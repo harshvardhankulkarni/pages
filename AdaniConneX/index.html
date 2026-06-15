@@ -581,6 +581,7 @@
       <a href="#automation">Automation</a>
       <a href="#dev-considerations">Dev Considerations</a>
       <a href="#client-comms">Client Comms</a>
+      <a href="#module-changes">Module Changes</a>
     </div>
   </nav>
 
@@ -1682,6 +1683,143 @@ Zoho Polling (scheduler every 30 min):
           <li>Standard price list for validation (rate card vs negotiated)</li>
           <li>Renewal approach (new Opportunity record vs update existing)</li>
         </ul>
+      </section>
+
+      <!-- Module Changes -->
+      <section id="module-changes" class="section">
+        <h2 class="section-title">Module Changes &amp; Workflow</h2>
+        <p class="section-intro">Detailed per-module configuration workflow for all 12 connected modules. Automation numbers (#1&ndash;#35) correspond to the automation matrix.</p>
+
+        <div class="callout callout-info">
+          <strong>~55% of project buildable without any client decision.</strong> Internal CRM work (P0-6, P8-9: 25-35 days) starts Day 1. Only P7 integrations require external API specs.
+        </div>
+
+        <h3>Dependency Map</h3>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:13px;background:var(--acx-gray-100);padding:16px;border-radius:8px;line-height:2;margin:12px 0;">
+          Phase 0: Roles/Profiles/Permissions<br>
+          &nbsp;&nbsp;&nbsp;│<br>
+          &nbsp;&nbsp;&nbsp;▼<br>
+          Accounts ──┐<br>
+          Contacts ──┼──► Data Center Opportunity ──► Colocation Pricing Subform<br>
+          EDC Products ┘&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;► Additional Products Subform<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──► Documents Module<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──► Calls / Meetings<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──► EdgeOS Integration [BLOCKED: Decision #6]<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└──► SAP Integration [BLOCKED: Decision #7]
+        </div>
+
+        <h3>Config Order</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Order</th>
+                <th>Module</th>
+                <th>Can Start</th>
+                <th>Depends On</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>1</td><td>Roles/Profiles/Permissions</td><td><span class="badge badge-green">Immediately</span></td><td>Org chart</td></tr>
+              <tr><td>2</td><td>Accounts + Contacts</td><td><span class="badge badge-green">Immediately</span></td><td>Roles</td></tr>
+              <tr><td>3</td><td>EDC Products (catalog)</td><td><span class="badge badge-green">Immediately</span></td><td>Roles</td></tr>
+              <tr><td>4</td><td>Data Center Opportunity</td><td><span class="badge badge-green">Immediately</span></td><td>Accounts, Contacts, EDC Products</td></tr>
+              <tr><td>5</td><td>Colocation Pricing (subform)</td><td><span class="badge badge-green">Immediately</span></td><td>Opp module exists</td></tr>
+              <tr><td>6</td><td>Additional DC Products (subform)</td><td><span class="badge badge-green">Immediately</span></td><td>Opp + EDC Products</td></tr>
+              <tr><td>7</td><td>Documents</td><td><span class="badge badge-green">Immediately</span></td><td>Opp module</td></tr>
+              <tr><td>8</td><td>Calls / Meetings</td><td><span class="badge badge-green">Immediately</span></td><td>Contacts + Opp</td></tr>
+              <tr><td>9</td><td>EdgeOS Integration</td><td><span class="badge badge-red">Blocked</span></td><td>Opp + Colo + API specs (#6)</td></tr>
+              <tr><td>10</td><td>SAP Integration</td><td><span class="badge badge-red">Blocked</span></td><td>Opp + subforms + file specs (#7)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Summary of Changes per Module</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Module</th>
+                <th>Change Type</th>
+                <th>Key Fields / Config</th>
+                <th>Automation Served</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Roles/Profiles</strong></td>
+                <td><span class="badge badge-green">New (7)</span></td>
+                <td>Admin&rarr;Sales Head&rarr;Ops&rarr;Commercials/Pre-Sales&rarr;Sales&rarr;SD</td>
+                <td>All</td>
+              </tr>
+              <tr>
+                <td><strong>Accounts</strong></td>
+                <td><span class="badge badge-blue">Enhance</span></td>
+                <td>SiteID, Account Manager, Duplicate Detection, Assignment</td>
+                <td>#11, #21, #22</td>
+              </tr>
+              <tr>
+                <td><strong>Contacts</strong></td>
+                <td><span class="badge badge-blue">Enhance</span></td>
+                <td>Primary Contact checkbox, Duplicate Detection</td>
+                <td>#22</td>
+              </tr>
+              <tr>
+                <td><strong>Data Center Opp</strong></td>
+                <td><span class="badge badge-blue">New (enhance)</span></td>
+                <td>17+ fields, Blueprint (12 states), 2 subforms, 5 CFs, 7 WFs, 5 schedulers</td>
+                <td>Core pipeline</td>
+              </tr>
+              <tr>
+                <td><strong>Colocation Pricing</strong></td>
+                <td><span class="badge badge-green">New subform</span></td>
+                <td>Pricing Type, Deal Type, Qty, KW, MRC, OTC</td>
+                <td>#5, #6, #7, #10, #17, #18</td>
+              </tr>
+              <tr>
+                <td><strong>Additional DC Products</strong></td>
+                <td><span class="badge badge-green">New subform</span></td>
+                <td>Product Category, Name (lookup&rarr;EDC), Qty, MRC, OTC</td>
+                <td>#5, #6, #7, #10, #18</td>
+              </tr>
+              <tr>
+                <td><strong>EDC Products</strong></td>
+                <td><span class="badge badge-green">New catalog</span></td>
+                <td>6 fields, ~50 seed products, Sales Ops maintains</td>
+                <td>Catalog for subform</td>
+              </tr>
+              <tr>
+                <td><strong>Documents</strong></td>
+                <td><span class="badge badge-blue">Enhance</span></td>
+                <td>Doc Type picklist (NDA/PO/SOF/MSA/LOA), stage-gate enforcement</td>
+                <td>#1, #2</td>
+              </tr>
+              <tr>
+                <td><strong>Calls/Meetings</strong></td>
+                <td><span class="badge badge-yellow">Minor</span></td>
+                <td>Verify fields, add Purpose/Agenda text</td>
+                <td>#4</td>
+              </tr>
+              <tr>
+                <td><strong>EdgeOS</strong></td>
+                <td><span class="badge badge-red">New build</span></td>
+                <td>Connections Mgr, pushToEdgeOS CF, 15-min scheduler, 3 statuses</td>
+                <td>#17</td>
+              </tr>
+              <tr>
+                <td><strong>SAP</strong></td>
+                <td><span class="badge badge-red">New build</span></td>
+                <td>Secure Params, generateSAPExport CF, ACK polling, 2 statuses</td>
+                <td>#18</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout callout-info" style="margin-top:16px;">
+          <strong>Full detail:</strong> See <code>AUTOMATION_MATRIX.md</code> Section 4 for complete per-module config workflows, Deluge code, field specs, validation rules, and dependency map.
+        </div>
       </section>
 
       <!-- Footer -->
