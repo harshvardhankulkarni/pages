@@ -35,6 +35,7 @@ Internal implementation plan: field-level module specs, Deluge pseudocode, looku
 - **Goods receipt**: accepted qty → Stock In transaction + PO line item update; rejected qty logged for returns
 - **Transfer orders**: completing a transfer auto-generates paired Stock Out / Stock In transactions
 - **Multi-stage PR approval**: Dept Manager → Finance → Procurement, each step triggers email notification
+- **PR → Auto-PO**: On final approval, Deluge auto-creates Purchase Order (Draft) with line items from PR
 - **Invoice revenue tracking**: Sent → updates Project Total Invoiced; Paid → auto-sets Balance Due
 - **Delivery Challan stock deduction**: Shipped → auto-creates Stock Out for each line item
 - **BOM Cost calculation**: On Submit → sums component costs + labor + overhead for Total Mfg Cost

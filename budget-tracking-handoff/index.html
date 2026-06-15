@@ -144,7 +144,7 @@
 <header class="hero">
 <div class="container">
   <h1>Project Budget Tracking<br>&amp; Inventory Management <span>— Internal Blueprint</span></h1>
-<p class="sub">ITOTCloud delivery team's implementation plan: 17 modules, 22 Deluge workflows, field-level specs, lookup maps, and build instructions for the Zoho Creator console.</p>
+<p class="sub">ITOTCloud delivery team's implementation plan: 17 modules, 23 Deluge workflows, field-level specs, lookup maps, and build instructions for the Zoho Creator console.</p>
     <div class="meta">
       <span class="badge accent">17 Modules</span>
     <span class="badge accent">18 Deluge Workflows</span>
@@ -223,6 +223,11 @@
       <ul>
         <li>On Create: generate Project Code</li>
         <li>On Status = <code>Completed</code>: validate no pending expenses/POs</li>
+      </ul>
+      <p><strong>Custom Actions (Form Buttons):</strong></p>
+      <ul>
+        <li><strong>Create Invoice</strong> — opens Invoice form with Project + Account pre-filled</li>
+        <li><strong>Request Part Repair</strong> — opens Purchase Requisition form with Project pre-filled, Request Type = "Part Repair"</li>
       </ul>
     </div>
 </div>
@@ -599,6 +604,7 @@
     <table class="tbl">
       <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
       <tr><td>Requisition No</td><td>Auto-number</td><td><code>REQ-0001</code></td></tr>
+      <tr><td>Request Type</td><td>Dropdown</td><td><code>General</code>, <code>Part Repair</code>, <code>Service</code> — defaults to General</td></tr>
       <tr><td>Subject</td><td>Text</td><td>Brief title for the requisition</td></tr>
       <tr><td>Project</td><td>Lookup → Projects <span class="tag tag-lookup">Lookup</span></td><td></td></tr>
       <tr><td>Requested By</td><td>User picker</td><td>Defaults to current user</td></tr>
@@ -623,7 +629,7 @@
       <tr><td>Item Type</td><td>Text</td><td>Copied from Item or manual</td></tr>
     </table>
 
-    <h4>Multi-stage Approval Workflow:</h4>
+    <h4>Multi-stage Approval + Auto-PO Workflow:</h4>
     <div class="wf-steps">
       <span class="step s-pending">Pending Dept Approval</span>
       <span class="arrow">→</span>
@@ -631,9 +637,11 @@
       <span class="arrow">→</span>
       <span class="step s-pending">Pending Procurement</span>
       <span class="arrow">→</span>
-      <span class="step s-approved">Approved / PO Created</span>
+      <span class="step s-approved">Approved</span>
+      <span class="arrow">→</span>
+      <span class="step s-approved">PO Auto-Created</span>
     </div>
-    <p>Each step is a form status update + email notification.</p>
+    <p>Each step sends email notification. On final approval (Approval Stage = "Approved"), Deluge auto-creates a Purchase Order in Draft status, copies line items, and links PO.Requisition to this PR. Procurement then reviews and sends.</p>
   </div>
 </div>
 
@@ -1057,7 +1065,7 @@
 
 <!-- DELUGE WORKFLOWS -->
 <section id="workflows">
-<h2>Deluge Automation Blueprints <span class="badge">22 workflows</span></h2>
+<h2>Deluge Automation Blueprints <span class="badge">23 workflows</span></h2>
 <table class="tbl">
   <tr><th>#</th><th>Trigger</th><th>Event</th><th>Action</th><th>Critical</th></tr>
   <tr><td>1</td><td>Project Create</td><td>On Submit</td><td>Generate Project Code (PROJ-0001)</td><td>—</td></tr>
@@ -1082,6 +1090,7 @@
   <tr><td>20</td><td>Invoice Paid</td><td>On Submit</td><td>Set Amount Paid, Balance Due = 0, Status = "Paid"</td><td>—</td></tr>
   <tr><td>21</td><td>DC Status = "Shipped"</td><td>On Submit</td><td>Auto-create Stock Out for dispatched items</td><td><span class="tag tag-critical">Yes</span></td></tr>
   <tr><td>22</td><td>BOM Submit</td><td>On Submit</td><td>Calculate Total Component Cost + Total Manufacturing Cost</td><td>—</td></tr>
+  <tr><td>23</td><td>PR Fully Approved</td><td>On Submit</td><td>Auto-create Purchase Order (Draft) with line items from PR; link PO.Requisition</td><td><span class="tag tag-critical">Yes</span></td></tr>
 </table>
 </section>
 
@@ -1228,7 +1237,7 @@
 <footer>
   <div class="container">
     <p><strong>ITOTCloud Systems Pvt. Ltd.</strong> — Internal Implementation Blueprint</p>
-    <p style="font-size:0.75rem;margin-top:4px">17 modules | 22 Deluge workflows | 27+ forms | Zoho Creator + Deluge | Phase 1A ready for console build</p>
+    <p style="font-size:0.75rem;margin-top:4px">17 modules | 23 Deluge workflows | 27+ forms | Zoho Creator + Deluge | Phase 1A ready for console build</p>
     <p style="font-size:0.7rem;margin-top:4px;color:var(--surface2)">Confidential — ITOTCloud Delivery Team Only</p>
   </div>
 </footer>

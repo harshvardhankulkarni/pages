@@ -47,7 +47,7 @@ This repo contains the **internal implementation plan** for our Project Budget T
 | 1E | BOM → Delivery Challan → Invoicing | Revenue & manufacturing | After 1D |
 | 1F | Reports & Dashboards (all modules incl. Project P&L) | Intelligence | After 1E |
 
-## Key Deluge Automations (22 total)
+## Key Deluge Automations (23 total)
 
 | # | Automation | Trigger | File ref |
 |---|------------|---------|----------|
@@ -68,6 +68,7 @@ This repo contains the **internal implementation plan** for our Project Budget T
 | 15 | Invoice Paid → update Amount Paid, Balance Due | Invoice Submit | §C.15 |
 | 16 | DC Shipped → auto-create Stock Out | DC Status = Shipped | §C.16 |
 | 17 | BOM Submit → calculate component + mfg costs | BOM Submit | §C.17 |
+| 18 | PR Approved → auto-create PO (Draft) | PR final approval | §C.11 |
 
 ## Team Access
 

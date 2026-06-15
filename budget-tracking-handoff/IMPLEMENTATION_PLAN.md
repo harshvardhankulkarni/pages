@@ -69,6 +69,10 @@ Phase 1F:  Reports & Dashboards (all modules incl. Project P&L)
 - On Create: generate Project Code
 - On Status = `Completed`: validate no pending expenses/POs
 
+**Custom Actions (Form Buttons):**
+- **Create Invoice** — opens Invoice form with Project + Account pre-filled
+- **Request Part Repair** — opens Purchase Requisition form with Project pre-filled, Request Type = "Part Repair"
+
 ---
 
 ### 2. Vendor Management (`Vendors`)
@@ -392,6 +396,7 @@ Matches Zoho Inventory's purchase requisition structure with multi-line items an
 | Field | Type | Notes |
 |---|---|---|
 | Requisition No | Auto-number | `REQ-0001` |
+| Request Type | Dropdown | `General`, `Part Repair`, `Service` — defaults to General |
 | Subject | Text | Brief title for the requisition |
 | Project | Lookup → Projects | |
 | Requested By | User picker | Defaults to current user |
@@ -415,13 +420,14 @@ Matches Zoho Inventory's purchase requisition structure with multi-line items an
 | Estimated Total | Formula | `Quantity * Estimated Unit Rate` |
 | Item Type | Text | Copied from Item or manual |
 
-**Multi-stage Approval Workflow:**
+**Multi-stage Approval + Auto-PO Workflow:**
 1. User submits (Status = "Open")
 2. Department Manager approves → Approval_Stage = "Pending Finance Approval"
 3. Finance approves → Approval_Stage = "Pending Procurement"
-4. Procurement creates PO → Status = "Closed", linked to PO
+4. Procurement approves → Approval_Stage = "Approved"
+5. **Auto-create PO** (Deluge on final approval): create Purchase_Order in Draft status, copy all PR_Line_Items → PO_Line_Items, link PO.Requisition = this PR
 
-Each step is a form status update + email notification.
+Each step sends email notification. Procurement then reviews the auto-created PO and sends to vendor.
 
 ---
 
@@ -819,6 +825,7 @@ BOM ──── BOM_Line_Items (1:N)
 | Goods Receipt (all items received) | On Submit | Auto-set PO.Status = "Closed" |
 | PO Status = "Open" | On Submit | Send email to vendor with PO details |
 | PR Approval Stage Change | On Submit | Send notification to next approver in chain |
+| PR Fully Approved (Stage = "Approved") | On Submit | Auto-create Purchase Order (Draft), copy line items, link PO.Requisition to PR |
 | Invoice Sent | On Submit | Update project P&L — add to Total Invoiced for revenue tracking |
 | Invoice Paid | On Submit | Update Amount Paid, set Balance Due = 0, Status = "Paid" |
 | DC Status = "Shipped" | On Submit | Auto-create Stock Out transaction for dispatched items |
