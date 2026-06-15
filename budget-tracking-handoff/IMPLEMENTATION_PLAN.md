@@ -71,7 +71,7 @@ Phase 1E:  Reports & Dashboards (all modules)
 
 ### 2. Vendor Management (`Vendors`)
 
-Matches Zoho Inventory's vendor master structure.
+Matches Zoho Inventory's vendor master structure. **Also serves as Accounts/Clients** — the Project Master's `Account` field looks up here. Use `Type` (or a tag) to distinguish vendors from clients.
 
 | Field | Type | Notes |
 |---|---|---|
