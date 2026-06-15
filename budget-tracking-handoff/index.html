@@ -846,6 +846,7 @@
       <tr><td>Due Date</td><td>Date</td><td>Based on payment terms</td></tr>
       <tr><td>Payment Terms</td><td>Dropdown</td><td><code>Due on Receipt</code>, <code>Net 15</code>, <code>Net 30</code>, <code>Net 45</code>, <code>Net 60</code></td></tr>
       <tr><td>PO Reference</td><td>Text</td><td>Customer PO number</td></tr>
+      <tr><td>Delivery Challan Ref</td><td>Lookup → Delivery_Challans <span class="tag tag-lookup">Lookup</span></td><td>Optional — link to DC if applicable</td></tr>
       <tr><td>Status</td><td>Dropdown</td><td><span class="tag s-draft">Draft</span> <span class="tag s-open">Sent</span> <span class="tag s-pending">Partially Paid</span> <span class="tag s-approved">Paid</span> <span class="tag s-exceeded">Overdue</span> <span class="tag s-closed">Cancelled</span></td></tr>
       <tr><td>Subtotal</td><td>Currency</td><td>Sum of line items</td></tr>
       <tr><td>Discount (%)</td><td>Decimal</td><td>Overall invoice discount</td></tr>
@@ -855,20 +856,30 @@
       <tr><td>Balance Due</td><td>Currency (Formula)</td><td><code>Total - Amount Paid</code></td></tr>
       <tr><td>Amount Paid</td><td>Currency</td><td>Updated on payment receipt</td></tr>
       <tr><td>Notes</td><td>Multi-line</td><td></td></tr>
+      <tr><td>Terms &amp; Conditions</td><td>Multi-line</td><td></td></tr>
+      <tr><td>Attachment</td><td>Upload</td><td>Invoice PDF</td></tr>
     </table>
 
     <h4>Line Items — Separate form <code>Invoice_Line_Items</code> with Add-as-Subform:</h4>
     <table class="tbl">
-      <tr><th>Field</th><th>Type</th></tr>
-      <tr><td>Invoice</td><td>Lookup → Invoices</td></tr>
-      <tr><td>Item</td><td>Lookup → Inventory_Items</td></tr>
-      <tr><td>Description</td><td>Text</td></tr>
-      <tr><td>Quantity</td><td>Decimal</td></tr>
-      <tr><td>Rate</td><td>Currency</td></tr>
-      <tr><td>Discount (%)</td><td>Decimal</td></tr>
-      <tr><td>Tax (%)</td><td>Decimal</td></tr>
-      <tr><td>Total</td><td>Formula</td></tr>
+      <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+      <tr><td>Invoice</td><td>Lookup → Invoices</td><td></td></tr>
+      <tr><td>Item</td><td>Lookup → Inventory_Items</td><td>Optional — can enter free-text</td></tr>
+      <tr><td>Description</td><td>Text</td><td>Auto-filled from Item, editable</td></tr>
+      <tr><td>Quantity</td><td>Decimal</td><td></td></tr>
+      <tr><td>Rate</td><td>Currency</td><td></td></tr>
+      <tr><td>Discount (%)</td><td>Decimal</td><td>Line-level</td></tr>
+      <tr><td>Discount Amount</td><td>Formula</td><td></td></tr>
+      <tr><td>Tax (%)</td><td>Decimal</td><td></td></tr>
+      <tr><td>Tax Amount</td><td>Formula</td><td></td></tr>
+      <tr><td>Total</td><td>Formula</td><td><code>(Qty × Rate) − Discount + Tax</code></td></tr>
     </table>
+    <p><strong>Deluge:</strong></p>
+    <ul>
+      <li>On Status = <code>Sent</code>: update Project Budget Component's Total Invoiced (P&amp;L reporting)</li>
+      <li>On Status = <code>Paid</code>: update Amount Paid, auto-set Balance Due = 0</li>
+      <li>On Status = <code>Cancelled</code>: validate no payments received</li>
+    </ul>
   </div>
 </div>
 
@@ -888,20 +899,30 @@
       <tr><td>Reference</td><td>Text</td><td>Customer PO / SO ref</td></tr>
       <tr><td>Date</td><td>Date</td><td>Defaults to today</td></tr>
       <tr><td>Ship Via</td><td>Dropdown</td><td><code>Courier</code>, <code>Freight</code>, <code>Own Vehicle</code>, <code>Pickup</code></td></tr>
-      <tr><td>Vehicle No</td><td>Text</td><td></td></tr>
+      <tr><td>Vehicle No</td><td>Text</td><td>If own transport</td></tr>
+      <tr><td>Driver Name</td><td>Text</td><td></td></tr>
+      <tr><td>Driver Contact</td><td>Phone</td><td></td></tr>
       <tr><td>Status</td><td>Dropdown</td><td><span class="tag s-draft">Draft</span> <span class="tag s-open">Shipped</span> <span class="tag s-approved">Delivered</span> <span class="tag s-closed">Cancelled</span></td></tr>
+      <tr><td>Remarks</td><td>Multi-line</td><td></td></tr>
+      <tr><td>Attachment</td><td>Upload</td><td>Signed DC copy</td></tr>
     </table>
 
     <h4>Line Items — Separate form <code>DC_Line_Items</code> with Add-as-Subform:</h4>
     <table class="tbl">
-      <tr><th>Field</th><th>Type</th></tr>
-      <tr><td>Delivery Challan</td><td>Lookup → Delivery_Challans</td></tr>
-      <tr><td>Item</td><td>Lookup → Inventory_Items</td></tr>
-      <tr><td>Description</td><td>Text</td></tr>
-      <tr><td>Quantity</td><td>Decimal</td></tr>
-      <tr><td>Unit</td><td>Text</td></tr>
-      <tr><td>Condition</td><td>Dropdown: <code>Good</code>, <code>Damaged</code>, <code>Partial</code></td></tr>
+      <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+      <tr><td>Delivery Challan</td><td>Lookup → Delivery_Challans</td><td></td></tr>
+      <tr><td>Item</td><td>Lookup → Inventory_Items</td><td></td></tr>
+      <tr><td>Description</td><td>Text</td><td></td></tr>
+      <tr><td>Quantity</td><td>Decimal</td><td></td></tr>
+      <tr><td>Unit</td><td>Text</td><td>Copied from Item</td></tr>
+      <tr><td>Condition</td><td>Dropdown</td><td><code>Good</code>, <code>Damaged</code>, <code>Partial</code></td></tr>
     </table>
+    <p><strong>Deluge:</strong></p>
+    <ul>
+      <li>On Create: validate stock availability for each line item</li>
+      <li>On Status = <code>Shipped</code>: reduce stock via auto-create Stock Out transaction</li>
+      <li>On Status = <code>Shipped</code> + no Invoice linked: prompt user to create Invoice</li>
+    </ul>
   </div>
 </div>
 
@@ -916,27 +937,36 @@
     <table class="tbl">
       <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
       <tr><td>BOM No</td><td>Auto-number</td><td><code>BOM-0001</code></td></tr>
+      <tr><td>BOM Name</td><td>Text</td><td>Auto-generated or manual</td></tr>
       <tr><td>Finished Item</td><td>Lookup → Inventory_Items <span class="tag tag-lookup">Lookup</span></td><td>The output/assembled item</td></tr>
-      <tr><td>Quantity</td><td>Decimal</td><td>Output qty this BOM produces</td></tr>
+      <tr><td>Quantity</td><td>Decimal</td><td>Output qty this BOM produces (e.g., 1 unit)</td></tr>
       <tr><td>Total Component Cost</td><td>Currency (Formula)</td><td>Sum of line item costs</td></tr>
       <tr><td>Labor Cost</td><td>Currency</td><td>Optional</td></tr>
       <tr><td>Overhead Cost</td><td>Currency</td><td>Optional</td></tr>
       <tr><td>Total Mfg Cost</td><td>Currency (Formula)</td><td><code>Component Cost + Labor + Overhead</code></td></tr>
-      <tr><td>Status</td><td>Dropdown</td><td><span class="tag s-draft">Draft</span> <span class="tag s-approved">Active</span> <span class="tag s-closed">Inactive</span></td></tr>
+      <tr><td>Status</td><td>Dropdown</td><td><span class="tag s-draft">Draft</span> <span class="tag s-approved">Active</span> <span class="tag s-rejected">Inactive</span> <span class="tag s-pending">Revised</span></td></tr>
       <tr><td>Version</td><td>Decimal</td><td>Track revisions</td></tr>
+      <tr><td>Notes</td><td>Multi-line</td><td></td></tr>
     </table>
 
     <h4>Line Items — Separate form <code>BOM_Line_Items</code> with Add-as-Subform:</h4>
     <table class="tbl">
-      <tr><th>Field</th><th>Type</th></tr>
-      <tr><td>BOM</td><td>Lookup → BOM</td></tr>
-      <tr><td>Component Item</td><td>Lookup → Inventory_Items</td></tr>
-      <tr><td>Quantity Required</td><td>Decimal</td></tr>
-      <tr><td>Unit</td><td>Text</td></tr>
-      <tr><td>Unit Cost</td><td>Currency</td></tr>
-      <tr><td>Total Cost</td><td>Formula</td></tr>
-      <tr><td>Scrap %</td><td>Decimal</td></tr>
+      <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+      <tr><td>BOM</td><td>Lookup → BOM</td><td></td></tr>
+      <tr><td>Component Item</td><td>Lookup → Inventory_Items</td><td>Raw material / sub-component</td></tr>
+      <tr><td>Quantity Required</td><td>Decimal</td><td>Per BOM output qty</td></tr>
+      <tr><td>Unit</td><td>Text</td><td>Copied from Item</td></tr>
+      <tr><td>Unit Cost</td><td>Currency</td><td>Standard cost or purchase price</td></tr>
+      <tr><td>Total Cost</td><td>Formula</td><td><code>Qty Required × Unit Cost</code></td></tr>
+      <tr><td>Scrap %</td><td>Decimal</td><td>Waste allowance</td></tr>
+      <tr><td>Notes</td><td>Text</td><td></td></tr>
     </table>
+    <p><strong>Deluge:</strong></p>
+    <ul>
+      <li>On Submit: calculate Total Component Cost = SUM of line item Total Costs</li>
+      <li>On Submit: calculate Total Mfg Cost = <code>Component Cost + Labor + Overhead</code></li>
+      <li>On Status = <code>Active</code>: ensure no other Active BOM for same Finished Item (or increment version)</li>
+    </ul>
   </div>
 </div>
 

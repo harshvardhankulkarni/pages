@@ -35,6 +35,9 @@ Internal implementation plan: field-level module specs, Deluge pseudocode, looku
 - **Goods receipt**: accepted qty → Stock In transaction + PO line item update; rejected qty logged for returns
 - **Transfer orders**: completing a transfer auto-generates paired Stock Out / Stock In transactions
 - **Multi-stage PR approval**: Dept Manager → Finance → Procurement, each step triggers email notification
+- **Invoice revenue tracking**: Sent → updates Project Total Invoiced; Paid → auto-sets Balance Due
+- **Delivery Challan stock deduction**: Shipped → auto-creates Stock Out for each line item
+- **BOM Cost calculation**: On Submit → sums component costs + labor + overhead for Total Mfg Cost
 
 ## User roles and their scope
 | Role | Key actions |
@@ -47,7 +50,7 @@ Internal implementation plan: field-level module specs, Deluge pseudocode, looku
 | Employee/User | Submit expenses, request purchases |
 
 ## Reporting
-Executive dashboard KPIs: Total Project Budget, Total Spent, Budget Utilization %, Open PO Value, Inventory Value, Cost Overruns. Budget vs Actual, category analysis, monthly trends — all Zoho Creator Report/Dashboard widgets or Zoho Analytics.
+Executive dashboard KPIs: Total Project Budget, Total Spent, Budget Utilization %, Open PO Value, Inventory Value, Cost Overruns. Reports: Budget vs Actual, Project P&L (Invoiced − Expenses), Invoice Aging, DC Register, BOM Cost Summary, category analysis, monthly trends — all Zoho Creator Report/Dashboard widgets or Zoho Analytics.
 
 ## Integration touchpoints (Phase 2)
 Zoho Books, Zoho Inventory (optional), Zoho Analytics, Zoho Projects, email notifications, vendor communication.
