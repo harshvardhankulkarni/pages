@@ -6,7 +6,7 @@ Zoho Creator low-code application. All logic is in **Deluge scripts**, forms, wo
 ## What this repo holds
 Internal implementation plan: field-level module specs, Deluge pseudocode, lookup relationship maps, build phases, role permissions matrix, and deployment checklist. This is the single source of truth for the Zoho Creator console build.
 
-## 14 canonical modules (matches Zoho Creator + Zoho Inventory structure)
+## 17 canonical modules
 1. Project Master — `Projects`
 2. Vendor Management — `Vendors`, `Vendor_Contacts`, `Vendor_Documents`
 3. Warehouses — `Warehouses`
@@ -21,6 +21,9 @@ Internal implementation plan: field-level module specs, Deluge pseudocode, looku
 12. Purchase Orders — `Purchase_Orders`, `PO_Line_Items`
 13. Goods Receipt — `Goods_Receipts`, `GRN_Line_Items`
 14. Reports & Dashboards — Reports + Dashboard widgets
+15. Invoicing — `Invoices`, `Invoice_Line_Items`
+16. Delivery Challan — `Delivery_Challans`, `DC_Line_Items`
+17. BOM (Bill of Materials) — `BOM`, `BOM_Line_Items`
 
 ## Key Deluge automation points (non-obvious)
 - **Budget validation**: sum of component budgets must not exceed approved project budget
@@ -62,5 +65,6 @@ Phase 1A: Vendors → Projects → Warehouses → Inventory_Items
 Phase 1B: Budget_Plans → Budget_Components → Inventory_Transactions
 Phase 1C: Expenses → Purchase_Requisitions
 Phase 1D: Budget_Approvals → Purchase_Orders → Goods_Receipts → Transfer_Orders
-Phase 1E: Reports & Dashboards
+Phase 1E: BOM → Delivery_Challans → Invoices
+Phase 1F: Reports & Dashboards (incl. Project P&L)
 ```

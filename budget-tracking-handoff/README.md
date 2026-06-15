@@ -14,7 +14,7 @@ This repo contains the **internal implementation plan** for our Project Budget T
 **Logic layer:** Deluge scripts, form workflows, reports
 **Integration target (Phase 2):** Zoho Inventory, Zoho Books, Zoho Projects, Zoho Analytics
 
-## The 14-Module Architecture
+## The 17-Module Architecture
 
 | # | Module | Form Name | Key Purpose |
 |---|--------|-----------|-------------|
@@ -32,6 +32,9 @@ This repo contains the **internal implementation plan** for our Project Budget T
 | 12 | Purchase Orders | `Purchase_Orders` + `PO_Line_Items` | Full PO lifecycle, line-level discount/tax |
 | 13 | Goods Receipt | `Goods_Receipts` + `GRN_Line_Items` | Accepted/rejected qty, auto Stock In |
 | 14 | Reports & Dashboards | Reports + Dashboard widgets | KPIs, Budget vs Actual, stock alerts |
+| 15 | Invoicing | `Invoices` + `Invoice_Line_Items` | Revenue tracking, Zoho Books compatible |
+| 16 | Delivery Challan | `Delivery_Challans` + `DC_Line_Items` | Goods dispatch tracking |
+| 17 | BOM | `BOM` + `BOM_Line_Items` | Bill of Materials for manufacturing |
 
 ## Build Phases
 
@@ -41,9 +44,10 @@ This repo contains the **internal implementation plan** for our Project Budget T
 | 1B | Budget Planning → Budget Components → Inventory Transactions | Budget + stock engine | After 1A |
 | 1C | Expense Management → Purchase Requisition | Spend + requests | After 1B |
 | 1D | Budget Approval → Purchase Orders → Goods Receipt → Transfer Orders | Procurement cycle | After 1C |
-| 1E | Reports & Dashboards (all modules) | Intelligence | After 1D |
+| 1E | BOM → Delivery Challan → Invoicing | Revenue & manufacturing | After 1D |
+| 1F | Reports & Dashboards (all modules incl. Project P&L) | Intelligence | After 1E |
 
-## Key Deluge Automations
+## Key Deluge Automations (22 total)
 
 | # | Automation | Trigger | File ref |
 |---|------------|---------|----------|
@@ -59,7 +63,11 @@ This repo contains the **internal implementation plan** for our Project Budget T
 | 10 | All items received → auto-close PO | GRN completion check | §C.13 |
 | 11 | PO Open → email vendor | PO Status = Open | §C.12 |
 | 12 | PR Approval Stage → notify next approver | PR stage change | §C.11 |
-| 13 | Daily Cron — alerts, KPI refresh, auto-close | Scheduled (midnight) | §C.14 |
+| 13 | Daily Cron — alerts, KPI refresh, overdue invoices | Scheduled (midnight) | §C.14 |
+| 14 | Invoice Sent → update project Total Invoiced | Invoice Submit | §C.15 |
+| 15 | Invoice Paid → update Amount Paid, Balance Due | Invoice Submit | §C.15 |
+| 16 | DC Shipped → auto-create Stock Out | DC Status = Shipped | §C.16 |
+| 17 | BOM Submit → calculate component + mfg costs | BOM Submit | §C.17 |
 
 ## Team Access
 
@@ -81,7 +89,7 @@ This repo contains the **internal implementation plan** for our Project Budget T
 
 | Document | Purpose |
 |----------|---------|
-| `IMPLEMENTATION_PLAN.md` | Complete field-level specs for all 14 modules, Deluge workflows, lookup map, risks |
+| `IMPLEMENTATION_PLAN.md` | Complete field-level specs for all 17 modules, Deluge workflows, lookup map, risks |
 | `AGENTS.md` | Compact AI assistant guide — module list, automation points, roles |
 | `index.html` | Interactive HTML implementation plan with expandable module cards |
 | `README.md` | This file — team onboarding and navigation |

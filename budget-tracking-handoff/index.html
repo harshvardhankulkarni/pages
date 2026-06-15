@@ -144,9 +144,9 @@
 <header class="hero">
 <div class="container">
   <h1>Project Budget Tracking<br>&amp; Inventory Management <span>— Internal Blueprint</span></h1>
-  <p class="sub">ITOTCloud delivery team's implementation plan: 14 modules, 18 Deluge workflows, field-level specs, lookup maps, and build instructions for the Zoho Creator console.</p>
-  <div class="badge-row">
-    <span class="badge accent">14 Modules</span>
+<p class="sub">ITOTCloud delivery team's implementation plan: 17 modules, 22 Deluge workflows, field-level specs, lookup maps, and build instructions for the Zoho Creator console.</p>
+    <div class="meta">
+      <span class="badge accent">17 Modules</span>
     <span class="badge accent">18 Deluge Workflows</span>
     <span class="badge accent">18+ Forms</span>
     <span class="badge accent">5 Build Phases</span>
@@ -195,8 +195,8 @@
 
 <!-- MODULES -->
 <section id="modules">
-<h2>14 Modules — Field-Level Specification <span class="badge">build from this</span></h2>
-<p>Full field-level specifications for all 14 modules below. Build each form in the Zoho Creator console following these specs.</p>
+<h2>17 Modules — Field-Level Specification <span class="badge">build from this</span></h2>
+<p>Full field-level specifications for all 17 modules below. Build each form in the Zoho Creator console following these specs.</p>
 <div class="module-grid">
 
 <!-- 1. Project Master -->
@@ -829,6 +829,117 @@
   </div>
 </div>
 
+<!-- 15. Invoicing -->
+<div class="module-card" >
+  <div class="num">#15</div>
+  <h4>Invoicing</h4>
+  <div class="desc">Revenue tracking per project. Zoho Books compatible — designed for 1:1 field mapping. Tracks invoice status, aging, and payments.</div>
+  <div class="tags"><span>Revenue</span><span>Zoho Books ready</span><span>P&amp;L</span></div>
+  <div class="detail-panel">
+    <p><strong>Form:</strong> <code>Invoices</code> <strong>| Sub-form:</strong> <code>Invoice_Line_Items</code></p>
+    <table class="tbl">
+      <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+      <tr><td>Invoice No</td><td>Auto-number</td><td><code>INV-0001</code></td></tr>
+      <tr><td>Project</td><td>Lookup → Projects <span class="tag tag-lookup">Lookup</span></td><td>Required — ties revenue to a project for P&amp;L</td></tr>
+      <tr><td>Customer / Account</td><td>Lookup → Vendors <span class="tag tag-lookup">Lookup</span></td><td>Billed party</td></tr>
+      <tr><td>Invoice Date</td><td>Date</td><td>Defaults to today</td></tr>
+      <tr><td>Due Date</td><td>Date</td><td>Based on payment terms</td></tr>
+      <tr><td>Payment Terms</td><td>Dropdown</td><td><code>Due on Receipt</code>, <code>Net 15</code>, <code>Net 30</code>, <code>Net 45</code>, <code>Net 60</code></td></tr>
+      <tr><td>PO Reference</td><td>Text</td><td>Customer PO number</td></tr>
+      <tr><td>Status</td><td>Dropdown</td><td><span class="tag s-draft">Draft</span> <span class="tag s-open">Sent</span> <span class="tag s-pending">Partially Paid</span> <span class="tag s-approved">Paid</span> <span class="tag s-exceeded">Overdue</span> <span class="tag s-closed">Cancelled</span></td></tr>
+      <tr><td>Subtotal</td><td>Currency</td><td>Sum of line items</td></tr>
+      <tr><td>Discount (%)</td><td>Decimal</td><td>Overall invoice discount</td></tr>
+      <tr><td>Discount Amount</td><td>Currency</td><td>Calculated</td></tr>
+      <tr><td>Tax Total</td><td>Currency</td><td>Sum of line item taxes</td></tr>
+      <tr><td>Total</td><td>Currency</td><td><code>Subtotal - Discount + Tax Total</code></td></tr>
+      <tr><td>Balance Due</td><td>Currency (Formula)</td><td><code>Total - Amount Paid</code></td></tr>
+      <tr><td>Amount Paid</td><td>Currency</td><td>Updated on payment receipt</td></tr>
+      <tr><td>Notes</td><td>Multi-line</td><td></td></tr>
+    </table>
+
+    <h4>Line Items — Separate form <code>Invoice_Line_Items</code> with Add-as-Subform:</h4>
+    <table class="tbl">
+      <tr><th>Field</th><th>Type</th></tr>
+      <tr><td>Invoice</td><td>Lookup → Invoices</td></tr>
+      <tr><td>Item</td><td>Lookup → Inventory_Items</td></tr>
+      <tr><td>Description</td><td>Text</td></tr>
+      <tr><td>Quantity</td><td>Decimal</td></tr>
+      <tr><td>Rate</td><td>Currency</td></tr>
+      <tr><td>Discount (%)</td><td>Decimal</td></tr>
+      <tr><td>Tax (%)</td><td>Decimal</td></tr>
+      <tr><td>Total</td><td>Formula</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- 16. Delivery Challan -->
+<div class="module-card" >
+  <div class="num">#16</div>
+  <h4>Delivery Challan</h4>
+  <div class="desc">Physical goods dispatch tracking. Links to Inventory Items for stock deduction on shipment. Zoho Books Delivery Challan compatible.</div>
+  <div class="tags"><span>Logistics</span><span>Stock deduction</span><span>Zoho Books ready</span></div>
+  <div class="detail-panel">
+    <p><strong>Form:</strong> <code>Delivery_Challans</code> <strong>| Sub-form:</strong> <code>DC_Line_Items</code></p>
+    <table class="tbl">
+      <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+      <tr><td>DC No</td><td>Auto-number</td><td><code>DC-0001</code></td></tr>
+      <tr><td>Project</td><td>Lookup → Projects <span class="tag tag-lookup">Lookup</span></td><td></td></tr>
+      <tr><td>Customer</td><td>Lookup → Vendors <span class="tag tag-lookup">Lookup</span></td><td>Recipient</td></tr>
+      <tr><td>Reference</td><td>Text</td><td>Customer PO / SO ref</td></tr>
+      <tr><td>Date</td><td>Date</td><td>Defaults to today</td></tr>
+      <tr><td>Ship Via</td><td>Dropdown</td><td><code>Courier</code>, <code>Freight</code>, <code>Own Vehicle</code>, <code>Pickup</code></td></tr>
+      <tr><td>Vehicle No</td><td>Text</td><td></td></tr>
+      <tr><td>Status</td><td>Dropdown</td><td><span class="tag s-draft">Draft</span> <span class="tag s-open">Shipped</span> <span class="tag s-approved">Delivered</span> <span class="tag s-closed">Cancelled</span></td></tr>
+    </table>
+
+    <h4>Line Items — Separate form <code>DC_Line_Items</code> with Add-as-Subform:</h4>
+    <table class="tbl">
+      <tr><th>Field</th><th>Type</th></tr>
+      <tr><td>Delivery Challan</td><td>Lookup → Delivery_Challans</td></tr>
+      <tr><td>Item</td><td>Lookup → Inventory_Items</td></tr>
+      <tr><td>Description</td><td>Text</td></tr>
+      <tr><td>Quantity</td><td>Decimal</td></tr>
+      <tr><td>Unit</td><td>Text</td></tr>
+      <tr><td>Condition</td><td>Dropdown: <code>Good</code>, <code>Damaged</code>, <code>Partial</code></td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- 17. BOM -->
+<div class="module-card" >
+  <div class="num">#17</div>
+  <h4>BOM (Bill of Materials)</h4>
+  <div class="desc">Defines component structure for manufactured items. Links components to finished goods for cost estimation and production planning.</div>
+  <div class="tags"><span>Manufacturing</span><span>Cost estimation</span></div>
+  <div class="detail-panel">
+    <p><strong>Form:</strong> <code>BOM</code> <strong>| Sub-form:</strong> <code>BOM_Line_Items</code></p>
+    <table class="tbl">
+      <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+      <tr><td>BOM No</td><td>Auto-number</td><td><code>BOM-0001</code></td></tr>
+      <tr><td>Finished Item</td><td>Lookup → Inventory_Items <span class="tag tag-lookup">Lookup</span></td><td>The output/assembled item</td></tr>
+      <tr><td>Quantity</td><td>Decimal</td><td>Output qty this BOM produces</td></tr>
+      <tr><td>Total Component Cost</td><td>Currency (Formula)</td><td>Sum of line item costs</td></tr>
+      <tr><td>Labor Cost</td><td>Currency</td><td>Optional</td></tr>
+      <tr><td>Overhead Cost</td><td>Currency</td><td>Optional</td></tr>
+      <tr><td>Total Mfg Cost</td><td>Currency (Formula)</td><td><code>Component Cost + Labor + Overhead</code></td></tr>
+      <tr><td>Status</td><td>Dropdown</td><td><span class="tag s-draft">Draft</span> <span class="tag s-approved">Active</span> <span class="tag s-closed">Inactive</span></td></tr>
+      <tr><td>Version</td><td>Decimal</td><td>Track revisions</td></tr>
+    </table>
+
+    <h4>Line Items — Separate form <code>BOM_Line_Items</code> with Add-as-Subform:</h4>
+    <table class="tbl">
+      <tr><th>Field</th><th>Type</th></tr>
+      <tr><td>BOM</td><td>Lookup → BOM</td></tr>
+      <tr><td>Component Item</td><td>Lookup → Inventory_Items</td></tr>
+      <tr><td>Quantity Required</td><td>Decimal</td></tr>
+      <tr><td>Unit</td><td>Text</td></tr>
+      <tr><td>Unit Cost</td><td>Currency</td></tr>
+      <tr><td>Total Cost</td><td>Formula</td></tr>
+      <tr><td>Scrap %</td><td>Decimal</td></tr>
+    </table>
+  </div>
+</div>
+
 </div>
 </section>
 
@@ -842,7 +953,10 @@
 <div class="indent">├── <span class="child">Inventory_Transactions</span> (1:N, Stock Out only)</div>
 <div class="indent">├── <span class="child">Purchase_Requisitions</span> (1:N)</div>
 <div class="indent">├── <span class="child">Purchase_Orders</span> (1:N)</div>
-<div class="indent">└── <span class="child">Budget_Approvals</span> (1:N)</div>
+<div class="indent">├── <span class="child">Budget_Approvals</span> (1:N)</div>
+<div class="indent">├── <span class="child">Invoices</span> (1:N)</div>
+<div class="indent">├── <span class="child">Delivery_Challans</span> (1:N)</div>
+<div class="indent">└── <span class="child">BOM</span> (1:N)</div>
 <br>
 <span class="form">Budget_Plans</span> —— <span class="child">Budget_Components</span> (1:N)<br>
 <br>
@@ -857,21 +971,28 @@
 <div class="indent">├── <span class="child">Purchase_Orders</span> (1:N)</div>
 <div class="indent">├── <span class="child">Inventory_Items</span> (1:N, preferred vendor)</div>
 <div class="indent">├── <span class="child">Expenses</span> (N:1)</div>
-<div class="indent">└── <span class="child">Goods_Receipts</span> (1:N)</div>
+<div class="indent">├── <span class="child">Goods_Receipts</span> (1:N)</div>
+<div class="indent">├── <span class="child">Invoices</span> (1:N)</div>
+<div class="indent">└── <span class="child">Delivery_Challans</span> (1:N)</div>
 <br>
 <span class="form">Warehouses</span> ──┬── <span class="child">Item_Warehouse_Stock</span> (1:N)<br>
 <div class="indent">├── <span class="child">Inventory_Transactions</span> (1:N)</div>
 <div class="indent">├── <span class="child">Transfer_Orders</span> — From (1:N)</div>
 <div class="indent">├── <span class="child">Transfer_Orders</span> — To (1:N)</div>
 <div class="indent">├── <span class="child">PO_Line_Items</span> (default receipt warehouse)</div>
-<div class="indent">└── <span class="child">GRN_Line_Items</span> (receipt warehouse)</div>
+<div class="indent">├── <span class="child">GRN_Line_Items</span> (receipt warehouse)</div>
+<div class="indent">└── <span class="child">DC_Line_Items</span> (dispatch warehouse)</div>
 <br>
 <span class="form">Inventory_Items</span> ──┬── <span class="child">Item_Warehouse_Stock</span> (1:N)<br>
 <div class="indent">├── <span class="child">Inventory_Transactions</span> (1:N)</div>
 <div class="indent">├── <span class="child">PO_Line_Items</span> (1:N)</div>
 <div class="indent">├── <span class="child">PR_Line_Items</span> (1:N)</div>
 <div class="indent">├── <span class="child">GRN_Line_Items</span> (1:N)</div>
-<div class="indent">└── <span class="child">TO_Line_Items</span> (1:N)</div>
+<div class="indent">├── <span class="child">TO_Line_Items</span> (1:N)</div>
+<div class="indent">├── <span class="child">Invoice_Line_Items</span> (1:N)</div>
+<div class="indent">├── <span class="child">DC_Line_Items</span> (1:N)</div>
+<div class="indent">├── <span class="child">BOM</span> (1:N, as finished item)</div>
+<div class="indent">└── <span class="child">BOM_Line_Items</span> (1:N, as component)</div>
 <br>
 <span class="form">Item_Warehouse_Stock</span> ──┬── <span class="child">Items</span> (N:1)<br>
 <div class="indent">└── <span class="child">Warehouses</span> (N:1)</div>
@@ -892,12 +1013,21 @@
 <div class="indent">└── <span class="child">Requisition</span> (optional, N:1)</div>
 <br>
 <span class="form">Goods_Receipts</span> —— <span class="child">GRN_Line_Items</span> (1:N) → Items (N:1), PO_Line_Items (N:1), Warehouses (N:1)
+<br><br>
+<span class="form">Invoices</span> —— <span class="child">Invoice_Line_Items</span> (1:N) → Items (N:1)<br>
+<div class="indent">└── <span class="child">Delivery_Challans</span> (N:1, optional)</div>
+<br>
+<span class="form">Delivery_Challans</span> —— <span class="child">DC_Line_Items</span> (1:N)<br>
+<div class="indent">├── <span class="child">Items</span> (N:1)</div>
+<div class="indent">└── <span class="child">Warehouses</span> (N:1, dispatch warehouse)</div>
+<br>
+<span class="form">BOM</span> —— <span class="child">BOM_Line_Items</span> (1:N) → Items (N:1, as component)
 </div>
 </section>
 
 <!-- DELUGE WORKFLOWS -->
 <section id="workflows">
-<h2>Deluge Automation Blueprints <span class="badge">18 workflows</span></h2>
+<h2>Deluge Automation Blueprints <span class="badge">22 workflows</span></h2>
 <table class="tbl">
   <tr><th>#</th><th>Trigger</th><th>Event</th><th>Action</th><th>Critical</th></tr>
   <tr><td>1</td><td>Project Create</td><td>On Submit</td><td>Generate Project Code (PROJ-0001)</td><td>—</td></tr>
@@ -915,15 +1045,19 @@
   <tr><td>13</td><td>PO Status = "Open"</td><td>On Submit</td><td>Send PO PDF to vendor email</td><td><span class="tag tag-notify">Yes</span></td></tr>
   <tr><td>14</td><td>PO Status = "Cancelled"</td><td>Validation</td><td>Validate no GRN linked</td><td><span class="tag tag-critical">Yes</span></td></tr>
   <tr><td>15</td><td>PR Approval Stage change</td><td>On Submit</td><td>Email next approver in chain</td><td><span class="tag tag-notify">Yes</span></td></tr>
-  <tr><td>16</td><td>Scheduled (daily midnight)</td><td>Cron</td><td>Budget alerts (80/90/100%); low stock alerts; KPI refresh</td><td><span class="tag tag-notify">Yes</span></td></tr>
+  <tr><td>16</td><td>Scheduled (daily midnight)</td><td>Cron</td><td>Budget alerts; low stock alerts; KPI refresh; mark overdue invoices</td><td><span class="tag tag-notify">Yes</span></td></tr>
   <tr><td>17</td><td>Project Status = "Completed"</td><td>Validation</td><td>Check no open Expenses or POs</td><td>—</td></tr>
   <tr><td>18</td><td>Auto-close completed POs</td><td>Scheduled</td><td>POs fully received + 30 days old → Closed</td><td>—</td></tr>
+  <tr><td>19</td><td>Invoice Sent</td><td>On Submit</td><td>Update project P&L — add to Total Invoiced</td><td><span class="tag tag-critical">Yes</span></td></tr>
+  <tr><td>20</td><td>Invoice Paid</td><td>On Submit</td><td>Set Amount Paid, Balance Due = 0, Status = "Paid"</td><td>—</td></tr>
+  <tr><td>21</td><td>DC Status = "Shipped"</td><td>On Submit</td><td>Auto-create Stock Out for dispatched items</td><td><span class="tag tag-critical">Yes</span></td></tr>
+  <tr><td>22</td><td>BOM Submit</td><td>On Submit</td><td>Calculate Total Component Cost + Total Manufacturing Cost</td><td>—</td></tr>
 </table>
 </section>
 
 <!-- BUILD PHASES -->
 <section id="phases">
-<h2>Implementation Build Order <span class="badge">5 phases</span></h2>
+<h2>Implementation Build Order <span class="badge">6 phases</span></h2>
 <p style="margin-bottom:16px">Each phase depends on the previous. Build in strict sequence — Expense Management needs Budget Components to exist before it can reference them.</p>
 <div class="phase-grid">
   <div class="phase-card" style="border-left:4px solid var(--green)">
@@ -960,10 +1094,19 @@
       <li>Goods Receipt</li>
     </ul>
   </div>
-  <div class="phase-card" style="border-left:4px solid var(--yellow)">
-    <h4 style="color:var(--yellow)">Phase 1E — Reports</h4>
+  <div class="phase-card" style="border-left:4px solid var(--pink)">
+    <h4 style="color:var(--pink)">Phase 1E — Revenue &amp; Manufacturing</h4>
     <ul>
-      <li>All Reports (14 total)</li>
+      <li>BOM (Bill of Materials)</li>
+      <li>Delivery Challans</li>
+      <li>Invoicing</li>
+    </ul>
+  </div>
+  <div class="phase-card" style="border-left:4px solid var(--yellow)">
+    <h4 style="color:var(--yellow)">Phase 1F — Reports</h4>
+    <ul>
+      <li>All Reports (17 total)</li>
+      <li>Project P&amp;L Dashboard</li>
       <li>Executive Dashboard</li>
       <li>Scheduled KPI Refresh</li>
     </ul>
@@ -971,8 +1114,8 @@
 </div>
 
 <h3 style="margin-top:24px">Phase 1 vs Phase 2 Strategy</h3>
-<div class="alert alert-info"><strong>Phase 1 (now):</strong> All in Zoho Creator — one application, 14 modules, no external integrations. Build forms with Zoho Inventory compatible field names and statuses for seamless Phase 2 migration.</div>
-<div class="alert alert-ok"><strong>Phase 2 (future):</strong> Zoho Inventory API sync, Zoho Projects task-to-budget linking, Zoho Books accounting push, Zoho Analytics advanced dashboards. The Phase 1 data model is already Zoho-Inventory-compatible — migration is field mapping, not a redesign.</div>
+<div class="alert alert-info"><strong>Phase 1 (now):</strong> All in Zoho Creator — one application, 17 modules, no external integrations. Build forms with Zoho Books &amp; Zoho Inventory compatible field names and statuses for seamless Phase 2 migration.</div>
+<div class="alert alert-ok"><strong>Phase 2 (future):</strong> Zoho Inventory API sync, Zoho Projects task-to-budget linking, Zoho Books accounting push (<code>Invoices</code> → Zoho Books Invoices, <code>Delivery_Challans</code> → Zoho Books DC, <code>Expenses</code> → Zoho Books Expenses, <code>Vendors</code> → Zoho Books Contacts), Zoho Analytics advanced dashboards. The Phase 1 data model is already compatible — migration is field mapping, not a redesign.</div>
 <div class="alert alert-warn"><strong>Important during Phase 1 build:</strong> Do not rename or restructure forms/fields just because it's "Phase 1 only" — future API sync depends on field name alignment.</div>
 </section>
 
@@ -994,7 +1137,10 @@
   <tr><td>Purchase Requisitions</td><td>CRUD</td><td>U (stage 1)</td><td>U (stage 2)</td><td>CRUD</td><td>—</td><td>C (own)</td></tr>
   <tr><td>Purchase Orders</td><td>CRUD</td><td>R</td><td>U (approve)</td><td>CRUD</td><td>R</td><td>—</td></tr>
   <tr><td>Goods Receipts</td><td>CRUD</td><td>R</td><td>R</td><td>CRUD</td><td>CRUD</td><td>—</td></tr>
-  <tr><td>Reports</td><td>All</td><td>Budget+Project</td><td>Financial</td><td>Procurement</td><td>Inventory</td><td>Own expenses</td></tr>
+  <tr><td>Invoices</td><td>CRUD</td><td>CRUD</td><td>CRUD</td><td>—</td><td>R</td><td>—</td></tr>
+  <tr><td>Delivery Challans</td><td>CRUD</td><td>R</td><td>—</td><td>—</td><td>CRUD</td><td>—</td></tr>
+  <tr><td>BOM</td><td>CRUD</td><td>R</td><td>R</td><td>—</td><td>CRUD</td><td>—</td></tr>
+  <tr><td>Reports</td><td>All</td><td>Budget+Project+P&amp;L</td><td>Financial</td><td>Procurement</td><td>Inventory</td><td>Own expenses</td></tr>
 </table>
 <p style="margin-top:8px;font-size:0.8rem;color:var(--muted)">C=Create, R=Read, U=Update, D=Delete. "C (own)" = create own records only.</p>
 </section>
@@ -1052,7 +1198,7 @@
 <footer>
   <div class="container">
     <p><strong>ITOTCloud Systems Pvt. Ltd.</strong> — Internal Implementation Blueprint</p>
-    <p style="font-size:0.75rem;margin-top:4px">14 modules | 18 Deluge workflows | 18+ forms | Zoho Creator + Deluge | Phase 1A ready for console build</p>
+    <p style="font-size:0.75rem;margin-top:4px">17 modules | 22 Deluge workflows | 27+ forms | Zoho Creator + Deluge | Phase 1A ready for console build</p>
     <p style="font-size:0.7rem;margin-top:4px;color:var(--surface2)">Confidential — ITOTCloud Delivery Team Only</p>
   </div>
 </footer>

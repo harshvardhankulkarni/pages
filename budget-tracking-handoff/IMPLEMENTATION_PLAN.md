@@ -41,12 +41,14 @@ Phase 1D:  Budget Approval             Purchase Orders            Transfer Order
                                                ↓                    ↓
                                           Goods Receipt  ←─────────┘
                                                ↓
-Phase 1E:  Reports & Dashboards (all modules)
+Phase 1E:  BOM  →  Delivery Challan  →  Invoicing
+                                                ↓
+Phase 1F:  Reports & Dashboards (all modules incl. Project P&L)
 ```
 
 ---
 
-## C. Module-by-Module Design (14 Modules)
+## C. Module-by-Module Design (17 Modules)
 
 ### 1. Project Master (`Projects`)
 
@@ -549,6 +551,7 @@ Matches Zoho Inventory's Goods Receipt Note (GRN) structure — supports accepte
 | Budget Utilization % | Summary | Budget_Components | PM |
 | Overrun Analysis | Summary (filter: status = Exceeded) | Budget_Components | PM, Finance |
 | Monthly Spend Trend | Chart (Line) | Expenses | All |
+| Project P&L | Pivot (Project, Total Revenue, Total Expense, Profit/Loss) | Invoices + Expenses | PM, Finance |
 | Open POs | Tabular (filter: Status != Closed, Cancelled) | Purchase_Orders | Procurement |
 | Vendor Spend | Summary (group by Vendor) | Purchase_Orders | Procurement, Finance |
 | Stock Availability | Tabular (group by Warehouse) | Item_Warehouse_Stock | Inventory Manager |
@@ -557,25 +560,155 @@ Matches Zoho Inventory's Goods Receipt Note (GRN) structure — supports accepte
 | Inventory Valuation | Summary | Inventory_Items | Finance |
 | Stock Movement by Warehouse | Summary by Item + Warehouse | Inventory_Transactions | Inventory Manager |
 | Open Transfer Orders | Tabular (filter: Status = In Transit) | Transfer_Orders | Inventory Manager |
+| Invoice Aging | Tabular (group by Due Date, Status != Paid) | Invoices | Finance |
+| DC Register | Tabular (filter by date range) | Delivery_Challans | Inventory, Logistics |
 | Vendor List with Contacts | Tabular | Vendors + Vendor_Contacts | Procurement |
+| BOM Cost Summary | Summary (group by Item) | BOM + BOM_Line_Items | Production |
 | Executive Dashboard | Dashboard with KPI cards + charts | All | All |
 
 **Dashboard KPIs — Deluge Scheduled Workflow to calculate and store in a Summary_Data form:**
 - Total Project Budget = Sum of all active Budget_Plans.Total_Budget_Amount
 - Total Spent = Sum of approved Expenses.Amount
+- Total Invoiced = Sum of Invoices where Status IN ("Sent", "Partially Paid", "Paid")
 - Budget Utilization % = `Total Spent / Total Project Budget * 100`
+- Project P&L = `Total Invoiced per Project - Total Expenses per Project`
 - Open PO Value = Sum of POs with Status = "Open"
 - Inventory Value = Sum of (Current_Stock × Purchase_Price) across all items
 - Cost Overruns = Count of Budget_Components where Status = "Exceeded"
 - Low Stock Items = Count of Item_Warehouse_Stock where Current_Stock <= Reorder_Level
 - Active POs = Count of POs where Status IN ("Open", "Partially Invoiced")
 - Pending Receipts = Count of POs where Status = "Open" and past Delivery_Date
+- Overdue Invoices = Count of Invoices where Due Date < Today and Status != "Paid"
 
 **Scheduled Workflow (runs daily at midnight):**
 - Recalculate all KPI values
 - Check for budget alerts (80%, 90%, 100%)
 - Check for low stock items and send alerts
 - Auto-close POs where all items Received_Quantity >= Quantity and older than 30 days
+- Mark Invoices as "Overdue" if Due Date passed and Status IN ("Sent", "Partially Paid")
+
+---
+
+### 15. Invoicing (`Invoices`)
+
+Matches Zoho Books invoice structure. Captures revenue per project. Future Zoho Books sync maps fields 1:1.
+
+| Field | Type | Notes |
+|---|---|---|
+| Invoice No | Auto-number | `INV-0001` |
+| Project | Lookup → Projects | Required — ties revenue to a project for P&L |
+| Customer / Account | Lookup → Vendors | Billed party (vendor form serves dual purpose) |
+| Invoice Date | Date | Defaults to today |
+| Due Date | Date | Based on payment terms |
+| Payment Terms | Dropdown | `Due on Receipt`, `Net 15`, `Net 30`, `Net 45`, `Net 60` |
+| PO Reference | Text | Customer PO number if applicable |
+| Delivery Challan Ref | Lookup → Delivery_Challans (optional) | Link to DC if applicable |
+| Status | Dropdown | `Draft`, `Sent`, `Partially Paid`, `Paid`, `Overdue`, `Cancelled` |
+| Subtotal | Currency | Sum of line item totals |
+| Discount (%) | Decimal | Overall invoice discount |
+| Discount Amount | Currency | Calculated |
+| Tax Total | Currency | Sum of line item taxes |
+| Total | Currency | `Subtotal - Discount + Tax Total` |
+| Balance Due | Currency (Formula) | `Total - Amount Paid` |
+| Amount Paid | Currency | Updated on payment receipt |
+| Notes | Multi-line | Internal |
+| Terms & Conditions | Multi-line | |
+| Attachment | Upload | Invoice PDF |
+
+**Line Items — Separate form `Invoice_Line_Items` with Add-as-Subform:**
+
+| Field | Type | Notes |
+|---|---|---|
+| Invoice | Lookup → Invoices | |
+| Item | Lookup → Inventory_Items | Optional — can enter free-text |
+| Description | Text | Auto-filled from Item, editable |
+| Quantity | Decimal | |
+| Rate | Currency | |
+| Discount (%) | Decimal | Line-level |
+| Discount Amount | Formula | |
+| Tax (%) | Decimal | |
+| Tax Amount | Formula | |
+| Total | Formula | `(Quantity * Rate) - Discount + Tax` |
+
+**Deluge:**
+- On Status = "Sent": update Project Budget Component's Total Invoiced (for P&L reporting)
+- On Status = "Paid": update Amount Paid, auto-set Balance Due = 0
+- On Status = "Cancelled": validate no payments received
+
+---
+
+### 16. Delivery Challan (`Delivery_Challans`)
+
+Tracks physical dispatch of goods. Customer-facing document. Future Zoho Books Delivery Challan sync.
+
+| Field | Type | Notes |
+|---|---|---|
+| DC No | Auto-number | `DC-0001` |
+| Project | Lookup → Projects | |
+| Customer | Lookup → Vendors | Recipient |
+| Reference | Text | Customer PO / Sales Order ref |
+| Date | Date | Defaults to today |
+| Ship Via | Dropdown | `Courier`, `Freight`, `Own Vehicle`, `Pickup` |
+| Vehicle No | Text | If own transport |
+| Driver Name | Text | |
+| Driver Contact | Phone | |
+| Status | Dropdown | `Draft`, `Shipped`, `Delivered`, `Cancelled` |
+| Remarks | Multi-line | |
+| Attachment | Upload | Signed DC copy |
+
+**Line Items — Separate form `DC_Line_Items` with Add-as-Subform:**
+
+| Field | Type | Notes |
+|---|---|---|
+| Delivery Challan | Lookup → Delivery_Challans | |
+| Item | Lookup → Inventory_Items | |
+| Description | Text | |
+| Quantity | Decimal | |
+| Unit | Text | Copied from Item |
+| Condition | Text | `Good`, `Damaged`, `Partial` |
+
+**Deluge:**
+- On Create: validate stock availability for each line item
+- On Status = "Shipped": reduce stock for each line item (auto create Stock Out transaction)
+- On Status = "Shipped" + no Invoice linked: prompt user to create Invoice
+
+---
+
+### 17. BOM — Bill of Materials (`BOM`)
+
+Defines component structure for manufactured/assembled items. Useful for manufacturing projects and cost estimation.
+
+| Field | Type | Notes |
+|---|---|---|
+| BOM No | Auto-number | `BOM-0001` |
+| Finished Item | Lookup → Inventory_Items | The output/assembled item |
+| BOM Name | Text | Auto-generated or manual |
+| Quantity | Decimal | Output quantity this BOM produces (e.g., 1 unit) |
+| Total Component Cost | Currency (Formula) | Sum of all line item costs |
+| Labor Cost | Currency | Optional — added to Total Cost |
+| Overhead Cost | Currency | Optional |
+| Total Manufacturing Cost | Currency (Formula) | `Total Component Cost + Labor + Overhead` |
+| Status | Dropdown | `Draft`, `Active`, `Inactive`, `Revised` |
+| Version | Decimal | Track revisions |
+| Notes | Multi-line | |
+
+**Line Items — Separate form `BOM_Line_Items` with Add-as-Subform:**
+
+| Field | Type | Notes |
+|---|---|---|
+| BOM | Lookup → BOM | |
+| Component Item | Lookup → Inventory_Items | Raw material / sub-component |
+| Quantity Required | Decimal | Per BOM Quantity output |
+| Unit | Text | Copied from Item |
+| Unit Cost | Currency | Current purchase price or standard cost |
+| Total Cost | Formula | `Quantity Required * Unit Cost` |
+| Scrap % | Decimal | Allowance for waste |
+| Notes | Text | |
+
+**Deluge:**
+- On Submit: calculate Total Component Cost = SUM of line item Total Costs
+- On Submit: calculate Total Manufacturing Cost = `Total Component Cost + Labor Cost + Overhead Cost`
+- On Status = "Active": ensure no other active BOM for same Finished Item (or increment version)
 
 ---
 
@@ -588,7 +721,10 @@ Projects ──┬── Budget_Plans (1:1)
            ├── Inventory_Transactions (1:N, Stock Out only)
            ├── Purchase_Requisitions (1:N)
            ├── Purchase_Orders (1:N)
-           └── Budget_Approvals (1:N)
+           ├── Budget_Approvals (1:N)
+           ├── Invoices (1:N)
+           ├── Delivery_Challans (1:N)
+           └── BOM (1:N)
 
 Budget_Plans ── Budget_Components (1:N)
 
@@ -603,21 +739,28 @@ Vendors ──┬── Vendor_Contacts (1:N, subform)
           ├── Purchase_Orders (1:N)
           ├── Inventory_Items (1:N, preferred vendor)
           ├── Expenses (N:1)
-          └── Goods_Receipts (1:N)
+          ├── Goods_Receipts (1:N)
+          ├── Invoices (1:N)
+          └── Delivery_Challans (1:N)
 
 Warehouses ──┬── Item_Warehouse_Stock (1:N)
              ├── Inventory_Transactions (1:N)
              ├── Transfer_Orders — From (1:N)
              ├── Transfer_Orders — To (1:N)
              ├── PO_Line_Items (default receipt warehouse)
-             └── GRN_Line_Items (receipt warehouse)
+             ├── GRN_Line_Items (receipt warehouse)
+             └── DC_Line_Items (dispatch warehouse)
 
 Inventory_Items ──┬── Item_Warehouse_Stock (1:N)
                   ├── Inventory_Transactions (1:N)
                   ├── PO_Line_Items (1:N)
                   ├── PR_Line_Items (1:N)
                   ├── GRN_Line_Items (1:N)
-                  └── TO_Line_Items (1:N)
+                  ├── TO_Line_Items (1:N)
+                  ├── Invoice_Line_Items (1:N)
+                  ├── DC_Line_Items (1:N)
+                  ├── BOM (1:N, as finished item)
+                  └── BOM_Line_Items (1:N, as component)
 
 Item_Warehouse_Stock ──┬── Items (N:1)
                        └── Warehouses (N:1)
@@ -645,6 +788,17 @@ Goods_Receipts ──── GRN_Line_Items (1:N)
                        ├── Items (N:1)
                        ├── PO_Line_Items (N:1)
                        └── Warehouses (N:1)
+
+Invoices ──── Invoice_Line_Items (1:N)
+                 ├── Items (N:1)
+                 └── Delivery_Challans (N:1, optional)
+
+Delivery_Challans ──── DC_Line_Items (1:N)
+                         ├── Items (N:1)
+                         └── Warehouses (N:1, dispatch warehouse)
+
+BOM ──── BOM_Line_Items (1:N)
+           └── Items (N:1, as component)
 ```
 
 ---
@@ -652,7 +806,7 @@ Goods_Receipts ──── GRN_Line_Items (1:N)
 ## E. Deluge Automation Summary
 
 | Trigger | Event | Action |
-|---|---|---|---|
+|---|---|---|---|---|
 | Project Create | On Submit | Generate Project Code |
 | Budget Plan Submit | On Submit | Validate sum of components ≤ Total Budget |
 | Expense Submit | On Submit | Budget check → auto-approve or trigger overrun workflow |
@@ -665,7 +819,12 @@ Goods_Receipts ──── GRN_Line_Items (1:N)
 | Goods Receipt (all items received) | On Submit | Auto-set PO.Status = "Closed" |
 | PO Status = "Open" | On Submit | Send email to vendor with PO details |
 | PR Approval Stage Change | On Submit | Send notification to next approver in chain |
-| Scheduled (Daily) | Cron | Budget alerts (80/90/100%), low stock alerts, KPI refresh, auto-close completed POs |
+| Invoice Sent | On Submit | Update project P&L — add to Total Invoiced for revenue tracking |
+| Invoice Paid | On Submit | Update Amount Paid, set Balance Due = 0, Status = "Paid" |
+| DC Status = "Shipped" | On Submit | Auto-create Stock Out transaction for dispatched items |
+| DC Shipped (no Invoice) | On Submit | Prompt user to create Invoice |
+| BOM Submit | On Submit | Calculate Total Component Cost, Total Manufacturing Cost |
+| Scheduled (Daily) | Cron | Budget alerts (80/90/100%), low stock alerts, KPI refresh, auto-close POs, mark overdue invoices |
 
 ---
 
@@ -677,7 +836,14 @@ Everything above is Phase 1 — one Zoho Creator application with modules mirror
 **Phase 2 (Optional Integrations):**
 - **Zoho Inventory** sync: Connect via API so Inventory Items, Purchase Orders, and Vendor records sync bidirectionally. The Phase 1 data model is already aligned — mostly field mapping.
 - **Zoho Projects** sync: Link Zoho Projects tasks to budget tracking. Log time as expense against the budget.
-- **Zoho Books** sync: Push approved POs and Expenses to Zoho Books for accounting. Enables true "Invoiced" PO status.
+- **Zoho Books** sync: Push Invoices, Delivery Challans, POs, and Expenses to Zoho Books for accounting. Each new module was designed for 1:1 field mapping:
+  - `Invoices` → Zoho Books Invoices (customer invoices)
+  - `Delivery_Challans` → Zoho Books Delivery Challan
+  - `Expenses` → Zoho Books Expenses
+  - `Purchase_Orders` → Zoho Books Purchase Orders
+  - `Vendors` → Zoho Books Contacts (with vendor type)
+  - `Projects` → Zoho Books Projects (for project-based accounting)
+  - Enables true "Invoiced" PO status, GST returns, and financial statements
 - **Zoho Analytics**: For advanced dashboards beyond Zoho Creator Reports (drill-down, cross-filter, custom charts).
 
 **Why Phase 1 in Zoho Creator alone is sufficient:**
@@ -705,8 +871,8 @@ Everything above is Phase 1 — one Zoho Creator application with modules mirror
 
 | Item | Details |
 |------|---------|
-| Forms to create | ~18 primary forms (Projects, Vendors, Vendor_Contacts, Vendor_Documents, Warehouses, Inventory_Items, Item_Warehouse_Stock, Item_Attributes, Budget_Plans, Budget_Components, Expenses, Budget_Approvals, Inventory_Transactions, Transfer_Orders, TO_Line_Items, Purchase_Requisitions, PR_Line_Items, Purchase_Orders, PO_Line_Items, Goods_Receipts, GRN_Line_Items) |
-| Deluge workflows | ~18 (17 On Submit + 1 Scheduled Cron) |
+| Forms to create | ~24 primary forms (Projects, Vendors, Vendor_Contacts, Vendor_Documents, Warehouses, Inventory_Items, Item_Warehouse_Stock, Item_Attributes, Budget_Plans, Budget_Components, Expenses, Budget_Approvals, Inventory_Transactions, Transfer_Orders, TO_Line_Items, Purchase_Requisitions, PR_Line_Items, Purchase_Orders, PO_Line_Items, Goods_Receipts, GRN_Line_Items, Invoices, Invoice_Line_Items, Delivery_Challans, DC_Line_Items, BOM, BOM_Line_Items) |
+| Deluge workflows | ~23 (22 On Submit + 1 Scheduled Cron) |
 | User roles | 6 (Admin, PM, Finance, Procurement, Inventory, Employee) |
 | Lookup forms (most referenced) | Projects, Vendors, Inventory_Items, Warehouses |
 | Seed data | "Main Warehouse" record, sample Budget Component categories |
