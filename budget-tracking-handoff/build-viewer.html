@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Build Guide — Project Budget Tracking</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    :root {
+      --bg: #0f172a; --surface: #1e293b; --surface2: #334155;
+      --border: #475569; --text: #f1f5f9; --muted: #94a3b8;
+      --accent: #38bdf8; --green: #4ade80; --yellow: #fbbf24;
+      --red: #f87171; --orange: #fb923c; --purple: #a78bfa;
+      --pink: #f472b6; --font: system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+      --mono: 'JetBrains Mono','Fira Code','Cascadia Code',Consolas,monospace;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: var(--font); line-height: 1.7;
+    }
+    .nav {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 12px 24px; display: flex; align-items: center; gap: 16px;
+    }
+    .nav a {
+      color: var(--accent); text-decoration: none; font-size: 0.9rem;
+    }
+    .nav a:hover { text-decoration: underline; }
+    .nav h1 { font-size: 1.1rem; font-weight: 600; flex: 1; }
+    .nav .phase-badge {
+      background: var(--surface2); padding: 4px 12px; border-radius: 100px;
+      font-size: 0.8rem; color: var(--accent); font-weight: 600;
+    }
+    .container { max-width: 960px; margin: 0 auto; padding: 32px 24px 80px; }
+
+    h1 { font-size: 1.8rem; margin: 24px 0 8px; color: var(--accent); }
+    h2 { font-size: 1.4rem; margin: 32px 0 8px; color: var(--green); border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+    h3 { font-size: 1.15rem; margin: 24px 0 6px; color: var(--yellow); }
+    h4 { font-size: 1rem; margin: 20px 0 4px; color: var(--orange); }
+    p { margin: 8px 0; color: var(--text); }
+    a { color: var(--accent); }
+    hr { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+    table {
+      width: 100%; border-collapse: collapse; margin: 12px 0;
+      font-size: 0.85rem; display: block; overflow-x: auto;
+    }
+    th, td {
+      border: 1px solid var(--border); padding: 8px 12px;
+      text-align: left; white-space: nowrap;
+    }
+    th { background: var(--surface2); color: var(--accent); font-weight: 600; }
+    td { background: var(--surface); }
+    tr:hover td { background: var(--surface2); }
+
+    code {
+      font-family: var(--mono); font-size: 0.85em;
+      background: var(--surface2); padding: 2px 6px; border-radius: 4px;
+      color: var(--accent);
+    }
+    pre {
+      background: #0d1117; border: 1px solid var(--border);
+      border-radius: 8px; padding: 16px; margin: 12px 0;
+      overflow-x: auto;
+    }
+    pre code {
+      background: none; padding: 0; color: var(--text);
+      font-size: 0.82rem; line-height: 1.5;
+    }
+
+    ul, ol { margin: 8px 0; padding-left: 24px; }
+    li { margin: 4px 0; }
+    blockquote {
+      border-left: 3px solid var(--accent); padding: 8px 16px;
+      margin: 12px 0; background: var(--surface); border-radius: 0 8px 8px 0;
+    }
+    blockquote p { margin: 0; color: var(--muted); }
+    strong { color: var(--text); }
+    em { color: var(--muted); }
+
+    .loading {
+      text-align: center; padding: 80px 20px; color: var(--muted);
+    }
+    .loading .spinner {
+      width: 40px; height: 40px; border: 3px solid var(--surface2);
+      border-top-color: var(--accent); border-radius: 50%;
+      animation: spin 0.8s linear infinite; margin: 16px auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .error {
+      text-align: center; padding: 80px 20px;
+    }
+    .error h2 { border: none; color: var(--red); }
+    .error p { color: var(--muted); }
+
+    .checklist {
+      background: var(--surface); border: 1px solid var(--green);
+      border-radius: 8px; padding: 16px 20px; margin: 16px 0;
+    }
+    .checklist li { list-style: none; }
+    .checklist li::before { content: "☐ "; color: var(--green); }
+
+    @media (max-width: 640px) {
+      .container { padding: 16px 12px 60px; }
+      .nav { padding: 10px 12px; flex-wrap: wrap; }
+      table { font-size: 0.78rem; }
+      th, td { padding: 6px 8px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="nav">
+    <a href="index.html">&larr; Back to Blueprint</a>
+    <h1><span id="phaseTitle">Build Guide</span></h1>
+    <span class="phase-badge" id="phaseBadge">Phase 1A</span>
+  </div>
+  <div class="container" id="content">
+    <div class="loading">
+      <div class="spinner"></div>
+      <p>Loading build guide...</p>
+    </div>
+  </div>
+
+  <script>
+    const phases = {
+      '1A': { file: 'build/PHASE_1A_BUILD.md', title: 'Phase 1A — Foundation', name: 'Vendors → Projects → Warehouses → Inventory Items' },
+      '1B': { file: 'build/PHASE_1B_BUILD.md', title: 'Phase 1B — Budget', name: 'Budget Plans → Components → Inventory Transactions' },
+      '1C': { file: 'build/PHASE_1C_BUILD.md', title: 'Phase 1C — Expenses', name: 'Expenses → Purchase Requisitions' },
+      '1D': { file: 'build/PHASE_1D_BUILD.md', title: 'Phase 1D — Procurement', name: 'Budget Approvals → PO → GRN → Transfer Orders' },
+      '1E': { file: 'build/PHASE_1E_BUILD.md', title: 'Phase 1E — Revenue &amp; Mfg', name: 'BOM → Delivery Challans → Invoicing' },
+      '1F': { file: 'build/PHASE_1F_BUILD.md', title: 'Phase 1F — Reports', name: 'Reports &amp; Dashboards' }
+    };
+
+    const params = new URLSearchParams(window.location.search);
+    const phase = params.get('phase') || '1A';
+    const info = phases[phase] || phases['1A'];
+
+    document.getElementById('phaseBadge').textContent = 'Phase ' + phase;
+    document.getElementById('phaseTitle').textContent = info.name;
+    document.title = 'Build Guide — Phase ' + phase + ' — Project Budget Tracking';
+
+    fetch(info.file)
+      .then(r => {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.text();
+      })
+      .then(md => {
+        document.getElementById('content').innerHTML = marked.parse(md, { breaks: true });
+        document.querySelectorAll('pre code').forEach(b => {
+          b.innerHTML = b.innerHTML.replace(/^(.*?)(\/\*.*?\*\/)?\s*$/gm, (m, code, comment) => {
+            return code;
+          });
+        });
+      })
+      .catch(err => {
+        document.getElementById('content').innerHTML =
+          '<div class="error"><h2>Failed to load build guide</h2>'
+          + '<p>' + err.message + '</p>'
+          + '<p style="margin-top:12px">Make sure the file <code>' + info.file + '</code> exists in the repository.</p>'
+          + '<p><a href="' + info.file + '" target="_blank">Open raw file directly</a></p></div>';
+      });
+  </script>
+</body>
+</html>

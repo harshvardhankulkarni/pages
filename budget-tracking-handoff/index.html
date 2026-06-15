@@ -121,7 +121,8 @@
   .lm .in { padding-left: 20px; }
 
   .pg { display: grid; grid-template-columns: repeat(auto-fill,minmax(190px,1fr)); gap: 12px; }
-  .pc { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
+  .pc { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px; transition: background 0.2s, transform 0.2s, box-shadow 0.2s; cursor: pointer; }
+  .pc:hover { background: var(--surface2); transform: translateY(-2px); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
   .pc h4 { font-size: 0.85rem; margin: 0 0 6px 0; }
   .pc ul { list-style: none; font-size: 0.76rem; color: var(--muted); }
   .pc ul li::before { content: "\2713 "; color: var(--green); }
@@ -708,30 +709,36 @@ Release:   Reserved_Qty -= Qty</pre>
       <h2>Build Order <span class="t">6 phases</span></h2>
       <p>Build in strict sequence. Each phase depends on the previous.</p>
       <div class="pg">
-        <div class="pc" style="border-left:3px solid var(--green)">
+        <a href="build-viewer.html?phase=1A" class="pc" style="border-left:3px solid var(--green);text-decoration:none;display:block">
           <h4 style="color:var(--green)">1A — Foundation</h4>
           <ul><li>Vendors + Contacts + Docs</li><li>Project Master</li><li>Warehouses</li><li>Inventory Items + Stock</li></ul>
-        </div>
-        <div class="pc" style="border-left:3px solid var(--accent)">
+          <span style="font-size:0.75rem;color:var(--muted);margin-top:6px;display:inline-block">Open build guide →</span>
+        </a>
+        <a href="build-viewer.html?phase=1B" class="pc" style="border-left:3px solid var(--accent);text-decoration:none;display:block">
           <h4 style="color:var(--accent)">1B — Budget</h4>
           <ul><li>Budget Planning</li><li>Budget Components</li><li>Inventory Transactions</li></ul>
-        </div>
-        <div class="pc" style="border-left:3px solid var(--purple)">
+          <span style="font-size:0.75rem;color:var(--muted);margin-top:6px;display:inline-block">Open build guide →</span>
+        </a>
+        <a href="build-viewer.html?phase=1C" class="pc" style="border-left:3px solid var(--purple);text-decoration:none;display:block">
           <h4 style="color:var(--purple)">1C — Expenses</h4>
           <ul><li>Expense Management</li><li>Purchase Requisitions</li><li>Budget Alerts</li></ul>
-        </div>
-        <div class="pc" style="border-left:3px solid var(--orange)">
+          <span style="font-size:0.75rem;color:var(--muted);margin-top:6px;display:inline-block">Open build guide →</span>
+        </a>
+        <a href="build-viewer.html?phase=1D" class="pc" style="border-left:3px solid var(--orange);text-decoration:none;display:block">
           <h4 style="color:var(--orange)">1D — Procurement</h4>
           <ul><li>Budget Approval</li><li>Purchase Orders</li><li>Transfer Orders</li><li>Goods Receipt</li></ul>
-        </div>
-        <div class="pc" style="border-left:3px solid var(--pink)">
+          <span style="font-size:0.75rem;color:var(--muted);margin-top:6px;display:inline-block">Open build guide →</span>
+        </a>
+        <a href="build-viewer.html?phase=1E" class="pc" style="border-left:3px solid var(--pink);text-decoration:none;display:block">
           <h4 style="color:var(--pink)">1E — Revenue &amp; Mfg</h4>
           <ul><li>BOM</li><li>Delivery Challans</li><li>Invoicing</li></ul>
-        </div>
-        <div class="pc" style="border-left:3px solid var(--yellow)">
+          <span style="font-size:0.75rem;color:var(--muted);margin-top:6px;display:inline-block">Open build guide →</span>
+        </a>
+        <a href="build-viewer.html?phase=1F" class="pc" style="border-left:3px solid var(--yellow);text-decoration:none;display:block">
           <h4 style="color:var(--yellow)">1F — Reports</h4>
           <ul><li>17 Reports</li><li>Project P&amp;L</li><li>Executive Dashboard</li><li>Scheduled KPI</li></ul>
-        </div>
+          <span style="font-size:0.75rem;color:var(--muted);margin-top:6px;display:inline-block">Open build guide →</span>
+        </a>
       </div>
       <div class="al al-i"><strong>Phase 1 (now):</strong> All in Zoho Creator. Field names aligned with Zoho Books/Inventory for seamless Phase 2 migration.</div>
       <div class="al al-o"><strong>Phase 2 (future):</strong> Zoho Inventory API sync, Zoho Books accounting push, Zoho Analytics dashboards. Data model already compatible.</div>
