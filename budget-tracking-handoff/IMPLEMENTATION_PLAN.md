@@ -54,7 +54,7 @@ Phase 1E:  Reports & Dashboards (all modules)
 |---|---|---|
 | Project Name | Text | Required |
 | Project Code | Text (auto-number) | e.g., `PROJ-0001` |
-| Client | Text | |
+| Account | Lookup → Vendors | Client/company associated with the project |
 | Start Date | Date | |
 | End Date | Date | |
 | Project Manager | User picker | Links to Zoho Creator user |
