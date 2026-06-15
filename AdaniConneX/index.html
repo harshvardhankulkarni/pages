@@ -575,6 +575,7 @@
       <a href="#phase-11">P11: Data Migration &amp; Go-Live</a>
 
       <div class="section-label">Governance</div>
+      <a href="#crm-flow">CRM Flow Changes</a>
       <a href="#decisions">Open Decisions</a>
       <a href="#timeline">Timeline</a>
     </div>
@@ -585,9 +586,9 @@
 
     <!-- Hero -->
     <section class="hero">
-      <div class="hero-eyebrow">Implementation Plan v1.0</div>
+      <div class="hero-eyebrow">Implementation Plan v1.1</div>
       <h1>AdaniConneX<br>ZohoCRM Sales Automation</h1>
-      <p>Data Center Opportunity lifecycle automation — from suspect through SOF Contracted, integrating EdgeOS, SAP, and cross-team approval workflows.</p>
+      <p>Data Center Opportunity lifecycle automation — from suspect through SOF Contracted, integrating EdgeOS, SAP, and cross-team approval workflows. Includes Deluge pseudo-code for integrations and CRM flow change analysis.</p>
       <div class="hero-meta">
         <div class="hero-meta-item">
           <span class="label">CRM Edition</span>
@@ -1028,16 +1029,192 @@ Pre-Sales Approval Request (Technical Feasibility)<br>
           <span class="phase-effort">10–15 days</span>
         </div>
 
-        <h4>7A. EdgeOS Portal</h4>
-        <p>Push data from ZohoCRM to EdgeOS every 15 minutes for SOF Contracted opportunities: Opportunity Reference ID, Account Name, Site ID, Contracted Power (KW), Contract Status, and Contract Expiry Date.</p>
-        <p><strong>Architecture Options:</strong> (A) Custom Function &rarr; Webhook &rarr; EdgeOS API (recommended if EdgeOS has REST API). (B) Scheduler + Deluge &rarr; JSON export &rarr; FTP/SFTP (fallback). (C) Middleware (Zapier/Workato).</p>
+        <div class="callout callout-info" style="margin-bottom:16px;">
+          <strong>Integration effort: ~30–40% of total project.</strong> Can proceed independently of internal CRM work (Phases 0–6, 8–9). The Zoho-side Custom Functions and schedulers can be built once API specs are confirmed.
+        </div>
 
-        <h4>7B. SAP Billing</h4>
-        <p>Triggered when Service Delivery updates Deployed Date. Exports: Opportunity Reference ID, Account + billing address, product lines, MRC, OTC, contract start date and term.</p>
-        <p><strong>Architecture Options:</strong> (A) Custom Function &rarr; SAP API (direct). (B) Flat file (CSV) &rarr; FTP/SFTP (recommended initially). (C) Middleware (Boomi, MuleSoft).</p>
+        <h4>7A. EdgeOS Portal Integration</h4>
+        <p><strong>Direction:</strong> ZohoCRM &rarr; EdgeOS (push every 15 minutes)</p>
+        <p><strong>Trigger:</strong> Stage change to <code>SOF Contracted</code> + scheduler every 15 min for batch sync / retry.</p>
+
+        <h5>Data to Sync</h5>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Source in Zoho</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Opportunity Reference ID</td><td><code>Opportunity_Reference_ID</code></td></tr>
+              <tr><td>Customer Name</td><td><code>Account_Name.Account_Name</code></td></tr>
+              <tr><td>Site ID</td><td><code>Site_ID</code></td></tr>
+              <tr><td>Contracted Power (KW)</td><td>SUM(Colocation_Pricing.Power_Density_KW)</td></tr>
+              <tr><td>Contract Status</td><td><code>"Active" / "Expired" / "Cancelled"</code></td></tr>
+              <tr><td>Contract Expiry Date</td><td><code>Contract_Expiry_Date</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h5>Deluge Pseudocode (Custom Function: <code>pushToEdgeOS</code>)</h5>
+        <div style="background:#1e293b;color:#e2e8f0;border-radius:8px;padding:16px;margin:12px 0;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.8;overflow-x:auto;">
+          <pre style="margin:0;white-space:pre-wrap;">
+// Step 1: Query all SOF Contracted opportunities
+criteria = "ACX_Sales_Stage == 'SOF Contracted'"
+oppRecords = zoho.crm.getRecords("Data_Center_Opportunity", criteria);
+
+// Step 2: Iterate and build payload
+for each opp in oppRecords:
+    // Join Colocation Pricing subform
+    pricingLines = opp.get("Colocation_Pricing");
+    totalPowerKW = 0;
+    for each line in pricingLines:
+        totalPowerKW += line.get("Power_Density_KW");
+    end
+
+    // Build JSON payload
+    payload = Map();
+    payload.put("opportunityRefId", opp.get("Opportunity_Reference_ID"));
+    payload.put("customerName", opp.get("Account_Name").get("Account_Name"));
+    payload.put("siteId", opp.get("Site_ID"));
+    payload.put("contractedPowerKW", totalPowerKW);
+    payload.put("contractStatus", "Active");
+    payload.put("contractExpiryDate",
+        opp.get("Contract_Expiry_Date").toString("yyyy-MM-dd"));
+
+    // POST to EdgeOS API
+    headerParams = Map();
+    headerParams.put("Authorization", "Bearer " + edgeosApiKey);
+    headerParams.put("Content-Type", "application/json");
+
+    response = invokeUrl(
+        url: "https://edgeos.adaniconnex.com/api/v1/sync-opportunity",
+        type: POST,
+        headers: headerParams,
+        body: payload.toString()
+    );
+
+    // Update sync status
+    updateRecord = Map();
+    if response.getResponseCode() == 200:
+        updateRecord.put("EdgeOS_Sync_Status", "Synced");
+    else:
+        updateRecord.put("EdgeOS_Sync_Status", "Sync Failed");
+    end
+    zoho.crm.updateRecord("Data_Center_Opportunity",
+        opp.get("id"), updateRecord);
+end
+          </pre>
+        </div>
+
+        <h5>What EdgeOS Must Provide</h5>
+        <ul style="margin:8px 0 16px 20px;color:var(--acx-gray-600);">
+          <li>REST API endpoint (e.g., <code>POST /api/v1/sync-opportunity</code>)</li>
+          <li>Authentication mechanism (API key in header, or OAuth2 client credentials)</li>
+          <li>Network accessibility: EdgeOS endpoint reachable from Zoho servers</li>
+          <li>Upsert logic: create customer+site+power limit if not exists, update if exists</li>
+          <li>Expected payload schema, response codes, error messages documentation</li>
+        </ul>
+
+        <h5>Architecture Options</h5>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Option</th>
+                <th>Pros</th>
+                <th>Cons</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>A. Custom Function &rarr; Webhook &rarr; EdgeOS API</strong></td><td>Real-time push, no middleware</td><td>EdgeOS needs public API endpoint</td></tr>
+              <tr><td><strong>B. Scheduler + Deluge &rarr; JSON export &rarr; FTP/SFTP</strong></td><td>No EdgeOS API needed, simpler</td><td>15-min delay, file management overhead</td></tr>
+              <tr><td><strong>C. Zoho &rarr; Middleware (Zapier/Workato) &rarr; EdgeOS</strong></td><td>No coding, visual connector</td><td>Monthly cost, external dependency</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-weight:600;">Recommended: Option A if EdgeOS has a REST API. Option B if EdgeOS does not.</p>
+
+        <h5>Sync Status Tracking</h5>
+        <p>Field on Opportunity: <code>EdgeOS_Sync_Status</code> — <span class="badge badge-green">Synced</span> (HTTP 200), <span class="badge badge-red">Sync Failed</span> (retry on next scheduler run), <span class="badge badge-yellow">Pending</span> (awaiting first sync).</p>
+
+        <hr style="margin:24px 0;border:none;border-top:1px solid var(--acx-gray-200);">
+
+        <h4>7B. SAP Billing Integration</h4>
+        <p><strong>Direction:</strong> ZohoCRM &rarr; SAP (triggered when Service Delivery marks deployment complete)</p>
+        <p><strong>When:</strong> Service Delivery updates <code>Deployed Date</code> on the opportunity.</p>
+
+        <h5>Data to Send</h5>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Source in Zoho</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Opportunity Reference ID</td><td>Billing reference</td></tr>
+              <tr><td>Account Name + Billing Address</td><td>Customer details (incl. GST, PAN)</td></tr>
+              <tr><td>Product Lines</td><td>Colo Pricing + Additional Products subforms</td></tr>
+              <tr><td>MRC (Monthly)</td><td>Recurring billing amount</td></tr>
+              <tr><td>OTC (One-time)</td><td>Setup/installation charges</td></tr>
+              <tr><td>Contract Start Date</td><td>Billing start (Deployed Date)</td></tr>
+              <tr><td>Contract Term</td><td>Billing duration in months</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h5>Option A — File-based (Recommended Initially)</h5>
+        <div style="background:#1e293b;color:#e2e8f0;border-radius:8px;padding:16px;margin:12px 0;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.8;overflow-x:auto;">
+          <pre style="margin:0;white-space:pre-wrap;">
+ZohoCRM Custom Function "generateSAPExport":
+1. Trigger: Workflow rule "On Deployed Date update" calls function
+2. Query: Get opportunity + all pricing subforms
+   - Colocation Pricing (space + power lines)
+   - Additional DC Products &amp; Services (ancillary items)
+3. Map to SAP structure:
+   - Customer master from Account (billing address, GST, PAN)
+   - Material codes from product-to-SAP mapping table
+   - Quantities from pricing subforms
+   - Prices from MRC/OTC fields
+4. Generate CSV with fixed-width columns per SAP spec:
+   - HEADER: Customer, Material, Qty, UoM, Price, Currency, Tax...
+   - DETAIL: one row per product line
+   - TRAILER: total amounts, record count
+5. Write file to SFTP server that SAP polls
+6. Update status: "Billing Exported"
+
+SAP Import Job (by SAP team):
+1. Polls SFTP folder periodically
+2. Validates file (checksum, record count)
+3. Creates billing documents via BAPI
+4. Writes ACK file back: opportunityRefId, status, SAP doc number
+
+Zoho Polling (scheduler every 30 min):
+1. Checks SFTP for ACK files
+2. On Confirmed &rarr; "Billing Confirmed" + SAP_Document_Number
+3. On Failed &rarr; "Billing Failed" + error reason
+          </pre>
+        </div>
+
+        <h5>Option B — Direct API (Future State)</h5>
+        <p style="margin:8px 0 16px;">Custom Function calls SAP RFC/REST API (<code>BAPI_BILLINGDOCUMENT_CREATEMULTIPLE</code> or OData service) synchronously. Immediate confirmation. Requires SAP connector, network connectivity, and API user with billing authorization.</p>
+
+        <h5>What SAP Must Provide</h5>
+        <ul style="margin:8px 0 16px 20px;color:var(--acx-gray-600);">
+          <li>BAPI/RFC or REST API for billing document creation</li>
+          <li>SFTP drop folder details (host, port, credentials, path) — for Option A</li>
+          <li>Web service endpoint details — for Option B</li>
+          <li>Product-to-material-code mapping (AdaniConneX product name &rarr; SAP material number)</li>
+          <li>SAP team POC for import job development</li>
+        </ul>
+
+        <p><strong>Status tracking:</strong> Field on Opportunity: <code>SAP_Billing_Status</code> — <span class="badge badge-yellow">Billing Pending</span> &rarr; <span class="badge badge-blue">Billing Exported</span> &rarr; <span class="badge badge-green">Billing Confirmed</span> / <span class="badge badge-red">Billing Failed</span>. Plus <code>SAP_Document_Number</code> field for the billing document reference.</p>
 
         <div class="callout callout-warning">
-          <strong>Open:</strong> EdgeOS API availability and auth mechanism. SAP import file format (CSV/IDoc/API). Existing middleware availability. EdgeOS sync scope — only SOF Contracted or also SOF MSA?
+          <strong>Open:</strong> EdgeOS API availability and auth mechanism. SAP import file format (CSV/IDoc/API). Existing middleware availability. EdgeOS sync scope — only SOF Contracted or also SOF MSA with future-dated start?
         </div>
       </div>
 
@@ -1134,6 +1311,138 @@ Pre-Sales Approval Request (Technical Feasibility)<br>
           8. Post-go-live: Configure scheduler
         </div>
       </div>
+
+      <!-- CRM Flow Changes -->
+      <section id="crm-flow">
+        <h2>CRM Flow Changes — Before vs After</h2>
+
+        <h3>Capability Gap Analysis</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Capability</th>
+                <th>Current Status</th>
+                <th>Target</th>
+                <th>Change Needed</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Accounts &amp; Contacts creation</td><td><span class="badge badge-green">Exists</span></td><td>Enhanced</td><td>Minor field additions (Site ID, Account Manager)</td></tr>
+              <tr><td>Opportunity creation</td><td><span class="badge badge-green">Exists</span></td><td>Structured</td><td>Add Contract Term, Renewal Periods, Deal Type</td></tr>
+              <tr><td>Stage updates</td><td><span class="badge badge-yellow">Free-form</span></td><td>Blueprint-controlled</td><td>Controlled picklist + validated transitions</td></tr>
+              <tr><td>Document upload</td><td><span class="badge badge-yellow">Basic</span></td><td>Stage-gated</td><td>PO/SOF enforced before SOF MSA, MSA before SOF Contracted</td></tr>
+              <tr><td>Pricing entry</td><td><span class="badge badge-yellow">Free-text</span></td><td>Structured subforms</td><td>Colocation Pricing + Additional Products subforms</td></tr>
+              <tr><td>EDC Products catalog</td><td><span class="badge badge-red">Missing</span></td><td>Populated</td><td>Seed ~50 products from process document</td></tr>
+              <tr><td>Stage gate enforcement</td><td><span class="badge badge-red">None</span></td><td>Blueprint</td><td>Field validation, doc requirements, approval triggers</td></tr>
+              <tr><td>Approval workflows</td><td><span class="badge badge-red">None</span></td><td>Sequential</td><td>Pre-Sales &rarr; Commercials on SOF MSA</td></tr>
+              <tr><td>Notifications</td><td><span class="badge badge-red">None</span></td><td>7 auto-triggers</td><td>Account, Opp, Order book, SOF MSA, Delivery, Expiry, Edit alerts</td></tr>
+              <tr><td>EdgeOS sync</td><td><span class="badge badge-red">None</span></td><td>15-min push</td><td>Deluge Custom Function &rarr; EdgeOS API</td></tr>
+              <tr><td>SAP billing trigger</td><td><span class="badge badge-red">None</span></td><td>File-based</td><td>CSV &rarr; SFTP &rarr; SAP import with ACK polling</td></tr>
+              <tr><td>Contract expiry tracking</td><td><span class="badge badge-red">Manual</span></td><td>Auto-calculated</td><td>Formula: Deployed Date + Contract Term</td></tr>
+              <tr><td>Reports &amp; dashboards</td><td><span class="badge badge-yellow">Standard Zoho</span></td><td>Custom ACX</td><td>7 reports + 3 role-specific dashboards</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Daily Workflow Comparison</h3>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0;">
+          <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:16px;">
+            <h4 style="color:#991b1b;margin-top:0;font-size:14px;">Before (Current State)</h4>
+            <ol style="margin:8px 0 0 18px;font-size:13px;color:#7f1d1d;line-height:1.8;">
+              <li>Sales creates opportunity</li>
+              <li>Manually types the stage from memory</li>
+              <li>Uploads documents when remembered (no enforcement)</li>
+              <li>Emails Pre-Sales / Commercials asking for approval</li>
+              <li>Tracks contract dates &amp; renewals in personal Excel</li>
+              <li>No one knows if pricing is complete</li>
+              <li>No automatic handoff to Service Delivery</li>
+              <li>EdgeOS &amp; SAP teams wait for manual email</li>
+            </ol>
+          </div>
+
+          <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:16px;">
+            <h4 style="color:#166534;margin-top:0;font-size:14px;">After (Target State)</h4>
+            <ol style="margin:8px 0 0 18px;font-size:13px;color:#14532d;line-height:1.8;">
+              <li>Sales creates opportunity with all required fields</li>
+              <li>Enters pricing in structured subforms</li>
+              <li>Uploads PO/SOF, clicks "Move to SOF MSA"</li>
+              <li>Blueprint validates &rarr; Pre-Sales auto-notified</li>
+              <li>Pre-Sales approves &rarr; Commercials auto-notified</li>
+              <li>Commercials approves &rarr; stage moves automatically</li>
+              <li>Notification fires to Service Delivery + Sales Heads</li>
+              <li>EdgeOS synced, SAP export triggered automatically</li>
+            </ol>
+          </div>
+        </div>
+
+        <h3>Behavioral Changes by Team</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Team</th>
+                <th>What Changes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Sales</strong></td>
+                <td>Must fill pricing subforms (not free-text). Must upload PO/SOF before stage moves. Cannot skip stages. Gets auto-notified on approvals/rejections.</td>
+              </tr>
+              <tr>
+                <td><strong>Sales Ops</strong></td>
+                <td>Must validate pricing before SOF MSA. Receives daily order book report. Manages contract renewals. Can edit post-SOF-Contracted.</td>
+              </tr>
+              <tr>
+                <td><strong>Pre-Sales</strong></td>
+                <td>Gets approval request when Sales clicks "Move to SOF MSA". Must approve/reject with comments.</td>
+              </tr>
+              <tr>
+                <td><strong>Commercials</strong></td>
+                <td>Gets approval request only after Pre-Sales approves. Must validate commercial terms.</td>
+              </tr>
+              <tr>
+                <td><strong>Service Delivery</strong></td>
+                <td>Gets auto-notified on new orders. Sets Deployed Date to trigger billing.</td>
+              </tr>
+              <tr>
+                <td><strong>IT</strong></td>
+                <td>Manages integrations (EdgeOS, SAP). Administers roles and permissions.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Effort Breakdown</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Workstream</th>
+                <th>Est. Days</th>
+                <th>% of Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>ZohoCRM internal configuration (Phases 0–6, 8–9)</td><td>25–35</td><td>45–50%</td></tr>
+              <tr><td>EdgeOS integration (Custom Function, API, scheduler)</td><td>5–8</td><td>10–12%</td></tr>
+              <tr><td>SAP integration (Custom Function, CSV, SFTP, polling)</td><td>5–7</td><td>10–12%</td></tr>
+              <tr><td>Testing + UAT</td><td>5–7</td><td>10%</td></tr>
+              <tr><td>Training + Data Migration</td><td>3–5</td><td>6–8%</td></tr>
+              <tr><td>Go-Live + Hyper-care</td><td>10</td><td>14–16%</td></tr>
+              <tr style="background:var(--acx-gray-100);font-weight:700;">
+                <td><strong>Total</strong></td><td><strong>55–75</strong></td><td><strong>100%</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout callout-info" style="margin-top:16px;">
+          <strong>Note:</strong> Integration work (~30–40% of total) can proceed independently of internal CRM work. Phases 0–6, 8–9 do not depend on EdgeOS or SAP teams. This means CRM configuration and integration builds can happen in parallel once API specs are confirmed.
+        </div>
+      </section>
 
       <!-- Open Decisions -->
       <section id="decisions">
