@@ -68,6 +68,7 @@ Phase 1F:  Reports & Dashboards (all modules incl. Project P&L)
 **Deluge:**
 - On Create: generate Project Code
 - On Status = `Completed`: validate no pending expenses/POs
+- On Status = `Completed`: auto-create final Invoice for any unbilled DCs or remaining budget balance
 
 **Custom Actions (Form Buttons):**
 - **Create Invoice** — opens Invoice form with Project + Account pre-filled
@@ -190,19 +191,24 @@ Matches Zoho Inventory's item master structure. Items are goods or services trac
 
 | Field | Type |
 |---|---|
-| Item | Lookup → Inventory_Items |
-| Warehouse | Lookup → Warehouses |
+| Item | Lookup  Inventory_Items |
+| Warehouse | Lookup  Warehouses |
 | Current Stock | Decimal (maintained by Deluge on each transaction) |
+| Reserved Qty | Decimal (maintained by Deluge — Reservation/Release transactions) |
+| Available Stock | Formula (read-only) | `Current Stock − Reserved Qty` |
 | Reorder Level | Decimal (warehouse-specific, overrides item default) |
 
-**Deluge approach for `Current_Stock`:**
+**Deluge approach for `Current_Stock` and `Reserved_Qty` :**
 ```
-On every Inventory Transaction (Stock In / Out / Adjustment):
-  Update Item_Warehouse_Stock.Current_Stock for the specific warehouse:
-    Stock In:  Current_Stock += Quantity
-    Stock Out: Current_Stock -= Quantity
-    Adjustment: Current_Stock = Adjusted_Qty
-  Then recompute Inventory_Item.Current_Stock = SUM of all Item_Warehouse_Stock records for that item
+On every Inventory Transaction:
+  Update Item_Warehouse_Stock for the specific warehouse:
+    Stock In:              Current_Stock += Quantity
+    Stock Out:             Current_Stock -= Quantity; Reserved_Qty -= Quantity (capped)
+    Adjustment:            Current_Stock = Adjusted_Qty (Reserved_Qty unchanged)
+    Return to Vendor:      Current_Stock -= Quantity
+    Reservation:           Reserved_Qty += Quantity; validate Reserved_Qty <= Current_Stock
+    Release:               Reserved_Qty -= Quantity
+  Then recompute Inventory_Item.Current_Stock = SUM of all Item_Warehouse_Stock records
 ```
 
 This gives both warehouse-level visibility and item-level totals without on-demand aggregation.
@@ -320,7 +326,7 @@ Matches Zoho Inventory's stock transaction structure. Every transaction ties to 
 | Field | Type | Notes |
 |---|---|---|
 | Transaction No | Auto-number | `TXN-0001` |
-| Type | Dropdown | `Stock In`, `Stock Out`, `Stock Adjustment`, `Return to Vendor`, `Return from Customer` |
+| Type | Dropdown | `Stock In`, `Stock Out`, `Stock Adjustment`, `Return to Vendor`, `Return from Customer`, `Reservation`, `Release` |
 | Item | Lookup → Inventory_Items | |
 | Warehouse | Lookup → Warehouses | Required — which warehouse stock changes |
 | Quantity | Decimal | Always positive. Direction determined by Type |
@@ -328,7 +334,7 @@ Matches Zoho Inventory's stock transaction structure. Every transaction ties to 
 | Rate / Unit Cost | Currency | Cost at time of transaction |
 | Total Value | Formula | `Quantity * Rate` |
 | Reference | Text | PO Number, GRN Number, Adjustment Reason |
-| Project | Lookup → Projects | Required only for Stock Out (consumption) |
+| Project | Lookup → Projects | Required for Stock Out (consumption) and Reservation |
 | Transaction Date | Date/Time | |
 | Notes | Multi-line | |
 | Created By | User picker | Auto-set |
@@ -337,20 +343,22 @@ Matches Zoho Inventory's stock transaction structure. Every transaction ties to 
 ```
 1. Locate Item_Warehouse_Stock record for (Item, Warehouse)
 2. Calculate new stock:
-   - Stock In:            Current_Stock += Quantity
-   - Stock Out:           Current_Stock -= Quantity
-   - Adjustment:          Current_Stock = Adjusted_Qty
-   - Return to Vendor:   Current_Stock -= Quantity
-3. Validate Current_Stock >= 0 before update
-4. Update Item_Warehouse_Stock.Current_Stock
+   - Stock In:              Current_Stock += Quantity
+   - Stock Out:             Current_Stock -= Quantity;  Reserved_Qty -= min(Reserved_Qty, Quantity)
+   - Adjustment:            Current_Stock = Adjusted_Qty
+   - Return to Vendor:      Current_Stock -= Quantity
+   - Reservation:           Reserved_Qty += Quantity;  validate Reserved_Qty <= Current_Stock
+   - Release:               Reserved_Qty -= Quantity
+3. Validate Current_Stock >= 0 AND unreserved stock (Current_Stock - Reserved_Qty) >= 0 for Stock Out
+4. Update Item_Warehouse_Stock.Current_Stock and Reserved_Qty
 5. Recalculate Inventory_Item.Current_Stock = SUM of all warehouse stock
 6. If Type = "Stock Out" AND Project is set:
-     Create Expense record automatically:
-       Amount = Quantity * Rate
-       Project = selected Project
-       Budget_Component = selected (or auto-map via item category)
-       Description = "Auto: Stock consumed — [Item Name] for [Project]"
-       Status = "Approved"
+      Create Expense record automatically:
+        Amount = Quantity * Rate
+        Project = selected Project
+        Budget_Component = selected (or auto-map via item category)
+        Description = "Auto: Stock consumed — [Item Name] for [Project]"
+        Status = "Approved"
 ```
 
 **Important:** The Stock Out → Expense flow is the highest-value automation. It closes the loop between inventory and budget tracking.
@@ -636,10 +644,11 @@ Matches Zoho Books invoice structure. Captures revenue per project. Future Zoho 
 | Tax Amount | Formula | |
 | Total | Formula | `(Quantity * Rate) - Discount + Tax` |
 
-**Deluge:**
+**Deluge / Custom Actions:**
 - On Status = "Sent": update Project Budget Component's Total Invoiced (for P&L reporting)
 - On Status = "Paid": update Amount Paid, auto-set Balance Due = 0
 - On Status = "Cancelled": validate no payments received
+- **Custom Button "Create DC"** (when Status = "Sent" + line items have stock Items): auto-create Delivery Challan with same Project, Customer, and line items copied to DC_Line_Items; link DC.Ref to Invoice
 
 ---
 
@@ -673,10 +682,11 @@ Tracks physical dispatch of goods. Customer-facing document. Future Zoho Books D
 | Unit | Text | Copied from Item |
 | Condition | Text | `Good`, `Damaged`, `Partial` |
 
-**Deluge:**
+**Deluge / Custom Actions:**
 - On Create: validate stock availability for each line item
 - On Status = "Shipped": reduce stock for each line item (auto create Stock Out transaction)
 - On Status = "Shipped" + no Invoice linked: prompt user to create Invoice
+- Can also be created automatically from Invoice via "Create DC" button on Invoice form
 
 ---
 
@@ -826,6 +836,10 @@ BOM ──── BOM_Line_Items (1:N)
 | PO Status = "Open" | On Submit | Send email to vendor with PO details |
 | PR Approval Stage Change | On Submit | Send notification to next approver in chain |
 | PR Fully Approved (Stage = "Approved") | On Submit | Auto-create Purchase Order (Draft), copy line items, link PO.Requisition to PR |
+| Invoice — Create DC | Custom Button | Auto-create Delivery Challan with same Project, Customer, and line items |
+| Inventory Reservation | On Submit | Increment Reserved_Qty on Item_Warehouse_Stock; validate ≤ Current_Stock |
+| Inventory Release | On Submit | Decrement Reserved_Qty |
+| Project Status = "Completed" | On Submit | Validate no pending expenses/POs; auto-create final Invoice for unbilled items |
 | Invoice Sent | On Submit | Update project P&L — add to Total Invoiced for revenue tracking |
 | Invoice Paid | On Submit | Update Amount Paid, set Balance Due = 0, Status = "Paid" |
 | DC Status = "Shipped" | On Submit | Auto-create Stock Out transaction for dispatched items |

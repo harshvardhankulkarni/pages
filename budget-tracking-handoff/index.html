@@ -144,7 +144,7 @@
 <header class="hero">
 <div class="container">
   <h1>Project Budget Tracking<br>&amp; Inventory Management <span>— Internal Blueprint</span></h1>
-<p class="sub">ITOTCloud delivery team's implementation plan: 17 modules, 23 Deluge workflows, field-level specs, lookup maps, and build instructions for the Zoho Creator console.</p>
+<p class="sub">ITOTCloud delivery team's implementation plan: 17 modules, 25 Deluge workflows, field-level specs, lookup maps, and build instructions for the Zoho Creator console.</p>
     <div class="meta">
       <span class="badge accent">17 Modules</span>
     <span class="badge accent">18 Deluge Workflows</span>
@@ -222,7 +222,7 @@
       <p><strong>Deluge:</strong></p>
       <ul>
         <li>On Create: generate Project Code</li>
-        <li>On Status = <code>Completed</code>: validate no pending expenses/POs</li>
+        <li>On Status = <code>Completed</code>: validate no pending expenses/POs; auto-create final Invoice for any unbilled DCs or budget balance</li>
       </ul>
       <p><strong>Custom Actions (Form Buttons):</strong></p>
       <ul>
@@ -367,16 +367,21 @@
       <tr><td>Item</td><td>Lookup → Inventory_Items <span class="tag tag-lookup">Lookup</span></td></tr>
       <tr><td>Warehouse</td><td>Lookup → Warehouses <span class="tag tag-lookup">Lookup</span></td></tr>
       <tr><td>Current Stock</td><td>Decimal (maintained by Deluge on each transaction)</td></tr>
+      <tr><td>Reserved Qty</td><td>Decimal (maintained by Deluge — Reservation/Release transactions)</td></tr>
+      <tr><td>Available Stock</td><td>Formula (read-only)</td><td><code>Current Stock − Reserved Qty</code></td></tr>
       <tr><td>Reorder Level</td><td>Decimal (warehouse-specific, overrides item default)</td></tr>
     </table>
 
-    <h4>Deluge approach for <code>Current_Stock</code>:</h4>
-    <pre>On every Inventory Transaction (Stock In / Out / Adjustment):
-  Update Item_Warehouse_Stock.Current_Stock for the specific warehouse:
-    Stock In:  Current_Stock += Quantity
-    Stock Out: Current_Stock -= Quantity
-    Adjustment: Current_Stock = Adjusted_Qty
-  Then recompute Inventory_Item.Current_Stock = SUM of all Item_Warehouse_Stock records for that item</pre>
+    <h4>Deluge approach for <code>Current_Stock</code> and <code>Reserved_Qty</code>:</h4>
+    <pre>On every Inventory Transaction:
+  Update Item_Warehouse_Stock for the specific warehouse:
+    Stock In:              Current_Stock += Quantity
+    Stock Out:             Current_Stock -= Quantity; Reserved_Qty -= Quantity (capped)
+    Adjustment:            Current_Stock = Adjusted_Qty (Reserved_Qty unchanged)
+    Return to Vendor:      Current_Stock -= Quantity
+    Reservation:           Reserved_Qty += Quantity; validate &lt;= Current_Stock
+    Release:               Reserved_Qty -= Quantity
+  Then recompute Inventory_Item.Current_Stock = SUM of all warehouse records</pre>
     <p>This gives both warehouse-level visibility and item-level totals without on-demand aggregation.</p>
 
     <h4>Item Attributes (optional — for variants like size/color):</h4>
@@ -521,7 +526,7 @@
     <table class="tbl">
       <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
       <tr><td>Transaction No</td><td>Auto-number</td><td><code>TXN-0001</code></td></tr>
-      <tr><td>Type</td><td>Dropdown</td><td><code>Stock In</code>, <code>Stock Out</code>, <code>Stock Adjustment</code>, <code>Return to Vendor</code>, <code>Return from Customer</code></td></tr>
+      <tr><td>Type</td><td>Dropdown</td><td><code>Stock In</code>, <code>Stock Out</code>, <code>Stock Adjustment</code>, <code>Return to Vendor</code>, <code>Return from Customer</code>, <code>Reservation</code>, <code>Release</code></td></tr>
       <tr><td>Item</td><td>Lookup → Inventory_Items <span class="tag tag-lookup">Lookup</span></td><td></td></tr>
       <tr><td>Warehouse</td><td>Lookup → Warehouses <span class="tag tag-critial">Required</span></td><td>Required — which warehouse stock changes</td></tr>
       <tr><td>Quantity</td><td>Decimal</td><td>Always positive. Direction determined by Type</td></tr>
@@ -529,7 +534,7 @@
       <tr><td>Rate / Unit Cost</td><td>Currency</td><td>Cost at time of transaction</td></tr>
       <tr><td>Total Value</td><td>Formula</td><td><code>Quantity * Rate</code></td></tr>
       <tr><td>Reference</td><td>Text</td><td>PO Number, GRN Number, Adjustment Reason</td></tr>
-      <tr><td>Project</td><td>Lookup → Projects <span class="tag tag-lookup">Lookup</span></td><td>Required only for Stock Out (consumption)</td></tr>
+      <tr><td>Project</td><td>Lookup → Projects <span class="tag tag-lookup">Lookup</span></td><td>Required for Stock Out (consumption) and Reservation</td></tr>
       <tr><td>Transaction Date</td><td>Date/Time</td><td></td></tr>
       <tr><td>Notes</td><td>Multi-line</td><td></td></tr>
       <tr><td>Created By</td><td>User picker</td><td>Auto-set</td></tr>
@@ -538,20 +543,22 @@
     <h4>Deluge Workflow (on Submit):</h4>
     <pre>1. Locate Item_Warehouse_Stock record for (Item, Warehouse)
 2. Calculate new stock:
-   - Stock In:            Current_Stock += Quantity
-   - Stock Out:           Current_Stock -= Quantity
-   - Adjustment:          Current_Stock = Adjusted_Qty
-   - Return to Vendor:   Current_Stock -= Quantity
-3. Validate Current_Stock >= 0 before update
-4. Update Item_Warehouse_Stock.Current_Stock
+   - Stock In:              Current_Stock += Quantity
+   - Stock Out:             Current_Stock -= Quantity;  Reserved_Qty -= min(Reserved_Qty, Quantity)
+   - Adjustment:            Current_Stock = Adjusted_Qty
+   - Return to Vendor:      Current_Stock -= Quantity
+   - Reservation:           Reserved_Qty += Quantity;  validate Reserved_Qty &lt;= Current_Stock
+   - Release:               Reserved_Qty -= Quantity
+3. Validate Current_Stock >= 0 AND unreserved stock >= 0 for Stock Out
+4. Update Item_Warehouse_Stock.Current_Stock and Reserved_Qty
 5. Recalculate Inventory_Item.Current_Stock = SUM of all warehouse stock
 6. If Type = "Stock Out" AND Project is set:
-     Create Expense record automatically:
-       Amount = Quantity * Rate
-       Project = selected Project
-       Budget_Component = selected (or auto-map via item category)
-       Description = "Auto: Stock consumed — [Item Name] for [Project]"
-       Status = "Approved"</pre>
+      Create Expense record automatically:
+        Amount = Quantity * Rate
+        Project = selected Project
+        Budget_Component = selected (or auto-map via item category)
+        Description = "Auto: Stock consumed — [Item Name] for [Project]"
+        Status = "Approved"</pre>
     <p><strong>Important:</strong> The Stock Out → Expense flow is the highest-value automation. It closes the loop between inventory and budget tracking.</p>
   </div>
 </div>
@@ -882,11 +889,12 @@
       <tr><td>Tax Amount</td><td>Formula</td><td></td></tr>
       <tr><td>Total</td><td>Formula</td><td><code>(Qty × Rate) − Discount + Tax</code></td></tr>
     </table>
-    <p><strong>Deluge:</strong></p>
+    <p><strong>Deluge / Custom Actions:</strong></p>
     <ul>
       <li>On Status = <code>Sent</code>: update Project Budget Component's Total Invoiced (P&amp;L reporting)</li>
       <li>On Status = <code>Paid</code>: update Amount Paid, auto-set Balance Due = 0</li>
       <li>On Status = <code>Cancelled</code>: validate no payments received</li>
+      <li><strong>Custom Button "Create DC"</strong> (when Status = Sent + stock items): auto-create Delivery Challan with same Project, Customer, and line items</li>
     </ul>
   </div>
 </div>
@@ -930,6 +938,7 @@
       <li>On Create: validate stock availability for each line item</li>
       <li>On Status = <code>Shipped</code>: reduce stock via auto-create Stock Out transaction</li>
       <li>On Status = <code>Shipped</code> + no Invoice linked: prompt user to create Invoice</li>
+      <li>Can also be auto-created from Invoice via "Create DC" button on Invoice form</li>
     </ul>
   </div>
 </div>
@@ -1065,7 +1074,7 @@
 
 <!-- DELUGE WORKFLOWS -->
 <section id="workflows">
-<h2>Deluge Automation Blueprints <span class="badge">23 workflows</span></h2>
+<h2>Deluge Automation Blueprints <span class="badge">25 workflows</span></h2>
 <table class="tbl">
   <tr><th>#</th><th>Trigger</th><th>Event</th><th>Action</th><th>Critical</th></tr>
   <tr><td>1</td><td>Project Create</td><td>On Submit</td><td>Generate Project Code (PROJ-0001)</td><td>—</td></tr>
@@ -1091,6 +1100,8 @@
   <tr><td>21</td><td>DC Status = "Shipped"</td><td>On Submit</td><td>Auto-create Stock Out for dispatched items</td><td><span class="tag tag-critical">Yes</span></td></tr>
   <tr><td>22</td><td>BOM Submit</td><td>On Submit</td><td>Calculate Total Component Cost + Total Manufacturing Cost</td><td>—</td></tr>
   <tr><td>23</td><td>PR Fully Approved</td><td>On Submit</td><td>Auto-create Purchase Order (Draft) with line items from PR; link PO.Requisition</td><td><span class="tag tag-critical">Yes</span></td></tr>
+  <tr><td>24</td><td>Invoice — Create DC</td><td>Custom Button</td><td>Auto-create Delivery Challan with same Project, Customer, and line items</td><td>—</td></tr>
+  <tr><td>25</td><td>Inventory Reservation</td><td>On Submit</td><td>Increment Reserved_Qty; validate ≤ Current_Stock</td><td><span class="tag tag-critical">Yes</span></td></tr>
 </table>
 </section>
 
@@ -1237,7 +1248,7 @@
 <footer>
   <div class="container">
     <p><strong>ITOTCloud Systems Pvt. Ltd.</strong> — Internal Implementation Blueprint</p>
-    <p style="font-size:0.75rem;margin-top:4px">17 modules | 23 Deluge workflows | 27+ forms | Zoho Creator + Deluge | Phase 1A ready for console build</p>
+    <p style="font-size:0.75rem;margin-top:4px">17 modules | 25 Deluge workflows | 27+ forms | Zoho Creator + Deluge | Phase 1A ready for console build</p>
     <p style="font-size:0.7rem;margin-top:4px;color:var(--surface2)">Confidential — ITOTCloud Delivery Team Only</p>
   </div>
 </footer>
