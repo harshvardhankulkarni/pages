@@ -58,7 +58,7 @@ Zoho Books, Zoho Inventory (optional), Zoho Analytics, Zoho Projects, email noti
 
 ## Build order quick reference
 ```
-Phase 1A: Projects → Vendors → Warehouses → Inventory_Items
+Phase 1A: Vendors → Projects → Warehouses → Inventory_Items
 Phase 1B: Budget_Plans → Budget_Components → Inventory_Transactions
 Phase 1C: Expenses → Purchase_Requisitions
 Phase 1D: Budget_Approvals → Purchase_Orders → Goods_Receipts → Transfer_Orders

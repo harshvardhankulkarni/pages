@@ -37,7 +37,7 @@ This repo contains the **internal implementation plan** for our Project Budget T
 
 | Phase | Modules | Build Order | Est. Effort |
 |-------|---------|-------------|-------------|
-| 1A | Project Master → Vendor → Warehouses → Inventory Master | Foundation first | Start here |
+| 1A | Vendor Management → Project Master → Warehouses → Inventory Master | Foundation first | Start here |
 | 1B | Budget Planning → Budget Components → Inventory Transactions | Budget + stock engine | After 1A |
 | 1C | Expense Management → Purchase Requisition | Spend + requests | After 1B |
 | 1D | Budget Approval → Purchase Orders → Goods Receipt → Transfer Orders | Procurement cycle | After 1C |

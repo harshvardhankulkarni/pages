@@ -31,7 +31,7 @@
 Each phase depends on the previous. Build in this order:
 
 ```
-Phase 1A:  Project Master  →  Vendor Management  →  Warehouses  →  Inventory Master
+Phase 1A:  Vendor Management  →  Project Master  →  Warehouses  →  Inventory Master
                    ↓                    ↓                               ↓
 Phase 1B:  Budget Planning  →  Budget Components              Inventory Transactions
                    ↓                                               ↓
@@ -712,4 +712,4 @@ Everything above is Phase 1 — one Zoho Creator application with modules mirror
 | Seed data | "Main Warehouse" record, sample Budget Component categories |
 | Critical performance rule | Maintain `Item_Warehouse_Stock.Current_Stock` via Deluge on every transaction — never aggregate on demand |
 
-**Start with Phase 1A in Zoho Creator console: Projects → Vendors → Warehouses → Inventory_Items**
+**Start with Phase 1A in Zoho Creator console: Vendors → Projects → Warehouses → Inventory_Items**
