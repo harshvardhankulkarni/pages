@@ -1,99 +1,93 @@
-# Project Budget Tracking & Inventory Management
+# Project Budget Tracking & Inventory Management — Internal Implementation Plan
 
-**A Zoho Creator Implementation by ITOTCloud Systems Pvt. Ltd.**
+**ITOTCloud Systems Pvt. Ltd. — Zoho Creator Delivery Team**
 
 ---
 
 ## Overview
 
-This repository contains the complete design artifacts for a **Project Budget Tracking & Inventory Management** system built on the **Zoho Creator** low-code platform. The system provides end-to-end project financial control, multi-warehouse inventory tracking, procurement lifecycle management, and executive reporting — all within a single Zoho Creator application.
+This repo contains the **internal implementation plan** for our Project Budget Tracking & Inventory Management system. This is the single source of truth for the ITOTCloud delivery team: module specs, Deluge workflow logic, lookup maps, build order, and deployment checklists.
 
-The data model is designed to be **Zoho Inventory compatible**, making Phase 2 integration seamless if API sync is later required.
+**Status:** Design complete — ready for Phase 1A console implementation.
 
-## Who We Are
-
-**ITOTCloud Systems Pvt. Ltd.** is a **Zoho Premium Partner** and **Zoho Creator Partner** based in Pune, India. We specialize in delivering enterprise-grade Zoho solutions — CRM automation, custom Creator applications, Books integrations, Projects sync, and Deluge scripting. This repository is maintained by our internal implementation team for project delivery and knowledge continuity.
+**Platform:** Zoho Creator (low-code)
+**Logic layer:** Deluge scripts, form workflows, reports
+**Integration target (Phase 2):** Zoho Inventory, Zoho Books, Zoho Projects, Zoho Analytics
 
 ## The 14-Module Architecture
 
-| # | Module | Purpose |
-|---|--------|---------|
-| 1 | **Project Master** | Central project registry with budgets, statuses, and PM assignment |
-| 2 | **Vendor Management** | Multi-contact, multi-address vendor master with tax IDs, payment terms |
-| 3 | **Warehouses** | Multi-warehouse stock tracking with default warehouse seeding |
-| 4 | **Inventory Master — Items** | SKU-level item catalog (goods/services), HSN/SAC, price lists, stock aggregation |
-| 5 | **Budget Planning** | Per-project budget plans with status workflow (Draft → Active → Revised → Closed) |
-| 6 | **Budget Components** | Dynamic budget breakdown per project (Labor, Materials, etc.) with consumption tracking |
-| 7 | **Expense Management** | Expense submission with auto-approval or overrun routing |
-| 8 | **Budget Approval Workflow** | Overrun approval process with PM + Finance Manager notifications |
-| 9 | **Inventory Transactions** | Stock In/Out/Adjustment/Return with per-warehouse tracking |
-| 10 | **Transfer Orders** | Inter-warehouse stock movement with paired transaction generation |
-| 11 | **Purchase Requisition** | Multi-line item requisitions with 3-stage approval (Dept → Finance → Procurement) |
-| 12 | **Purchase Orders** | Full PO lifecycle with line-level discount/tax, billing/shipping addresses |
-| 13 | **Goods Receipt** | Accepted/rejected quantity tracking, auto-inventory update, PO closure |
-| 14 | **Reports & Dashboards** | Executive KPIs, Budget vs Actual, stock alerts, vendor spend, and more |
+| # | Module | Form Name | Key Purpose |
+|---|--------|-----------|-------------|
+| 1 | Project Master | `Projects` | Central project registry, auto-numbered codes |
+| 2 | Vendor Management | `Vendors` + `Vendor_Contacts` + `Vendor_Documents` | Zoho Inventory-aligned vendor master |
+| 3 | Warehouses | `Warehouses` | Multi-warehouse stock locations |
+| 4 | Inventory Master | `Inventory_Items` + `Item_Warehouse_Stock` | SKU catalog, HSN/SAC, per-warehouse stock |
+| 5 | Budget Planning | `Budget_Plans` | Per-project budget plans |
+| 6 | Budget Components | `Budget_Components` | Dynamic cost breakdown per project |
+| 7 | Expense Management | `Expenses` | Actual spend against budget components |
+| 8 | Budget Approval | `Budget_Approvals` | Overrun approval workflow |
+| 9 | Inventory Transactions | `Inventory_Transactions` | Stock In/Out/Adjustment/Return |
+| 10 | Transfer Orders | `Transfer_Orders` + `TO_Line_Items` | Inter-warehouse stock transfer |
+| 11 | Purchase Requisition | `Purchase_Requisitions` + `PR_Line_Items` | Multi-stage approval PRs |
+| 12 | Purchase Orders | `Purchase_Orders` + `PO_Line_Items` | Full PO lifecycle, line-level discount/tax |
+| 13 | Goods Receipt | `Goods_Receipts` + `GRN_Line_Items` | Accepted/rejected qty, auto Stock In |
+| 14 | Reports & Dashboards | Reports + Dashboard widgets | KPIs, Budget vs Actual, stock alerts |
 
 ## Build Phases
 
-```
-Phase 1A:  Project Master → Vendor Management → Warehouses → Inventory Master
-Phase 1B:  Budget Planning → Budget Components || Inventory Transactions
-Phase 1C:  Expense Management → Purchase Requisition
-Phase 1D:  Budget Approval || Purchase Orders → Goods Receipt || Transfer Orders
-Phase 1E:  Reports & Dashboards (all modules)
-```
+| Phase | Modules | Build Order | Est. Effort |
+|-------|---------|-------------|-------------|
+| 1A | Project Master → Vendor → Warehouses → Inventory Master | Foundation first | Start here |
+| 1B | Budget Planning → Budget Components → Inventory Transactions | Budget + stock engine | After 1A |
+| 1C | Expense Management → Purchase Requisition | Spend + requests | After 1B |
+| 1D | Budget Approval → Purchase Orders → Goods Receipt → Transfer Orders | Procurement cycle | After 1C |
+| 1E | Reports & Dashboards (all modules) | Intelligence | After 1D |
 
 ## Key Deluge Automations
 
-| # | Automation | Description |
-|---|------------|-------------|
-| 1 | **Budget Validation** | Sum of component budgets must not exceed approved project budget |
-| 2 | **Auto-Inventory Deduction** | Stock Out on a project auto-creates Expense record and updates budget |
-| 3 | **Warehouse Stock Sync** | Every transaction updates `Item_Warehouse_Stock` + rolls up to `Item.Current_Stock` |
-| 4 | **Budget Alerts** | Scheduled workflow triggers at 80%, 90%, 100% consumption |
-| 5 | **Overrun Approval Workflow** | Expense exceeding component budget routes to PM + Finance Manager |
-| 6 | **PO Lifecycle** | `Draft → Open → Partially Invoiced → Invoiced → Closed / Cancelled` |
-| 7 | **Goods Receipt** | Accepted qty → Stock In + PO update; rejected qty logged for returns |
-| 8 | **Transfer Orders** | Completion auto-generates paired Stock Out / Stock In transactions |
-| 9 | **Multi-Stage PR Approval** | Dept Manager → Finance → Procurement, with email notifications |
+| # | Automation | Trigger | File ref |
+|---|------------|---------|----------|
+| 1 | Generate Project Code | Project Create | `IMPLEMENTATION_PLAN.md` §C.1 |
+| 2 | Budget Validation — sum of components ≤ total | Budget Plan Submit | §C.5 |
+| 3 | Expense Budget Check — auto-approve or overrun | Expense Submit | §C.7 |
+| 4 | Overrun Approval — create Budget_Approval + notify | Expense Overrun | §C.8 |
+| 5 | Approval Status Change — update Expense + notify | Budget_Approval status | §C.8 |
+| 6 | Stock Sync — update Item_Warehouse_Stock + roll up | Inventory Transaction | §C.9 |
+| 7 | Stock Out → Auto-create Expense record | Stock Out + Project set | §C.9 (highest value) |
+| 8 | Transfer Complete → paired Stock Out/In | TO Status = Completed | §C.10 |
+| 9 | GRN → Stock In for accepted qty + PO update | GRN Status = Open | §C.13 |
+| 10 | All items received → auto-close PO | GRN completion check | §C.13 |
+| 11 | PO Open → email vendor | PO Status = Open | §C.12 |
+| 12 | PR Approval Stage → notify next approver | PR stage change | §C.11 |
+| 13 | Daily Cron — alerts, KPI refresh, auto-close | Scheduled (midnight) | §C.14 |
 
-## User Roles
+## Team Access
 
-| Role | Key Actions |
-|------|------------|
-| Administrator | Full access to all modules and settings |
-| Project Manager | Manage projects, track budgets, approve overruns |
-| Finance Manager | Budget approvals, financial reporting, cost oversight |
-| Procurement Team | Create requisitions, manage POs, vendor communication |
-| Inventory Manager | Stock transactions, warehouse management, transfer orders |
-| Employee/User | Submit expenses, request purchases |
+- **Zoho Creator Console:** [creator.zoho.com](https://creator.zoho.com) — ITOTCloud org
+- **Design Docs:** Open `/budget-tracking-handoff/` in this repo's GitHub Pages
+- **Full Spec:** `IMPLEMENTATION_PLAN.md` — field-level, workflow, lookup map
+- **AI Agent Context:** `AGENTS.md` — optimized for AI coding assistants
 
-## Quick Reference
+## How to Use This Repo
 
-- **Platform**: Zoho Creator (Deluge scripts, forms, workflows, reports)
-- **Forms**: ~18 primary forms including line-item subforms
-- **Workflows**: ~18 Deluge automations (17 On Submit + 1 Scheduled Cron)
-- **Integration Ready**: Data model aligned with Zoho Inventory, Books, Projects, Analytics
-- **Design Constraints**: See [IMPLEMENTATION_PLAN.md](./IMPLEMENTATION_PLAN.md) Section A for Zoho Creator constraints (no foreign keys, no transactions, subform limitations, etc.)
-
-## How to Contribute
-
-This repository holds **design artifacts only** — FRD, data models, workflow diagrams, role matrices, form/dashboard designs, and the implementation roadmap.
-
-1. **Design changes** are made via markdown files in this repo
-2. **Implementation** happens in the Zoho Creator console — never in this repo
-3. When designing a new module or modifying an existing one, follow this pattern:
-   - Form fields → Validation rules → Deluge workflow → Report/Dashboard → Role permissions
-4. Use the [solution template](../templates/solution-template.md) for new client solutions
+1. **Before building a module** → read its section in `IMPLEMENTATION_PLAN.md` for field specs
+2. **When writing Deluge** → follow the pseudo-code in each module's workflow section
+3. **When linking forms** → reference the lookup map in `IMPLEMENTATION_PLAN.md` §D
+4. **When testing** → follow the build order, seed "Main Warehouse" first
+5. **Phase 2 planning** → don't break Phase 1 form designs — the data model is already Zoho Inventory compatible
+6. **Update this repo** when design decisions change during implementation
 
 ## Key Documents
 
-| Document | Description |
-|----------|-------------|
-| [AGENTS.md](./AGENTS.md) | Project overview for AI agents: modules, automation points, roles, reporting |
-| [IMPLEMENTATION_PLAN.md](./IMPLEMENTATION_PLAN.md) | Full implementation plan: 14 module designs, Deluge workflows, lookup maps, risks |
+| Document | Purpose |
+|----------|---------|
+| `IMPLEMENTATION_PLAN.md` | Complete field-level specs for all 14 modules, Deluge workflows, lookup map, risks |
+| `AGENTS.md` | Compact AI assistant guide — module list, automation points, roles |
+| `index.html` | Interactive HTML implementation plan with expandable module cards |
+| `README.md` | This file — team onboarding and navigation |
 
 ---
 
-**ITOTCloud Systems Pvt. Ltd.** — Aston Plaza, Ambegaon BK, Pune — 411046  
-Confidential — © 2026
+**ITOTCloud Systems Pvt. Ltd.** — Aston Plaza, Ambegaon BK, Pune — 411046
+**Contact:** Implementation Lead — Zoho Creator Delivery Team
+**Confidential — © 2026 — Internal Use Only**

@@ -1,5 +1,16 @@
 # Implementation Plan — Project Budget Tracking & Inventory Management (Zoho Creator)
 
+**ITOTCloud Systems Pvt. Ltd. — Internal Delivery Document**
+**Author:** Implementation Team | **Status:** Ready for Phase 1A | **Confidential**
+
+---
+
+> This is the field-level implementation blueprint for the ITOTCloud delivery team.
+> Build from this document in the Zoho Creator console. Update it when design decisions change.
+> Refer to `AGENTS.md` for AI assistant context and `index.html` for an interactive version.
+
+---
+
 ## A. Zoho Creator Design Constraints (Key Factors)
 
 | Constraint | Design Impact |
@@ -690,4 +701,15 @@ Everything above is Phase 1 — one Zoho Creator application with modules mirror
 
 ---
 
-**Bottom line:** Build as a single Zoho Creator app with ~18 primary forms (Projects, Vendors, Vendor_Contacts, Vendor_Documents, Warehouses, Inventory_Items, Item_Warehouse_Stock, Item_Attributes, Budget_Plans, Budget_Components, Expenses, Budget_Approvals, Inventory_Transactions, Transfer_Orders, Purchase_Requisitions, Purchase_Orders, Goods_Receipts, plus line-item forms) linked via lookups, automated with ~18 Deluge workflows (On Submit + 1 Scheduled). The single most important performance decision: keep `Item_Warehouse_Stock.Current_Stock` maintained by Deluge on every transaction — never aggregate on demand.
+## H. Quick Reference for Console Build
+
+| Item | Details |
+|------|---------|
+| Forms to create | ~18 primary forms (Projects, Vendors, Vendor_Contacts, Vendor_Documents, Warehouses, Inventory_Items, Item_Warehouse_Stock, Item_Attributes, Budget_Plans, Budget_Components, Expenses, Budget_Approvals, Inventory_Transactions, Transfer_Orders, TO_Line_Items, Purchase_Requisitions, PR_Line_Items, Purchase_Orders, PO_Line_Items, Goods_Receipts, GRN_Line_Items) |
+| Deluge workflows | ~18 (17 On Submit + 1 Scheduled Cron) |
+| User roles | 6 (Admin, PM, Finance, Procurement, Inventory, Employee) |
+| Lookup forms (most referenced) | Projects, Vendors, Inventory_Items, Warehouses |
+| Seed data | "Main Warehouse" record, sample Budget Component categories |
+| Critical performance rule | Maintain `Item_Warehouse_Stock.Current_Stock` via Deluge on every transaction — never aggregate on demand |
+
+**Start with Phase 1A in Zoho Creator console: Projects → Vendors → Warehouses → Inventory_Items**

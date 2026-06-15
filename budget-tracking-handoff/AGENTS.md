@@ -1,26 +1,26 @@
-# AGENTS.md — Project Budget Tracking & Inventory Management
+# AGENTS.md — Project Budget Tracking & Inventory Management (Internal)
 
 ## Project type
-Zoho Creator low-code application. All logic is in **Deluge scripts**, forms, workflows, and reports — no traditional source code lives in this repo.
+Zoho Creator low-code application. All logic is in **Deluge scripts**, forms, workflows, and reports. This repo holds the internal implementation blueprint for the ITOTCloud delivery team.
 
 ## What this repo holds
-Design artifacts only: FRD, data model, workflow diagrams, role matrix, form/dashboard designs, implementation roadmap. No Zoho Creator deployable artifacts (those live on the Zoho platform).
+Internal implementation plan: field-level module specs, Deluge pseudocode, lookup relationship maps, build phases, role permissions matrix, and deployment checklist. This is the single source of truth for the Zoho Creator console build.
 
 ## 14 canonical modules (matches Zoho Creator + Zoho Inventory structure)
-1. Project Master
-2. Vendor Management (multi-contact, multi-address, tax IDs, payment terms)
-3. Warehouses (multi-warehouse stock tracking)
-4. Inventory Master — Items (SKU, goods/services, dimensions, HSN/SAC, price lists)
-5. Budget Planning
-6. Budget Components (dynamic per project)
-7. Expense Management
-8. Budget Approval Workflow
-9. Inventory Transactions (Stock In/Out/Adjustment/Return, per-warehouse)
-10. Transfer Orders (inter-warehouse stock movement)
-11. Purchase Requisition (multi-line item, multi-stage approval)
-12. Purchase Orders (line-level discount/tax, billing/shipping addresses, Zoho Inventory statuses)
-13. Goods Receipt (accepted/rejected qty, auto-inventory + PO update)
-14. Reports & Dashboards
+1. Project Master — `Projects`
+2. Vendor Management — `Vendors`, `Vendor_Contacts`, `Vendor_Documents`
+3. Warehouses — `Warehouses`
+4. Inventory Master — `Inventory_Items`, `Item_Warehouse_Stock`, `Item_Attributes`
+5. Budget Planning — `Budget_Plans`
+6. Budget Components — `Budget_Components`
+7. Expense Management — `Expenses`
+8. Budget Approval Workflow — `Budget_Approvals`
+9. Inventory Transactions — `Inventory_Transactions`
+10. Transfer Orders — `Transfer_Orders`, `TO_Line_Items`
+11. Purchase Requisition — `Purchase_Requisitions`, `PR_Line_Items`
+12. Purchase Orders — `Purchase_Orders`, `PO_Line_Items`
+13. Goods Receipt — `Goods_Receipts`, `GRN_Line_Items`
+14. Reports & Dashboards — Reports + Dashboard widgets
 
 ## Key Deluge automation points (non-obvious)
 - **Budget validation**: sum of component budgets must not exceed approved project budget
@@ -46,8 +46,21 @@ Design artifacts only: FRD, data model, workflow diagrams, role matrix, form/das
 ## Reporting
 Executive dashboard KPIs: Total Project Budget, Total Spent, Budget Utilization %, Open PO Value, Inventory Value, Cost Overruns. Budget vs Actual, category analysis, monthly trends — all Zoho Creator Report/Dashboard widgets or Zoho Analytics.
 
-## Integration touchpoints
+## Integration touchpoints (Phase 2)
 Zoho Books, Zoho Inventory (optional), Zoho Analytics, Zoho Projects, email notifications, vendor communication.
 
-## How to contribute
-Design docs live as markdown in this repo. Implementation happens in the Zoho Creator console — not here. When designing a module, always follow the pattern: form fields → validation rules → Deluge workflow → report/dashboard → role permissions.
+## Internal workflow
+1. Implementation happens in the **Zoho Creator console** — not in this repo
+2. Update this repo when design decisions change during implementation
+3. Module design pattern: Form fields → Validation rules → Deluge workflow → Report/Dashboard → Role permissions
+4. Refer to `IMPLEMENTATION_PLAN.md` for field-level specs during console build
+5. Log implementation blockers/issues in the repo for team discussion
+
+## Build order quick reference
+```
+Phase 1A: Projects → Vendors → Warehouses → Inventory_Items
+Phase 1B: Budget_Plans → Budget_Components → Inventory_Transactions
+Phase 1C: Expenses → Purchase_Requisitions
+Phase 1D: Budget_Approvals → Purchase_Orders → Goods_Receipts → Transfer_Orders
+Phase 1E: Reports & Dashboards
+```
