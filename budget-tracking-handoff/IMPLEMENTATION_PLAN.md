@@ -399,7 +399,7 @@ For each line item:
 
 ### 11. Purchase Requisition (`Purchase_Requisitions`)
 
-Matches Zoho Inventory's purchase requisition structure with multi-line items and approval routing.
+Custom Zoho Creator module (Zoho Books has no native PR). Designed to feed into Zoho Books Purchase Orders via Phase 2 API sync.
 
 | Field | Type | Notes |
 |---|---|---|
@@ -427,6 +427,8 @@ Matches Zoho Inventory's purchase requisition structure with multi-line items an
 | Estimated Unit Rate | Currency | |
 | Estimated Total | Formula | `Quantity * Estimated Unit Rate` |
 | Item Type | Text | Copied from Item or manual |
+| Account | Lookup → Chart of Accounts | Maps to Zoho Books `account_id` for Phase 2 |
+| Unit | Text | Copied from Item or manual; maps to Zoho Books `unit` |
 
 **Multi-stage Approval + Auto-PO Workflow:**
 1. User submits (Status = "Open")
@@ -441,63 +443,93 @@ Each step sends email notification. Procurement then reviews the auto-created PO
 
 ### 12. Purchase Orders (`Purchase_Orders`)
 
-Matches Zoho Inventory's purchase order structure. Full line-item detail, discount/tax support, address tracking, and status lifecycle.
+1:1 aligned with Zoho Books Purchase Order API (`/books/v3/purchaseorder`). Full line-item detail, discount/tax support, address tracking, and status lifecycle. All fields map directly to Zoho Books JSON payload for Phase 2 API sync.
 
-| Field | Type | Notes |
-|---|---|---|
-| PO Number | Auto-number | `PO-0001` |
-| Vendor | Lookup → Vendors | Required |
-| Vendor Email | Email | Copied from Vendor |
-| Requisition | Lookup → Purchase_Requisitions | Optional — linked if created from PR |
-| Project | Lookup → Projects | |
-| PO Date | Date | Defaults to today |
-| Delivery Date | Date | Expected delivery |
-| Ship Via | Dropdown | `Courier`, `Freight`, `Air`, `Sea`, `Road`, `Pickup` |
-| Shipment Tracking | Text | Tracking number if applicable |
-| Billing Address | Multi-line | Copied from Vendor, editable |
-| Shipping Address | Multi-line | Copied from Vendor, editable |
-| Status | Dropdown | `Draft`, `Open`, `Partially Invoiced`, `Invoiced`, `Closed`, `Cancelled` |
-| Billable | Checkbox | Can this PO be billed to a client |
-| Subtotal | Currency | Sum of line item totals |
-| Discount (%) | Decimal | Overall PO-level discount percentage |
-| Discount Amount | Currency | Calculated |
-| Tax Total | Currency | Sum of line item taxes |
-| Total | Currency | `Subtotal - Discount + Tax Total` |
-| Terms & Conditions | Multi-line | |
-| Notes | Multi-line | Internal |
-| Attachment | Upload | PO document file |
-| Custom Fields | Multi-line | Any additional info |
+| Field | Type | Zoho Books API Field | Notes |
+|---|---|---|---|
+| PO Number | Auto-number | `purchaseorder_number` | `PO-0001` — auto-numbering in Zoho Books |
+| Vendor | Lookup → Vendors | `vendor_id` | Required |
+| Vendor Email | Email | — | Copied from Vendor; convenience field |
+| Contact Person | Lookup → Vendor_Contacts | `contact_persons_associated` | Maps to Zoho Books contact persons array |
+| Requisition | Lookup → Purchase_Requisitions | — | Optional — linked if created from PR |
+| Project | Lookup → Projects | `project_id` (line items) | |
+| PO Date | Date | `date` | Defaults to today; YYYY-MM-DD |
+| Delivery Date | Date | `delivery_date` | Expected delivery |
+| Expected Arrival Date | Date | `expected_delivery_date` | |
+| Due Date | Date | `due_date` | Payment due date |
+| Reference Number | Text | `reference_number` | Vendor's reference or contract no. |
+| Ship Via | Dropdown | `ship_via` | `Courier`, `Freight`, `Air`, `Sea`, `Road`, `Pickup` |
+| Attention | Text | `attention` | Person to receive |
+| Billing Address | Multi-line | `billing_address_id` | Copied from Vendor, editable |
+| Shipping Address | Multi-line | — | Copied from Vendor, editable |
+| Status | Dropdown | `status` | `Draft`, `Open`, `Partially Invoiced`, `Invoiced`, `Closed`, `Cancelled` |
+| Currency | Lookup → Currencies | `currency_id` | Defaults to org base currency |
+| Exchange Rate | Decimal | `exchange_rate` | Defaults to 1 |
+| Is Inclusive Tax | Checkbox | `is_inclusive_tax` | Tax included in item rates |
+| Subtotal | Currency | `sub_total` | Sum of line item totals |
+| Discount (%) | Decimal | `discount` | Overall PO-level discount (e.g. `10` or `10%`) |
+| Discount Account | Lookup → Chart of Accounts | `discount_account_id` | GL account for discount |
+| Discount Before Tax | Checkbox | `is_discount_before_tax` | Apply discount before tax calc |
+| Discount Amount | Currency | — | Calculated |
+| Tax Total | Currency | `total_tax` | Sum of line item taxes |
+| Total | Currency | `total` | `Subtotal - Discount + Tax Total` |
+| Terms & Conditions | Multi-line | `terms` | Printed on PO |
+| Notes | Multi-line | `notes` | Internal instructions |
+| Attachment | Upload | — | PO document file |
+| Location | Lookup → Warehouses | `location_id` | Zoho Books location/warehouse |
+| Template | Lookup → Templates | `template_id` | Zoho Books PDF template |
+| Price Book | Lookup → Price Books | `pricebook_id` | Zoho Books price book |
+| GST Treatment | Dropdown | `gst_treatment` | India: `business_gst`, `consumer_gst`, etc. |
+| GST No | Text | `gst_no` | Vendor GSTIN |
+| Source of Supply | Text | `source_of_supply` | GST state code |
+| Destination of Supply | Text | `destination_of_supply` | GST state code |
+| Reverse Charge | Checkbox | `is_reverse_charge_applied` | India reverse charge |
+| Custom Fields | JSON | `custom_fields` | Zoho Books custom field values |
 
 **Line Items — Separate form `PO_Line_Items` with Add-as-Subform:**
 
-| Field | Type | Notes |
-|---|---|---|
-| PO | Lookup → Purchase_Orders | |
-| Item | Lookup → Inventory_Items | |
-| Description | Text | Auto-filled from Item Name, editable |
-| Quantity | Decimal | |
-| Unit Rate | Currency | |
-| Discount (%) | Decimal | Line-level discount |
-| Discount Amount | Formula | `(Unit Rate * Quantity) * (Discount% / 100)` |
-| Tax (%) | Decimal | Defaults from Item's Tax Rate |
-| Tax Amount | Formula | `((Unit Rate * Quantity) - Discount Amount) * (Tax% / 100)` |
-| Total | Formula | `(Unit Rate * Quantity) - Discount Amount + Tax Amount` |
-| Received Quantity | Decimal | Updated by Goods Receipt |
-| Warehouse | Lookup → Warehouses | Default warehouse for this item on receipt |
+| Field | Type | Zoho Books API Field | Notes |
+|---|---|---|---|
+| PO | Lookup → Purchase_Orders | — | |
+| Line Item ID | Text | `line_item_id` | Zoho Books internal ID (Phase 2 sync) |
+| Item | Lookup → Inventory_Items | `item_id` | |
+| SKU | Text | `sku` | Auto-filled from Item |
+| Name | Text | `name` | Auto-filled from Item Name, editable |
+| Description | Text | `description` | Item description |
+| Unit | Text | `unit` | `Nos`, `Kg`, `Hours`, etc. |
+| HSN/SAC | Text | `hsn_or_sac` | Tax classification code |
+| Quantity | Decimal | `quantity` | |
+| Unit Rate | Currency | `rate` | |
+| BCY Rate | Currency | `bcy_rate` | Rate in base currency |
+| Discount (%) | Decimal | — | Line-level discount |
+| Discount Amount | Formula | — | `(Unit Rate * Quantity) * (Discount% / 100)` |
+| Tax (%) | Decimal | `tax_id` | Defaults from Item's Tax Rate |
+| Tax Amount | Formula | — | `((Unit Rate * Quantity) - Discount Amount) * (Tax% / 100)` |
+| Item Total | Formula | `item_total` | `(Unit Rate * Quantity) - Discount + Tax` |
+| Tax Exemption | Lookup | `tax_exemption_id` | Tax exemption reference |
+| TDS Tax | Lookup → TDS | `tds_tax_id` | TDS applicable |
+| Account | Lookup → Chart of Accounts | `account_id` | Expense account for this line |
+| Received Quantity | Decimal | — | Updated by Goods Receipt |
+| Warehouse | Lookup → Warehouses | `location_id` | Default warehouse on receipt |
+| Product Type | Dropdown | `product_type` | `goods`, `service`, `digital` |
+| Item Order | Number | `item_order` | Display order in line items |
+| Tags | Multi-select | `tags` | Zoho Books tags |
+| Project | Lookup → Projects | `project_id` | Project tracking per line item |
 
-**PO Lifecycle (matches Zoho Inventory's status model):**
-- **Draft**: Being created, not yet submitted
-- **Open**: Approved and sent to vendor
-- **Partially Invoiced**: Some line items billed (Phase 2 with Zoho Books)
-- **Invoiced**: Fully billed (Phase 2)
+**PO Lifecycle (matches Zoho Books status model):**
+- **Draft**: Being created, not yet submitted → `status: "draft"`
+- **Open**: Approved and sent to vendor → `status: "open"`
+- **Partially Invoiced**: Some line items billed (Phase 2)
+- **Invoiced**: Fully billed (Phase 2) → `status: "billed"`
 - **Closed**: Items received, PO fulfilled
-- **Cancelled**: Voided before completion
+- **Cancelled**: Voided before completion → via Cancel PO endpoint
 
 **Deluge Workflow:**
 - On Status = "Open": trigger email to vendor with PO PDF
 - On Goods Receipt: update `Received_Quantity` in line items
 - When Status ≠ "Closed" and all line items `Received_Quantity >= Quantity`: auto-set Status to "Closed"
 - On Status = "Cancelled": validate no GRN linked to this PO
+- **Phase 2**: On Status = "Open" → POST to Zoho Books `purchaseorder` endpoint to sync
 
 ---
 

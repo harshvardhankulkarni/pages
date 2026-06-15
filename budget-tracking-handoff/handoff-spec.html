@@ -502,49 +502,57 @@
 <section id="procurement">
   <h2>Procurement &amp; Purchase Orders <span class="badge">form spec</span></h2>
 
-  <div class="alert alert-info">Zoho Inventory aligned. PO statuses: Draft → Open → Partially Invoiced → Invoiced → Closed / Cancelled.</div>
+  <div class="alert alert-info">1:1 aligned with Zoho Books Purchase Order API (<code>/books/v3/purchaseorder</code>). Every field maps to a JSON property for Phase 2 sync.</div>
 
   <h3>Purchase Requisitions</h3>
   <table class="spec-table">
-    <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
-    <tr><td>Requisition No</td><td>Auto-number</td><td>REQ-0001</td></tr>
-    <tr><td>Subject / Project</td><td>Text / Lookup → Projects</td><td></td></tr>
-    <tr><td>Requested By / Date / Delivery Date</td><td>User picker / Date ×2</td><td></td></tr>
-    <tr><td>Urgency / Justification</td><td>Dropdown / Multi-line</td><td>Low, Medium, High, Critical</td></tr>
-    <tr><td>Status</td><td>Dropdown</td><td>Draft, Open, Approved, Rejected, Closed</td></tr>
-    <tr><td>Approval Stage</td><td>Dropdown</td><td>Pending Dept Approval → Pending Finance → Pending Procurement → Approved</td></tr>
-    <tr><td>PR Line Items</td><td>Sub-form: Item lookup or free-text, Qty, Rate, Total</td><td></td></tr>
+    <tr><th>Field</th><th>Type</th><th>Zoho Books API</th><th>Notes</th></tr>
+    <tr><td>Requisition No</td><td>Auto-number</td><td>—</td><td>REQ-0001</td></tr>
+    <tr><td>Request Type</td><td>Dropdown</td><td>—</td><td>General, Part Repair, Service</td></tr>
+    <tr><td>Subject / Project</td><td>Text / Lookup → Projects</td><td>— / <code>project_id</code></td><td></td></tr>
+    <tr><td>Requested By / Date / Delivery Date</td><td>User picker / Date ×2</td><td>—</td><td></td></tr>
+    <tr><td>Urgency / Justification</td><td>Dropdown / Multi-line</td><td>—</td><td>Low, Medium, High, Critical</td></tr>
+    <tr><td>Status / Approval Stage</td><td>Dropdown ×2</td><td>—</td><td>Draft→Open→Approved→Rejected→Closed + 4-stage</td></tr>
+    <tr><td>PR Line Items</td><td>Sub-form</td><td>—</td><td>Item lookup, Account (NEW), Unit (NEW), Qty, Rate, Total</td></tr>
   </table>
-  <p><strong>Approval flow:</strong> Each stage transition sends email to next approver. Creator sets Approval_Stage, Deluge triggers notification.</p>
+  <p><strong>Approval flow:</strong> Each stage transition sends email to next approver. On final approval → auto-create PO (Draft).</p>
 
   <h3>Purchase Orders</h3>
   <table class="spec-table">
-    <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
-    <tr><td>PO Number</td><td>Auto-number</td><td>PO-0001</td></tr>
-    <tr><td>Vendor / Vendor Email</td><td>Lookup / Email</td><td>Email copied from Vendor</td></tr>
-    <tr><td>Requisition</td><td>Lookup → PR (optional)</td><td>Linked when created from PR</td></tr>
-    <tr><td>Project / PO Date / Delivery Date</td><td>Lookup / Date ×2</td><td></td></tr>
-    <tr><td>Ship Via / Tracking</td><td>Dropdown / Text</td><td>Courier, Freight, Air, Sea, Road, Pickup</td></tr>
-    <tr><td>Billing / Shipping Address</td><td>Multi-line ×2</td><td>Copied from Vendor, editable</td></tr>
-    <tr><td>Status</td><td>Dropdown</td><td>Draft, Open, Partially Invoiced, Invoiced, Closed, Cancelled</td></tr>
-    <tr><td>Billable</td><td>Checkbox</td><td></td></tr>
-    <tr><td>Subtotal / Discount / Tax / Total</td><td>Currency + Formula</td><td>Full financial rollup</td></tr>
-    <tr><td>Terms / Notes / Attachment</td><td>Multi-line / Multi-line / Upload</td><td></td></tr>
-    <tr><td>PO Line Items</td><td>Sub-form</td><td>See below</td></tr>
+    <tr><th>Field</th><th>Type</th><th>Zoho Books API</th><th>Notes</th></tr>
+    <tr><td>PO Number</td><td>Auto-number</td><td><code>purchaseorder_number</code></td><td>PO-0001</td></tr>
+    <tr><td>Vendor / Vendor Email</td><td>Lookup / Email</td><td><code>vendor_id</code></td><td>Email convenience field</td></tr>
+    <tr><td>Contact Person</td><td>Lookup → Vendor_Contacts</td><td><code>contact_persons_associated</code></td><td>Books contact persons</td></tr>
+    <tr><td>Requisition / Project</td><td>Lookup ×2</td><td>— / <code>project_id</code></td><td>PR linked on auto-create</td></tr>
+    <tr><td>PO Date / Delivery Date / Due Date</td><td>Date ×3</td><td><code>date</code> / <code>delivery_date</code> / <code>due_date</code></td><td>Expected arrival: <code>expected_delivery_date</code></td></tr>
+    <tr><td>Reference Number</td><td>Text</td><td><code>reference_number</code></td><td>Vendor contract ref</td></tr>
+    <tr><td>Ship Via / Attention</td><td>Dropdown / Text</td><td><code>ship_via</code> / <code>attention</code></td><td>Courier, Freight, Air, Sea, Road, Pickup</td></tr>
+    <tr><td>Billing / Shipping Address</td><td>Multi-line ×2</td><td><code>billing_address_id</code></td><td>Copied from Vendor, editable</td></tr>
+    <tr><td>Status</td><td>Dropdown</td><td><code>status</code></td><td>Draft, Open, Part Invoiced, Billed, Closed, Cancelled</td></tr>
+    <tr><td>Currency / Exchange Rate</td><td>Lookup / Decimal</td><td><code>currency_id</code> / <code>exchange_rate</code></td><td>Base currency default</td></tr>
+    <tr><td>Is Inclusive Tax / Discount Before Tax</td><td>Checkbox ×2</td><td><code>is_inclusive_tax</code> / <code>is_discount_before_tax</code></td><td>Tax treatment flags</td></tr>
+    <tr><td>Discount / Discount Account</td><td>% / Lookup→CoA</td><td><code>discount</code> / <code>discount_account_id</code></td><td>PO-level discount</td></tr>
+    <tr><td>Subtotal / Tax Total / Total</td><td>Currency + Formula</td><td><code>sub_total</code> / <code>total_tax</code> / <code>total</code></td><td>Full financial rollup</td></tr>
+    <tr><td>Terms / Notes</td><td>Multi-line ×2</td><td><code>terms</code> / <code>notes</code></td><td></td></tr>
+    <tr><td>Location / Template / Price Book</td><td>Lookups</td><td><code>location_id</code> / <code>template_id</code> / <code>pricebook_id</code></td><td>Books location/template/pricebook</td></tr>
+    <tr><td>GST / Reverse Charge</td><td>Text + Dropdown + Checkbox</td><td><code>gst_treatment</code> / <code>gst_no</code> / <code>is_reverse_charge_applied</code></td><td>India GST fields</td></tr>
+    <tr><td>Custom Fields / Attachment</td><td>JSON / Upload</td><td><code>custom_fields</code></td><td>Books custom field values</td></tr>
   </table>
 
   <h4>PO Line Item Spec</h4>
   <table class="spec-table">
-    <tr><th>Field</th><th>Type</th><th>Formula</th></tr>
-    <tr><td>Item / Description</td><td>Lookup → Items / Text</td><td></td></tr>
-    <tr><td>Quantity / Unit Rate</td><td>Decimal / Currency</td><td></td></tr>
-    <tr><td>Discount %</td><td>Decimal</td><td>Line-level</td></tr>
-    <tr><td>Discount Amount</td><td>Formula</td><td>(Qty × Rate) × (Discount% / 100)</td></tr>
-    <tr><td>Tax %</td><td>Decimal</td><td>Defaults from Item</td></tr>
-    <tr><td>Tax Amount</td><td>Formula</td><td>((Qty × Rate) - Discount_Amt) × (Tax% / 100)</td></tr>
-    <tr><td>Total</td><td>Formula</td><td>(Qty × Rate) - Discount_Amt + Tax_Amt</td></tr>
-    <tr><td>Received Qty</td><td>Decimal</td><td>Updated by GRN — read-only in PO</td></tr>
-    <tr><td>Warehouse</td><td>Lookup → Warehouses</td><td>Default receipt location</td></tr>
+    <tr><th>Field</th><th>Type</th><th>Zoho Books API</th><th>Notes</th></tr>
+    <tr><td>Item / SKU / Name</td><td>Lookup / Text / Text</td><td><code>item_id</code> / <code>sku</code> / <code>name</code></td><td>Auto-filled from Item</td></tr>
+    <tr><td>Description / Unit / HSN/SAC</td><td>Text ×3</td><td><code>description</code> / <code>unit</code> / <code>hsn_or_sac</code></td><td></td></tr>
+    <tr><td>Quantity / Rate / BCY Rate</td><td>Decimal / Currency ×2</td><td><code>quantity</code> / <code>rate</code> / <code>bcy_rate</code></td><td></td></tr>
+    <tr><td>Account</td><td>Lookup → Chart of Accounts</td><td><code>account_id</code></td><td>Expense account for line</td></tr>
+    <tr><td>Discount % / Discount Amount</td><td>Decimal / Formula</td><td>—</td><td>Line-level</td></tr>
+    <tr><td>Tax / Tax Exemption / TDS</td><td>Lookups</td><td><code>tax_id</code> / <code>tax_exemption_id</code> / <code>tds_tax_id</code></td><td></td></tr>
+    <tr><td>Item Total</td><td>Formula</td><td><code>item_total</code></td><td>(Qty × Rate) - Discount + Tax</td></tr>
+    <tr><td>Product Type / Item Order / Tags</td><td>Dropdown / Number / Multi-select</td><td><code>product_type</code> / <code>item_order</code> / <code>tags</code></td><td>goods/service/digital</td></tr>
+    <tr><td>Project (per line)</td><td>Lookup → Projects</td><td><code>project_id</code></td><td>Project tracking per line item</td></tr>
+    <tr><td>Received Qty</td><td>Decimal</td><td>—</td><td>Updated by GRN</td></tr>
+    <tr><td>Warehouse / Location</td><td>Lookup → Warehouses</td><td><code>location_id</code></td><td>Default receipt location</td></tr>
   </table>
 
   <div class="workflow-steps">
@@ -587,7 +595,7 @@
 
 <!-- WORKFLOWS -->
 <section id="workflows">
-  <h2>Deluge Workflow Catalog <span class="badge">18 automations</span></h2>
+  <h2>Deluge Workflow Catalog <span class="badge">25 automations</span></h2>
 
   <table class="spec-table">
     <tr><th>#</th><th>Trigger</th><th>Event</th><th>Action</th><th>Critical?</th></tr>

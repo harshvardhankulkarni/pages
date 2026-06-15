@@ -457,7 +457,7 @@ Release:   Reserved_Qty -= Qty</pre>
         <hd onclick="t(this)">
           <span class="num">#11</span>
           <h4>Purchase Requisition</h4>
-          <div class="tags"><s>3-stage approval</s><s>Auto-PO</s></div>
+          <div class="tags"><s>3-stage approval</s><s>Auto-PO</s><s>Books aligned</s></div>
           <span class="arr">▸</span>
         </hd>
         <bd>
@@ -469,7 +469,21 @@ Release:   Reserved_Qty -= Qty</pre>
             <span class="st s-ap">Approved</span><span class="ar">→</span>
             <span class="st s-ap">PO Auto-Created</span>
           </div>
-          <p><strong>Deluge:</strong> On final approval → auto-create Purchase Order (Draft) with linked line items.</p>
+          <p><strong>Deluge:</strong> On final approval → auto-create PO (Draft) with linked line items.</p>
+          <div class="tw"><table class="tbl">
+            <tr><th colspan="2">PR Fields (Zoho Books aligned)</th></tr>
+            <tr><td>Req No</td><td>Auto-number <code>REQ-0001</code></td></tr>
+            <tr><td>Request Type</td><td>Dropdown: General / Part Repair / Service</td></tr>
+            <tr><td>Subject / Project / Requested By</td><td>Text + Lookup→Projects + User picker</td></tr>
+            <tr><td>Requested Date / Delivery Date</td><td>Date (default today)</td></tr>
+            <tr><td>Urgency / Justification</td><td>Dropdown Low–Critical + Multi-line</td></tr>
+            <tr><td>Status / Approval Stage</td><td>Draft→Open→Approved→Rejected→Closed + 4-stage approval</td></tr>
+            <tr><th colspan="2">PR Line Items</th></tr>
+            <tr><td>Item</td><td>Lookup→Inventory_Items (optional free-text)</td></tr>
+            <tr><td>Account <span class="t-new">NEW</span></td><td>Lookup→Chart of Accounts (maps to Books <code>account_id</code>)</td></tr>
+            <tr><td>Unit <span class="t-new">NEW</span></td><td>Text (maps to Books <code>unit</code>)</td></tr>
+            <tr><td>Qty / Est. Rate / Est. Total</td><td>Decimal + Currency + Formula</td></tr>
+          </table></div>
         </bd>
       </div>
 
@@ -477,7 +491,7 @@ Release:   Reserved_Qty -= Qty</pre>
         <hd onclick="t(this)">
           <span class="num">#12</span>
           <h4>Purchase Orders</h4>
-          <div class="tags"><s>Zoho aligned</s><s>Full lifecycle</s></div>
+          <div class="tags"><s>Books 1:1</s><s>28+ fields</s><s>Full lifecycle</s></div>
           <span class="arr">▸</span>
         </hd>
         <bd>
@@ -486,12 +500,46 @@ Release:   Reserved_Qty -= Qty</pre>
             <span class="st s-dr">Draft</span><span class="ar">→</span>
             <span class="st s-op">Open</span><span class="ar">→</span>
             <span class="st s-pn">Part Invoiced</span><span class="ar">→</span>
-            <span class="st s-ap">Invoiced</span><span class="ar">→</span>
+            <span class="st s-ap">Billed</span><span class="ar">→</span>
             <span class="st s-cl">Closed</span>
             <span class="ar">|</span>
             <span class="st s-rj">Cancelled</span>
           </div>
-          <p><strong>Deluge:</strong> Open → email vendor. GRN → update Received_Qty. All received → auto-close.</p>
+          <p><strong>1:1 mapped to Zoho Books PO API.</strong> Every field targets a <code>purchaseorder</code> JSON property.</p>
+          <div class="tw"><table class="tbl">
+            <tr><th>Field</th><th>Zoho Books API</th><th>Type</th></tr>
+            <tr><td>PO Number</td><td><code>purchaseorder_number</code></td><td>Auto-number <code>PO-0001</code></td></tr>
+            <tr><td>Vendor / Contact Person</td><td><code>vendor_id</code> / <code>contact_persons_associated</code></td><td>Lookup→Vendors + Vendor_Contacts</td></tr>
+            <tr><td>Requisition / Project</td><td>— / <code>project_id</code></td><td>Lookup→Purchase_Requisitions + Lookup→Projects</td></tr>
+            <tr><td>PO Date / Delivery Date / Due Date</td><td><code>date</code> / <code>delivery_date</code> / <code>due_date</code></td><td>Date</td></tr>
+            <tr><td>Reference No</td><td><code>reference_number</code></td><td>Text (vendor contract ref)</td></tr>
+            <tr><td>Ship Via / Attention</td><td><code>ship_via</code> / <code>attention</code></td><td>Dropdown + Text</td></tr>
+            <tr><td>Currency / Exchange Rate</td><td><code>currency_id</code> / <code>exchange_rate</code></td><td>Lookup→Currencies + Decimal</td></tr>
+            <tr><td>Is Inclusive Tax</td><td><code>is_inclusive_tax</code></td><td>Checkbox</td></tr>
+            <tr><td>Discount / Discount Acct / Before Tax</td><td><code>discount</code> / <code>discount_account_id</code> / <code>is_discount_before_tax</code></td><td>% + Lookup→CoA + Checkbox</td></tr>
+            <tr><td>Subtotal / Tax Total / Total</td><td><code>sub_total</code> / <code>total_tax</code> / <code>total</code></td><td>Currency (formula)</td></tr>
+            <tr><td>Terms / Notes</td><td><code>terms</code> / <code>notes</code></td><td>Multi-line</td></tr>
+            <tr><td>Location / Template / Price Book</td><td><code>location_id</code> / <code>template_id</code> / <code>pricebook_id</code></td><td>Lookups</td></tr>
+            <tr><td>GST Treatment / GST No</td><td><code>gst_treatment</code> / <code>gst_no</code></td><td>Dropdown + Text</td></tr>
+            <tr><td>Source/Destination of Supply</td><td><code>source_of_supply</code> / <code>destination_of_supply</code></td><td>Text (GST state codes)</td></tr>
+            <tr><td>Reverse Charge</td><td><code>is_reverse_charge_applied</code></td><td>Checkbox</td></tr>
+            <tr><td>Custom Fields</td><td><code>custom_fields</code></td><td>JSON array</td></tr>
+            <tr><td>Attachment</td><td>—</td><td>Upload</td></tr>
+          </table></div>
+          <div class="tw"><table class="tbl">
+            <tr><th colspan="3">PO Line Items (1:1 with Books <code>line_items[]</code>)</th></tr>
+            <tr><td>Item / SKU / Name</td><td><code>item_id</code> / <code>sku</code> / <code>name</code></td><td>Lookup→Items + auto-fill</td></tr>
+            <tr><td>Description / Unit / HSN/SAC</td><td><code>description</code> / <code>unit</code> / <code>hsn_or_sac</code></td><td>Text</td></tr>
+            <tr><td>Qty / Rate / BCY Rate</td><td><code>quantity</code> / <code>rate</code> / <code>bcy_rate</code></td><td>Decimal + Currency</td></tr>
+            <tr><td>Account</td><td><code>account_id</code></td><td>Lookup→Chart of Accounts</td></tr>
+            <tr><td>Tax / Tax Exemption / TDS</td><td><code>tax_id</code> / <code>tax_exemption_id</code> / <code>tds_tax_id</code></td><td>Lookups</td></tr>
+            <tr><td>Discount % / Discount Amt</td><td>—</td><td>Decimal + Formula</td></tr>
+            <tr><td>Item Total</td><td><code>item_total</code></td><td>Formula</td></tr>
+            <tr><td>Product Type / Item Order / Tags</td><td><code>product_type</code> / <code>item_order</code> / <code>tags</code></td><td>Dropdown + Number + Multi-select</td></tr>
+            <tr><td>Project</td><td><code>project_id</code></td><td>Lookup→Projects (per line)</td></tr>
+            <tr><td>Received Qty / Warehouse</td><td>—</td><td>Decimal + Lookup (GRN updates)</td></tr>
+          </table></div>
+          <p><strong>Deluge:</strong> Open → email vendor PDF. GRN → update Received_Qty. All received → auto-close. Phase 2: POST to Books on Open.</p>
         </bd>
       </div>
 
