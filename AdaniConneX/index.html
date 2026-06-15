@@ -578,6 +578,9 @@
       <a href="#crm-flow">CRM Flow Changes</a>
       <a href="#decisions">Open Decisions</a>
       <a href="#timeline">Timeline</a>
+      <a href="#automation">Automation</a>
+      <a href="#dev-considerations">Dev Considerations</a>
+      <a href="#client-comms">Client Comms</a>
     </div>
   </nav>
 
@@ -1560,6 +1563,125 @@ Zoho Polling (scheduler every 30 min):
             </tbody>
           </table>
         </div>
+      </section>
+
+      <!-- Automation Opportunities -->
+      <section id="automation" class="section">
+        <h2 class="section-title">Automation Opportunities</h2>
+        <p class="section-intro">Beyond the core implementation, these automations add value:</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Automation</th>
+                <th>Trigger</th>
+                <th>Mechanism</th>
+                <th>Priority</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Account-Manager Assignment</strong></td><td>Account creation</td><td>ZohoCRM Assignment Rules by territory/industry</td><td>Medium</td></tr>
+              <tr><td><strong>Deal Value Roll-up</strong></td><td>Pricing subform insert/update</td><td>Custom Function sums all pricing lines</td><td>High</td></tr>
+              <tr><td><strong>Duplicate Detection</strong></td><td>Account/Contact creation</td><td>ZohoCRM native + workflow alert</td><td>High</td></tr>
+              <tr><td><strong>Order Book Auto-Generation</strong></td><td>Daily scheduler</td><td>Scheduled report + email per team</td><td>Medium</td></tr>
+              <tr><td><strong>Stage-Based Field Visibility</strong></td><td>Stage change</td><td>Layout rules per pipeline stage</td><td>Medium</td></tr>
+              <tr><td><strong>Sales Ops Pricing Reminder</strong></td><td>Pricing subform entry</td><td>Workflow notification to Sales Ops</td><td>Medium</td></tr>
+              <tr><td><strong>Expiry Date Batch Update</strong></td><td>Renewal field update</td><td>Custom Function recalculates on renewal</td><td>Low</td></tr>
+              <tr><td><strong>EdgeOS Sync Monitor</strong></td><td>Scheduler</td><td>Dashboard with sync failure filter</td><td>High</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Development Considerations -->
+      <section id="dev-considerations" class="section">
+        <h2 class="section-title">Development Considerations</h2>
+
+        <h3 class="subsection-title">Deluge Script Constraints</h3>
+        <ul class="dot-list">
+          <li>Execution: <strong>max 5 minutes</strong> per Custom Function run</li>
+          <li>API calls: limited per-day per-org (check ZohoCRM Enterprise limits)</li>
+          <li>Response size: <strong>max 1MB</strong> for API responses</li>
+          <li>No complex recursion, no external JS/library imports</li>
+        </ul>
+
+        <h3 class="subsection-title">Blueprint Limitations</h3>
+        <ul class="dot-list">
+          <li>Forward transitions only — backward needs separate rejection flow</li>
+          <li>Blueprint cannot invoke Custom Functions directly; use Workflow Rules as bridge</li>
+        </ul>
+
+        <h3 class="subsection-title">Integration Reliability</h3>
+        <ul class="dot-list">
+          <li>EdgeOS: <strong>3 retry attempts</strong> before <code>Sync Failed</code>; alert IT on failure</li>
+          <li>SAP SFTP: connection health monitoring; dead-letter alerts on failed exports</li>
+          <li>Both integrations need status tracking fields on Opportunity record</li>
+        </ul>
+
+        <h3 class="subsection-title">Data Migration Risks</h3>
+        <ul class="dot-list">
+          <li>Existing free-text pricing data cannot auto-map to structured subforms — manual cleanup</li>
+          <li>Existing Stage transitions may not match new Blueprint rules — bulk update needed</li>
+          <li>Existing Documents may not be linked to correct Opportunities — relinking effort</li>
+        </ul>
+
+        <h3 class="subsection-title">User Adoption Risks</h3>
+        <ul class="dot-list">
+          <li>Sales team may resist mandatory pricing subforms (currently free-text)</li>
+          <li>Approval workflow adds latency if approvers are slow to respond</li>
+          <li>Mitigate new mandatory fields with phased rollout + training</li>
+        </ul>
+
+        <h3 class="subsection-title">Security</h3>
+        <ul class="dot-list">
+          <li>EdgeOS API keys: store in Zoho Connections Manager, <strong>never hardcode</strong> in Deluge</li>
+          <li>SAP SFTP credentials: store in secure parameters</li>
+          <li>Role hierarchy must be fully implemented before go-live</li>
+        </ul>
+      </section>
+
+      <!-- Client Communication Points -->
+      <section id="client-comms" class="section">
+        <h2 class="section-title">Client Communication Points</h2>
+
+        <h3 class="subsection-title">Timeline Dependencies</h3>
+        <ul class="dot-list">
+          <li>"EdgeOS and SAP teams must provide API specs before integration work begins"</li>
+          <li>"Internal CRM work can start immediately and runs independently of integrations"</li>
+        </ul>
+
+        <h3 class="subsection-title">Process Changes Impact</h3>
+        <ul class="dot-list">
+          <li>"Sales team workflow changes significantly — hands-on training is essential"</li>
+          <li>"Opportunity creation takes ~30s longer initially but prevents downstream issues"</li>
+        </ul>
+
+        <h3 class="subsection-title">Data Quality Expectations</h3>
+        <ul class="dot-list">
+          <li>"Existing opportunities with free-text pricing need manual cleanup before migration"</li>
+          <li>"Recommend a data audit and deduplication pass before Phase 2"</li>
+        </ul>
+
+        <h3 class="subsection-title">Go-Live Criteria</h3>
+        <ul class="dot-list">
+          <li>All Blueprint transitions tested end-to-end</li>
+          <li>EdgeOS API endpoint confirmed operational</li>
+          <li>SAP team confirms CSV file format matches their import spec</li>
+          <li>At least one training session per team (Sales, Sales Ops, Pre-Sales, Commercials)</li>
+          <li>Role hierarchy + permissions verified with each team</li>
+        </ul>
+
+        <h3 class="subsection-title">What Client Must Decide</h3>
+        <ul class="dot-list">
+          <li>SiteID picklist values</li>
+          <li>6-digit counter scope (global vs per-SiteID)</li>
+          <li>Deployed Date ownership (Service Delivery vs Sales Ops)</li>
+          <li>Expiry notification cadence (single vs staged reminders)</li>
+          <li>EdgeOS integration approach (Option A: API webhook / Option B: SFTP)</li>
+          <li>SAP integration approach (Option A: CSV via SFTP / Option B: direct API)</li>
+          <li>Standard price list for validation (rate card vs negotiated)</li>
+          <li>Renewal approach (new Opportunity record vs update existing)</li>
+        </ul>
       </section>
 
       <!-- Footer -->
