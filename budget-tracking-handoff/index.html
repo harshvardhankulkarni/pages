@@ -255,7 +255,8 @@
               <tr><td>Currency</td><td>Dropdown</td><td>USD, EUR, INR, etc.</td></tr>
               <tr><td>Payment Terms</td><td>Dropdown</td><td>Due on Receipt, Net 15/30/45/60</td></tr>
               <tr><td>Tax ID / PAN</td><td>Text</td><td>GSTIN / VAT / PAN</td></tr>
-              <tr><td>Billing / Shipping Address</td><td>Full address block</td><td></td></tr>
+              <tr><td>Billing Address</td><td>Address (Zoho type)</td><td>Multi-field composite</td></tr>
+              <tr><td>Shipping Address</td><td>Address (Zoho type)</td><td>Multi-field composite</td></tr>
               <tr><td>Vendor Category</td><td>Dropdown</td><td>Materials, Services, Equipment, Labor, Logistics</td></tr>
               <tr><td>Performance Rating</td><td>Decimal (1-5)</td><td></td></tr>
               <tr><td>Status</td><td>Dropdown</td><td><span class="s-ap">Active</span> <span class="s-cl">Inactive</span></td></tr>
@@ -310,12 +311,12 @@
               <tr><td>Purchase Price / Sales Price</td><td>Currency</td><td></td></tr>
               <tr><td>Reorder Level</td><td>Decimal</td><td>Min stock before alert</td></tr>
               <tr><td>Preferred Vendor</td><td>Lookup → Vendors <span class="tag tag-lk">Lookup</span></td><td></td></tr>
-              <tr><td>Current Stock</td><td>Formula</td><td>Aggregated across warehouses</td></tr>
+              <tr><td>Current Stock</td><td>Decimal</td><td>Maintained by Deluge — aggregated across warehouses</td></tr>
               <tr><td>Stock Value</td><td>Formula</td><td><code>Current Stock × Purchase Price</code></td></tr>
             </table>
           </div>
           <p><strong>Item_Warehouse_Stock:</strong> Item, Warehouse, Current_Stock, Reserved_Qty, Available_Stock (Current − Reserved), Reorder_Level. Source of truth for stock.</p>
-          <p><strong>Deluge:</strong> Every Inventory Transaction → update Item_Warehouse_Stock → roll up Item.Current_Stock.</p>
+          <p><strong>Deluge:</strong> Every Inventory Transaction → update Item_Warehouse_Stock → recompute Item.Current_Stock via Deluge.</p>
         </bd>
       </div>
 
@@ -482,7 +483,6 @@ Release:   Reserved_Qty -= Qty</pre>
             <tr><td>Status / Approval Stage</td><td>Draft→Open→Approved→Rejected→Closed + 4-stage approval</td></tr>
             <tr><th colspan="2">PR Line Items</th></tr>
             <tr><td>Item</td><td>Lookup→Inventory_Items (optional free-text)</td></tr>
-            <tr><td>Account <span class="t-new">NEW</span></td><td>Lookup→Chart of Accounts (maps to Books <code>account_id</code>)</td></tr>
             <tr><td>Unit <span class="t-new">NEW</span></td><td>Text (maps to Books <code>unit</code>)</td></tr>
             <tr><td>Qty / Est. Rate / Est. Total</td><td>Decimal + Currency + Formula</td></tr>
           </table></div>
@@ -518,7 +518,7 @@ Release:   Reserved_Qty -= Qty</pre>
             <tr><td>Ship Via / Attention</td><td><code>ship_via</code> / <code>attention</code></td><td>Dropdown + Text</td></tr>
             <tr><td>Currency / Exchange Rate</td><td><code>currency_id</code> / <code>exchange_rate</code></td><td>Lookup→Currencies + Decimal</td></tr>
             <tr><td>Is Inclusive Tax</td><td><code>is_inclusive_tax</code></td><td>Checkbox</td></tr>
-            <tr><td>Discount / Discount Acct / Before Tax</td><td><code>discount</code> / <code>discount_account_id</code> / <code>is_discount_before_tax</code></td><td>% + Lookup→CoA + Checkbox</td></tr>
+            <tr><td>Discount / Before Tax</td><td><code>discount</code> / <code>is_discount_before_tax</code></td><td>% + Checkbox</td></tr>
             <tr><td>Subtotal / Tax Total / Total</td><td><code>sub_total</code> / <code>total_tax</code> / <code>total</code></td><td>Currency (formula)</td></tr>
             <tr><td>Terms / Notes</td><td><code>terms</code> / <code>notes</code></td><td>Multi-line</td></tr>
             <tr><td>Location / Template / Price Book</td><td><code>location_id</code> / <code>template_id</code> / <code>pricebook_id</code></td><td>Lookups</td></tr>
@@ -533,13 +533,11 @@ Release:   Reserved_Qty -= Qty</pre>
             <tr><td>Item / SKU / Name</td><td><code>item_id</code> / <code>sku</code> / <code>name</code></td><td>Lookup→Items + auto-fill</td></tr>
             <tr><td>Description / Unit / HSN/SAC</td><td><code>description</code> / <code>unit</code> / <code>hsn_or_sac</code></td><td>Text</td></tr>
             <tr><td>Qty / Rate / BCY Rate</td><td><code>quantity</code> / <code>rate</code> / <code>bcy_rate</code></td><td>Decimal + Currency</td></tr>
-            <tr><td>Account</td><td><code>account_id</code></td><td>Lookup→Chart of Accounts</td></tr>
-            <tr><td>Tax / Tax Exemption / TDS</td><td><code>tax_id</code> / <code>tax_exemption_id</code> / <code>tds_tax_id</code></td><td>Lookups</td></tr>
+            <tr><td>Tax %</td><td><code>tax_id</code></td><td>Decimal — defaults from Item's Tax Rate</td></tr>
             <tr><td>Discount % / Discount Amt</td><td>—</td><td>Decimal + Formula</td></tr>
-            <tr><td>Item Total</td><td><code>item_total</code></td><td>Formula</td></tr>
-            <tr><td>Product Type / Item Order / Tags</td><td><code>product_type</code> / <code>item_order</code> / <code>tags</code></td><td>Dropdown + Number + Multi-select</td></tr>
-            <tr><td>Project</td><td><code>project_id</code></td><td>Lookup→Projects (per line)</td></tr>
-            <tr><td>Received Qty / Warehouse</td><td>—</td><td>Decimal + Lookup (GRN updates)</td></tr>
+            <tr><td>Tax Amount</td><td>—</td><td>Formula: <code>(Qty × Rate − Discount) × Tax% / 100</code></td></tr>
+            <tr><td>Item Total</td><td><code>item_total</code></td><td>Formula: <code>(Qty × Rate) + Tax Amount − Discount Amount</code></td></tr>
+            <tr><td>Tags</td><td><code>tags</code></td><td>Multi-select</td></tr>
           </table></div>
           <p><strong>Deluge:</strong> Open → email vendor PDF. GRN → update Received_Qty. All received → auto-close. Phase 2: POST to Books on Open.</p>
         </bd>
@@ -683,7 +681,7 @@ Release:   Reserved_Qty -= Qty</pre>
           <tr><td>4</td><td>Expense Overrun</td><td>On Submit</td><td>Create Budget_Approval record; email PM + Finance Manager</td><td><span class="tag tag-nt">Yes</span></td></tr>
           <tr><td>5</td><td>Budget Approval — Approved</td><td>On Submit</td><td>Update component amount; approve Expense</td><td><span class="tag tag-cr">Yes</span></td></tr>
           <tr><td>6</td><td>Budget Approval — Rejected</td><td>On Submit</td><td>Expense Rejected; notify submitter</td><td><span class="tag tag-nt">Yes</span></td></tr>
-          <tr><td>7</td><td>Inventory Transaction</td><td>On Submit</td><td>Update Item_Warehouse_Stock; roll up item total</td><td><span class="tag tag-cr">Yes</span></td></tr>
+          <tr><td>7</td><td>Inventory Transaction</td><td>On Submit</td><td>Update Item_Warehouse_Stock; recompute Item.Current_Stock</td><td><span class="tag tag-cr">Yes</span></td></tr>
           <tr><td>8</td><td>Stock Out + Project set</td><td>On Submit</td><td>Auto-create Expense record (Qty × Rate)</td><td><span class="tag tag-cr">Yes</span></td></tr>
           <tr><td>9</td><td>Transaction Validation</td><td>Validation</td><td>Prevent negative stock</td><td><span class="tag tag-cr">Yes</span></td></tr>
           <tr><td>10</td><td>TO Status = Completed</td><td>On Submit</td><td>Paired Stock Out (From) + Stock In (To)</td><td><span class="tag tag-cr">Yes</span></td></tr>
@@ -872,7 +870,7 @@ Release:   Reserved_Qty -= Qty</pre>
             <tr><td>1:N Lookup</td><td>Multiple child records each look up to a single parent</td><td><code>Expenses.Project</code> → <code>Projects</code> (many expenses per project)</td></tr>
             <tr><td>Add-as-Subform</td><td>In form settings, enable a child form as subform</td><td><code>Vendor_Contacts</code> inside <code>Vendors</code>; <code>PO_Line_Items</code> inside <code>Purchase_Orders</code></td></tr>
             <tr><td>Denormalized Lookup</td><td>Add a Lookup to a non-direct parent for report grouping</td><td><code>Budget_Components.Project</code> → <code>Projects</code> enables P&amp;L reports to group by project without joins</td></tr>
-            <tr><td>Formula Lookup</td><td>Use Formula Lookup (not regular Lookup) for calculated values from related records</td><td><code>Item_Warehouse_Stock</code> stock levels are aggregated by formula into <code>Inventory_Items.Current_Stock</code></td></tr>
+            <tr><td>Formula Lookup</td><td>Use Formula Lookup (not regular Lookup) for calculated values from related records</td><td><code>Item_Warehouse_Stock</code> stock levels aggregated into <code>Inventory_Items.Current_Stock</code> via Deluge each transaction</td></tr>
           </table>
           <h4>Setting up a Lookup field</h4>
           <ol>
@@ -1310,7 +1308,7 @@ catch (e)
           <p>Follow this sequence for each build phase. Open <code>build-viewer.html?phase=1X</code> or the markdown build guide for full field and Deluge specs.</p>
           <table>
             <tr><th>Phase</th><th>Forms to Create</th><th>Workflows to Build</th><th>Key Deluge Scripts</th></tr>
-            <tr><td><strong>1A</strong></td><td>Vendors, Vendor_Contacts, Vendor_Documents, Projects, Warehouses, Inventory_Items, Item_Warehouse_Stock, Item_Attributes</td><td>Project Code generation, Ship-to-Billing copy, Validate completion, Init stock per warehouse</td><td>Auto-number formats. On Post Submit: create stock records for all warehouses.</td></tr>
+            <tr><td><strong>1A</strong></td><td>Vendors, Vendor_Contacts, Vendor_Documents, Projects, Warehouses, Inventory_Items, Item_Warehouse_Stock, Item_Attributes</td><td>Project Code generation, Validate completion, Init stock per warehouse</td><td>Auto-number formats. On Post Submit: create stock records for all warehouses.</td></tr>
             <tr><td><strong>1B</strong></td><td>Budget_Plans, Budget_Components, Inventory_Transactions</td><td>Budget validation (sum ≤ total), Stock update on transaction, Stock Out → auto Expense, Negative stock prevention</td><td>WF #2: Budget_Plans submit validation. WF #7: Stock In/Out/Reserve/Release math. WF #8: Expense creation from Stock Out.</td></tr>
             <tr><td><strong>1C</strong></td><td>Expenses, Purchase_Requisitions, PR_Line_Items</td><td>Budget check on expense submit, Auto-approve or trigger overrun, Budget Approval creation on overrun, PR stage notification emails</td><td>WF #3-4: Budget threshold check. WF #15: Approver email chain. Blueprint: PR approval stages.</td></tr>
             <tr><td><strong>1D</strong></td><td>Budget_Approvals, Purchase_Orders, PO_Line_Items, Goods_Receipts, GRN_Line_Items, Transfer_Orders, TO_Line_Items</td><td>Approve/Reject budget, Auto-create PO from PR, GRN → Stock In + PO update, TO → paired Stock Out/In</td><td>WF #5-6: Budget approval outcomes. WF #10: Paired TO. WF #11-12: GRN processing. WF #13: PO Status=Open email.</td></tr>

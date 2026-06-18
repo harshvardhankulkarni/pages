@@ -337,8 +337,8 @@
     <tr><td>Payment Options</td><td>Multi-select</td><td>Cheque, Cash, Bank Transfer, Credit Card</td></tr>
     <tr><td>Opening Balance</td><td>Currency</td><td>Starting balance if carried forward</td></tr>
     <tr><td>Tax ID / PAN</td><td>Text</td><td>GSTIN / VAT / HST / PAN</td></tr>
-    <tr><td>Billing Address</td><td>Block (Attention, Street, City, State, Zip, Country)</td><td>6 sub-fields</td></tr>
-    <tr><td>Shipping Address</td><td>Same-as-billing toggle + full address block</td><td></td></tr>
+    <tr><td>Billing Address</td><td>Address (Zoho Creator type)</td><td>Multi-field composite</td></tr>
+    <tr><td>Shipping Address</td><td>Address (Zoho Creator type)</td><td>Multi-field composite</td></tr>
     <tr><td>Category</td><td>Dropdown</td><td>Materials, Services, Equipment, Labor, Logistics</td></tr>
     <tr><td>Performance Rating</td><td>Decimal 1-5</td><td>Manual update after deliveries</td></tr>
     <tr><td>Status</td><td>Dropdown</td><td>Active, Inactive</td></tr>
@@ -399,7 +399,7 @@
     <tr><td>Purchase Price / Sales Price</td><td>Currency ×2</td><td>Default cost / reference price</td></tr>
     <tr><td>Reorder Level</td><td>Decimal</td><td>Low stock threshold</td></tr>
     <tr><td>Preferred Vendor</td><td>Lookup → Vendors</td><td></td></tr>
-    <tr><td>Current Stock</td><td>Formula (read-only)</td><td>SUM of all Item_Warehouse_Stock records</td></tr>
+    <tr><td>Current Stock</td><td>Decimal</td><td>Maintained by Deluge — aggregated across all Item_Warehouse_Stock records</td></tr>
     <tr><td>Stock Value</td><td>Formula</td><td>Current_Stock × Purchase_Price</td></tr>
     <tr><td>Image / Description</td><td>Upload / Multi-line</td><td></td></tr>
     <tr><td>Status</td><td>Dropdown</td><td>Active, Inactive</td></tr>
@@ -413,7 +413,7 @@
     <tr><td>Current Stock</td><td>Decimal</td><td>Maintained by Deluge — never manual</td></tr>
     <tr><td>Reorder Level</td><td>Decimal</td><td>Overrides item default if set</td></tr>
   </table>
-  <div class="alert alert-warning"><strong>CRITICAL:</strong> <code>Current_Stock</code> in this table is the source of truth. Every Inventory Transaction updates it via Deluge. The Item-level <code>Current_Stock</code> is a SUM rollup. Never aggregate on demand.</div>
+  <div class="alert alert-warning"><strong>CRITICAL:</strong> <code>Item_Warehouse_Stock.Current_Stock</code> is the source of truth. Every Inventory Transaction updates it via Deluge. The Item-level <code>Inventory_Items.Current_Stock</code> is a Decimal maintained by Deluge (SUM rollup on each transaction). Never aggregate on demand.</div>
 
   <h3>Inventory Transactions</h3>
   <table class="spec-table">
@@ -426,7 +426,7 @@
     <tr><td>Project</td><td>Lookup → Projects</td><td>Required only for Stock Out</td></tr>
     <tr><td>Reference / Notes</td><td>Text / Multi-line</td><td>PO# / GRN# / reason</td></tr>
   </table>
-  <div class="alert alert-warning"><strong>Deluge (on submit):</strong> (1) Locate <code>Item_Warehouse_Stock[Item, Warehouse]</code>. (2) Update <code>Current_Stock</code> ± Quantity. (3) Validate no negative stock. (4) Roll up to <code>Item.Current_Stock</code>. (5) If Stock Out + Project set → auto-create Expense record.</div>
+  <div class="alert alert-warning"><strong>Deluge (on submit):</strong> (1) Locate <code>Item_Warehouse_Stock[Item, Warehouse]</code>. (2) Update <code>Current_Stock</code> ± Quantity. (3) Validate no negative stock. (4) Recompute <code>Inventory_Items.Current_Stock</code> via Deluge (SUM of all warehouse stock). (5) If Stock Out + Project set → auto-create Expense record.</div>
 
   <h3>Transfer Orders</h3>
   <table class="spec-table">
@@ -513,7 +513,7 @@
     <tr><td>Requested By / Date / Delivery Date</td><td>User picker / Date ×2</td><td>—</td><td></td></tr>
     <tr><td>Urgency / Justification</td><td>Dropdown / Multi-line</td><td>—</td><td>Low, Medium, High, Critical</td></tr>
     <tr><td>Status / Approval Stage</td><td>Dropdown ×2</td><td>—</td><td>Draft→Open→Approved→Rejected→Closed + 4-stage</td></tr>
-    <tr><td>PR Line Items</td><td>Sub-form</td><td>—</td><td>Item lookup, Account (NEW), Unit (NEW), Qty, Rate, Total</td></tr>
+    <tr><td>PR Line Items</td><td>Sub-form</td><td>—</td><td>Item lookup, Unit (NEW), Qty, Rate, Total</td></tr>
   </table>
   <p><strong>Approval flow:</strong> Each stage transition sends email to next approver. On final approval → auto-create PO (Draft).</p>
 
@@ -531,7 +531,7 @@
     <tr><td>Status</td><td>Dropdown</td><td><code>status</code></td><td>Draft, Open, Part Invoiced, Billed, Closed, Cancelled</td></tr>
     <tr><td>Currency / Exchange Rate</td><td>Lookup / Decimal</td><td><code>currency_id</code> / <code>exchange_rate</code></td><td>Base currency default</td></tr>
     <tr><td>Is Inclusive Tax / Discount Before Tax</td><td>Checkbox ×2</td><td><code>is_inclusive_tax</code> / <code>is_discount_before_tax</code></td><td>Tax treatment flags</td></tr>
-    <tr><td>Discount / Discount Account</td><td>% / Lookup→CoA</td><td><code>discount</code> / <code>discount_account_id</code></td><td>PO-level discount</td></tr>
+    <tr><td>Discount</td><td>%</td><td><code>discount</code></td><td>PO-level discount</td></tr>
     <tr><td>Subtotal / Tax Total / Total</td><td>Currency + Formula</td><td><code>sub_total</code> / <code>total_tax</code> / <code>total</code></td><td>Full financial rollup</td></tr>
     <tr><td>Terms / Notes</td><td>Multi-line ×2</td><td><code>terms</code> / <code>notes</code></td><td></td></tr>
     <tr><td>Location / Template / Price Book</td><td>Lookups</td><td><code>location_id</code> / <code>template_id</code> / <code>pricebook_id</code></td><td>Books location/template/pricebook</td></tr>
@@ -545,14 +545,11 @@
     <tr><td>Item / SKU / Name</td><td>Lookup / Text / Text</td><td><code>item_id</code> / <code>sku</code> / <code>name</code></td><td>Auto-filled from Item</td></tr>
     <tr><td>Description / Unit / HSN/SAC</td><td>Text ×3</td><td><code>description</code> / <code>unit</code> / <code>hsn_or_sac</code></td><td></td></tr>
     <tr><td>Quantity / Rate / BCY Rate</td><td>Decimal / Currency ×2</td><td><code>quantity</code> / <code>rate</code> / <code>bcy_rate</code></td><td></td></tr>
-    <tr><td>Account</td><td>Lookup → Chart of Accounts</td><td><code>account_id</code></td><td>Expense account for line</td></tr>
     <tr><td>Discount % / Discount Amount</td><td>Decimal / Formula</td><td>—</td><td>Line-level</td></tr>
-    <tr><td>Tax / Tax Exemption / TDS</td><td>Lookups</td><td><code>tax_id</code> / <code>tax_exemption_id</code> / <code>tds_tax_id</code></td><td></td></tr>
-    <tr><td>Item Total</td><td>Formula</td><td><code>item_total</code></td><td>(Qty × Rate) - Discount + Tax</td></tr>
-    <tr><td>Product Type / Item Order / Tags</td><td>Dropdown / Number / Multi-select</td><td><code>product_type</code> / <code>item_order</code> / <code>tags</code></td><td>goods/service/digital</td></tr>
-    <tr><td>Project (per line)</td><td>Lookup → Projects</td><td><code>project_id</code></td><td>Project tracking per line item</td></tr>
-    <tr><td>Received Qty</td><td>Decimal</td><td>—</td><td>Updated by GRN</td></tr>
-    <tr><td>Warehouse / Location</td><td>Lookup → Warehouses</td><td><code>location_id</code></td><td>Default receipt location</td></tr>
+    <tr><td>Tax %</td><td>Decimal</td><td><code>tax_id</code></td><td>Defaults from Item's Tax Rate</td></tr>
+    <tr><td>Tax Amount</td><td>Formula</td><td>—</td><td><code>(Qty × Rate − Discount) × Tax% / 100</code></td></tr>
+    <tr><td>Item Total</td><td>Formula</td><td><code>item_total</code></td><td><code>(Qty × Rate) + Tax Amount − Discount Amount</code></td></tr>
+    <tr><td>Tags</td><td>Multi-select</td><td><code>tags</code></td><td>Zoho Books tags</td></tr>
   </table>
 
   <div class="workflow-steps">
@@ -583,8 +580,7 @@
   <h4>GRN Line Item Spec</h4>
   <table class="spec-table">
     <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
-    <tr><td>PO Line Item</td><td>Lookup → PO_Line_Items</td><td></td></tr>
-    <tr><td>Item</td><td>Lookup → Items</td><td>Auto-filled from PO line</td></tr>
+    <tr><td>Item</td><td>Lookup → Items</td><td>Auto-filled from PO</td></tr>
     <tr><td>PO Qty / Accepted Qty / Rejected Qty</td><td>Decimal ×3</td><td>Accepted + Rejected ≤ PO Qty</td></tr>
     <tr><td>Rejection Reason</td><td>Text</td><td>Required if Rejected &gt; 0</td></tr>
     <tr><td>Actual Unit Cost</td><td>Currency</td><td>Editable — may differ from PO</td></tr>
@@ -605,7 +601,7 @@
     <tr><td>4</td><td>Expense Overrun</td><td>On Submit</td><td>Create Budget_Approval record; email PM + Finance Manager</td><td><span class="tag tag-notify">Yes</span></td></tr>
     <tr><td>5</td><td>Budget Approval — Approved</td><td>On Submit</td><td>Update Budget Component allocated amount; approve Expense</td><td><span class="tag tag-critical">Yes</span></td></tr>
     <tr><td>6</td><td>Budget Approval — Rejected</td><td>On Submit</td><td>Set Expense Status = "Rejected"; notify submitter</td><td><span class="tag tag-notify">Yes</span></td></tr>
-    <tr><td>7</td><td>Inventory Transaction Submit</td><td>On Submit</td><td>Update Item_Warehouse_Stock; roll up Item.Current_Stock</td><td><span class="tag tag-critical">Yes</span></td></tr>
+    <tr><td>7</td><td>Inventory Transaction Submit</td><td>On Submit</td><td>Update Item_Warehouse_Stock; recompute Item.Current_Stock via Deluge</td><td><span class="tag tag-critical">Yes</span></td></tr>
     <tr><td>8</td><td>Stock Out + Project set</td><td>On Submit</td><td>Auto-create Expense record (Amount = Qty × Rate)</td><td><span class="tag tag-critical">Yes</span></td></tr>
     <tr><td>9</td><td>Inventory Transaction</td><td>Validation</td><td>Prevent negative stock</td><td><span class="tag tag-critical">Yes</span></td></tr>
     <tr><td>10</td><td>Transfer Order = Completed</td><td>On Submit</td><td>Generate paired Stock Out / Stock In</td><td><span class="tag tag-critical">Yes</span></td></tr>

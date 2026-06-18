@@ -25,19 +25,8 @@
 | Account Number | Single Line | `Account_Number` | No | |
 | Tax ID | Single Line | `Tax_ID` | No | GSTIN / VAT |
 | PAN | Single Line | `PAN` | No | India PAN |
-| Bill Attention | Single Line | `Bill_Attention` | No | |
-| Bill Street | Multi Line | `Bill_Street` | No | |
-| Bill City | Single Line | `Bill_City` | No | |
-| Bill State | Single Line | `Bill_State` | No | |
-| Bill Zip | Single Line | `Bill_Zip` | No | |
-| Bill Country | Single Line | `Bill_Country` | No | |
-| Ship Same As Bill | Checkbox | `Ship_Same_As_Bill` | No | Default unchecked |
-| Ship Attention | Single Line | `Ship_Attention` | No | |
-| Ship Street | Multi Line | `Ship_Street` | No | |
-| Ship City | Single Line | `Ship_City` | No | |
-| Ship State | Single Line | `Ship_State` | No | |
-| Ship Zip | Single Line | `Ship_Zip` | No | |
-| Ship Country | Single Line | `Ship_Country` | No | |
+| Billing Address | Address | `Billing_Address` | No | Zoho Creator Address type (composite) |
+| Shipping Address | Address | `Shipping_Address` | No | Zoho Creator Address type (composite) |
 | Vendor Category | Dropdown | `Vendor_Category` | No | `Materials, Services, Equipment, Labor, Logistics` |
 | Performance Rating | Decimal | `Performance_Rating` | No | 1-5 scale |
 | Status | Dropdown | `Status` | No | `Active, Inactive` — default Active |
@@ -76,20 +65,7 @@
 
 ### Deluge Scripts
 
-#### On Submit — Copy Shipping Address
-```deluge
-/* Phase 1A — Vendors: On Submit
-   Copy billing address to shipping when Ship_Same_As_Bill checked */
-if (input.Ship_Same_As_Bill == true)
-{
-    input.Ship_Attention = input.Bill_Attention;
-    input.Ship_Street = input.Bill_Street;
-    input.Ship_City = input.Bill_City;
-    input.Ship_State = input.Bill_State;
-    input.Ship_Zip = input.Bill_Zip;
-    input.Ship_Country = input.Bill_Country;
-}
-```
+
 
 ---
 
@@ -210,16 +186,11 @@ After form creation, manually create one default record:
 | Sales Price | Currency | `Sales_Price` | No | For reference |
 | Reorder Level | Decimal | `Reorder_Level` | No | Min stock alert |
 | Preferred Vendor | Lookup → Vendors | `Preferred_Vendor` | No | Default vendor for POs |
-| Current Stock | Formula | `Current_Stock` | — | Aggregate from Item_Warehouse_Stock |
+| Current Stock | Decimal | `Current_Stock` | No | Maintained by Deluge — aggregated across warehouses |
 | Stock Value | Formula | `Stock_Value` | — | `Current_Stock * Purchase_Price` |
 | Description | Multi Line | `Description` | No | |
 | Image | Upload | `Image` | No | |
 | Status | Dropdown | `Status` | No | `Active, Inactive` — default Active |
-
-### Formula: Current_Stock
-```
-Sum of Item_Warehouse_Stock[Item == ID].Current_Stock
-```
 
 ### Formula: Stock_Value
 ```
@@ -251,6 +222,8 @@ Current_Stock * Purchase_Price
 3. **Goods require Unit** — On Submit, if `Item_Type == "Goods"` and `Unit` is blank → `throw "Unit is required for Goods items."`
 
 ### Deluge Scripts
+
+No Deluge scripts for Vendors in Phase 1A — Zoho Creator Address type handles the composite address fields natively.
 
 #### On Submit — Initialize Stock for All Warehouses
 ```deluge

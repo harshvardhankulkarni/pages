@@ -95,13 +95,8 @@ Matches Zoho Inventory's vendor master structure. **Also serves as Accounts/Clie
 | Account Number | Text | Internal account reference |
 | Tax ID | Text | GSTIN / VAT / HST registration number |
 | PAN | Text | Permanent Account Number (India) |
-| Billing Address — Attention | Text | |
-| Billing Address — Street | Multi-line | |
-| Billing Address — City | Text | |
-| Billing Address — State | Text | |
-| Billing Address — Zip | Text | |
-| Billing Address — Country | Text | |
-| Shipping Address | Same-as-billing toggle + full address block | |
+| Billing Address | Address | Zoho Creator Address type (composite) |
+| Shipping Address | Address | Zoho Creator Address type (composite) |
 | Vendor Category | Dropdown | `Materials`, `Services`, `Equipment`, `Labor`, `Logistics` |
 | Performance Rating | Decimal (1-5) | Manually updated after deliveries |
 | Status | Dropdown | `Active`, `Inactive` |
@@ -181,7 +176,7 @@ Matches Zoho Inventory's item master structure. Items are goods or services trac
 | Sales Price | Currency | For internal reference |
 | Reorder Level | Decimal | Min stock before alert |
 | Preferred Vendor | Lookup → Vendors | Default vendor for POs |
-| Current Stock | Decimal (Formula/Subform) | **Aggregated across warehouses** — see stock-by-warehouse below |
+| Current Stock | Decimal | Maintained by Deluge — updated on every Inventory Transaction via SUM aggregation across Item_Warehouse_Stock |
 | Stock Value | Formula | `Current Stock * Purchase Price` |
 | Description | Multi-line | Internal notes |
 | Image | Upload | Item photo |
@@ -208,7 +203,7 @@ On every Inventory Transaction:
     Return to Vendor:      Current_Stock -= Quantity
     Reservation:           Reserved_Qty += Quantity; validate Reserved_Qty <= Current_Stock
     Release:               Reserved_Qty -= Quantity
-  Then recompute Inventory_Item.Current_Stock = SUM of all Item_Warehouse_Stock records
+  Then update Inventory_Item.Current_Stock = SUM of all Item_Warehouse_Stock records via Deluge
 ```
 
 This gives both warehouse-level visibility and item-level totals without on-demand aggregation.
@@ -351,7 +346,7 @@ Matches Zoho Inventory's stock transaction structure. Every transaction ties to 
    - Release:               Reserved_Qty -= Quantity
 3. Validate Current_Stock >= 0 AND unreserved stock (Current_Stock - Reserved_Qty) >= 0 for Stock Out
 4. Update Item_Warehouse_Stock.Current_Stock and Reserved_Qty
-5. Recalculate Inventory_Item.Current_Stock = SUM of all warehouse stock
+5. Update Inventory_Item.Current_Stock via Deluge = SUM of all Item_Warehouse_Stock records for this Item
 6. If Type = "Stock Out" AND Project is set:
       Create Expense record automatically:
         Amount = Quantity * Rate
@@ -427,7 +422,6 @@ Custom Zoho Creator module (Zoho Books has no native PR). Designed to feed into 
 | Estimated Unit Rate | Currency | |
 | Estimated Total | Formula | `Quantity * Estimated Unit Rate` |
 | Item Type | Text | Copied from Item or manual |
-| Account | Lookup → Chart of Accounts | Maps to Zoho Books `account_id` for Phase 2 |
 | Unit | Text | Copied from Item or manual; maps to Zoho Books `unit` |
 
 **Multi-stage Approval + Auto-PO Workflow:**
@@ -468,7 +462,6 @@ Each step sends email notification. Procurement then reviews the auto-created PO
 | Is Inclusive Tax | Checkbox | `is_inclusive_tax` | Tax included in item rates |
 | Subtotal | Currency | `sub_total` | Sum of line item totals |
 | Discount (%) | Decimal | `discount` | Overall PO-level discount (e.g. `10` or `10%`) |
-| Discount Account | Lookup → Chart of Accounts | `discount_account_id` | GL account for discount |
 | Discount Before Tax | Checkbox | `is_discount_before_tax` | Apply discount before tax calc |
 | Discount Amount | Currency | — | Calculated |
 | Tax Total | Currency | `total_tax` | Sum of line item taxes |
@@ -505,16 +498,8 @@ Each step sends email notification. Procurement then reviews the auto-created PO
 | Discount Amount | Formula | — | `(Unit Rate * Quantity) * (Discount% / 100)` |
 | Tax (%) | Decimal | `tax_id` | Defaults from Item's Tax Rate |
 | Tax Amount | Formula | — | `((Unit Rate * Quantity) - Discount Amount) * (Tax% / 100)` |
-| Item Total | Formula | `item_total` | `(Unit Rate * Quantity) - Discount + Tax` |
-| Tax Exemption | Lookup | `tax_exemption_id` | Tax exemption reference |
-| TDS Tax | Lookup → TDS | `tds_tax_id` | TDS applicable |
-| Account | Lookup → Chart of Accounts | `account_id` | Expense account for this line |
-| Received Quantity | Decimal | — | Updated by Goods Receipt |
-| Warehouse | Lookup → Warehouses | `location_id` | Default warehouse on receipt |
-| Product Type | Dropdown | `product_type` | `goods`, `service`, `digital` |
-| Item Order | Number | `item_order` | Display order in line items |
+| Item Total | Formula | `item_total` | `(Unit Rate * Quantity) + Tax Amount - Discount Amount` |
 | Tags | Multi-select | `tags` | Zoho Books tags |
-| Project | Lookup → Projects | `project_id` | Project tracking per line item |
 
 **PO Lifecycle (matches Zoho Books status model):**
 - **Draft**: Being created, not yet submitted → `status: "draft"`
@@ -549,9 +534,8 @@ Matches Zoho Inventory's Goods Receipt Note (GRN) structure — supports accepte
 **Line Items — Separate form `GRN_Line_Items` with Add-as-Subform:**
 
 | Field | Type | Notes |
-|---|---|---|
+|---|---|---|---|
 | GRN | Lookup → Goods_Receipts | |
-| PO Line Item | Lookup → PO_Line_Items | |
 | Item | Lookup → Inventory_Items | Auto-filled from PO Line Item |
 | PO Quantity | Decimal (Read Only) | Quantity ordered on PO |
 | Accepted Quantity | Decimal | Quantity received in good condition |
@@ -860,7 +844,7 @@ BOM ──── BOM_Line_Items (1:N)
 | Expense Submit | On Submit | Budget check → auto-approve or trigger overrun workflow |
 | Expense Overrun | On Submit | Create Budget_Approval record, send notification |
 | Budget Approval Status Change | On Submit | Update Expense status, notify requester |
-| Inventory Transaction (Stock In/Out/Adj) | On Submit | Update Item_Warehouse_Stock, recompute Item.Current_Stock |
+| Inventory Transaction (Stock In/Out/Adj) | On Submit | Update Item_Warehouse_Stock, recompute Item.Current_Stock via Deluge |
 | Inventory Transaction (Stock Out + Project) | On Submit | Also auto-create Expense record |
 | Transfer Order Status = "Completed" | On Submit | Generate paired Stock Out / Stock In transactions |
 | Goods Receipt Status = "Open" | On Submit | Create Stock In for Accepted Qty, update PO_Line_Item.Received_Qty |
