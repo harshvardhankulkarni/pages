@@ -816,526 +816,738 @@ Release:   Reserved_Qty -= Qty</pre>
     </section>
 
     <section id="impl-guide">
-      <h2>Implementation Guide <span class="t">Zoho Creator console walkthrough</span></h2>
-      <p style="color:var(--muted);margin-bottom:16px">Step-by-step instructions for building this project in the Zoho Creator console. Follow this when implementing in <strong>creator.zoho.com</strong>.</p>
+<style>
+        .ig-wrap { width:100%; }
+        .ig-tab-bar { display:flex; flex-wrap:wrap; gap:6px; padding-bottom:12px; margin-bottom:20px; border-bottom:1px solid var(--border); }
+        .ig-tab-btn { background:var(--surface2); border:1px solid var(--border); border-radius:24px; padding:7px 16px; font-size:0.78rem; color:var(--muted); cursor:pointer; transition:all .18s; white-space:nowrap; }
+        .ig-tab-btn:hover { color:var(--text); border-color:var(--accent); background:var(--surface); }
+        .ig-tab-btn.active { color:var(--accent); border-color:var(--accent); background:rgba(34,211,238,.08); box-shadow:0 0 12px rgba(34,211,238,.12); font-weight:600; }
+        .ig-tab-pane { display:none; }
+        .ig-tab-pane.active { display:block; animation:igFade .22s ease; }
+        @keyframes igFade { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+        .ts { position:relative; padding-left:44px; }
+        .ts::before { content:''; position:absolute; left:20px; top:14px; bottom:14px; width:2px; background:var(--border); z-index:0; }
+        .ts-step { position:relative; margin-bottom:0; }
+        .ts-hd { display:flex; align-items:center; gap:12px; padding:10px 14px 10px 0; cursor:pointer; user-select:none; border-radius:8px; transition:background .12s; }
+        .ts-hd:hover { background:var(--surface2); }
+        .ts-circle { width:28px; height:28px; min-width:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:700; font-family:var(--font-mono); background:var(--surface2); color:var(--muted); border:2px solid var(--border); position:relative; z-index:1; transition:all .25s; }
+        .ts-step.done .ts-circle { background:var(--green); border-color:var(--green); color:var(--bg); }
+        .ts-step.active .ts-circle { background:var(--accent); border-color:var(--accent); color:var(--bg); box-shadow:0 0 12px rgba(34,211,238,.3); }
+        .ts-step.done .ts-circle .ts-num { display:none; }
+        .ts-step.done .ts-circle::after { content:'\2713'; font-size:0.8rem; }
+        .ts-step.active .ts-circle .ts-num { font-size:0.7rem; }
+        .ts-hd h4 { font-size:0.88rem; font-weight:600; color:var(--text); flex:1; }
+        .ts-step.done .ts-hd h4 { color:var(--muted); }
+        .ts-step.active .ts-hd h4 { color:var(--accent); }
+        .ts-bd { overflow:hidden; max-height:0; opacity:0; transition:max-height .35s ease, opacity .25s ease; margin:0; }
+        .ts-step.active .ts-bd { max-height:4000px; opacity:1; padding:4px 0 14px; }
+        .ts-bd p { font-size:0.82rem; color:var(--muted); margin:0 0 10px; }
+        .ts-bd .tbl { margin:6px 0 10px; }
+        .ts-bd pre { margin:6px 0 10px; font-size:0.74rem; }
+        .ts-bd ol, .ts-bd ul { font-size:0.82rem; color:var(--muted); margin:0 0 10px; padding-left:20px; }
+        .ts-bd li { margin:3px 0; }
+        .ts-btn { background:var(--surface2); border:1px solid var(--accent); color:var(--accent); padding:6px 18px; border-radius:6px; cursor:pointer; font-size:0.78rem; transition:all .18s; }
+        .ts-btn:hover { background:rgba(34,211,238,.12); }
+        .ts-btn-muted { background:transparent; border:1px solid var(--border); color:var(--muted); padding:6px 14px; border-radius:6px; cursor:pointer; font-size:0.78rem; transition:all .18s; }
+        .ts-btn-muted:hover { background:var(--surface2); color:var(--text); }
+        .ts-nav { display:flex; gap:6px; align-items:center; margin-top:10px; padding-top:10px; border-top:1px solid var(--border); }
+        .ts-indicator { font-size:0.72rem; color:var(--muted); font-family:var(--font-mono); background:var(--surface2); padding:2px 10px; border-radius:12px; display:inline-block; margin-bottom:12px; }
+        .ts-bd h3 { font-size:0.9rem; color:var(--accent); margin:12px 0 6px; }
+        @media (max-width:640px) {
+          .ts { padding-left:36px; }
+          .ts::before { left:16px; }
+          .ts-circle { width:24px; height:24px; min-width:24px; font-size:0.65rem; }
+          .ig-tab-btn { font-size:0.7rem; padding:5px 10px; }
+        }
+      </style>
 
-      <!-- 1 -->
-      <div class="module-card">
-        <div class="mc-h" onclick="t(this)"><span class="mcn">1</span> App Setup <span class="t">create workspace</span><span class="arr">▸</span></div>
-        <div class="bd">
-          <table>
-            <tr><th>Step</th><th>Action</th><th>Notes</th></tr>
-            <tr><td>1.1</td><td>Go to <code>creator.zoho.com</code> → <strong>Create New App</strong> → <strong>Blank App</strong></td><td>Choose "Blank App" (not template)</td></tr>
-            <tr><td>1.2</td><td>Set app name: <code>Project Budget Tracking</code></td><td>API name auto-generates as <code>budget_tracking</code></td></tr>
-            <tr><td>1.3</td><td>Set app icon &amp; color for quick identification</td><td>Use any project-themed icon</td></tr>
-            <tr><td>1.4</td><td>Go to <strong>Settings → General</strong> → set date format, timezone, number format</td><td>Match your regional settings (e.g. IST, INR, DD/MM/YYYY)</td></tr>
-            <tr><td>1.5</td><td>Go to <strong>Settings → User Permissions</strong> → create 6 roles: <code>Administrator</code>, <code>Project_Manager</code>, <code>Finance_Manager</code>, <code>Procurement</code>, <code>Inventory</code>, <code>Employee</code></td><td>Assign CRUD permissions per the Role Matrix in this blueprint. Roles are reusable across all forms.</td></tr>
-            <tr><td>1.6</td><td>Invite users via <strong>Settings → Users</strong> → assign roles</td><td>Each user gets login credentials. Admin can also enable portal access for external vendors.</td></tr>
-          </table>
+      <div class="ig-wrap">
+        <h2>Implementation Guide <span class="t">Zoho Creator console walkthrough</span></h2>
+        <p style="color:var(--muted);margin-bottom:16px">Click a topic tab above, then step through sub-steps below. Use <strong>Next &rarr;</strong> to advance sequentially or click any step to jump.</p>
+
+        <div class="ig-tab-bar">
+          <button class="ig-tab-btn active" data-tab="setup">App Setup</button>
+          <button class="ig-tab-btn" data-tab="forms">Form Creation</button>
+          <button class="ig-tab-btn" data-tab="mapping">Module Mapping</button>
+          <button class="ig-tab-btn" data-tab="validation">Validation</button>
+          <button class="ig-tab-btn" data-tab="workflows">Workflows</button>
+          <button class="ig-tab-btn" data-tab="blueprints">Blueprints</button>
+          <button class="ig-tab-btn" data-tab="reports">Reports</button>
+          <button class="ig-tab-btn" data-tab="pages">Pages &amp; Dashboards</button>
+          <button class="ig-tab-btn" data-tab="permissions">Permissions</button>
+          <button class="ig-tab-btn" data-tab="practices">Best Practices</button>
+          <button class="ig-tab-btn" data-tab="checklist">Checklist</button>
         </div>
-      </div>
 
-      <!-- 2 -->
-      <div class="module-card">
-        <div class="mc-h" onclick="t(this)"><span class="mcn">2</span> Form Creation <span class="t">drag-drop builder</span><span class="arr">▸</span></div>
-        <div class="bd">
-          <p>Every module starts with form creation. Follow this exact sequence in the Zoho Creator <strong>Design → Forms</strong> section.</p>
-          <table>
-            <tr><th>Step</th><th>Action</th><th>Details</th></tr>
-            <tr><td>2.1</td><td>Click <strong>+ Create Form</strong> → <strong>Create from Scratch</strong></td><td>Name the form per spec (e.g. <code>Vendors</code>, <code>Projects</code>, <code>Expenses</code>)</td></tr>
-            <tr><td>2.2</td><td>Drag fields from the right panel onto the canvas</td><td>26+ field types: Single Line, Multi Line, Email, Phone, URL, Date, Date/Time, Currency, Number, Decimal, Dropdown, Multi-Select, Lookup, User Picker, Auto-Number, Checkbox, File Upload, Image, Signature, Address, Formula, etc.</td></tr>
-            <tr><td>2.3</td><td>Configure each field: <strong>Label</strong>, <strong>API Name</strong>, <strong>Required</strong> toggle, <strong>Help Text</strong></td><td>API Name is the system name used in Deluge. Use snake_case: <code>Vendor_Name</code>, <code>Total_Approved_Budget</code>. Never rename API names after forms go live — it breaks lookups and Deluge.</td></tr>
-            <tr><td>2.4</td><td>For <strong>Dropdown</strong> fields: click <strong>Values</strong> → enter options (one per line)</td><td>e.g. Status values: <code>Draft</code>, <code>Active</code>, <code>On Hold</code>, <code>Completed</code>, <code>Closed</code>. Set default value if needed. Use clear, business-readable labels.</td></tr>
-            <tr><td>2.5</td><td>For <strong>Auto-Number</strong> fields: configure the format pattern</td><td>Patterns like <code>PROJ-{0000}</code> generate PROJ-0001, PROJ-0002... Use a unique prefix per module: <code>VND-</code>, <code>WH-</code>, <code>SKU-</code>, <code>EXP-</code>, <code>TXN-</code>, <code>REQ-</code>, <code>PO-</code>, <code>GRN-</code>, <code>INV-</code>, <code>DC-</code>, <code>BOM-</code>.</td></tr>
-            <tr><td>2.6</td><td>For <strong>Lookup</strong> fields: click <strong>Setup Lookup</strong> → select source form and display field</td><td>Example: In <code>Projects</code>, create Lookup → <code>Vendors</code> showing <code>Vendor_Name</code>. Configure popup/select mode. Enable <strong>"Allow select from popup"</strong> for better UX on large datasets.</td></tr>
-            <tr><td>2.7</td><td>For <strong>Formula</strong> fields: write the formula expression</td><td>e.g. <code>Current_Stock * Purchase_Price</code> for Stock Value. Formula fields are read-only and recalculated on load. Use <strong>Formula Lookup</strong> type for pulling live values from related records (critical for stock counts).</td></tr>
-            <tr><td>2.8</td><td>For <strong>User Picker</strong>: choose single or multi-user selection</td><td>Used for <code>Project_Manager</code>, <code>Approver</code> fields. Users come from the app's user list.</td></tr>
-            <tr><td>2.9</td><td>Group logical fields with <strong>Sections</strong> (drag Section element)</td><td>Improves form readability. Example sections: "Billing Address", "Shipping Address", "Line Items".</td></tr>
-            <tr><td>2.10</td><td>Set <strong>Field Display Rules</strong> (conditional show/hide)</td><td>Example: Show <code>Ship_Address</code> fields only when <code>Ship_Same_As_Bill</code> is unchecked.</td></tr>
-            <tr><td>2.11</td><td>Create <strong>Subforms</strong> for 1:N child data</td><td>In form settings, enable <strong>Add-as-Subform</strong> for child forms. Example: <code>Vendor_Contacts</code> as a subform inside <code>Vendors</code>; <code>PO_Line_Items</code> inside <code>Purchase_Orders</code>. Subforms appear as inline editable tables inside the parent form.</td></tr>
-            <tr><td>2.12</td><td>Create <strong>Custom Actions</strong> (form buttons)</td><td>In <strong>Form Settings → Custom Actions</strong>, add buttons like "Create Invoice" that open a target form with pre-filled fields from the current record. This is how we implement the workflow buttons on <code>Projects</code> and <code>Invoices</code>.</td></tr>
-            <tr><td>2.13</td><td>Click <strong>Save</strong> → <strong>Access this Application</strong> to test</td><td>Submit test records. Verify all fields capture data correctly. Test subform entry. Test custom action buttons.</td></tr>
-          </table>
+        <!-- TAB: Setup -->
+        <div class="ig-tab-pane active" id="tab-setup">
+          <div class="ts" data-ts-total="4">
+            <span class="ts-indicator">Step <span class="ts-cur">1</span> of 4</span>
+            <div class="ts-step active" data-ts="1">
+              <div class="ts-hd" onclick="igGo(this,1)"><div class="ts-circle"><span class="ts-num">1</span></div><h4>Create Application Workspace</h4></div>
+              <div class="ts-bd">
+                <p>Go to <strong>creator.zoho.com</strong> → <strong>+ Create New App</strong> → <strong>Blank App</strong>.</p>
+                <table class="tbl"><tr><th>Setting</th><th>Value</th></tr><tr><td>App Name</td><td><code>Project Budget Tracking</code> (API: <code>budget_tracking</code>)</td></tr><tr><td>Icon</td><td>Project-themed for visual ID</td></tr></table>
+                <div class="ts-nav"><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="2">
+              <div class="ts-hd" onclick="igGo(this,2)"><div class="ts-circle"><span class="ts-num">2</span></div><h4>Configure Regional Settings</h4></div>
+              <div class="ts-bd">
+                <p><strong>Settings → General</strong> → set date format, timezone, number format, currency to match your region (e.g. IST, INR, DD/MM/YYYY).</p>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="3">
+              <div class="ts-hd" onclick="igGo(this,3)"><div class="ts-circle"><span class="ts-num">3</span></div><h4>Create User Roles</h4></div>
+              <div class="ts-bd">
+                <p><strong>Settings → User Permissions</strong> → create 6 roles: <code>Administrator</code>, <code>Project_Manager</code>, <code>Finance_Manager</code>, <code>Procurement</code>, <code>Inventory</code>, <code>Employee</code>.</p>
+                <p>Roles are reusable across all forms. CRUD permissions per the Role Matrix in this blueprint.</p>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="4">
+              <div class="ts-hd" onclick="igGo(this,4)"><div class="ts-circle"><span class="ts-num">4</span></div><h4>Invite Users</h4></div>
+              <div class="ts-bd">
+                <p><strong>Settings → Users</strong> → invite users by email, assign roles. Each user gets login credentials. Portal access can be enabled for external vendors.</p>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button></div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <!-- 3 -->
-      <div class="module-card">
-        <div class="mc-h" onclick="t(this)"><span class="mcn">3</span> Module Mapping <span class="t">lookups &amp; relationships</span><span class="arr">▸</span></div>
-        <div class="bd">
-          <p>Zoho Creator uses <strong>Lookup fields</strong> to relate forms. This is the equivalent of foreign keys in SQL. All relationships in this project are implemented via Lookups.</p>
-          <table>
-            <tr><th>Pattern</th><th>How to Implement</th><th>Example in This Project</th></tr>
-            <tr><td>1:1 Lookup</td><td>Add a Lookup field on the dependent form pointing to the parent</td><td><code>Budget_Plans.Project</code> → <code>Projects</code> (one active budget per project)</td></tr>
-            <tr><td>1:N Lookup</td><td>Multiple child records each look up to a single parent</td><td><code>Expenses.Project</code> → <code>Projects</code> (many expenses per project)</td></tr>
-            <tr><td>Add-as-Subform</td><td>In form settings, enable a child form as subform</td><td><code>Vendor_Contacts</code> inside <code>Vendors</code>; <code>PO_Line_Items</code> inside <code>Purchase_Orders</code></td></tr>
-            <tr><td>Denormalized Lookup</td><td>Add a Lookup to a non-direct parent for report grouping</td><td><code>Budget_Components.Project</code> → <code>Projects</code> enables P&amp;L reports to group by project without joins</td></tr>
-            <tr><td>Formula Lookup</td><td>Use Formula Lookup (not regular Lookup) for calculated values from related records</td><td><code>Item_Warehouse_Stock</code> stock levels aggregated into <code>Inventory_Items.Current_Stock</code> via Deluge each transaction</td></tr>
-          </table>
-          <h4>Setting up a Lookup field</h4>
-          <ol>
-            <li>Drag a <strong>Lookup</strong> field onto the form canvas</li>
-            <li>Click <strong>Setup Lookup</strong> → select the <strong>Application</strong> (same app) and <strong>Form</strong> to look up from</li>
-            <li>Choose the <strong>Display Field</strong> (the field shown to users, e.g. <code>Vendor_Name</code>)</li>
-            <li>Choose <strong>Selection Type</strong>: <em>Dropdown</em> for small lists (statuses), <em>Popup</em> for large lists (1000+ records)</li>
-            <li>Enable <strong>Criteria</strong> to filter lookup values dynamically. Example: In <code>Expenses</code>, <code>Budget_Component</code> lookup should be filtered by <code>Project == current.Project</code> so only components for the selected project appear.</li>
-          </ol>
-          <h4>Key Lookup Map for This Project</h4>
-          <pre><code>Projects ──┬── Budget_Plans (Lookup: Projects.Project)
-            ├── Expenses (Lookup: Expenses.Project)
-            ├── Inventory_Transactions (Lookup: Inventory_Transactions.Project)
-            ├── Purchase_Requisitions (Lookup: PR.Project)
-            ├── Purchase_Orders (Lookup: PO.Project)
-            ├── Invoices (Lookup: Invoices.Project)
-            └── Delivery_Challans (Lookup: DC.Project)
-
-Vendors ──┬── Projects (Lookup: Projects.Account → Vendors)
-          ├── PO (Lookup: PO.Vendor → Vendors)
-          ├── Expenses (Lookup: Expenses.Vendor → Vendors)
-          └── Invoices (Lookup: Invoices.Customer → Vendors)
-
-Warehouses ──┬── Item_Warehouse_Stock (Lookup: IWS.Warehouse)
-             ├── PO_Line_Items (Lookup: line.Warehouse)
-             └── TO_Line_Items (Lookup: line.From_Warehouse, line.To_Warehouse)
-
-Inventory_Items ──┬── Item_Warehouse_Stock (Lookup: IWS.Item)
-                  ├── PO_Line_Items (Lookup: line.Item)
-                  ├── GRN_Line_Items (Lookup: line.Item)
-                  └── BOM (Lookup: BOM.Finished_Item → Items)</code></pre>
+        <!-- TAB: Form Creation -->
+        <div class="ig-tab-pane" id="tab-forms">
+          <div class="ts" data-ts-total="7">
+            <span class="ts-indicator">Step <span class="ts-cur">1</span> of 7</span>
+            <div class="ts-step active" data-ts="1">
+              <div class="ts-hd" onclick="igGo(this,1)"><div class="ts-circle"><span class="ts-num">1</span></div><h4>Create Form &amp; Add Fields</h4></div>
+              <div class="ts-bd">
+                <p>In <strong>Design → Forms</strong>, click <strong>+ Create Form</strong> → <strong>Create from Scratch</strong>. Name per spec (e.g. <code>Vendors</code>, <code>Projects</code>, <code>Expenses</code>).</p>
+                <p>Drag 26+ field types from the right panel: Single Line, Multi Line, Email, Phone, URL, Date, Date/Time, Currency, Number, Decimal, Dropdown, Multi-Select, Lookup, User Picker, Auto-Number, Checkbox, File Upload, Image, Address, Formula, etc.</p>
+                <div class="ts-nav"><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="2">
+              <div class="ts-hd" onclick="igGo(this,2)"><div class="ts-circle"><span class="ts-num">2</span></div><h4>Configure Field Properties</h4></div>
+              <div class="ts-bd">
+                <p>For each field, set <strong>Label</strong>, <strong>API Name</strong> (snake_case), <strong>Required</strong> toggle, <strong>Help Text</strong>.</p>
+                <p class="al al-w" style="font-size:0.78rem"><strong>Critical:</strong> Never rename API names after forms go live — it breaks lookups and Deluge scripts.</p>
+                <table class="tbl"><tr><th>Field Type</th><th>Config Tips</th></tr>
+                <tr><td>Dropdown</td><td>Click Values → enter options one per line. Set default. Use clear business labels.</td></tr>
+                <tr><td>Auto-Number</td><td>Use unique prefixes: <code>PROJ-{0000}</code>, <code>VND-</code>, <code>WH-</code>, <code>SKU-</code>, <code>EXP-</code>, <code>TXN-</code>, <code>REQ-</code>, <code>PO-</code>, <code>GRN-</code>, <code>INV-</code>, <code>DC-</code>, <code>BOM-</code></td></tr>
+                <tr><td>Lookup</td><td>Setup Lookup → select source form + display field. Enable popup mode for large datasets.</td></tr>
+                <tr><td>Formula</td><td>Expression like <code>Current_Stock * Purchase_Price</code>. Use Formula Lookup type for live values from related records.</td></tr>
+                <tr><td>User Picker</td><td>Choose single or multi-user. Users come from the app's user list.</td></tr></table>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="3">
+              <div class="ts-hd" onclick="igGo(this,3)"><div class="ts-circle"><span class="ts-num">3</span></div><h4>Sections &amp; Display Rules</h4></div>
+              <div class="ts-bd">
+                <p>Drag <strong>Section</strong> elements to group related fields (e.g. "Billing Address", "Shipping Address", "Line Items"). Set <strong>Field Display Rules</strong> for conditional show/hide — e.g. show <code>Ship_Address</code> only when <code>Ship_Same_As_Bill</code> is unchecked.</p>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="4">
+              <div class="ts-hd" onclick="igGo(this,4)"><div class="ts-circle"><span class="ts-num">4</span></div><h4>Add Subforms for 1:N Data</h4></div>
+              <div class="ts-bd">
+                <p>In form settings, enable <strong>Add-as-Subform</strong> for child forms. Subforms appear as inline editable tables inside the parent form.</p>
+                <p>Examples: <code>Vendor_Contacts</code> inside <code>Vendors</code>; <code>PO_Line_Items</code> inside <code>Purchase_Orders</code>; <code>DC_Line_Items</code> inside <code>Delivery_Challans</code>.</p>
+                <p class="al al-w" style="font-size:0.78rem">Max ~100 rows per subform. Use separate Lookup-based forms if exceeding.</p>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="5">
+              <div class="ts-hd" onclick="igGo(this,5)"><div class="ts-circle"><span class="ts-num">5</span></div><h4>Custom Actions (Form Buttons)</h4></div>
+              <div class="ts-bd">
+                <p>In <strong>Form Settings → Custom Actions</strong>, add buttons that open a target form with pre-filled fields.</p>
+                <table class="tbl"><tr><th>Button</th><th>Form</th><th>Pre-fill</th></tr>
+                <tr><td>Create Invoice</td><td><code>Invoices</code></td><td>Project = current record</td></tr>
+                <tr><td>Request Part Repair</td><td><code>Purchase_Requisitions</code></td><td>Project set, Request Type = "Part Repair"</td></tr>
+                <tr><td>Create DC</td><td><code>Delivery_Challans</code></td><td>Same project/customer/line items</td></tr></table>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="6">
+              <div class="ts-hd" onclick="igGo(this,6)"><div class="ts-circle"><span class="ts-num">6</span></div><h4>Set Lookup Criteria</h4></div>
+              <div class="ts-bd">
+                <p>Enable <strong>Criteria</strong> on Lookup fields to filter values dynamically. Critical for data integrity:</p>
+                <ul>
+                  <li><code>Expenses.Budget_Component</code> — filter by <code>Project == current.Project</code></li>
+                  <li><code>Invoice_Line_Items.Item</code> — filter by active items only</li>
+                  <li><code>GRN_Line_Items.Purchase_Order</code> — filter by open/unreceived POs</li>
+                </ul>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="7">
+              <div class="ts-hd" onclick="igGo(this,7)"><div class="ts-circle"><span class="ts-num">7</span></div><h4>Save &amp; Test</h4></div>
+              <div class="ts-bd">
+                <p>Click <strong>Save</strong> → <strong>Access this Application</strong> to preview. Submit test records. Verify all fields, subforms, and custom action buttons work correctly.</p>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button></div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <!-- 4 -->
-      <div class="module-card">
-        <div class="mc-h" onclick="t(this)"><span class="mcn">4</span> Validation Rules <span class="t">data quality</span><span class="arr">▸</span></div>
-        <div class="bd">
-          <p>Validation rules prevent bad data from being saved. In Zoho Creator, you add them in the form editor under <strong>Field Settings → Validation</strong> (field-level) or via <strong>Form Workflows → On Submit</strong> with Deluge <code>throw</code> statements.</p>
-          <table>
-            <tr><th>Type</th><th>Where to Configure</th><th>Examples in This Project</th></tr>
-            <tr><td>Field Required</td><td>Field Properties → <strong>Required</strong> checkbox</td><td>All mandatory fields: <code>Vendor_Name</code>, <code>Project_Name</code>, <code>Warehouse_Name</code>, <code>Item_Name</code>, <code>Expense_Amount</code>, etc.</td></tr>
-            <tr><td>Field Pattern</td><td>Field Properties → <strong>Validation</strong> → regex pattern</td><td>Email format, phone format. Custom regex: <code>^[A-Z]{5}[0-9]{4}[A-Z]{1}$</code> for PAN validation.</td></tr>
-            <tr><td>Field Range</td><td>Field Properties → <strong>Validation</strong> → min/max</td><td><code>Performance_Rating</code> must be between 1-5. <code>Tax_Rate</code> between 0-100.</td></tr>
-            <tr><td>Cross-field Validation</td><td>Form Workflow → <strong>On Submit</strong> → Deluge script with <code>throw</code></td><td>End Date must be ≥ Start Date. Total of Budget Components ≤ Total Budget Amount. Stock Out quantity ≤ Current Stock + Reserved_Qty. PR items total ≤ available budget.</td></tr>
-            <tr><td>Duplicate Prevention</td><td>Form Workflow → <strong>On Submit</strong> → Deluge <code>getRecords</code> + <code>throw</code></td><td>One active Budget Plan per Project. No duplicate SKUs. No duplicate active BOMs per item.</td></tr>
-          </table>
-          <h4>Deluge throw pattern for cross-field validation</h4>
-          <pre><code>/* Example: Validate End Date >= Start Date (copy into On Submit workflow) */
-if (input.End_Date != null && input.Start_Date != null)
-{
-    if (input.End_Date &lt; input.Start_Date)
-        throw "End Date must be on or after the Start Date.";
-}</code></pre>
-          <h4>Duplicate check pattern</h4>
-          <pre><code>/* Example: Prevent duplicate active budget plans per project */
-criteria = "Project == " + input.Project + " && Status == 'Active'";
-existing = zoho.creator.getRecords("budget_tracking", "Budget_Plans", criteria, 1, 1);
+        <!-- TAB: Module Mapping -->
+        <div class="ig-tab-pane" id="tab-mapping">
+          <div class="ts" data-ts-total="3">
+            <span class="ts-indicator">Step <span class="ts-cur">1</span> of 3</span>
+            <div class="ts-step active" data-ts="1">
+              <div class="ts-hd" onclick="igGo(this,1)"><div class="ts-circle"><span class="ts-num">1</span></div><h4>Understand Lookup Patterns</h4></div>
+              <div class="ts-bd">
+                <p>Zoho Creator uses <strong>Lookup fields</strong> to relate forms (equivalent of foreign keys in SQL). Five patterns:</p>
+                <table class="tbl"><tr><th>Pattern</th><th>Implementation</th><th>Example</th></tr>
+                <tr><td>1:1 Lookup</td><td>Lookup field on dependent form → parent</td><td><code>Budget_Plans.Project → Projects</code></td></tr>
+                <tr><td>1:N Lookup</td><td>Multiple child records with Lookup to single parent</td><td><code>Expenses.Project → Projects</code></td></tr>
+                <tr><td>Add-as-Subform</td><td>Enable subform in form settings</td><td><code>Vendor_Contacts</code> inside <code>Vendors</code></td></tr>
+                <tr><td>Denormalized Lookup</td><td>Extra Lookup for report grouping</td><td><code>Budget_Components.Project</code> for P&amp;L reports</td></tr>
+                <tr><td>Formula Lookup</td><td>Calculated value from related record</td><td>Stock levels aggregated into <code>Items.Current_Stock</code></td></tr></table>
+                <div class="ts-nav"><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="2">
+              <div class="ts-hd" onclick="igGo(this,2)"><div class="ts-circle"><span class="ts-num">2</span></div><h4>Set Up a Lookup Field</h4></div>
+              <div class="ts-bd">
+                <ol>
+                  <li>Drag a <strong>Lookup</strong> field onto the form canvas</li>
+                  <li>Click <strong>Setup Lookup</strong> → select Application (same app) and Form</li>
+                  <li>Choose <strong>Display Field</strong> (e.g. <code>Vendor_Name</code>)</li>
+                  <li>Choose <strong>Selection Type</strong>: Dropdown for small lists, Popup for 1000+ records</li>
+                  <li>Enable <strong>Criteria</strong> for dynamic filtering</li>
+                </ol>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="3">
+              <div class="ts-hd" onclick="igGo(this,3)"><div class="ts-circle"><span class="ts-num">3</span></div><h4>Reference the Lookup Relationship Map</h4></div>
+              <div class="ts-bd">
+<pre><code>Projects ──┬── Budget_Plans ──┬── Budget_Components
+            ├── Expenses        ├── Inventory_Transactions
+            ├── Purchase_Reqs   ├── Purchase_Orders
+            ├── Invoices        └── Delivery_Challans
+Vendors ──┬── Projects (as Account)
+           ├── POs, Expenses, Invoices
+           └── Vendor_Contacts + Vendor_Documents
+Warehouses   ──┬── Item_Warehouse_Stock + Inventory_Transactions
+Inventory_Items ──┬── Item_Warehouse_Stock + PO/GRN/DC/Txn items</code></pre>
+                <p class="al al-i" style="font-size:0.78rem">See the <strong>Lookup Map</strong> section in the sidebar for the full relationship diagram.</p>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: Validation -->
+        <div class="ig-tab-pane" id="tab-validation">
+          <div class="ts" data-ts-total="3">
+            <span class="ts-indicator">Step <span class="ts-cur">1</span> of 3</span>
+            <div class="ts-step active" data-ts="1">
+              <div class="ts-hd" onclick="igGo(this,1)"><div class="ts-circle"><span class="ts-num">1</span></div><h4>Field-Level Validation</h4></div>
+              <div class="ts-bd">
+                <p>Configure in <strong>Field Properties → Required/Validation</strong>:</p>
+                <table class="tbl"><tr><th>Type</th><th>Configuration</th><th>Examples</th></tr>
+                <tr><td>Required</td><td>Checkbox in field properties</td><td><code>Vendor_Name</code>, <code>Project_Name</code>, <code>Item_Name</code></td></tr>
+                <tr><td>Pattern (regex)</td><td>Custom regex expression</td><td><code>^[A-Z]{5}[0-9]{4}[A-Z]{1}$</code> for PAN</td></tr>
+                <tr><td>Range</td><td>Min/max values</td><td><code>Performance_Rating</code> 1-5, <code>Tax_Rate</code> 0-100</td></tr></table>
+                <div class="ts-nav"><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="2">
+              <div class="ts-hd" onclick="igGo(this,2)"><div class="ts-circle"><span class="ts-num">2</span></div><h4>Cross-Field Validation (Deluge)</h4></div>
+              <div class="ts-bd">
+                <p>Use Form Workflow → <strong>On Submit</strong> with Deluge <code>throw</code> for cross-field rules:</p>
+<pre><code>if (input.End_Date != null && input.Start_Date != null
+    && input.End_Date &lt; input.Start_Date)
+    throw "End Date must be on or after Start Date.";</code></pre>
+                <p>Examples in this project:</p>
+                <ul>
+                  <li>Budget Components total &le; Total Budget Amount</li>
+                  <li>Stock Out quantity &le; Current Stock</li>
+                  <li>PR line items total &le; available project budget</li>
+                </ul>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="3">
+              <div class="ts-hd" onclick="igGo(this,3)"><div class="ts-circle"><span class="ts-num">3</span></div><h4>Duplicate Prevention</h4></div>
+              <div class="ts-bd">
+<pre><code>criteria = "Project == " + input.Project + " && Status == 'Active'";
+existing = zoho.creator.getRecords("budget_tracking",
+    "Budget_Plans", criteria, 1, 1);
 if (!existing.isNull() && existing.size() > 0)
-    throw "An active Budget Plan already exists for this project.";
-</code></pre>
+    throw "An active Budget Plan already exists for this project.";</code></pre>
+                <p>Prevents duplicate active plans per project, duplicate SKUs, duplicate active BOMs.</p>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button></div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <!-- 5 -->
-      <div class="module-card">
-        <div class="mc-h" onclick="t(this)"><span class="mcn">5</span> Workflow Automation <span class="t">Deluge + blueprints</span><span class="arr">▸</span></div>
-        <div class="bd">
-          <p>Zoho Creator has 3 types of workflows. This project uses all three:</p>
-          <table>
-            <tr><th>Type</th><th>Trigger</th><th>When to Use</th></tr>
-            <tr><td><strong>Form Workflow</strong></td><td>On Load, On Submit (new), On Submit (edit), On Submit (create or edit), On Delete</td><td>Real-time validation, field updates, auto-record creation, notifications. Most automations in this project use <strong>On Submit</strong>.</td></tr>
-            <tr><td><strong>Schedule Workflow</strong></td><td>Cron: daily, hourly, weekly at specific time</td><td>Batch operations: budget alerts at 8 AM, low stock alerts, auto-close aged POs, daily KPI refresh.</td></tr>
-            <tr><td><strong>Blueprint</strong></td><td>User-driven stage transitions</td><td>Approval flows, multi-stage processes. Used for PR 3-stage approval and PO lifecycle.</td></tr>
-          </table>
-
-          <h4>5.1 Creating a Form Workflow</h4>
-          <ol>
-            <li>Go to <strong>Workflows → + Create Workflow</strong> → <strong>Form Workflow</strong></li>
-            <li>Name it (e.g. <code>WF_Expense_Budget_Check</code>)</li>
-            <li>Select the target form (e.g. <code>Expenses</code>)</li>
-            <li>Choose trigger: <strong>On Submit</strong> (after the user clicks Save)</li>
-            <li>Select trigger condition: <strong>When a record is created or edited</strong> (or choose specific)</li>
-            <li>In the workflow designer, click <strong>+ Add Action</strong></li>
-            <li>Available action types:
-              <ul>
-                <li><strong>Set Field Value</strong> — Update a field on the current or related record</li>
-                <li><strong>Send Email</strong> — Email notifications with record data</li>
-                <li><strong>Add Notification</strong> — In-app notification to specific users</li>
-                <li><strong>Update Record</strong> — Update fields on the current form</li>
-                <li><strong>Create Record</strong> — Create a new record in any form</li>
-                <li><strong>Custom Function</strong> — Execute Deluge script (most powerful option)</li>
-                <li><strong>Get Records</strong> — Fetch records from any form for processing</li>
-              </ul>
-            </li>
-            <li>For complex logic, use <strong>Custom Function</strong> and paste Deluge from the build guides</li>
-            <li>Click <strong>Save</strong> → <strong>Activate</strong> toggle to ON</li>
-          </ol>
-
-          <h4>5.2 Creating a Scheduled Workflow</h4>
-          <ol>
-            <li>Go to <strong>Workflows → + Create Workflow</strong> → <strong>Schedule</strong></li>
-            <li>Set name: <code>Sched_Daily_KPI</code></li>
-            <li>Set schedule: <strong>Daily</strong> at <code>00:00</code> (or any preferred time)</li>
-            <li>In the designer, add <strong>Custom Function</strong> actions</li>
-            <li>Example: Fetch all active projects, calculate budget % consumed, update dashboard fields, send alerts at 80/90/100%</li>
-            <li>Enable <strong>Activate</strong> toggle</li>
-            <li>Note: Scheduled workflows ignore <code>input.</code> objects — use <code>zoho.creator.getRecords()</code> to fetch data</li>
-          </ol>
-
-          <h4>5.3 Deluge Scripting Essentials</h4>
-          <table>
-            <tr><th>Concept</th><th>Syntax</th><th>Notes</th></tr>
-            <tr><td>Variables</td><td><code>v_name = "Hello";</code><br><code>v_count = 10;</code><br><code>v_amount = 1000.50;</code></td><td>No type declaration. Variables are dynamically typed. Must declare before use.</td></tr>
-            <tr><td>Map (dictionary)</td><td><code>m_data = Map();</code><br><code>m_data.put("key", value);</code></td><td>Used for creating records, JSON payloads, collecting data.</td></tr>
-            <tr><td>List (array)</td><td><code>l_items = List();</code><br><code>l_items.add(value);</code></td><td>Used for iterating multiple records.</td></tr>
-            <tr><td>Conditional</td><td><code>if (condition) { } else if (condition) { } else { }</code></td><td>Standard if-else. Use <code>&amp;&amp;</code> for AND, <code>||</code> for OR.</td></tr>
-            <tr><td>Loop</td><td><code>for each record in records { }</code></td><td>Iterates collections from <code>getRecords()</code>.</td></tr>
-            <tr><td>Null check</td><td><code>if (!value.isNull())</code><br><code>value = ifnull(value, default);</code></td><td><code>isNull()</code> checks for null. <code>ifnull()</code> provides fallback.</td></tr>
-            <tr><td>Get Records</td><td><code>zoho.creator.getRecords("app", "form", "criteria", 1, 200);</code></td><td>Fetches from report (max 200 per call). Supports pagination with offset. API calls count against your plan.</td></tr>
-            <tr><td>Get Record by ID</td><td><code>zoho.creator.getRecordById("app", "form", record_id);</code></td><td>Fetches a single record. Faster for known IDs.</td></tr>
-            <tr><td>Create Record</td><td><code>zoho.creator.createRecord("app", "form", data_map);</code></td><td>Returns the created record with ID. <code>data_map</code> is a Map with field API names as keys.</td></tr>
-            <tr><td>Update Record</td><td><code>zoho.creator.updateRecord("app", "form", record_id, data_map);</code></td><td>Updates specific fields. Only include fields you want to change.</td></tr>
-            <tr><td>Access current fields</td><td><code>input.Field_API_Name</code></td><td>Use <code>input.</code> prefix to access the current record's field values in form workflows.</td></tr>
-            <tr><td>Get display value of dropdown</td><td><code>input.Status.toMap().get("display_value")</code></td><td>Important when comparing dropdown display values vs internal values.</td></tr>
-            <tr><td>Throw error</td><td><code>throw "Error message here";</code></td><td>Stops execution, shows error to user. Use for validation failures.</td></tr>
-            <tr><td>Info/Alert (debugging)</td><td><code>info variable_name;</code><br><code>alert "message";</code></td><td><code>info</code> logs to debug console. <code>alert</code> shows popup (use only during development).</td></tr>
-            <tr><td>Try/Catch</td><td><code>try { } catch (e) { info e; }</code></td><td>Critical for production workflows. Log errors to avoid silent failures.</td></tr>
-          </table>
-
-          <h4>5.4 Standard Deluge Patterns for This Project</h4>
-          <pre><code>/* Pattern 1: Update Related Record */
-related_id = input.Lookup_Field.toMap().get("ID");
-update_map = Map();
-update_map.put("Field_To_Update", new_value);
-zoho.creator.updateRecord("budget_tracking", "Target_Form", related_id, update_map);
-
-
-/* Pattern 2: Create Record from Workflow */
-new_rec = Map();
-new_rec.put("Lookup_Field", parent_id);
-new_rec.put("Text_Field", input.Source_Field);
-new_rec.put("Currency_Field", calculated_value);
-created = zoho.creator.createRecord("budget_tracking", "Target_Form", new_rec);
-
-
-/* Pattern 3: Get Records with Filter */
-criteria = "Status == 'Active'";
-records = zoho.creator.getRecords("budget_tracking", "Source_Form", criteria, 1, 200);
-if (!records.isNull() && records.size() > 0)
-{
-    for each rec in records
-    {
-        /* process each record */
-        rec_id = rec.get("ID");
-    }
-}
-
-
-/* Pattern 4: Safe Null Handling */
-amount = ifnull(input.Amount, 0);
-total = ifnull(running_total, 0) + amount;
-
-
-/* Pattern 5: Throw with Context */
-if (current_stock &lt; requested_qty)
-    throw "Insufficient stock. Available: " + current_stock.toString() + ", Requested: " + requested_qty.toString();</code></pre>
-
-          <h4>5.5 Workflow Error Logging Pattern</h4>
-          <p>Always use try/catch in production workflows. Log errors to a dedicated <code>Deluge_Error_Log</code> form:</p>
-          <pre><code>/* Create a form: Deluge_Error_Log with fields: Timestamp, Form_Name, Workflow_Name, Error_Message, Record_ID */
-try
-{
-    /* your workflow logic here */
-}
-catch (e)
-{
-    error_log = Map();
-    error_log.put("Timestamp", now());
-    error_log.put("Form_Name", "Expenses");
-    error_log.put("Workflow_Name", "WF_Expense_Budget_Check");
-    error_log.put("Error_Message", e.toString());
-    error_log.put("Record_ID", input.ID.toString());
-    zoho.creator.createRecord("budget_tracking", "Deluge_Error_Log", error_log);
+        <!-- TAB: Workflows -->
+        <div class="ig-tab-pane" id="tab-workflows">
+          <div class="ts" data-ts-total="5">
+            <span class="ts-indicator">Step <span class="ts-cur">1</span> of 5</span>
+            <div class="ts-step active" data-ts="1">
+              <div class="ts-hd" onclick="igGo(this,1)"><div class="ts-circle"><span class="ts-num">1</span></div><h4>Choose Workflow Type</h4></div>
+              <div class="ts-bd">
+                <p>Three types available. Pick based on your need:</p>
+                <table class="tbl"><tr><th>Type</th><th>Trigger</th><th>Use in This Project</th></tr>
+                <tr><td><strong>Form Workflow</strong></td><td>On Load / On Submit / On Delete</td><td>Real-time validation, stock updates, auto-record creation, notifications (WF #1-15, #17, #19-25)</td></tr>
+                <tr><td><strong>Schedule</strong></td><td>Daily / Hourly cron</td><td>Budget alerts at 8 AM, low stock alerts, auto-close POs, KPI refresh (WF #16, #18)</td></tr>
+                <tr><td><strong>Blueprint</strong></td><td>User-driven stage transitions</td><td>PR 3-stage approval, PO lifecycle (Draft → Open → Billed → Closed)</td></tr></table>
+                <div class="ts-nav"><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="2">
+              <div class="ts-hd" onclick="igGo(this,2)"><div class="ts-circle"><span class="ts-num">2</span></div><h4>Create a Form Workflow</h4></div>
+              <div class="ts-bd">
+                <ol>
+                  <li>Go to <strong>Workflows → + Create Workflow → Form Workflow</strong></li>
+                  <li>Name it: <code>WF_Expense_Budget_Check</code></li>
+                  <li>Select target form (<code>Expenses</code>)</li>
+                  <li>Trigger: <strong>On Submit</strong> → <strong>When a record is created or edited</strong></li>
+                  <li>Add actions: Set Field Value, Send Email, Add Notification, Create Record, Update Record, Custom Function (Deluge)</li>
+                  <li>For complex logic, use <strong>Custom Function</strong> and paste code from build guides</li>
+                  <li>Toggle <strong>Activate</strong> ON</li>
+                </ol>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="3">
+              <div class="ts-hd" onclick="igGo(this,3)"><div class="ts-circle"><span class="ts-num">3</span></div><h4>Create a Scheduled Workflow</h4></div>
+              <div class="ts-bd">
+                <ol>
+                  <li><strong>Workflows → + Create Workflow → Schedule</strong></li>
+                  <li>Name: <code>Sched_Daily_KPI</code>, schedule: <strong>Daily</strong> at <code>00:00</code></li>
+                  <li>Add <strong>Custom Function</strong> actions</li>
+                  <li>Note: Scheduled workflows don't have <code>input.</code> — use <code>zoho.creator.getRecords()</code> to fetch data</li>
+                </ol>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="4">
+              <div class="ts-hd" onclick="igGo(this,4)"><div class="ts-circle"><span class="ts-num">4</span></div><h4>Deluge Scripting Reference</h4></div>
+              <div class="ts-bd">
+                <table class="tbl"><tr><th>Task</th><th>Deluge Syntax</th></tr>
+                <tr><td>Get Records</td><td><code>zoho.creator.getRecords("app","form","criteria", page, 200)</code></td></tr>
+                <tr><td>Get by ID</td><td><code>zoho.creator.getRecordById("app","form", id)</code></td></tr>
+                <tr><td>Create Record</td><td><code>zoho.creator.createRecord("app","form", data_map)</code></td></tr>
+                <tr><td>Update Record</td><td><code>zoho.creator.updateRecord("app","form", id, data_map)</code></td></tr>
+                <tr><td>Null check</td><td><code>ifnull(value, default)</code> or <code>!value.isNull()</code></td></tr>
+                <tr><td>Throw error</td><td><code>throw "message"</code></td></tr>
+                <tr><td>Map</td><td><code>m = Map(); m.put("key", val);</code></td></tr>
+                <tr><td>Dropdown display</td><td><code>input.Field.toMap().get("display_value")</code></td></tr>
+                <tr><td>Try/Catch</td><td><code>try { } catch (e) { info e; }</code></td></tr></table>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="5">
+              <div class="ts-hd" onclick="igGo(this,5)"><div class="ts-circle"><span class="ts-num">5</span></div><h4>Error Logging Pattern</h4></div>
+              <div class="ts-bd">
+                <p>Never leave a production workflow without error handling. Use try/catch + log to a <code>Deluge_Error_Log</code> form:</p>
+<pre><code>try {
+    /* workflow logic here */
+} catch (e) {
+    err = Map();
+    err.put("Timestamp", now());
+    err.put("Form_Name", "Expenses");
+    err.put("Workflow_Name", "WF_Budget_Check");
+    err.put("Error_Message", e.toString());
+    err.put("Record_ID", input.ID.toString());
+    zoho.creator.createRecord("budget_tracking",
+        "Deluge_Error_Log", err);
 }</code></pre>
+                <p>The <code>Deluge_Error_Log</code> form needs: Timestamp, Form_Name, Workflow_Name, Error_Message, Record_ID.</p>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button></div>
+              </div>
+            </div>
+          </div>
         </div>
+
+        <!-- TAB: Blueprints -->
+        <div class="ig-tab-pane" id="tab-blueprints">
+          <div class="ts" data-ts-total="4">
+            <span class="ts-indicator">Step <span class="ts-cur">1</span> of 4</span>
+            <div class="ts-step active" data-ts="1">
+              <div class="ts-hd" onclick="igGo(this,1)"><div class="ts-circle"><span class="ts-num">1</span></div><h4>When to Use Blueprints</h4></div>
+              <div class="ts-bd">
+                <table class="tbl"><tr><th>Use Blueprint When</th><th>Use Form Workflow When</th></tr>
+                <tr><td>Process has defined stages (Draft → Review → Approved)</td><td>Logic auto-runs on form events</td></tr>
+                <tr><td>Different users handle different stages</td><td>No manual stage transitions needed</td></tr>
+                <tr><td>Process order must be enforced</td><td>Background data sync, mass updates</td></tr>
+                <tr><td>Audit trail needed per stage</td><td>Calculations, validations</td></tr></table>
+                <p>In this project: Blueprints handle PR approval and PO lifecycle. Form workflows handle all other automations.</p>
+                <div class="ts-nav"><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="2">
+              <div class="ts-hd" onclick="igGo(this,2)"><div class="ts-circle"><span class="ts-num">2</span></div><h4>Create a Blueprint</h4></div>
+              <div class="ts-bd">
+                <ol>
+                  <li><strong>Workflows → Blueprints → + Create Blueprint</strong></li>
+                  <li>Select form (e.g. <code>Purchase_Requisitions</code>)</li>
+                  <li>Name: <code>BP_PR_Approval</code>, set execution: <strong>Run always</strong></li>
+                  <li>Canvas opens → drag stages from the left panel. Each stage = a status value</li>
+                  <li>Click between two stages to create a <strong>transition line</strong></li>
+                </ol>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="3">
+              <div class="ts-hd" onclick="igGo(this,3)"><div class="ts-circle"><span class="ts-num">3</span></div><h4>Configure Transitions</h4></div>
+              <div class="ts-bd">
+                <p>Each transition has configurable properties:</p>
+                <table class="tbl"><tr><th>Property</th><th>Purpose</th></tr>
+                <tr><td><strong>Transition Owner</strong></td><td>Who can perform this action. Select users, roles, or user fields.</td></tr>
+                <tr><td><strong>Criteria</strong></td><td>Conditions for availability (e.g. amount &gt;$10k requires CFO)</td></tr>
+                <tr><td><strong>Before</strong></td><td>Validation checks executed before transition</td></tr>
+                <tr><td><strong>After</strong></td><td>Notifications, Deluge scripts, field updates after transition</td></tr>
+                <tr><td><strong>Require Confirmation</strong></td><td>Show confirmation dialog before executing</td></tr></table>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="4">
+              <div class="ts-hd" onclick="igGo(this,4)"><div class="ts-circle"><span class="ts-num">4</span></div><h4>Associate Blueprint to Form</h4></div>
+              <div class="ts-bd">
+                <ol>
+                  <li>In Blueprint editor, click <strong>Associate</strong> (or Form Settings → Blueprint tab)</li>
+                  <li>Select form layout (standard or mobile)</li>
+                  <li>Map existing status values to blueprint stages</li>
+                  <li>Once associated, transition buttons appear in form/report views</li>
+                  <li>Users click buttons to move records forward. Order is enforced.</li>
+                </ol>
+                <p>Two transition types: <strong>Common</strong> (available from multiple stages, e.g. "Cancel") and <strong>Parallel</strong> (multiple paths from one stage).</p>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: Reports -->
+        <div class="ig-tab-pane" id="tab-reports">
+          <div class="ts" data-ts-total="4">
+            <span class="ts-indicator">Step <span class="ts-cur">1</span> of 4</span>
+            <div class="ts-step active" data-ts="1">
+              <div class="ts-hd" onclick="igGo(this,1)"><div class="ts-circle"><span class="ts-num">1</span></div><h4>Choose Report Type</h4></div>
+              <div class="ts-bd">
+                <table class="tbl"><tr><th>Type</th><th>Best For</th><th>In This Project</th></tr>
+                <tr><td><strong>List</strong></td><td>Tabular browsing with inline editing</td><td>All module records: Projects, Vendors, Items</td></tr>
+                <tr><td><strong>Summary</strong></td><td>Aggregated totals grouped by field</td><td>Budget vs Actual, Stock Value by Warehouse</td></tr>
+                <tr><td><strong>Chart</strong></td><td>Visual trends (Bar, Pie, Line, Area)</td><td>Monthly spending trend, Expense by category</td></tr>
+                <tr><td><strong>Pivot</strong></td><td>Multi-dimensional cross-tabulation</td><td>Expense by Category x Project</td></tr>
+                <tr><td><strong>Kanban</strong></td><td>Stage-based pipeline view</td><td>PO Pipeline, PR Approval pipeline</td></tr>
+                <tr><td><strong>Calendar</strong></td><td>Date-based records</td><td>Invoice due dates, Project timeline</td></tr>
+                <tr><td><strong>Spreadsheet</strong></td><td>Editable grid for power users</td><td>Quick inventory adjustments</td></tr></table>
+                <div class="ts-nav"><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="2">
+              <div class="ts-hd" onclick="igGo(this,2)"><div class="ts-circle"><span class="ts-num">2</span></div><h4>Create &amp; Customize a Report</h4></div>
+              <div class="ts-bd">
+                <ol>
+                  <li><strong>Reports → + Create Report</strong> → select source form and type</li>
+                  <li>Select fields to display. For Summary: set group-by + aggregate (Sum, Count, Avg)</li>
+                  <li>Add filters: e.g. <code>Status != 'Closed'</code>, <code>Date &gt;= Today-30</code></li>
+                  <li>Enable <strong>Search</strong>, <strong>Group By</strong>, <strong>Sort</strong>, <strong>Color Coding</strong>, <strong>Conditional Formatting</strong></li>
+                  <li>Set <strong>Role-based access</strong> per report</li>
+                  <li>Add <strong>Custom Actions</strong>: "Approve", "Reject", "Send Email" buttons on rows</li>
+                </ol>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="3">
+              <div class="ts-hd" onclick="igGo(this,3)"><div class="ts-circle"><span class="ts-num">3</span></div><h4>Consolidated Cross-Form Reports</h4></div>
+              <div class="ts-bd">
+                <p>Summary reports can include fields from related forms via Lookup relationships:</p>
+                <ul>
+                  <li><strong>Project P&amp;L</strong>: Summary on <code>Invoices</code> with Sum(Total) grouped by <code>Project.Project_Name</code></li>
+                  <li><strong>Budget vs Actual</strong>: Summary on <code>Budget_Components</code> with Sum(Allocated) and Sum(Total_Spent) by <code>Budget_Plan.Project</code></li>
+                  <li><strong>Invoice Aging</strong>: Summary on <code>Invoices</code>, Status=Sent, grouped by age bucket</li>
+                </ul>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="4">
+              <div class="ts-hd" onclick="igGo(this,4)"><div class="ts-circle"><span class="ts-num">4</span></div><h4>Conditional Formatting</h4></div>
+              <div class="ts-bd">
+                <p>Set visual rules in report settings:</p>
+                <ul>
+                  <li>Budget &gt; 90% used → <span style="color:#f87171">red background</span></li>
+                  <li>Invoice overdue → <span style="color:#fb923c">orange text</span></li>
+                  <li>Stock &lt; Reorder Level → <span style="color:#fbbf24">yellow highlight</span></li>
+                  <li>Status = Completed → <span style="color:#4ade80">green text</span></li>
+                </ul>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: Pages & Dashboards -->
+        <div class="ig-tab-pane" id="tab-pages">
+          <div class="ts" data-ts-total="3">
+            <span class="ts-indicator">Step <span class="ts-cur">1</span> of 3</span>
+            <div class="ts-step active" data-ts="1">
+              <div class="ts-hd" onclick="igGo(this,1)"><div class="ts-circle"><span class="ts-num">1</span></div><h4>Create a Dashboard Page</h4></div>
+              <div class="ts-bd">
+                <ol>
+                  <li><strong>Pages → + Create Page</strong></li>
+                  <li>Choose layout: Grid (2/3/4 column) or Free-form</li>
+                  <li>Drag components: <strong>Report</strong>, <strong>KPI</strong>, <strong>Chart</strong>, <strong>HTML</strong>, <strong>Image</strong>, <strong>Text</strong>, <strong>Map</strong></li>
+                  <li>For each component: configure size, data source, display options</li>
+                  <li>Set page as <strong>Homepage</strong> in app settings</li>
+                  <li>Set <strong>Permissions</strong> per role</li>
+                </ol>
+                <div class="ts-nav"><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="2">
+              <div class="ts-hd" onclick="igGo(this,2)"><div class="ts-circle"><span class="ts-num">2</span></div><h4>Configure KPI Widgets</h4></div>
+              <div class="ts-bd">
+                <p>KPI = single metric with label and optional trend arrow:</p>
+                <table class="tbl"><tr><th>KPI</th><th>Source</th><th>Aggregation</th><th>Filter</th></tr>
+                <tr><td>Total Project Budget</td><td>Budget_Plans</td><td>Sum(Total_Budget_Amount)</td><td>Status=Active</td></tr>
+                <tr><td>Total Spent</td><td>Expenses</td><td>Sum(Amount)</td><td>Status=Approved</td></tr>
+                <tr><td>Open PO Value</td><td>PO_Line_Items</td><td>Sum(Total)</td><td>PO.Status=Open</td></tr>
+                <tr><td>Inventory Value</td><td>Inventory_Items</td><td>Sum(Stock_Value)</td><td>Status=Active</td></tr>
+                <tr><td>Cost Overruns</td><td>Budget_Components</td><td>Count</td><td>Status=Exceeded</td></tr>
+                <tr><td>Pending Approvals</td><td>Budget_Approvals</td><td>Count</td><td>Status=Pending</td></tr></table>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="3">
+              <div class="ts-hd" onclick="igGo(this,3)"><div class="ts-circle"><span class="ts-num">3</span></div><h4>Page Layout Best Practices</h4></div>
+              <div class="ts-bd">
+                <ul>
+                  <li>2-3 column grid for KPI cards at top (4-6 KPIs per row)</li>
+                  <li>Full-width for main charts (line, bar, pie)</li>
+                  <li>List reports below charts for drill-down detail</li>
+                  <li>Use <strong>Tabs</strong> on page to organize by domain: Overview, Inventory, Budget, Procurement</li>
+                  <li>Set Overview page as <strong>app homepage</strong></li>
+                </ul>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: Permissions -->
+        <div class="ig-tab-pane" id="tab-permissions">
+          <div class="ts" data-ts-total="3">
+            <span class="ts-indicator">Step <span class="ts-cur">1</span> of 3</span>
+            <div class="ts-step active" data-ts="1">
+              <div class="ts-hd" onclick="igGo(this,1)"><div class="ts-circle"><span class="ts-num">1</span></div><h4>Understand 3 Permission Levels</h4></div>
+              <div class="ts-bd">
+                <table class="tbl"><tr><th>Level</th><th>Where to Set</th><th>Controls</th></tr>
+                <tr><td><strong>Component</strong></td><td>Form/Report/Page Settings → Permissions</td><td>Which roles can access. Toggle Create/Read/Update/Delete.</td></tr>
+                <tr><td><strong>Field</strong></td><td>Field Settings → Permissions</td><td>Which roles can see/edit each field. Hide sensitive data.</td></tr>
+                <tr><td><strong>Record</strong></td><td>Form Settings → Record Sharing</td><td>Who sees which records: All, Own only, or Group-based.</td></tr></table>
+                <div class="ts-nav"><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="2">
+              <div class="ts-hd" onclick="igGo(this,2)"><div class="ts-circle"><span class="ts-num">2</span></div><h4>Apply Role Permissions</h4></div>
+              <div class="ts-bd">
+                <p><strong>Settings → User Permissions → Permissions</strong>. Configure each role per the matrix:</p>
+                <ul>
+                  <li><strong>Admin</strong>: CRUD on everything</li>
+                  <li><strong>Project Manager</strong>: CRUD on Projects, Budgets, Expenses; Read on Inventory</li>
+                  <li><strong>Finance Manager</strong>: CRUD on Budgets; Read on Expenses; Update-only on Approvals</li>
+                  <li><strong>Procurement</strong>: CRUD on Vendors, POs, GRNs; Read others</li>
+                  <li><strong>Inventory</strong>: CRUD on Items, Stock, Transactions, TOs, DCs, BOMs</li>
+                  <li><strong>Employee</strong>: Create own Expenses/PRs; Read own records only</li>
+                </ul>
+                <p>Also set field-level: e.g. <code>PAN</code> = Admin/Finance only. <code>Purchase_Price</code> = Admin/Procurement/Inventory.</p>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="3">
+              <div class="ts-hd" onclick="igGo(this,3)"><div class="ts-circle"><span class="ts-num">3</span></div><h4>Record-Level Sharing</h4></div>
+              <div class="ts-bd">
+                <p><strong>Form Settings → Record Sharing</strong>:</p>
+                <ul>
+                  <li><strong>Employee</strong>: "Own records only" for Expenses, PRs</li>
+                  <li><strong>Project Manager</strong>: "All records" for project forms</li>
+                  <li><strong>Procurement</strong>: "All records" for POs, GRNs, TOs</li>
+                </ul>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: Best Practices -->
+        <div class="ig-tab-pane" id="tab-practices">
+          <div class="ts" data-ts-total="3">
+            <span class="ts-indicator">Step <span class="ts-cur">1</span> of 3</span>
+            <div class="ts-step active" data-ts="1">
+              <div class="ts-hd" onclick="igGo(this,1)"><div class="ts-circle"><span class="ts-num">1</span></div><h4>Naming &amp; API Name Rules</h4></div>
+              <div class="ts-bd">
+                <ul>
+                  <li><strong>Always use snake_case</strong> for API names: <code>Vendor_Name</code>, <code>Total_Approved_Budget</code></li>
+                  <li><strong>Never rename after go-live</strong> — breaks all lookups and Deluge references</li>
+                  <li>Use <strong>Formula Lookup</strong> (not Regular Lookup) for live values that change in source (stock, budget)</li>
+                </ul>
+                <div class="ts-nav"><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="2">
+              <div class="ts-hd" onclick="igGo(this,2)"><div class="ts-circle"><span class="ts-num">2</span></div><h4>Performance &amp; Limits</h4></div>
+              <div class="ts-bd">
+                <table class="tbl"><tr><th>Rule</th><th>Detail</th></tr>
+                <tr><td>API calls</td><td>Every CRUD operation counts against your plan limit. Batch in Scheduled workflows.</td></tr>
+                <tr><td>getRecords max</td><td>200 records per call. Paginate with offset/page parameter.</td></tr>
+                <tr><td>Subforms</td><td>~100 rows max. Use separate form with Lookup for more.</td></tr>
+                <tr><td>Deluge timeout</td><td>~5 min script limit. Keep On Submit under 30s. Use Scheduled for mass ops.</td></tr>
+                <tr><td>On Submit vs Post</td><td>Use <strong>On Submit</strong> for validation. <strong>On Post Submit</strong> for creating records dependent on current record ID.</td></tr>
+                <tr><td>Never delete</td><td>Always archive (Status=Inactive). Deleting breaks lookup references.</td></tr>
+                <tr><td>Mobile layout</td><td>Check mobile form layout after creation. Reorder for small screens.</td></tr></table>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="3">
+              <div class="ts-hd" onclick="igGo(this,3)"><div class="ts-circle"><span class="ts-num">3</span></div><h4>Common Issues &amp; Fixes</h4></div>
+              <div class="ts-bd">
+                <table class="tbl"><tr><th>Problem</th><th>Fix</th></tr>
+                <tr><td>"Invalid field name" in Deluge</td><td>Check API name spelling and case. Match exactly.</td></tr>
+                <tr><td>Lookup shows no records</td><td>Check criteria filter is not too restrictive. Ensure source has records.</td></tr>
+                <tr><td>Workflow not triggering</td><td>Check Activate toggle. Verify trigger form and event.</td></tr>
+                <tr><td>Subform not saving</td><td>Check subform field validations. Add required fields.</td></tr>
+                <tr><td>KPI shows 0</td><td>Wrong field/aggregation or filter excludes all records.</td></tr>
+                <tr><td>Slow form load</td><td>Too many lookups. Use popup mode, add criteria, reduce Formula Lookup scope.</td></tr>
+                <tr><td>Auto-number "Data exists"</td><td>Can't change format after records exist. Plan before data entry.</td></tr></table>
+                <p class="al al-w" style="font-size:0.78rem">Use <strong>Workflows → Execution Log</strong> to debug failed workflows. Always wrap production Deluge in try/catch.</p>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: Checklist -->
+        <div class="ig-tab-pane" id="tab-checklist">
+          <div class="ts" data-ts-total="3">
+            <span class="ts-indicator">Step <span class="ts-cur">1</span> of 3</span>
+            <div class="ts-step active" data-ts="1">
+              <div class="ts-hd" onclick="igGo(this,1)"><div class="ts-circle"><span class="ts-num">1</span></div><h4>Phase-by-Phase Build Order</h4></div>
+              <div class="ts-bd">
+                <table class="tbl"><tr><th>Phase</th><th>Forms</th><th>Key Workflows</th></tr>
+                <tr><td><strong>1A</strong></td><td>Vendors, Projects, Warehouses, Inventory_Items + Stock + Attributes</td><td>Project Code, Ship-to-Billing copy, Init warehouse stock</td></tr>
+                <tr><td><strong>1B</strong></td><td>Budget_Plans, Budget_Components, Inventory_Transactions</td><td>Budget validation, Stock update, Stock Out → Expense, Negative stock</td></tr>
+                <tr><td><strong>1C</strong></td><td>Expenses, Purchase_Requisitions + Line Items</td><td>Budget check, Overrun approval, PR stage emails</td></tr>
+                <tr><td><strong>1D</strong></td><td>Budget_Approvals, Purchase_Orders + Items, GRN + Items, Transfer_Orders + Items</td><td>Approve/Reject, Auto-PO from PR, GRN→Stock In, TO paired txns</td></tr>
+                <tr><td><strong>1E</strong></td><td>BOM + Items, Delivery_Challans + Items, Invoices + Items</td><td>BOM cost calc, DC→Stock Out, Invoice→P&amp;L update, Create DC button</td></tr>
+                <tr><td><strong>1F</strong></td><td>10+ Reports, Dashboard Pages (Executive, Inventory, Procurement, Financial)</td><td>Scheduled daily: KPI refresh, budget alerts, low stock alerts, auto-close POs</td></tr></table>
+                <div class="ts-nav"><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="2">
+              <div class="ts-hd" onclick="igGo(this,2)"><div class="ts-circle"><span class="ts-num">2</span></div><h4>Per-Form Build Pattern</h4></div>
+              <div class="ts-bd">
+                <p>Repeat for every form in every phase:</p>
+                <ol>
+                  <li>Create form with all fields per spec</li>
+                  <li>Configure Auto-Number format</li>
+                  <li>Set up Lookup fields with source, display field, criteria</li>
+                  <li>Add Add-as-Subform children</li>
+                  <li>Configure Field Display Rules (conditional show/hide)</li>
+                  <li>Set Field-Level Validation (required, pattern, range)</li>
+                  <li>Create Form Workflow for automation (On Submit)</li>
+                  <li>Create Blueprint if stage-based process</li>
+                  <li>Create default List Report → customize columns, filters</li>
+                  <li>Set Role Permissions on form + report</li>
+                  <li>Test: submit records, verify workflows, check edge cases</li>
+                  <li>Move to next form</li>
+                </ol>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="3">
+              <div class="ts-hd" onclick="igGo(this,3)"><div class="ts-circle"><span class="ts-num">3</span></div><h4>Open Build Guides</h4></div>
+              <div class="ts-bd">
+                <p>Open the full build guide for each phase for exact field specs and Deluge scripts:</p>
+                <ul>
+                  <li><a href="build-viewer.html?phase=1A">Phase 1A — Foundation</a></li>
+                  <li><a href="build-viewer.html?phase=1B">Phase 1B — Budget</a></li>
+                  <li><a href="build-viewer.html?phase=1C">Phase 1C — Expenses</a></li>
+                  <li><a href="build-viewer.html?phase=1D">Phase 1D — Procurement</a></li>
+                  <li><a href="build-viewer.html?phase=1E">Phase 1E — Revenue &amp; Mfg</a></li>
+                  <li><a href="build-viewer.html?phase=1F">Phase 1F — Reports &amp; Dashboards</a></li>
+                </ul>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
 
-      <!-- 6 -->
-      <div class="module-card">
-        <div class="mc-h" onclick="t(this)"><span class="mcn">6</span> Blueprint Assignment <span class="t">stage-based processes</span><span class="arr">▸</span></div>
-        <div class="bd">
-          <p>Blueprints enforce structured, stage-based workflows. They are ideal for approval processes and lifecycle management where a record must pass through defined stages.</p>
+      <script>
+        (function(){
+          // Tab switching
+          var tabs = document.querySelectorAll('.ig-tab-btn');
+          var panes = document.querySelectorAll('.ig-tab-pane');
+          tabs.forEach(function(t){
+            t.addEventListener('click', function(){
+              tabs.forEach(function(x){ x.classList.remove('active'); });
+              panes.forEach(function(p){ p.classList.remove('active'); });
+              t.classList.add('active');
+              var pane = document.getElementById('tab-' + t.getAttribute('data-tab'));
+              if (pane) pane.classList.add('active');
+            });
+          });
 
-          <h4>6.1 When to Use Blueprints in This Project</h4>
-          <table>
-            <tr><th>Process</th><th>Stages</th><th>Transitions</th></tr>
-            <tr><td>Purchase Requisition (3-stage approval)</td><td>Draft → Dept Manager → Finance → Procurement → Approved / Rejected</td><td>Submit, Approve, Reject, Revise</td></tr>
-            <tr><td>Purchase Order lifecycle</td><td>Draft → Open → Partially Invoiced → Billed → Closed (or Cancelled)</td><td>Send PO, Receive Goods, Mark Invoiced, Close, Cancel</td></tr>
-            <tr><td>Expense Approval (budget overrun)</td><td>Submitted → Overrun-Pending → Approved / Rejected</td><td>Submit, Approve, Reject</td></tr>
-          </table>
-
-          <h4>6.2 Creating a Blueprint</h4>
-          <ol>
-            <li>Go to <strong>Workflows → Blueprints</strong> → <strong>+ Create Blueprint</strong></li>
-            <li>Select the form (e.g. <code>Purchase_Requisitions</code>)</li>
-            <li>Name the blueprint (e.g. <code>BP_PR_Approval</code>)</li>
-            <li>Set execution: <strong>Run this blueprint always</strong> (or set condition)</li>
-            <li>The blueprint canvas opens. Here you define stages and transitions.</li>
-          </ol>
-
-          <h4>6.3 Defining Stages and Transitions</h4>
-          <ul>
-            <li><strong>Stage</strong> = a status value in the process. Drag from the left panel or create new. Each stage maps to a value in the form's Status field.</li>
-            <li><strong>Transition</strong> = the action that moves a record between stages. Click between two stages to create a transition line.</li>
-            <li>Configure each transition:
-              <ul>
-                <li><strong>Transition Owner</strong> — Who can perform this transition? Select users, roles, or user fields.</li>
-                <li><strong>Criteria</strong> — Conditions that must be true for the transition to be available (e.g. amount &gt; 10000)</li>
-                <li><strong>Before</strong> — Actions executed before the transition (validation checks)</li>
-                <li><strong>After</strong> — Actions executed after the transition (notifications, Deluge scripts, field updates)</li>
-                <li><strong>Tooltip</strong> — Message shown on the transition button</li>
-                <li><strong>Require Confirmation</strong> — Show confirmation dialog before executing</li>
-              </ul>
-            </li>
-          </ul>
-
-          <h4>6.4 Associating a Blueprint to a Form</h4>
-          <ol>
-            <li>In the Blueprint editor, click <strong>Associate</strong> (or go to form settings → Blueprint tab)</li>
-            <li>Select the form layout (standard or mobile)</li>
-            <li>Map existing status values to blueprint stages (done automatically if names match)</li>
-            <li>Once associated, the blueprint stages and transitions appear as buttons in form/report views</li>
-            <li>Users click transition buttons to move records forward. Blueprint enforces the order — users cannot skip stages.</li>
-          </ol>
-
-          <h4>6.5 Blueprint vs Form Workflow: Which to Use?</h4>
-          <table>
-            <tr><th>Use Blueprint When</th><th>Use Form Workflow When</th></tr>
-            <tr><td>Process has defined stages that records must pass through</td><td>Logic runs automatically on form events (submit, edit, delete)</td></tr>
-            <tr><td>Different users handle different stages</td><td>No manual stage transitions needed</td></tr>
-            <tr><td>You need to enforce process order</td><td>Validation, auto-calculations, real-time updates</td></tr>
-            <tr><td>Audit trail of who approved/rejected at each stage</td><td>Background data sync, mass updates</td></tr>
-          </table>
-          <p>In this project: Blueprints handle PR approval and PO lifecycle. Form workflows handle all other automations (stock updates, budget checks, notifications).</p>
-        </div>
-      </div>
-
-      <!-- 7 -->
-      <div class="module-card">
-        <div class="mc-h" onclick="t(this)"><span class="mcn">7</span> Reports <span class="t">list, summary, chart, pivot, kanban, calendar</span><span class="arr">▸</span></div>
-        <div class="bd">
-          <p>Zoho Creator auto-generates a default <strong>List Report</strong> for each form. You can customize it and create additional report types:</p>
-
-          <h4>7.1 Report Types Available</h4>
-          <table>
-            <tr><th>Type</th><th>Best For</th><th>Example in This Project</th></tr>
-            <tr><td><strong>List</strong></td><td>Tabular data browsing, inline editing</td><td>All module records: Projects list, Vendors list, Inventory Items list</td></tr>
-            <tr><td><strong>Summary</strong></td><td>Aggregated data with totals, averages, counts. Groupable by any field.</td><td>Budget vs Actual (group by Project), Stock Value by Warehouse, Category-wise Expense total</td></tr>
-            <tr><td><strong>Chart</strong></td><td>Visual trends: Bar, Pie, Line, Area, Donut, Funnel</td><td>Monthly spending trend (Line), Budget utilization by project (Bar), Expense by category (Pie)</td></tr>
-            <tr><td><strong>Pivot Table</strong></td><td>Multi-dimensional cross-tabulation: rows × columns × values</td><td>Expense by Category × Project, Stock movement by Item × Month</td></tr>
-            <tr><td><strong>Kanban</strong></td><td>Pipeline / stage-based card view. Group by status field.</td><td>PO Pipeline (Draft / Open / Billed / Closed), PR Approval pipeline</td></tr>
-            <tr><td><strong>Calendar</strong></td><td>Date-based records on a calendar grid</td><td>Invoice due dates, Expense calendar, Project timeline</td></tr>
-            <tr><td><strong>Spreadsheet</strong></td><td>Editable grid view — users can edit data inline</td><td>Quick data entry for inventory adjustments</td></tr>
-          </table>
-
-          <h4>7.2 Creating a Report</h4>
-          <ol>
-            <li>Go to <strong>Reports → + Create Report</strong></li>
-            <li>Select the source form</li>
-            <li>Choose report type (List, Summary, Chart, Pivot, Kanban, Calendar)</li>
-            <li>Select fields to display. For Summary: set group-by field and aggregate (Sum, Count, Avg, Min, Max)</li>
-            <li>Add filters (e.g. Status != 'Closed', Date >= Today-30)</li>
-            <li>Enable <strong>Search</strong>, <strong>Group By</strong>, <strong>Sort</strong>, <strong>Color Coding</strong>, <strong>Conditional Formatting</strong></li>
-            <li>Set <strong>Role-based access</strong>: which roles can view this report</li>
-            <li>Add <strong>Custom Actions</strong>: buttons like "Approve", "Reject", "Send Email" on the report row</li>
-            <li>Click <strong>Save</strong></li>
-          </ol>
-
-          <h4>7.3 Consolidated Reports (Across Linked Forms)</h4>
-          <p>In <strong>Summary reports</strong>, you can include fields from related forms via Lookup relationships. This is how we build cross-form reports without Deluge:</p>
-          <ul>
-            <li><strong>Project P&amp;L Report</strong>: Summary report on <code>Invoices</code> with Sum(Total) grouped by <code>Project.Project_Name</code> → Compare with Expense summary grouped by project</li>
-            <li><strong>Budget vs Actual</strong>: Summary on <code>Budget_Components</code> with Sum(Allocated_Amount) and Sum(Total_Spent) grouped by <code>Budget_Plan.Project.Project_Name</code></li>
-            <li><strong>Invoice Aging</strong>: Summary on <code>Invoices</code> filtered by Status=Sent/Partially Paid, grouped by aging bucket (via formula field)</li>
-          </ul>
-
-          <h4>7.4 Conditional Formatting</h4>
-          <p>Set rules in report settings:</p>
-          <ul>
-            <li>Budget Utilization &gt; 90% → <span style="color:var(--red)">red background</span></li>
-            <li>Invoice Overdue → <span style="color:var(--orange)">orange text</span></li>
-            <li>Stock &lt; Reorder Level → <span style="color:var(--yellow)">yellow highlight</span></li>
-            <li>Status = Completed → <span style="color:var(--green)">green text</span></li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- 8 -->
-      <div class="module-card">
-        <div class="mc-h" onclick="t(this)"><span class="mcn">8</span> Pages &amp; Dashboards <span class="t">KPI cards + charts</span><span class="arr">▸</span></div>
-        <div class="bd">
-          <p>Pages are the dashboard layer of Zoho Creator. They combine reports, KPI widgets, charts, and HTML/JS components into a single view.</p>
-
-          <h4>8.1 Creating a Dashboard Page</h4>
-          <ol>
-            <li>Go to <strong>Pages → + Create Page</strong></li>
-            <li>Choose layout: Grid (2-column, 3-column, 4-column) or Free-form</li>
-            <li>Drag components from the right panel:
-              <ul>
-                <li><strong>Report</strong> — Embed any existing report (list, chart, summary, kanban, pivot)</li>
-                <li><strong>KPI</strong> — Single-value metric with label and optional trend arrow. Example: Total Budget, Open PO Value, Inventory Value</li>
-                <li><strong>Chart</strong> — Create a chart inline (or reuse an existing chart report)</li>
-                <li><strong>HTML</strong> — Custom HTML/JS for widgets, custom visualizations</li>
-                <li><strong>Image</strong> — Logo, branding, illustrations</li>
-                <li><strong>Text</strong> — Headings, descriptions, annotations</li>
-                <li><strong>Map</strong> — Location-based data visualization</li>
-              </ul>
-            </li>
-            <li>For each component, configure size, data source, and display options</li>
-            <li>Set page as <strong>Homepage</strong> in app settings so it loads first when users open the app</li>
-            <li>Set <strong>Permissions</strong> per role (who can view/edit this page)</li>
-          </ol>
-
-          <h4>8.2 Executive Dashboard Components (Phase 1F)</h4>
-          <table>
-            <tr><th>Component</th><th>Type</th><th>Source</th></tr>
-            <tr><td>Total Project Budget</td><td>KPI</td><td>Sum of Budget_Plans.Total_Budget_Amount where Status=Active</td></tr>
-            <tr><td>Total Spent to Date</td><td>KPI</td><td>Sum of Expenses.Amount where Status=Approved</td></tr>
-            <tr><td>Budget Utilization %</td><td>KPI (formula)</td><td>Total Spent / Total Budget × 100</td></tr>
-            <tr><td>Open PO Value</td><td>KPI</td><td>Sum of PO_Line_Items.Total where PO.Status=Open</td></tr>
-            <tr><td>Inventory Value</td><td>KPI</td><td>Sum of Inventory_Items.Stock_Value where Status=Active</td></tr>
-            <tr><td>Cost Overruns Count</td><td>KPI</td><td>Count of Budget_Components where Status=Exceeded</td></tr>
-            <tr><td>Pending Approvals</td><td>KPI</td><td>Count of Budget_Approvals where Status=Pending</td></tr>
-            <tr><td>Monthly Spending Trend</td><td>Chart (Line)</td><td>Expenses grouped by Month(Expense_Date) with Sum(Amount)</td></tr>
-            <tr><td>Budget by Project</td><td>Chart (Bar)</td><td>Budget_Components grouped by Project with Sum(Allocated)</td></tr>
-            <tr><td>Expense by Category</td><td>Chart (Pie/Donut)</td><td>Expenses grouped by Category with Sum(Amount)</td></tr>
-            <tr><td>Low Stock Items</td><td>Report (List)</td><td>Item_Warehouse_Stock where Current_Stock ≤ Reorder_Level</td></tr>
-            <tr><td>Invoice Aging</td><td>Report (List)</td><td>Invoices where Status=Sent and Due_Date &lt; Today, sorted by Due_Date</td></tr>
-          </table>
-
-          <h4>8.3 KPI Field Type Configuration</h4>
-          <p>When adding a KPI widget:</p>
-          <ol>
-            <li>Drag <strong>KPI</strong> component onto the page</li>
-            <li>Select <strong>Source</strong> → <strong>Form</strong> and pick the target form</li>
-            <li>Set <strong>Aggregation</strong>: Sum, Count, Average, Min, Max</li>
-            <li>Set <strong>Field</strong>: the numeric field to aggregate</li>
-            <li>Set <strong>Filter</strong> criteria (e.g. Status = 'Active')</li>
-            <li>Set <strong>Label</strong> text to display</li>
-            <li>Optionally enable <strong>Trend</strong> to show up/down arrow with % change from previous period</li>
-          </ol>
-
-          <h4>8.4 Page Layout Tips</h4>
-          <ul>
-            <li>Use <strong>2-column or 3-column grid</strong> for KPI cards at the top (4-6 KPIs per row)</li>
-            <li>Use <strong>full-width</strong> for main charts (line/bar/pie)</li>
-            <li>Place <strong>List Reports</strong> below charts for drill-down detail</li>
-            <li>Use <strong>Tabs</strong> on the page to organize by domain: Overview, Inventory, Budget, Procurement, Reports</li>
-            <li>Set the Overview page as the <strong>app homepage</strong> so it's the first thing users see</li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- 9 -->
-      <div class="module-card">
-        <div class="mc-h" onclick="t(this)"><span class="mcn">9</span> Role Permissions <span class="t">CRUD / field / record level</span><span class="arr">▸</span></div>
-        <div class="bd">
-          <p>Zoho Creator permissions operate at 3 levels. Configure in order:</p>
-          <table>
-            <tr><th>Level</th><th>Where</th><th>What It Controls</th></tr>
-            <tr><td><strong>Form / Report / Page</strong></td><td>Component Settings → Permissions</td><td>Which roles can access/view each component. Toggle Create/Read/Update/Delete per role.</td></tr>
-            <tr><td><strong>Field</strong></td><td>Field Settings → Permissions</td><td>Which roles can see/edit each field. Hide sensitive fields (e.g. PAN, Bank details) from certain roles.</td></tr>
-            <tr><td><strong>Record</strong></td><td>Form Settings → Record Sharing</td><td>Who can see which records. Options: All records, Own records only, Records shared with user, Records in same group.</td></tr>
-          </table>
-
-          <h4>9.1 Setting Up Roles (from the Permission Matrix)</h4>
-          <ol>
-            <li>Go to <strong>Settings → User Permissions → Permissions</strong></li>
-            <li>Click each role (Administrator, PM, Finance, Procurement, Inventory, Employee)</li>
-            <li>For each component, set checkboxes: View, Create, Edit, Delete</li>
-            <li>For forms, also set field-level permissions: click the form name → toggle field visibility per role</li>
-            <li>Example: <code>PAN</code> field visible to Admin + Finance only. <code>Purchase_Price</code> visible to Admin + Procurement + Inventory.</li>
-          </ol>
-
-          <h4>9.2 Record-Level Sharing</h4>
-          <ul>
-            <li><strong>Employee role</strong>: Record Sharing = "Own records only" for Expenses, PRs → employees see only their own entries</li>
-            <li><strong>Project Manager role</strong>: Record Sharing = "All records" for project-related forms → PM sees all projects, budgets, expenses</li>
-            <li><strong>Procurement role</strong>: Record Sharing = "All records" for POs, GRNs, Transfer Orders</li>
-          </ul>
-          <p>Set these in <strong>Form Settings → Record Sharing</strong> after creating roles.</p>
-        </div>
-      </div>
-
-      <!-- 10 -->
-      <div class="module-card">
-        <div class="mc-h" onclick="t(this)"><span class="mcn">10</span> Best Practices &amp; Troubleshooting <span class="t">avoid pitfalls</span><span class="arr">▸</span></div>
-        <div class="bd">
-          <table>
-            <tr><th>Area</th><th>Practice</th><th>Why</th></tr>
-            <tr><td>API Names</td><td>Use <strong>snake_case</strong>. Never rename after go-live. Prefix with form initials for uniqueness.</td><td>Lookups and Deluge scripts reference API names. Renaming breaks everything.</td></tr>
-            <tr><td>Lookup fields</td><td>Use <strong>Formula Lookup</strong> (not Regular Lookup) for values that change in the source record</td><td>Regular Lookup caches the value at time of selection. Formula Lookup refreshes on every form load — critical for stock counts, budget balances.</td></tr>
-            <tr><td>CRUD operations</td><td>Every <code>createRecord</code>, <code>updateRecord</code>, <code>deleteRecord</code> counts as an API call</td><td>API call limits apply based on your plan. Batch operations in Scheduled workflows to reduce calls. One <code>getRecords</code> fetch, then loop with <code>updateRecord</code>.</td></tr>
-            <tr><td>getRecords limits</td><td>Max <strong>200 records per call</strong>. Paginate with offset parameter for large datasets.</td><td><code>zoho.creator.getRecords("app","form","criteria",page,200)</code>. Page starts at 1. Loop with page++ until result size &lt; 200.</td></tr>
-            <tr><td>Subform limits</td><td>Max ~100 rows in a single subform. For &gt;100, use a separate form with Lookup instead.</td><td>Relevant if PO/Invoice line items exceed 100. Our design uses Add-as-Subform for typical cases.</td></tr>
-            <tr><td>On Submit vs On Post Submit</td><td>Use <strong>On Submit</strong> for validations. Use <strong>On Post Submit</strong> for record creation that depends on the current record's ID.</td><td>In On Submit, <code>input.ID</code> is null for new records. On Post Submit has the ID available.</td></tr>
-            <tr><td>Delete prevention</td><td><strong>Never delete records</strong> that are referenced by Lookups. Use Status=Inactive/Archived instead.</td><td>Deleting a record that is a Lookup target breaks all references. This is the #1 cause of data loss in Creator apps.</td></tr>
-            <tr><td>Deluge timeout</td><td>Creator scripts timeout after ~5 minutes. Keep On Submit workflows under 30 seconds. Move batch ops to Scheduled workflows.</td><td>For mass updates, trigger a Scheduled workflow instead of looping inside On Submit.</td></tr>
-            <tr><td>Error logging</td><td>Always wrap production Deluge in <strong>try/catch</strong> and log to an error form</td><td>Without logging, failures are invisible. See section 5.5 for the logging pattern.</td></tr>
-            <tr><td>Testing</td><td>Create a separate <strong>Test</strong> app or use a Dev environment before Production</td><td>Zoho Creator doesn't have built-in versioning for data. Test workflows with sample records first.</td></tr>
-            <tr><td>Auto-number seeds</td><td>Auto-number fields start at 0001. To change the seed, delete the field and re-add it with the new starting number.</td><td>Can't change auto-number format after records exist. Plan formats carefully before any data entry.</td></tr>
-            <tr><td>Mobile forms</td><td>Check <strong>Mobile Layout</strong> in form settings after creating the form</td><td>Forms look different on mobile. Reorder fields, adjust layout for small screens. Enable offline data collection if needed.</td></tr>
-            <tr><td>Workflow execution log</td><td>Use <strong>Workflows → Execution Log</strong> to debug failed workflows</td><td>Shows which workflows ran, what data was processed, and where errors occurred. Essential for troubleshooting.</td></tr>
-          </table>
-
-          <h4>10.1 Common Issues &amp; Fixes</h4>
-          <table>
-            <tr><th>Symptom</th><th>Likely Cause</th><th>Fix</th></tr>
-            <tr><td>"Invalid field name" in Deluge</td><td>Typo or wrong API name</td><td>Check the field's API Name in form editor. Use exact match including case.</td></tr>
-            <tr><td>Lookup not showing any records</td><td>Criteria filter is too restrictive, or source form has no records</td><td>Check the lookup criteria. Ensure at least one matching record exists in the source form.</td></tr>
-            <tr><td>Workflow doesn't trigger</td><td>Workflow not activated, or form not selected as trigger</td><td>Go to Workflows → toggle <strong>Activate</strong> ON. Check the trigger form and event match what you expected.</td></tr>
-            <tr><td>Subform not saving</td><td>Subform validation error</td><td>Check each field in the subform for validation rules. Add required fields.</td></tr>
-            <tr><td>"Data exists" error on auto-number</td><td>Auto-number field was re-added after records existed</td><td>Delete the field, delete all records, then re-add. Or use a text field with custom numbering logic in Deluge.</td></tr>
-            <tr><td>KPI shows 0</td><td>Wrong field selected, or filter excludes all records</td><td>Verify aggregation field and filter criteria. Test the same aggregation in a Summary report.</td></tr>
-            <tr><td>Slow form load</td><td>Too many Lookup fields, or Formula Lookups on large datasets</td><td>Use popup mode (not dropdown) for large lookups. Add criteria to limit Formula Lookup scope.</td></tr>
-          </table>
-        </div>
-      </div>
-
-      <!-- 11 -->
-      <div class="module-card">
-        <div class="mc-h" onclick="t(this)"><span class="mcn">11</span> Build Phase Checklist <span class="t">console execution order</span><span class="arr">▸</span></div>
-        <div class="bd">
-          <p>Follow this sequence for each build phase. Open <code>build-viewer.html?phase=1X</code> or the markdown build guide for full field and Deluge specs.</p>
-          <table>
-            <tr><th>Phase</th><th>Forms to Create</th><th>Workflows to Build</th><th>Key Deluge Scripts</th></tr>
-            <tr><td><strong>1A</strong></td><td>Vendors, Vendor_Contacts, Vendor_Documents, Projects, Warehouses, Inventory_Items, Item_Warehouse_Stock, Item_Attributes</td><td>Project Code generation, Validate completion, Init stock per warehouse</td><td>Auto-number formats. On Post Submit: create stock records for all warehouses.</td></tr>
-            <tr><td><strong>1B</strong></td><td>Budget_Plans, Budget_Components, Inventory_Transactions</td><td>Budget validation (sum ≤ total), Stock update on transaction, Stock Out → auto Expense, Negative stock prevention</td><td>WF #2: Budget_Plans submit validation. WF #7: Stock In/Out/Reserve/Release math. WF #8: Expense creation from Stock Out.</td></tr>
-            <tr><td><strong>1C</strong></td><td>Expenses, Purchase_Requisitions, PR_Line_Items</td><td>Budget check on expense submit, Auto-approve or trigger overrun, Budget Approval creation on overrun, PR stage notification emails</td><td>WF #3-4: Budget threshold check. WF #15: Approver email chain. Blueprint: PR approval stages.</td></tr>
-            <tr><td><strong>1D</strong></td><td>Budget_Approvals, Purchase_Orders, PO_Line_Items, Goods_Receipts, GRN_Line_Items, Transfer_Orders, TO_Line_Items</td><td>Approve/Reject budget, Auto-create PO from PR, GRN → Stock In + PO update, TO → paired Stock Out/In</td><td>WF #5-6: Budget approval outcomes. WF #10: Paired TO. WF #11-12: GRN processing. WF #13: PO Status=Open email.</td></tr>
-            <tr><td><strong>1E</strong></td><td>BOM, BOM_Line_Items, Delivery_Challans, DC_Line_Items, Invoices, Invoice_Line_Items</td><td>BOM cost calculation, DC → Stock Out, Invoice sent → update project invoiced, Invoice paid → balance = 0, Custom button: Create DC from Invoice</td><td>WF #19-24: Revenue tracking, DC auto-stock-out, BOM costing, auto-create DC button.</td></tr>
-            <tr><td><strong>1F</strong></td><td>Reports (10+): Budget vs Actual, Project P&L, Stock Availability, Low Stock, Invoice Aging, DC Register, BOM Cost, PO Register, Expense Analysis, Vendor Performance. Dashboard pages: Executive Dashboard, Inventory Dashboard, Procurement Dashboard, Financial Dashboard.</td><td>Scheduled daily: KPI refresh, budget alerts at 80/90/100%, low stock alerts, auto-close aged POs, mark overdue invoices</td><td>WF #16: Cron-based operations. KPI field setup. Summary reports with group-by + aggregates. Page layout with KPI widgets + charts.</td></tr>
-          </table>
-
-          <h4>Per-Form Build Pattern (Repeat for every form)</h4>
-          <ol>
-            <li>Create form with all fields per spec</li>
-            <li>Configure Auto-Number format</li>
-            <li>Set up Lookup fields with source form, display field, and criteria</li>
-            <li>Add Add-as-Subform children</li>
-            <li>Configure Field Display Rules (conditional show/hide)</li>
-            <li>Set Field-Level Validation (required, pattern, range)</li>
-            <li>Create Form Workflow for cross-field validation and automation (On Submit)</li>
-            <li>Create Blueprint if the form has a stage-based process</li>
-            <li>Create default List Report → customize columns, filters, sorting</li>
-            <li>Set Role Permissions on form + report</li>
-            <li>Test: submit records, verify workflows fire, check edge cases</li>
-            <li>Move to next form in the phase</li>
-          </ol>
-
-          <p style="margin-top:12px;color:var(--accent)">→ Open each phase build guide for exact field specs and Deluge scripts.</p>
-        </div>
-      </div>
-
+          // Stepper navigation (scoped per tab)
+          window.igGo = function(el, num) {
+            var stepper = el.closest('.ts');
+            var steps = stepper.querySelectorAll('.ts-step');
+            var total = steps.length;
+            steps.forEach(function(s){ s.classList.remove('active','done'); });
+            steps.forEach(function(s){
+              var sn = parseInt(s.getAttribute('data-ts'));
+              if (sn < num) s.classList.add('done');
+              if (sn === num) s.classList.add('active');
+            });
+            var ind = stepper.querySelector('.ts-indicator .ts-cur');
+            if (ind) ind.textContent = num;
+          };
+          window.igNext = function(el) {
+            var stepper = el.closest('.ts');
+            var cur = stepper.querySelector('.ts-step.active');
+            if (!cur) return;
+            var num = parseInt(cur.getAttribute('data-ts'));
+            var next = stepper.querySelector('.ts-step[data-ts="' + (num+1) + '"]');
+            if (!next) return;
+            cur.classList.remove('active');
+            cur.classList.add('done');
+            next.classList.add('active');
+            var ind = stepper.querySelector('.ts-indicator .ts-cur');
+            if (ind) ind.textContent = num+1;
+            var hd = next.querySelector('.ts-hd');
+            if (hd) setTimeout(function(){ hd.scrollIntoView({behavior:'smooth',block:'center'}); }, 100);
+          };
+          window.igPrev = function(el) {
+            var stepper = el.closest('.ts');
+            var cur = stepper.querySelector('.ts-step.active');
+            if (!cur) return;
+            var num = parseInt(cur.getAttribute('data-ts'));
+            var prev = stepper.querySelector('.ts-step[data-ts="' + (num-1) + '"]');
+            if (!prev) return;
+            cur.classList.remove('active');
+            if (stepper.querySelector('.ts-step[data-ts="' + (num+1) + '"]')) {
+              /* don't mark last as done if going back */
+            }
+            prev.classList.remove('done');
+            prev.classList.add('active');
+            var ind = stepper.querySelector('.ts-indicator .ts-cur');
+            if (ind) ind.textContent = num-1;
+            var hd = prev.querySelector('.ts-hd');
+            if (hd) setTimeout(function(){ hd.scrollIntoView({behavior:'smooth',block:'center'}); }, 100);
+          };
+        })();
+      </script>
     </section>
 
     <footer>

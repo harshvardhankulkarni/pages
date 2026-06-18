@@ -21,7 +21,7 @@ This repo contains the **internal implementation plan** for our Project Budget T
 | 1 | Project Master | `Projects` | Central project registry, auto-numbered codes |
 | 2 | Vendor Management | `Vendors` + `Vendor_Contacts` + `Vendor_Documents` | Zoho Inventory-aligned vendor master |
 | 3 | Warehouses | `Warehouses` | Multi-warehouse stock locations |
-| 4 | Inventory Master | `Inventory_Items` + `Item_Warehouse_Stock` | SKU catalog, HSN/SAC, per-warehouse stock |
+| 4 | Inventory Master | `Inventory_Items` + `Item_Warehouse_Stock` + `Item_Attributes` | SKU catalog, HSN/SAC, per-warehouse stock |
 | 5 | Budget Planning | `Budget_Plans` | Per-project budget plans |
 | 6 | Budget Components | `Budget_Components` | Dynamic cost breakdown per project |
 | 7 | Expense Management | `Expenses` | Actual spend against budget components |
@@ -72,6 +72,10 @@ This repo contains the **internal implementation plan** for our Project Budget T
 | 19 | Invoice → Create DC (custom button) | Invoice Sent + stock items | §C.15 |
 | 20 | Stock Reservation → increment Reserved_Qty | Reservation transaction | §C.9 |
 | 21 | Project Completed → auto-final Invoice | Project status change | §C.1 |
+| 22 | Transaction Validation — prevent negative stock | Inventory Transaction submit | §C.9 |
+| 23 | PO Cancelled — validate no linked GRN | PO Status = Cancelled | §C.12 |
+| 24 | Project Completion — validate no open items | Project Status = Completed | §C.1 |
+| 25 | Auto-close Completed POs — aged >30 days | Scheduled workflow | §C.14 |
 
 ## Team Access
 
@@ -95,8 +99,12 @@ This repo contains the **internal implementation plan** for our Project Budget T
 |----------|---------|
 | `IMPLEMENTATION_PLAN.md` | Complete field-level specs for all 17 modules, Deluge workflows, lookup map, risks |
 | `AGENTS.md` | Compact AI assistant guide — module list, automation points, roles |
-| `index.html` | Interactive HTML implementation plan with expandable module cards |
+| `index.html` | Interactive HTML blueprint with sidebar nav, KPI bar, module cards, lookup map, build phases, role matrix, and tab+stepper implementation guide |
 | `README.md` | This file — team onboarding and navigation |
+| `build-viewer.html` | Markdown viewer for `build/` phase guides — loads via `?phase=1A` through `1F` |
+| `build/PHASE_1A_BUILD.md` – `1F_BUILD.md` | Phase-wise console build guides with Deluge scripts, field configs, validation rules, and verification checklists (2,101 lines total) |
+| `user-guide.html` | End-user guide — 16 modules in data entry order, relationship diagrams, flow charts, report descriptions |
+| `handoff-spec.html` | Developer handoff spec for engineering team — component specs, design tokens, interaction states |
 
 ---
 
