@@ -26,6 +26,31 @@ Requires Phase 1B complete (Budget_Plans, Budget_Components, Inventory_Transacti
 ### Validation Rules
 1. **Positive Amount** — On Submit, if `Amount <= 0` → `throw "Amount must be positive."`
 2. **Budget Component belongs to Project** — On Submit, verify Budget_Component.Budget_Plan.Project matches input.Project.
+3. **Budget Plan must be Active** — On Submit, verify parent Budget_Plan.Status = "Active".
+4. **Duplicate Prevention** — On Submit, check no duplicate expense with same Project + Component + Date + Amount.
+
+### Workflow / Approval Process
+
+```
+Expense Submitted
+    │
+    ├── Budget Component found? ── No ──→ Throw error
+    │
+    ├── Belongs to this Project? ── No ──→ Throw error
+    │
+    ├── Budget Plan is Active? ── No ──→ Throw error
+    │
+    ├── Amount ≤ Allocated Budget?
+    │       ├── Yes → Auto-Approve (Status = "Approved")
+    │       │         → Update Budget_Component.Spent_Amount
+    │       │
+    │       └── No  → Overrun (Status = "Overrun-Pending Approval")
+    │                   → Create Budget_Approval record
+    │                   → Notify PM + Finance Manager
+    │
+    └── Approved? ── Yes → Spent_Amount updated
+        └── Rejected?    → Expense stays Rejected
+```
 
 ### Deluge Scripts
 
@@ -205,6 +230,43 @@ Custom module (Zoho Books has no native PR). Feeds into Purchase Orders.
 | Item Type | Single Line | `Item_Type` | Copied from Item |
 | Account | Lookup → Chart_of_Accounts | `Account` | Maps to Books `account_id` |
 | Unit | Single Line | `Unit` | Copied from Item |
+
+### Validation Rules
+1. **Required fields on Submit** — Subject, Project, and at least one line item required when Status = "Open".
+2. **Urgency validation** — If Urgency = "Critical", justification is required.
+
+### Approval Process (3-Stage Blueprint)
+
+```
+PR Created (Status = Draft)
+    │
+    └── User submits (Status → Open)
+            │
+            ├── Stage 1: Pending Dept Approval
+            │       ├── Approve → Stage 2
+            │       └── Reject  → Status = Rejected
+            │
+            ├── Stage 2: Pending Finance Approval
+            │       ├── Approve → Stage 3
+            │       └── Reject  → Status = Rejected
+            │
+            ├── Stage 3: Pending Procurement
+            │       ├── Approve → Status = Approved
+            │       │            → Auto-create PO (Draft)
+            │       │            → Copy PR line items to PO
+            │       └── Reject  → Status = Rejected
+            │
+            └── Approved → PO auto-generated in Draft
+```
+
+**Stage Transitions:**
+| From | To | Trigger | Action |
+|---|---|---|---|
+| Draft | Open | User clicks Submit | Notify Dept Manager |
+| Pending Dept Approval | Pending Finance | Dept Manager approves | Notify Finance Manager |
+| Pending Finance | Pending Procurement | Finance approves | Notify Procurement |
+| Pending Procurement | Approved | Procurement approves | Auto-create PO + copy line items |
+| Any | Rejected | Any approver rejects | Status = Rejected, notify requester |
 
 ### Deluge Scripts
 

@@ -25,6 +25,27 @@ Tracks overrun approval requests. Auto-created by Expense workflow.
 | Approval Date | Date | `Approval_Date` | No | |
 | Remarks | Multi Line | `Remarks` | No | |
 
+### Validation Rules
+1. **Cannot approve without Expense** — On Submit, if Status = "Approved" or "Rejected", Expense field must not be null.
+2. **Status change only from Pending** — Only records with Status = "Pending" can be updated to "Approved" or "Rejected".
+
+### Approval Process
+
+```
+Overrun Expense Submitted
+    │
+    └── Budget_Approval auto-created (Status = "Pending")
+            │
+            ├── PM / Finance Manager approves
+            │       ├── Expense Status → "Approved"
+            │       ├── Budget_Component.Spent_Amount → incremented
+            │       └── Approval_Date + Approved_By recorded
+            │
+            └── PM / Finance Manager rejects
+                    ├── Expense Status → "Rejected"
+                    └── Submitter notified
+```
+
 ### Deluge Scripts
 
 #### On Status = Approved — Update Expense + Budget
@@ -153,6 +174,46 @@ if (status_val == "Rejected" && !expense_id.isNull())
 | Item Order | Number | `Item_Order` | |
 | Project | Lookup → Projects | `Project` | Per-line tracking |
 
+### Validation Rules
+1. **Cannot cancel with linked GRNs** — On Status = "Cancelled", check for Goods_Receipts linked to this PO. If found, throw error.
+2. **Open requires Vendor** — On Status = "Open", Vendor field must not be null.
+3. **At least one line item** — On Status = "Open" or "Closed", there must be at least one PO_Line_Item.
+
+### Approval Process (PO Lifecycle)
+
+```
+PO Created (Status = Draft)
+    │
+    ├── Send to Vendor → Status = Open
+    │       ├── Email PO PDF to vendor
+    │       └── Inventory expected
+    │
+    ├── Goods Received → Status = Open (stays Open)
+    │       ├── GRN creates Stock In
+    │       ├── PO_Line_Item.Received_Quantity updated
+    │       └── All received? → Auto-Close
+    │
+    ├── Partially Invoiced → Status = Partially Invoiced
+    │       └── Some line items billed
+    │
+    ├── Fully Invoiced → Status = Billed
+    │       └── All line items billed
+    │
+    ├── All received + invoiced → Status = Closed
+    │
+    └── Cancel (if no GRNs) → Status = Cancelled
+```
+
+**State Transitions:**
+| From | To | Condition |
+|---|---|---|
+| Draft | Open | User sends PO |
+| Open | Partially Invoiced | Some line items invoiced |
+| Open / Partially Invoiced | Billed | All line items invoiced |
+| Open / Partially Invoiced / Billed | Closed | All items received + invoiced |
+| Draft / Open | Cancelled | No linked GRNs |
+| Any | Closed | Scheduled auto-close (30 days after fully received) |
+
 ### Deluge Scripts
 
 #### On Submit — PO Open Workflow
@@ -226,6 +287,32 @@ if (status_val == "Cancelled")
 | Rejection Reason | Single Line | `Rejection_Reason` | Required if Rejected > 0 |
 | Actual Unit Cost | Currency | `Actual_Unit_Cost` | Editable |
 | Warehouse | Lookup → Warehouses | `Warehouse` | Destination |
+
+### Validation Rules
+1. **Accepted + Rejected ≤ PO Quantity** — On Submit, validate `Accepted_Quantity + Rejected_Quantity ≤ PO_Quantity` for each line.
+2. **Rejection Reason required** — If `Rejected_Quantity > 0`, `Rejection_Reason` must not be empty.
+3. **PO must be Open** — GRN can only be created against POs with Status = "Open".
+4. **Warehouse required for accepted items** — If `Accepted_Quantity > 0`, Warehouse must be set.
+
+### Workflow Process
+
+```
+GRN Created (Status = Draft)
+    │
+    └── Submit (Status → Open)
+            │
+            ├── For each line item with Accepted_Quantity > 0:
+            │       ├── Create Stock In transaction
+            │       ├── Update PO_Line_Item.Received_Quantity
+            │       └── Alert if partial receipt
+            │
+            ├── For each line with Rejected_Quantity > 0:
+            │       └── Log rejection reason for vendor return
+            │
+            └── All PO line items fully received?
+                    ├── Yes → Auto-close PO (Status = Closed)
+                    └── No  → PO stays Open
+```
 
 ### Deluge Scripts
 
@@ -342,6 +429,26 @@ if (status_val == "Open" && !po_id.isNull())
 | Item | Lookup → Inventory_Items | `Item` |
 | Quantity | Decimal | `Quantity` |
 | Warehouse | Lookup → Warehouses | `Warehouse` |
+
+### Validation Rules
+1. **Different warehouses** — From_Warehouse and To_Warehouse must be different.
+2. **At least one line item** — On Status = "Completed", at least one TO_Line_Item required.
+3. **Sufficient stock** — On Status = "Completed", validate source warehouse has enough stock for each item (check Item_Warehouse_Stock).
+
+### Workflow Process
+
+```
+TO Created (Status = Draft)
+    │
+    └── Mark Completed → Status = Completed
+            │
+            ├── Validate From ≠ To Warehouse
+            ├── Validate stock availability at source
+            │
+            └── For each line item:
+                    ├── Stock Out at From_Warehouse
+                    └── Stock In at To_Warehouse
+```
 
 ### Deluge Scripts
 

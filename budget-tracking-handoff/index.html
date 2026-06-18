@@ -391,6 +391,23 @@
             </table>
           </div>
           <p><strong>Deluge:</strong> On Submit → check budget. Within: auto-approve + update component. Over: create Budget_Approval + notify PM/Finance.</p>
+          <div class="tw" style="margin-top:8px">
+            <table class="tbl">
+              <tr><th colspan="2">Validation Rules</th></tr>
+              <tr><td>Amount > 0</td><td>Reject if Amount ≤ 0</td></tr>
+              <tr><td>Component belongs to Project</td><td>Budget_Component.Budget_Plan.Project must match Expense.Project</td></tr>
+              <tr><td>Budget Plan must be Active</td><td>Parent Budget_Plan must have Status = "Active"</td></tr>
+              <tr><td>Duplicate check</td><td>Same Project + Component + Date + Amount combination rejected</td></tr>
+            </table>
+          </div>
+          <div class="wf-s">
+            <span class="st s-dr">Draft</span><span class="ar">→</span>
+            <span class="st s-op">Submitted</span><span class="ar">→</span>
+            <span class="st s-ap">Approved</span><span class="ar">|</span>
+            <span class="st s-pn">Overrun-Pending</span><span class="ar">→</span>
+            <span class="st s-ap">Approved</span><span class="ar">/</span>
+            <span class="st s-rj">Rejected</span>
+          </div>
         </bd>
       </div>
 
@@ -414,6 +431,19 @@
             </table>
           </div>
           <p><strong>Deluge:</strong> On Approval → update component amount, approve Expense. On Rejection → Expense Rejected, notify.</p>
+          <div class="tw" style="margin-top:8px">
+            <table class="tbl">
+              <tr><th colspan="2">Validation Rules</th></tr>
+              <tr><td>Expense required</td><td>Approval must reference an existing Expense record</td></tr>
+              <tr><td>Pending only</td><td>Only "Pending" records can transition to Approved/Rejected</td></tr>
+            </table>
+          </div>
+          <div class="wf-s">
+            <span class="st s-pn">Pending</span><span class="ar">→</span>
+            <span class="st s-ap">Approved</span><span class="ar">→ Expense Approved + Budget updated</span>
+            <span style="margin:0 6px">|</span>
+            <span class="st s-rj">Rejected</span><span class="ar">→ Expense Rejected</span>
+          </div>
         </bd>
       </div>
 
@@ -453,6 +483,19 @@ Release:   Reserved_Qty -= Qty</pre>
         </hd>
         <bd>
           <p><strong>Form:</strong> <code>Transfer_Orders</code> | <strong>Sub:</strong> <code>TO_Line_Items</code></p>
+          <div class="tw" style="margin-top:8px">
+            <table class="tbl">
+              <tr><th colspan="2">Validation Rules</th></tr>
+              <tr><td>Different warehouses</td><td>From_Warehouse ≠ To_Warehouse</td></tr>
+              <tr><td>Sufficient stock</td><td>Check Item_Warehouse_Stock on Complete</td></tr>
+            </table>
+          </div>
+          <div class="wf-s">
+            <span class="st s-dr">Draft</span><span class="ar">→</span>
+            <span class="st s-op">Completed</span><span class="ar">→ Stock Out + Stock In per line</span>
+            <span style="margin:0 6px">|</span>
+            <span class="st s-rj">Cancelled</span>
+          </div>
           <p><strong>Deluge:</strong> On Status=Completed → for each line item: create Stock Out (From) + Stock In (To).</p>
         </bd>
       </div>
@@ -466,6 +509,14 @@ Release:   Reserved_Qty -= Qty</pre>
         </hd>
         <bd>
           <p><strong>Form:</strong> <code>Purchase_Requisitions</code> | <strong>Sub:</strong> <code>PR_Line_Items</code></p>
+          <div class="tw" style="margin-top:8px">
+            <table class="tbl">
+              <tr><th colspan="2">Validation Rules</th></tr>
+              <tr><td>At least one line item</td><td>On transition to Open</td></tr>
+              <tr><td>Est. Rate > 0</td><td>All line item rates must be > 0</td></tr>
+              <tr><td>Project required</td><td>Must be set before Open</td></tr>
+            </table>
+          </div>
           <div class="wf-s">
             <span class="st s-pn">Dept Manager</span><span class="ar">→</span>
             <span class="st s-pn">Finance</span><span class="ar">→</span>
@@ -499,6 +550,15 @@ Release:   Reserved_Qty -= Qty</pre>
         </hd>
         <bd>
           <p><strong>Form:</strong> <code>Purchase_Orders</code> | <strong>Sub:</strong> <code>PO_Line_Items</code></p>
+          <div class="tw" style="margin-top:8px">
+            <table class="tbl">
+              <tr><th colspan="2">Validation Rules</th></tr>
+              <tr><td>Vendor required</td><td>On Open, Vendor must not be null</td></tr>
+              <tr><td>Project required</td><td>On Open, Project must not be null</td></tr>
+              <tr><td>At least one line item</td><td>On transition to Open</td></tr>
+              <tr><td>PR already linked</td><td>If linked to a PR, PR must be Approved</td></tr>
+            </table>
+          </div>
           <div class="wf-s">
             <span class="st s-dr">Draft</span><span class="ar">→</span>
             <span class="st s-op">Open</span><span class="ar">→</span>
@@ -553,6 +613,23 @@ Release:   Reserved_Qty -= Qty</pre>
         </hd>
         <bd>
           <p><strong>Form:</strong> <code>Goods_Receipts</code> | <strong>Sub:</strong> <code>GRN_Line_Items</code></p>
+          <div class="tw" style="margin-top:8px">
+            <table class="tbl">
+              <tr><th colspan="2">Validation Rules</th></tr>
+              <tr><td>Accepted + Rejected ≤ PO Qty</td><td>Per line item</td></tr>
+              <tr><td>PO must be Open</td><td>GRN only on Open POs</td></tr>
+              <tr><td>Rejection Reason required</td><td>If Rejected_Qty > 0</td></tr>
+              <tr><td>Warehouse required</td><td>If Accepted_Qty > 0</td></tr>
+            </table>
+          </div>
+          <div class="wf-s">
+            <span class="st s-dr">Draft</span><span class="ar">→</span>
+            <span class="st s-op">Open</span><span class="ar">→</span>
+            <span>Accepted → Stock In + update PO</span><span class="ar">|</span>
+            <span>Rejected → Log for returns</span>
+            <span class="ar">|</span>
+            <span>All received → auto-close PO</span>
+          </div>
           <p><strong>Deluge:</strong> On Submit → Accepted Qty → Stock In + update PO Received_Qty. All items received → auto-close PO.</p>
         </bd>
       </div>
@@ -591,6 +668,25 @@ Release:   Reserved_Qty -= Qty</pre>
               <tr><td>Balance Due / Amount Paid</td><td>Currency</td><td></td></tr>
             </table>
           </div>
+          <div class="tw" style="margin-top:8px">
+            <table class="tbl">
+              <tr><th colspan="2">Validation Rules</th></tr>
+              <tr><td>At least one line item</td><td>On Status = Sent</td></tr>
+              <tr><td>Due Date ≥ Invoice Date</td><td>On Submit</td></tr>
+              <tr><td>Balance non-negative</td><td>Balance_Due = Total − Amount_Paid ≥ 0</td></tr>
+            </table>
+          </div>
+          <div class="wf-s">
+            <span class="st s-dr">Draft</span><span class="ar">→</span>
+            <span class="st s-op">Sent</span><span class="ar">→ Track revenue</span>
+            <span>|</span>
+            <span class="st s-pn">Partially Paid</span><span class="ar">→</span>
+            <span class="st s-ap">Paid</span>
+            <span>|</span>
+            <span>Due passed → <span class="st s-ex">Overdue</span></span>
+            <span>|</span>
+            <span class="st s-cl">Cancelled</span>
+          </div>
           <p><strong>Deluge:</strong> Sent → update Project Total Invoiced. Paid → set Amount Paid, Balance Due = 0. Custom button "Create DC".</p>
         </bd>
       </div>
@@ -612,6 +708,24 @@ Release:   Reserved_Qty -= Qty</pre>
               <tr><td>Ship Via / Vehicle / Driver</td><td>Text + Phone</td><td></td></tr>
               <tr><td>Status</td><td>Dropdown</td><td><span class="s-dr">Draft</span> <span class="s-op">Shipped</span> <span class="s-ap">Delivered</span> <span class="s-cl">Cancelled</span></td></tr>
             </table>
+          </div>
+          <div class="tw" style="margin-top:8px">
+            <table class="tbl">
+              <tr><th colspan="2">Validation Rules</th></tr>
+              <tr><td>At least one line item</td><td>On Status = Shipped</td></tr>
+              <tr><td>Sufficient stock</td><td>Validate unreserved stock ≥ dispatch qty</td></tr>
+              <tr><td>Warehouse required</td><td>On Shipped</td></tr>
+            </table>
+          </div>
+          <div class="wf-s">
+            <span class="st s-dr">Draft</span><span class="ar">→</span>
+            <span class="st s-op">Shipped</span><span class="ar">→ Stock Out per line</span>
+            <span class="ar">→</span>
+            <span class="st s-ap">Delivered</span>
+            <span>|</span>
+            <span class="st s-cl">Cancelled</span>
+            <span>|</span>
+            <span class="st s-pn">Returned</span><span class="ar">→ Stock In (reverse)</span>
           </div>
           <p><strong>Deluge:</strong> On Status=Shipped → auto-create Stock Out for dispatched items. Validate stock on create.</p>
         </bd>
@@ -637,6 +751,20 @@ Release:   Reserved_Qty -= Qty</pre>
               <tr><td>Total Mfg Cost</td><td>Formula</td><td>Component + Labor + Overhead</td></tr>
               <tr><td>Status / Version</td><td>Dropdown + Decimal</td><td></td></tr>
             </table>
+          </div>
+          <div class="tw" style="margin-top:8px">
+            <table class="tbl">
+              <tr><th colspan="2">Validation Rules</th></tr>
+              <tr><td>At least one component</td><td>On Submit</td></tr>
+              <tr><td>Quantity > 0</td><td>All component quantities must be > 0</td></tr>
+              <tr><td>No duplicate items</td><td>Same component item cannot appear twice</td></tr>
+            </table>
+          </div>
+          <div class="wf-s">
+            <span class="st s-dr">Draft</span><span class="ar">→</span>
+            <span class="st s-op">Active</span><span class="ar">→ Auto-calc: Component + Labor + Overhead</span>
+            <span>|</span>
+            <span class="st s-cl">Inactive</span>
           </div>
           <p><strong>Deluge:</strong> On Submit → calculate Total Component Cost + Total Mfg Cost. Prevent duplicate Active BOMs per item.</p>
         </bd>

@@ -33,6 +33,28 @@ Requires Phase 1D complete (Budget_Approvals, Purchase_Orders, Goods_Receipts, T
 | Total Cost | Formula | `Total_Cost` | `Quantity * Unit_Cost` |
 | Notes | Single Line | `Notes` | |
 
+### Validation Rules
+1. **At least one component** — On Submit, there must be at least one BOM_Line_Item.
+2. **Quantity > 0** — All component quantities must be greater than 0.
+3. **No duplicate components** — Same component item cannot appear twice in one BOM.
+
+### Workflow Process
+
+```
+BOM Created (Status = Draft)
+    │
+    └── Submit
+            │
+            ├── For each BOM_Line_Item:
+            │       ├── Auto-fill Unit_Cost from Item.Purchase_Price
+            │       └── Calculate Total_Cost = Quantity × Unit_Cost
+            │
+            ├── Sum all line Total_Cost → Total_Material_Cost
+            ├── Total_Mfg_Cost = Total_Material_Cost + Labor_Cost + Overhead_Cost
+            │
+            └── BOM ready for manufacturing routing
+```
+
 ### Deluge Scripts
 
 #### On Submit — Calculate BOM Cost
@@ -102,6 +124,27 @@ if (!item_id.isNull())
 | Quantity | Decimal | `Quantity` | |
 | Unit | Single Line | `Unit` | Copied from Item |
 | Warehouse | Lookup → Warehouses | `Warehouse` | Override |
+
+### Validation Rules
+1. **Warehouse required for Shipped** — On Status = "Shipped", Warehouse must not be null.
+2. **At least one line item** — On Status = "Shipped", at least one DC_Line_Item required.
+3. **Sufficient stock** — On Status = "Shipped", validate available stock (Current_Stock − Reserved_Qty) ≥ dispatch quantity.
+
+### Workflow Process
+
+```
+DC Created (Status = Draft)
+    │
+    ├── Mark Shipped → Status = Shipped
+    │       ├── Validate warehouse and stock
+    │       └── For each line item: Create Stock Out transaction
+    │
+    ├── Mark Delivered → Status = Delivered
+    │       └── Carrier confirmed delivery
+    │
+    └── Mark Returned → Status = Returned
+            └── Create Stock In transaction (reverse)
+```
 
 ### Deluge Scripts
 
@@ -190,6 +233,42 @@ if (status_val == "Shipped")
 | Tax Amount | Formula | `Tax_Amount` | |
 | Total | Formula | `Total` | |
 | Project | Lookup → Projects | `Project` | Per-line project |
+
+### Validation Rules
+1. **At least one line item** — On Status = "Sent", at least one Invoice_Line_Item required.
+2. **Due Date ≥ Invoice Date** — On Submit, Due_Date must be on or after Invoice_Date.
+3. **Balance non-negative** — Balance_Due = Total − Amount_Paid must not be negative.
+4. **Account required for Sent** — On Status = "Sent", Account must not be null.
+
+### Workflow Process
+
+```
+Invoice Created (Status = Draft)
+    │
+    ├── Send to Client → Status = Sent
+    │       ├── Update Project.Total_Invoiced
+    │       └── Track for P&L calculation
+    │
+    ├── Partial Payment → Status = Partially Paid
+    │       ├── Amount_Paid updated
+    │       └── Balance_Due recalculated
+    │
+    ├── Full Payment → Status = Paid
+    │       ├── Amount_Paid = Total
+    │       └── Balance_Due = 0
+    │
+    ├── Due Date Passed (scheduled daily)
+    │       └── Status = Overdue
+    │
+    └── Cancelled → Status = Cancelled
+            └── No financial impact
+
+**Custom Actions:**
+| Button | Source Form | Action |
+|---|---|---|
+| Create Invoice | Projects | Opens Invoice form pre-filled with Project |
+| Create DC | Invoices | Auto-creates Delivery Challan from line items |
+```
 
 ### Deluge Scripts
 
