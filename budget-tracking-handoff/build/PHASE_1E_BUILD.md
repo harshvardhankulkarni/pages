@@ -149,6 +149,28 @@ DC Created (Status = Draft)
 
 ### Deluge Scripts
 
+#### DC_Line_Items On Submit — Fill Default Warehouse from Parent
+```deluge
+/* Phase 1E — DC_Line_Items: On Submit
+   Auto-fill Warehouse from parent Delivery_Challan.Warehouse if line item has no override */
+dc_id = input.DC;
+li_wh = input.Warehouse;
+if (!dc_id.isNull() && li_wh.isNull())
+{
+    dc_record = zoho.creator.getRecordById("budget_tracking", "Delivery_Challans", dc_id);
+    if (!dc_record.isNull())
+    {
+        parent_wh = dc_record.get("Warehouse");
+        if (!parent_wh.isNull())
+        {
+            li_data = Map();
+            li_data.put("Warehouse", parent_wh);
+            zoho.creator.updateRecord("budget_tracking", "DC_Line_Items", input.ID, li_data);
+        }
+    }
+}
+```
+
 #### On Submit — Process Stock Deduction on Ship
 ```deluge
 /* Phase 1E — Delivery_Challans: On Submit

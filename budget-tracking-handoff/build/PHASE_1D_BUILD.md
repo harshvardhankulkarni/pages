@@ -453,6 +453,27 @@ TO Created (Status = Draft)
 
 ### Deluge Scripts
 
+#### TO_Line_Items On Submit — Sync Warehouse with Parent
+```deluge
+/* Phase 1D — TO_Line_Items: On Submit
+   Auto-fill Warehouse from parent Transfer_Order.From_Warehouse for consistency */
+to_id = input.Transfer_Order;
+if (!to_id.isNull())
+{
+    to_record = zoho.creator.getRecordById("budget_tracking", "Transfer_Orders", to_id);
+    if (!to_record.isNull())
+    {
+        from_wh = to_record.get("From_Warehouse");
+        if (!from_wh.isNull())
+        {
+            li_data = Map();
+            li_data.put("Warehouse", from_wh);
+            zoho.creator.updateRecord("budget_tracking", "TO_Line_Items", input.ID, li_data);
+        }
+    }
+}
+```
+
 #### On Submit — Process Transfer Completion
 ```deluge
 /* Phase 1D — Transfer_Orders: On Submit
