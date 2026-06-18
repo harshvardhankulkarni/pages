@@ -128,7 +128,7 @@ if (!item_id.isNull())
 ### Validation Rules
 1. **Warehouse required for Shipped** — On Status = "Shipped", Warehouse must not be null.
 2. **At least one line item** — On Status = "Shipped", at least one DC_Line_Item required.
-3. **Sufficient stock** — On Status = "Shipped", validate available stock (Current_Stock − Reserved_Qty) ≥ dispatch quantity.
+3. **Sufficient stock** — On Status = "Shipped", validate available stock at the source warehouse per line item ≥ dispatch quantity.
 
 ### Workflow Process
 
@@ -137,6 +137,7 @@ DC Created (Status = Draft)
     │
     ├── Mark Shipped → Status = Shipped
     │       ├── Validate warehouse and stock
+    │       ├── Use line item Warehouse (override) or fall back to parent Warehouse
     │       └── For each line item: Create Stock Out transaction
     │
     ├── Mark Delivered → Status = Delivered
@@ -156,10 +157,10 @@ status_val = ifnull(input.Status.toMap().get("display_value"), "");
 
 if (status_val == "Shipped")
 {
-    wh_id = input.Warehouse;
+    parent_wh = input.Warehouse;
     dc_id = input.ID;
 
-    if (wh_id.isNull())
+    if (parent_wh.isNull())
     {
         throw "Warehouse is required before shipping.";
     }
@@ -176,6 +177,10 @@ if (status_val == "Shipped")
 
             if (!item_id.isNull() && qty > 0)
             {
+                /* Use line item Warehouse override if set, else parent Warehouse */
+                li_wh = li.get("Warehouse");
+                wh_id = ifnull(li_wh, parent_wh);
+
                 /* Create Stock Out transaction */
                 txn_data = Map();
                 txn_data.put("Transaction_Type", "Stock Out");

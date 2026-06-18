@@ -487,7 +487,7 @@ Release:   Reserved_Qty -= Qty</pre>
             <table class="tbl">
               <tr><th colspan="2">Validation Rules</th></tr>
               <tr><td>Different warehouses</td><td>From_Warehouse ≠ To_Warehouse</td></tr>
-              <tr><td>Sufficient stock</td><td>Check Item_Warehouse_Stock on Complete</td></tr>
+              <tr><td>Sufficient stock</td><td>Validate From_Warehouse stock per line item</td></tr>
             </table>
           </div>
           <div class="wf-s">
@@ -713,7 +713,7 @@ Release:   Reserved_Qty -= Qty</pre>
             <table class="tbl">
               <tr><th colspan="2">Validation Rules</th></tr>
               <tr><td>At least one line item</td><td>On Status = Shipped</td></tr>
-              <tr><td>Sufficient stock</td><td>Validate unreserved stock ≥ dispatch qty</td></tr>
+              <tr><td>Sufficient stock</td><td>Validate source warehouse stock per line item</td></tr>
               <tr><td>Warehouse required</td><td>On Shipped</td></tr>
             </table>
           </div>

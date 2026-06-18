@@ -433,7 +433,7 @@ if (status_val == "Open" && !po_id.isNull())
 ### Validation Rules
 1. **Different warehouses** — From_Warehouse and To_Warehouse must be different.
 2. **At least one line item** — On Status = "Completed", at least one TO_Line_Item required.
-3. **Sufficient stock** — On Status = "Completed", validate source warehouse has enough stock for each item (check Item_Warehouse_Stock).
+3. **Sufficient stock** — On Status = "Completed", validate `From_Warehouse` has enough stock for each item.
 
 ### Workflow Process
 
@@ -443,7 +443,8 @@ TO Created (Status = Draft)
     └── Mark Completed → Status = Completed
             │
             ├── Validate From ≠ To Warehouse
-            ├── Validate stock availability at source
+            ├── Sync each TO_Line_Item.Warehouse → From_Warehouse
+            ├── Validate stock availability at From_Warehouse
             │
             └── For each line item:
                     ├── Stock Out at From_Warehouse
@@ -476,6 +477,16 @@ if (status_val == "Completed")
     {
         for each li in to_lines
         {
+            /* Sync subform Warehouse with parent From_Warehouse for consistency */
+            li_id = li.get("ID");
+            li_wh = li.get("Warehouse");
+            if (li_wh != from_wh)
+            {
+                li_data = Map();
+                li_data.put("Warehouse", from_wh);
+                zoho.creator.updateRecord("budget_tracking", "TO_Line_Items", li_id, li_data);
+            }
+
             item_id = li.get("Item");
             qty = ifnull(li.get("Quantity"), 0);
 
