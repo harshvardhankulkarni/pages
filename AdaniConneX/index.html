@@ -558,7 +558,11 @@
     <div class="sidebar-nav">
       <a href="#overview">Overview</a>
       <a href="#pipeline">Sales Pipeline</a>
-      <a href="#teams">Teams &amp; Roles</a>
+          <a href="#teams">Teams</a>
+          <a href="#cpq-tax">CPQ &amp; Tax</a>
+          <a href="#scripts">Client Scripts</a>
+          <a href="#compliance">Compliance</a>
+          <a href="#build-seq">Build Sequence</a>
 
       <div class="section-label">Implementation</div>
       <a href="#phase-0">P0: Roles &amp; Profiles</a>
@@ -626,18 +630,21 @@
             <thead>
               <tr>
                 <th>Module</th>
+                <th>Type</th>
                 <th>Purpose</th>
               </tr>
             </thead>
             <tbody>
-              <tr><td>Accounts</td><td>Companies with a business relationship</td></tr>
-              <tr><td>Data Center Opportunity</td><td>Tracks DC product sales lifecycle (core module)</td></tr>
-              <tr><td>Contacts</td><td>People at each Account</td></tr>
-              <tr><td>Calls / Meetings</td><td>Logged interactions with Contacts</td></tr>
-              <tr><td>Documents</td><td>MSA, SOF, PO, NDA, LOA (linked to modules)</td></tr>
-              <tr><td>EDC Products</td><td>Ancillary product catalog (maintained by Sales Ops)</td></tr>
-              <tr><td>Colocation Pricing</td><td>Colo space + power pricing (Per Rack or Per KW)</td></tr>
-              <tr><td>Additional DC Products &amp; Services</td><td>Supplementary products with recurring/one-time costs</td></tr>
+              <tr><td>Accounts</td><td>Standard</td><td>Customer companies; Industry Type, Site/Region, GSTIN, NDA</td></tr>
+              <tr><td>Contacts</td><td>Standard</td><td>People at each Account; Role/Designation, Decision Maker</td></tr>
+              <tr><td><strong>Data Center Opportunity</strong></td><td>Standard (renamed <code>Deals</code>)</td><td>DC product sales lifecycle; API name stays <strong>Deals</strong></td></tr>
+              <tr><td><strong>Service Delivery Request</strong></td><td>Custom</td><td>Order fulfillment swimlane (Request&rarr;Inventory&rarr;Procurement&rarr;Delivery&rarr;Ack)</td></tr>
+              <tr><td>Calls / Meetings</td><td>Standard</td><td>Engagement logging; multi-attendee internal + external</td></tr>
+              <tr><td>Documents</td><td>Standard</td><td>MSA, SOF, PO, NDA, LOA (linked to modules)</td></tr>
+              <tr><td>EDC Products</td><td>Custom</td><td>Ancillary product catalog (~50 items, maintained by Sales Ops)</td></tr>
+              <tr><td>Colocation Pricing</td><td>Custom (subform)</td><td>Colo space+power pricing (Per Rack or Per KW)</td></tr>
+              <tr><td>Additional DC Products &amp; Services</td><td>Custom (subform)</td><td>Supplementary products with recurring/one-time costs</td></tr>
+              <tr><td><strong>Yearly Commercials</strong></td><td>Custom (subform)</td><td>4 commercial models — fixed escalation YoY, year-wise, fixed, consumption-based</td></tr>
             </tbody>
           </table>
         </div>
@@ -729,6 +736,10 @@
             <h4>Service Delivery</h4>
             <p>Receives order notifications, initiates billing in SAP, sets Deployed Date.</p>
           </div>
+          <div class="card">
+            <h4>Billing</h4>
+            <p>Acknowledges delivery in Service Delivery blueprint (parallel acknowledgement step).</p>
+          </div>
         </div>
 
         <h3>Data Integrity Rules</h3>
@@ -747,6 +758,58 @@
             </tbody>
           </table>
         </div>
+      </section>
+
+      <!-- CPQ & Taxation -->
+      <section id="cpq-tax">
+        <h2>CPQ &amp; Taxation</h2>
+
+        <h3>Quotes &amp; CPQ</h3>
+        <ul>
+          <li><strong>Quotes</strong>: Enable standard Quotes module, relate to Account + Opportunity + Contacts</li>
+          <li><strong>Product Bundles</strong>: Rack + PDU + Cross-Connect bundles</li>
+          <li><strong>Price Rules</strong>: Volume tiers for colocation pricing</li>
+          <li><strong>Discount Rules</strong>: Cap % by profile, route over-cap to approval workflow</li>
+        </ul>
+
+        <h3>Taxation (Client Script)</h3>
+        <p><strong>IGST vs CGST+SGST</strong> determined by comparing Account Billing State vs Data Center Site State. A Client Script fires on <code>onChange</code> of either field to set tax type:</p>
+        <ul>
+          <li>Intra-state (same state) = CGST+SGST</li>
+          <li>Inter-state (different states) = IGST</li>
+        </ul>
+        <p>Taxation applied at line level in both Deals and Quotes modules.</p>
+      </section>
+
+      <!-- Client Scripts -->
+      <section id="scripts">
+        <h2>Client Scripts (JavaScript, ZDK API)</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Script</th><th>Module / Event</th><th>Purpose</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Duplicate-name guard</td><td>Accounts / onSave</td><td>Punctuation-insensitive dup warning (HDFC vs H.D.F.C.)</td></tr>
+              <tr><td>Pricing-type toggle</td><td>Deals / onChange</td><td>Show/hide racks vs KW based on Pricing Type</td></tr>
+              <tr><td>Tax determination</td><td>Deals, Quotes / onChange</td><td>Auto-set IGST vs CGST+SGST from Site/Billing state</td></tr>
+              <tr><td>Stage doc check</td><td>Deals / onSave</td><td>Warn if PO/MSA missing before critical stage move</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- India Compliance -->
+      <section id="compliance">
+        <h2>India-First Compliance</h2>
+        <ul>
+          <li><strong>DPDPA</strong>: Label every personal-data element at build stage; UAT must use masked data; sanitise hypercare logs</li>
+          <li><strong>GST 10-20 freeze</strong>: Cutover blocked inside monthly GST filing window (10th&ndash;20th)</li>
+          <li><strong>Festive freeze</strong>: No cutover during Diwali &plusmn;2d, FY-end Mar 25&ndash;Apr 5, or election days</li>
+          <li><strong>MSME 45-day payment</strong>: Project-finance EAC ties to AR ageing</li>
+          <li><strong>PoSH</strong>: Signed acknowledgement + customer IC details for any onsite team member &gt;5 contiguous days</li>
+          <li><strong>TDS 194-J / 194-Q</strong>: Vendor/subcontractor payment scheduling in project-finance</li>
+        </ul>
       </section>
 
       <!-- Implementation Phases -->
@@ -806,7 +869,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr><td><strong>Opportunity Reference ID</strong></td><td>Auto-number</td><td>Pattern: <code>{SiteID}-{000000}-{V0}</code></td></tr>
+              <tr><td><strong>Opportunity Reference ID</strong></td><td>Auto-number</td><td>Built from Sequence_No (auto-number 000000) + Version_No (text, default 01). Deluge <code>build_opportunity_reference</code> concatenates on create. Pattern: <code>{SiteID}-{6DigitNo}-{Version}</code></td></tr>
               <tr><td><strong>ACX Sales Stage</strong></td><td>Picklist</td><td>Values from Sales Pipeline</td></tr>
               <tr><td><strong>Account Name</strong></td><td>Lookup</td><td>Required</td></tr>
               <tr><td><strong>Contact Name</strong></td><td>Lookup</td><td>Required</td></tr>
@@ -1061,7 +1124,7 @@ Pre-Sales Approval Request (Technical Feasibility)<br>
           </table>
         </div>
 
-        <h5>Deluge Pseudocode (Custom Function: <code>pushToEdgeOS</code>)</h5>
+        <h5>Deluge Pseudocode (Custom Function: <code>sync_sof_to_edgeos</code>)</h5>
         <div style="background:#1e293b;color:#e2e8f0;border-radius:8px;padding:16px;margin:12px 0;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.8;overflow-x:auto;">
           <pre style="margin:0;white-space:pre-wrap;">
 // Step 1: Query all SOF Contracted opportunities
@@ -1315,6 +1378,31 @@ Zoho Polling (scheduler every 30 min):
           8. Post-go-live: Configure scheduler
         </div>
       </div>
+
+      <!-- Build Sequence -->
+      <section id="build-seq">
+        <h2>Build Sequence (18 Steps)</h2>
+        <ol style="column-count: 2; column-gap: 32px; line-height: 2;">
+          <li>Org: edition, India DC (zoho.in), company profile</li>
+          <li>Roles &rarr; Profiles &rarr; data-sharing &rarr; field-level security</li>
+          <li>Accounts + Contacts customizations + duplicate check</li>
+          <li>EDC Products module + catalog import (~50 products)</li>
+          <li>Data Center Opportunity: fields, subform, layout</li>
+          <li>Colocation Pricing + Additional DC Products modules</li>
+          <li>Auto-number + Deluge: reference ID, TCV, escalation</li>
+          <li>Client scripts: pricing toggle, tax, duplicate guard</li>
+          <li>ACX Sales Stage Blueprint + mandatory-doc rules</li>
+          <li>Order approval process (Commercials &rarr; Pre-Sales)</li>
+          <li>Quotes + CPQ + taxes (IGST/CGST+SGST)</li>
+          <li>PO/contract fields + expiry formula + renewal automation</li>
+          <li>Service Delivery + Procurement modules + Blueprint</li>
+          <li>Workflows &amp; notifications + org email</li>
+          <li>Schedules: renewal alerts, EdgeOS sync, SAP push</li>
+          <li>Segmentation views + Account Segment picklist</li>
+          <li>CSAT survey (Zoho Survey) + dashboard + scheduler</li>
+          <li>Sample data load + end-to-end test + demo dry-run</li>
+        </ol>
+      </section>
 
       <!-- CRM Flow Changes -->
       <section id="crm-flow">
@@ -1688,7 +1776,7 @@ Zoho Polling (scheduler every 30 min):
       <!-- Module Changes -->
       <section id="module-changes" class="section">
         <h2 class="section-title">Module Changes &amp; Workflow</h2>
-        <p class="section-intro">Detailed per-module configuration workflow for all 12 connected modules. Automation numbers (#1&ndash;#35) correspond to the automation matrix.</p>
+        <p class="section-intro">Detailed per-module configuration workflow for all 14 connected modules. Automation numbers (#1&ndash;#35) correspond to the automation matrix.</p>
 
         <div class="callout callout-info">
           <strong>~55% of project buildable without any client decision.</strong> Internal CRM work (P0-6, P8-9: 25-35 days) starts Day 1. Only P7 integrations require external API specs.
@@ -1700,13 +1788,14 @@ Zoho Polling (scheduler every 30 min):
           &nbsp;&nbsp;&nbsp;│<br>
           &nbsp;&nbsp;&nbsp;▼<br>
           Accounts ──┐<br>
-          Contacts ──┼──► Data Center Opportunity ──► Colocation Pricing Subform<br>
-          EDC Products ┘&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;► Additional Products Subform<br>
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──► Documents Module<br>
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──► Calls / Meetings<br>
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──► EdgeOS Integration [BLOCKED: Decision #6]<br>
-          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└──► SAP Integration [BLOCKED: Decision #7]
+          Contacts ──┼──► Data Center Opportunity ──┬──► Colocation Pricing (subform)<br>
+          EDC Products ┘&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──► Additional DC Products (subform)<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──► Yearly Commercials (subform)<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──► Documents<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──► Calls / Meetings<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──► Service Delivery Request<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──► EdgeOS Integration [BLOCKED: Decision #6]<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└──► SAP Integration [BLOCKED: Decision #7]
         </div>
 
         <h3>Config Order</h3>
@@ -1727,10 +1816,12 @@ Zoho Polling (scheduler every 30 min):
               <tr><td>4</td><td>Data Center Opportunity</td><td><span class="badge badge-green">Immediately</span></td><td>Accounts, Contacts, EDC Products</td></tr>
               <tr><td>5</td><td>Colocation Pricing (subform)</td><td><span class="badge badge-green">Immediately</span></td><td>Opp module exists</td></tr>
               <tr><td>6</td><td>Additional DC Products (subform)</td><td><span class="badge badge-green">Immediately</span></td><td>Opp + EDC Products</td></tr>
-              <tr><td>7</td><td>Documents</td><td><span class="badge badge-green">Immediately</span></td><td>Opp module</td></tr>
-              <tr><td>8</td><td>Calls / Meetings</td><td><span class="badge badge-green">Immediately</span></td><td>Contacts + Opp</td></tr>
-              <tr><td>9</td><td>EdgeOS Integration</td><td><span class="badge badge-red">Blocked</span></td><td>Opp + Colo + API specs (#6)</td></tr>
-              <tr><td>10</td><td>SAP Integration</td><td><span class="badge badge-red">Blocked</span></td><td>Opp + subforms + file specs (#7)</td></tr>
+              <tr><td>7</td><td>Yearly Commercials (subform)</td><td><span class="badge badge-green">Immediately</span></td><td>Opp module exists</td></tr>
+              <tr><td>8</td><td>Documents</td><td><span class="badge badge-green">Immediately</span></td><td>Opp module</td></tr>
+              <tr><td>9</td><td>Calls / Meetings</td><td><span class="badge badge-green">Immediately</span></td><td>Contacts + Opp</td></tr>
+              <tr><td>10</td><td>Service Delivery Request</td><td><span class="badge badge-green">Immediately</span></td><td>Opp module exists</td></tr>
+              <tr><td>11</td><td>EdgeOS Integration</td><td><span class="badge badge-red">Blocked</span></td><td>Opp + Colo + API specs (#6)</td></tr>
+              <tr><td>12</td><td>SAP Integration</td><td><span class="badge badge-red">Blocked</span></td><td>Opp + subforms + file specs (#7)</td></tr>
             </tbody>
           </table>
         </div>
@@ -1784,6 +1875,12 @@ Zoho Polling (scheduler every 30 min):
                 <td>#5, #6, #7, #10, #18</td>
               </tr>
               <tr>
+                <td><strong>Yearly Commercials</strong></td>
+                <td><span class="badge badge-green">New subform</span></td>
+                <td>Year, MRC, OTC; 4 commercial models</td>
+                <td>#5, #6, #7, #10, #18</td>
+              </tr>
+              <tr>
                 <td><strong>EDC Products</strong></td>
                 <td><span class="badge badge-green">New catalog</span></td>
                 <td>6 fields, ~50 seed products, Sales Ops maintains</td>
@@ -1802,9 +1899,15 @@ Zoho Polling (scheduler every 30 min):
                 <td>#4</td>
               </tr>
               <tr>
+                <td><strong>Service Delivery</strong></td>
+                <td><span class="badge badge-green">New module</span></td>
+                <td>Blueprint with 5 sub-processes, push_delivery_to_sap CF</td>
+                <td>#10, #18</td>
+              </tr>
+              <tr>
                 <td><strong>EdgeOS</strong></td>
                 <td><span class="badge badge-red">New build</span></td>
-                <td>Connections Mgr, pushToEdgeOS CF, 15-min scheduler, 3 statuses</td>
+                <td>Connections Mgr, sync_sof_to_edgeos CF, 15-min scheduler, 3 statuses</td>
                 <td>#17</td>
               </tr>
               <tr>
