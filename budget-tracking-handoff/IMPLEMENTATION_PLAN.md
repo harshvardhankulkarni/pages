@@ -102,7 +102,6 @@ Matches Zoho Inventory's vendor master structure.
 | Status | Dropdown | `Active`, `Inactive` |
 | Portal Access | Checkbox | Enable vendor self-service portal |
 | Remarks | Multi-line | |
-| Tags | Multi-select | Custom classification |
 
 **Contact Persons — Separate form `Vendor_Contacts` with Add-as-Subform:**
 
@@ -158,7 +157,6 @@ Matches Zoho Books Customer module structure. Stores customer/client information
 | Portal Access | Checkbox | Enable customer self-service portal |
 | Status | Dropdown | `Active`, `Inactive` — default Active |
 | Remarks | Multi-line | |
-| Tags | Multi-select | Custom classification |
 
 **Contact Persons — Separate form `Account_Contacts` with Add-as-Subform:**
 
@@ -554,7 +552,7 @@ Each step sends email notification. Procurement then reviews the auto-created PO
 | Tax (%) | Decimal | `tax_id` | Defaults from Item's Tax Rate |
 | Tax Amount | Formula | — | `((Unit Rate * Quantity) - Discount Amount) * (Tax% / 100)` |
 | Item Total | Formula | `item_total` | `(Unit Rate * Quantity) + Tax Amount - Discount Amount` |
-| Tags | Multi-select | `tags` | Zoho Books tags |
+
 
 **PO Lifecycle (matches Zoho Books status model):**
 - **Draft**: Being created, not yet submitted → `status: "draft"`

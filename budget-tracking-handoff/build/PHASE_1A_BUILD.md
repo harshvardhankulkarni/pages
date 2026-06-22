@@ -32,7 +32,6 @@
 | Status | Dropdown | `Status` | No | `Active, Inactive` — default Active |
 | Portal Access | Checkbox | `Portal_Access` | No | |
 | Remarks | Multi Line | `Remarks` | No | |
-| Tags | Multi Select | `Tags` | No | |
 
 ### Subforms (Add-as-Subform)
 
@@ -94,7 +93,6 @@
 | Portal Access | Checkbox | `Portal_Access` | No | |
 | Status | Dropdown | `Status` | No | `Active, Inactive` — default Active |
 | Remarks | Multi Line | `Remarks` | No | |
-| Tags | Multi Select | `Tags` | No | |
 
 ### Subforms (Add-as-Subform)
 
@@ -245,16 +243,11 @@ After form creation, manually create one default record:
 | Sales Price | Currency | `Sales_Price` | No | For reference |
 | Reorder Level | Decimal | `Reorder_Level` | No | Min stock alert |
 | Preferred Vendor | Lookup → Vendors | `Preferred_Vendor` | No | Default vendor for POs |
-| Current Stock | Decimal | `Current_Stock` | No | Maintained by Deluge — aggregated across warehouses |
+| Current Stock | Decimal | `Current_Stock` | No | Maintained by Deluge |
 | Stock Value | Formula | `Stock_Value` | — | `Current_Stock * Purchase_Price` |
 | Description | Multi Line | `Description` | No | |
 | Image | Upload | `Image` | No | |
 | Status | Dropdown | `Status` | No | `Active, Inactive` — default Active |
-
-### Formula: Stock_Value
-```
-Current_Stock * Purchase_Price
-```
 
 ### Subforms (Add-as-Subform)
 

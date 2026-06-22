@@ -628,9 +628,8 @@ Release:   Reserved_Qty -= Qty</pre>
             <tr><td>Discount % / Discount Amt</td><td>—</td><td>Decimal + Formula</td></tr>
             <tr><td>Tax Amount</td><td>—</td><td>Formula: <code>(Qty × Rate − Discount) × Tax% / 100</code></td></tr>
             <tr><td>Item Total</td><td><code>item_total</code></td><td>Formula: <code>(Qty × Rate) + Tax Amount − Discount Amount</code></td></tr>
-            <tr><td>Tags</td><td><code>tags</code></td><td>Multi-select</td></tr>
           </table></div>
-          <p><strong>Deluge:</strong> Open → email vendor PDF. GRN → update Received_Qty. All received → auto-close. Phase 2: POST to Books on Open.</p>
+          <p><strong>Deluge:</strong> Open → email vendor PDF. GRN creates Stock In. Phase 2: POST to Books on Open.</p>
         </bd>
       </div>
 
@@ -655,12 +654,10 @@ Release:   Reserved_Qty -= Qty</pre>
           <div class="wf-s">
             <span class="st s-dr">Draft</span><span class="ar">→</span>
             <span class="st s-op">Open</span><span class="ar">→</span>
-            <span>Accepted → Stock In + update PO</span><span class="ar">|</span>
+            <span>Accepted → Stock In</span><span class="ar">|</span>
             <span>Rejected → Log for returns</span>
-            <span class="ar">|</span>
-            <span>All received → auto-close PO</span>
           </div>
-          <p><strong>Deluge:</strong> On Submit → Accepted Qty → Stock In + update PO Received_Qty. All items received → auto-close PO.</p>
+          <p><strong>Deluge:</strong> On Submit → Accepted Qty → Stock In transaction.</p>
         </bd>
       </div>
 

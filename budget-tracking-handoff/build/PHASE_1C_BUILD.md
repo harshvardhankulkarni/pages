@@ -228,7 +228,6 @@ Custom module (Zoho Books has no native PR). Feeds into Purchase Orders.
 | Estimated Unit Rate | Currency | `Estimated_Unit_Rate` | |
 | Estimated Total | Formula | `Estimated_Total` | `Quantity * Estimated_Unit_Rate` |
 | Item Type | Single Line | `Item_Type` | Copied from Item |
-| Account | Lookup → Chart_of_Accounts | `Account` | Maps to Books `account_id` |
 | Unit | Single Line | `Unit` | Copied from Item |
 
 ### Validation Rules

@@ -128,7 +128,7 @@ if (status_val == "Rejected" && !expense_id.isNull())
 | Is Inclusive Tax | Checkbox | `Is_Inclusive_Tax` | No | |
 | Subtotal | Currency | `Subtotal` | No | Formula sum |
 | Discount | Decimal | `Discount` | No | % or flat |
-| Discount Account | Lookup → Chart_of_Accounts | `Discount_Account` | No | |
+ |
 | Discount Before Tax | Checkbox | `Discount_Before_Tax` | No | |
 | Discount Amount | Currency | `Discount_Amount` | No | Formula |
 | Tax Total | Currency | `Tax_Total` | No | Formula sum |
@@ -159,20 +159,11 @@ if (status_val == "Rejected" && !expense_id.isNull())
 | Quantity | Decimal | `Quantity` | |
 | Unit Rate | Currency | `Unit_Rate` | |
 | BCY Rate | Currency | `BCY_Rate` | Base currency rate |
-| Account | Lookup → Chart_of_Accounts | `Account` | |
 | Discount % | Decimal | `Discount_Pct` | Line-level |
 | Discount Amount | Formula | `Discount_Amount` | |
 | Tax % | Decimal | `Tax_Pct` | Default from Item |
-| Tax ID | Lookup | `Tax_ID` | |
 | Tax Amount | Formula | `Tax_Amount` | |
-| Item Total | Formula | `Item_Total` | |
-| Tax Exemption | Single Line | `Tax_Exemption` | |
-| TDS Tax | Single Line | `TDS_Tax` | |
-| Received Quantity | Decimal | `Received_Quantity` | GRN updates |
-| Warehouse | Lookup → Warehouses | `Warehouse` | Receipt location |
-| Product Type | Dropdown | `Product_Type` | `goods, service, digital` |
-| Item Order | Number | `Item_Order` | |
-| Project | Lookup → Projects | `Project` | Per-line tracking |
+| Item Total | Formula | `Item_Total` | `(Quantity * Unit_Rate) + Tax_Amount - Discount_Amount` |
 
 ### Validation Rules
 1. **Cannot cancel with linked GRNs** — On Status = "Cancelled", check for Goods_Receipts linked to this PO. If found, throw error.
@@ -188,18 +179,15 @@ PO Created (Status = Draft)
     │       ├── Email PO PDF to vendor
     │       └── Inventory expected
     │
-    ├── Goods Received → Status = Open (stays Open)
-    │       ├── GRN creates Stock In
-    │       ├── PO_Line_Item.Received_Quantity updated
-    │       └── All received? → Auto-Close
+    ├── Goods Received → GRN created
+    │       └── GRN creates Stock In transaction
     │
     ├── Partially Invoiced → Status = Partially Invoiced
     │       └── Some line items billed
     │
     ├── Fully Invoiced → Status = Billed
-    │       └── All line items billed
     │
-    ├── All received + invoiced → Status = Closed
+    ├── All items received → Status = Closed (manual)
     │
     └── Cancel (if no GRNs) → Status = Cancelled
 ```
@@ -210,9 +198,8 @@ PO Created (Status = Draft)
 | Draft | Open | User sends PO |
 | Open | Partially Invoiced | Some line items invoiced |
 | Open / Partially Invoiced | Billed | All line items invoiced |
-| Open / Partially Invoiced / Billed | Closed | All items received + invoiced |
+| Open / Partially Invoiced / Billed | Closed | Manual close after all items received |
 | Draft / Open | Cancelled | No linked GRNs |
-| Any | Closed | Scheduled auto-close (30 days after fully received) |
 
 ### Deluge Scripts
 
@@ -279,7 +266,6 @@ if (status_val == "Cancelled")
 | Label | Field Type | API Name | Notes |
 |---|---|---|---|
 | GRN | Lookup → Goods_Receipts | `GRN` | |
-| PO Line Item | Lookup → PO_Line_Items | `PO_Line_Item` | |
 | Item | Lookup → Inventory_Items | `Item` | Auto-filled |
 | PO Quantity | Decimal | `PO_Quantity` | From PO line |
 | Accepted Quantity | Decimal | `Accepted_Quantity` | |
@@ -302,16 +288,10 @@ GRN Created (Status = Draft)
     └── Submit (Status → Open)
             │
             ├── For each line item with Accepted_Quantity > 0:
-            │       ├── Create Stock In transaction
-            │       ├── Update PO_Line_Item.Received_Quantity
-            │       └── Alert if partial receipt
+            │       └── Create Stock In transaction
             │
-            ├── For each line with Rejected_Quantity > 0:
-            │       └── Log rejection reason for vendor return
-            │
-            └── All PO line items fully received?
-                    ├── Yes → Auto-close PO (Status = Closed)
-                    └── No  → PO stays Open
+            └── For each line with Rejected_Quantity > 0:
+                    └── Log rejection reason for vendor return
 ```
 
 ### Deluge Scripts
@@ -325,37 +305,17 @@ po_id = input.PO;
 
 if (status_val == "Open" && !po_id.isNull())
 {
-    po_line_criteria = "PO == " + po_id;
-    po_lines = zoho.creator.getRecords("budget_tracking", "PO_Line_Items", po_line_criteria, 1, 200);
-
     /* Get GRN line items */
     grn_li_criteria = "GRN == " + input.ID;
     grn_lines = zoho.creator.getRecords("budget_tracking", "GRN_Line_Items", grn_li_criteria, 1, 200);
-
-    all_received = true;
 
     if (!grn_lines.isNull())
     {
         for each grn_li in grn_lines
         {
             accepted = ifnull(grn_li.get("Accepted_Quantity"), 0);
-            rejected = ifnull(grn_li.get("Rejected_Quantity"), 0);
             item_id = grn_li.get("Item");
             wh_id = grn_li.get("Warehouse");
-
-            /* Update PO Line Item - Received Quantity */
-            po_li_id = grn_li.get("PO_Line_Item");
-            if (!po_li_id.isNull())
-            {
-                po_li = zoho.creator.getRecordById("budget_tracking", "PO_Line_Items", po_li_id);
-                if (!po_li.isNull())
-                {
-                    current_received = ifnull(po_li.get("Received_Quantity"), 0);
-                    po_data = Map();
-                    po_data.put("Received_Quantity", current_received + accepted);
-                    zoho.creator.updateRecord("budget_tracking", "PO_Line_Items", po_li_id, po_data);
-                }
-            }
 
             /* Stock In for accepted items */
             if (accepted > 0 && !item_id.isNull() && !wh_id.isNull())
@@ -369,39 +329,15 @@ if (status_val == "Open" && !po_id.isNull())
                 txn_data.put("Reference_Type", "GRN");
                 txn_data.put("Reference_ID", input.ID.toString());
 
-                /* Get unit cost from GRN line item or PO line */
                 actual_cost = ifnull(grn_li.get("Actual_Unit_Cost"), 0);
                 if (actual_cost > 0)
                 {
                     txn_data.put("Unit_Rate", actual_cost);
                 }
 
-                inv_txn = zoho.creator.createRecord("budget_tracking", "Inventory_Transactions", txn_data);
-            }
-
-            /* Check if this PO line item is fully received */
-            if (!po_li_id.isNull())
-            {
-                po_li = zoho.creator.getRecordById("budget_tracking", "PO_Line_Items", po_li_id);
-                if (!po_li.isNull())
-                {
-                    po_qty = ifnull(po_li.get("Quantity"), 0);
-                    recv_qty = ifnull(po_li.get("Received_Quantity"), 0);
-                    if (recv_qty < po_qty)
-                    {
-                        all_received = false;
-                    }
-                }
+                zoho.creator.createRecord("budget_tracking", "Inventory_Transactions", txn_data);
             }
         }
-    }
-
-    /* Auto-close PO if all items fully received */
-    if (all_received)
-    {
-        po_data = Map();
-        po_data.put("Status", "Closed");
-        zoho.creator.updateRecord("budget_tracking", "Purchase_Orders", po_id, po_data);
     }
 }
 ```
@@ -553,10 +489,8 @@ if (status_val == "Completed")
 6. PR → auto-PO copies line items correctly
 7. Goods Receipt (GRN) creates GRN-0001, GRN-0002...
 8. GRN Open → Stock In transaction created for accepted items
-9. GRN updates PO_Line_Item.Received_Quantity
-10. All items received → PO auto-closes
-11. Transfer Orders creates TO-0001, TO-0002...
-12. TO Completed → paired Stock Out/In transactions
+9. Transfer Orders creates TO-0001, TO-0002...
+10. TO Completed → paired Stock Out/In transactions
 
 ## Next Phase
 → Proceed to `PHASE_1E_BUILD.md` when all above forms are verified.
