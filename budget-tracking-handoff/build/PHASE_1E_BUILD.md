@@ -107,7 +107,7 @@ if (!item_id.isNull())
 | DC No | Auto Number | `DC_No` | Yes | Format: `DC-{0000}` |
 | Invoice | Lookup → Invoices | `Invoice` | No | Linked invoice |
 | Project | Lookup → Projects | `Project` | Yes | |
-| Account | Lookup → Vendors | `Account` | Yes | Client/vendor |
+| Account | Lookup → Accounts | `Account` | Yes | Client |
 | DC Date | Date | `DC_Date` | No | Default today |
 | Status | Dropdown | `Status` | No | `Draft, Shipped, Delivered, Returned` |
 | Warehouse | Lookup → Warehouses | `Warehouse` | Yes | Source warehouse |
@@ -229,7 +229,7 @@ if (status_val == "Shipped")
 |---|---|---|---|---|
 | Invoice No | Auto Number | `Invoice_No` | Yes | Format: `INV-{0000}` |
 | Project | Lookup → Projects | `Project` | Yes | |
-| Account | Lookup → Vendors | `Account` | Yes | Client |
+| Account | Lookup → Accounts | `Account` | Yes | Client |
 | Invoice Date | Date | `Invoice_Date` | No | Default today |
 | Due Date | Date | `Due_Date` | No | |
 | Payment Terms | Dropdown | `Payment_Terms` | No | `Due on Receipt, Net 15, Net 30, Net 45` |
@@ -455,7 +455,10 @@ if (status_val == "Completed")
 ---
 
 ## Build Verification Checklist
-1. BOM creates BOM-0001, BOM-0002... with component costs calculated
+1. Accounts form creates records with all fields saving correctly
+2. Account Contacts subform adds contact persons
+3. Account Documents subform uploads files
+4. BOM creates BOM-0001, BOM-0002... with component costs calculated
 2. BOM Line Items auto-fill Unit_Cost from Item.Purchase_Price
 3. Delivery Challans creates DC-0001, DC-0002...
 4. DC Status = "Shipped" → auto-Stock Out for each line

@@ -31,7 +31,7 @@
 Each phase depends on the previous. Build in this order:
 
 ```
-Phase 1A:  Vendor Management  →  Project Master  →  Warehouses  →  Inventory Master
+Phase 1A:  Vendor Management  →  Account Management  →  Project Master  →  Warehouses  →  Inventory Master
                    ↓                    ↓                               ↓
 Phase 1B:  Budget Planning  →  Budget Components              Inventory Transactions
                    ↓                                               ↓
@@ -48,7 +48,7 @@ Phase 1F:  Reports & Dashboards (all modules incl. Project P&L)
 
 ---
 
-## C. Module-by-Module Design (17 Modules)
+## C. Module-by-Module Design (18 Modules)
 
 ### 1. Project Master (`Projects`)
 
@@ -56,7 +56,7 @@ Phase 1F:  Reports & Dashboards (all modules incl. Project P&L)
 |---|---|---|
 | Project Name | Text | Required |
 | Project Code | Text (auto-number) | e.g., `PROJ-0001` |
-| Account | Lookup → Vendors | Client/company associated with the project |
+| Account | Lookup → Accounts | Client/company associated with the project |
 | Start Date | Date | |
 | End Date | Date | |
 | Project Manager | User picker | Links to Zoho Creator user |
@@ -78,7 +78,7 @@ Phase 1F:  Reports & Dashboards (all modules incl. Project P&L)
 
 ### 2. Vendor Management (`Vendors`)
 
-Matches Zoho Inventory's vendor master structure. **Also serves as Accounts/Clients** — the Project Master's `Account` field looks up here. Use `Type` (or a tag) to distinguish vendors from clients.
+Matches Zoho Inventory's vendor master structure.
 
 | Field | Type | Notes |
 |---|---|---|
@@ -132,7 +132,62 @@ Matches Zoho Inventory's vendor master structure. **Also serves as Accounts/Clie
 
 ---
 
-### 3. Warehouses (`Warehouses`)
+### 3. Account Management (`Accounts`)
+
+Matches Zoho Books Customer module structure. Stores customer/client information separate from Vendors. Used by Projects, Invoices, and Delivery Challans.
+
+| Field | Type | Notes |
+|---|---|---|
+| Account Name | Single Line | Required — display name |
+| Company Name | Single Line | Legal entity name |
+| Email | Email | Primary contact email |
+| Phone | Phone | |
+| Mobile | Phone | |
+| Website | URL | |
+| Currency | Dropdown | `USD`, `EUR`, `INR`, `GBP`, `AED` |
+| Payment Terms | Dropdown | `Due on Receipt`, `Net 15`, `Net 30`, `Net 45`, `Net 60` |
+| Opening Balance | Currency | Starting balance if carried forward |
+| Credit Limit | Currency | Maximum credit allowed |
+| Tax ID | Text | GSTIN / VAT registration number |
+| PAN | Text | Permanent Account Number (India) |
+| GST Treatment | Dropdown | `business_gst`, `consumer_gst`, `overseas`, `SEZ`, `SEZ_Developer` |
+| Source of Supply | Text | GST state code |
+| Place of Contact | Text | |
+| Billing Address | Address | Zoho Creator Address type (composite) |
+| Shipping Address | Address | Zoho Creator Address type (composite) |
+| Portal Access | Checkbox | Enable customer self-service portal |
+| Status | Dropdown | `Active`, `Inactive` — default Active |
+| Remarks | Multi-line | |
+| Tags | Multi-select | Custom classification |
+
+**Contact Persons — Separate form `Account_Contacts` with Add-as-Subform:**
+
+| Field | Type |
+|---|---|
+| Account | Lookup → Accounts |
+| Salutation | Dropdown: `Mr`, `Ms`, `Mrs`, `Dr` |
+| First Name | Text |
+| Last Name | Text |
+| Email | Email |
+| Phone | Phone |
+| Mobile | Phone |
+| Designation | Text |
+| Department | Text |
+| Is Primary | Checkbox |
+
+**Documents — Separate form `Account_Documents` with Add-as-Subform:**
+
+| Field | Type |
+|---|---|
+| Account | Lookup → Accounts |
+| Document Name | Text |
+| File | Upload |
+| Expiry Date | Date |
+| Notes | Text |
+
+---
+
+### 4. Warehouses (`Warehouses`)
 
 Multi-warehouse support — every inventory transaction references a warehouse (or a default "Main Warehouse" is created on setup).
 
@@ -152,7 +207,7 @@ A **default warehouse** is seeded on app creation so single-warehouse users neve
 
 ---
 
-### 4. Inventory Master — Items (`Inventory_Items`)
+### 5. Inventory Master — Items (`Inventory_Items`)
 
 Matches Zoho Inventory's item master structure. Items are goods or services tracked at the SKU level.
 
@@ -213,7 +268,7 @@ Create a form `Item_Attributes` with fields: Item (lookup), Attribute Name (e.g.
 
 ---
 
-### 5. Budget Planning (`Budget_Plans`)
+### 6. Budget Planning (`Budget_Plans`)
 
 | Field | Type | Notes |
 |---|---|---|
@@ -231,7 +286,7 @@ Create a form `Item_Attributes` with fields: Item (lookup), Attribute Name (e.g.
 
 ---
 
-### 6. Budget Components (`Budget_Components`)
+### 7. Budget Components (`Budget_Components`)
 
 | Field | Type | Notes |
 |---|---|---|
@@ -258,7 +313,7 @@ On Expense Submit (if within budget):
 
 ---
 
-### 7. Expense Management (`Expenses`)
+### 8. Expense Management (`Expenses`)
 
 | Field | Type | Notes |
 |---|---|---|
@@ -289,7 +344,7 @@ On Expense Submit (if within budget):
 
 ---
 
-### 8. Budget Approval Workflow (`Budget_Approvals`)
+### 9. Budget Approval Workflow (`Budget_Approvals`)
 
 | Field | Type | Notes |
 |---|---|---|
@@ -314,7 +369,7 @@ On Expense Submit (if within budget):
 
 ---
 
-### 9. Inventory Transactions (`Inventory_Transactions`)
+### 10. Inventory Transactions (`Inventory_Transactions`)
 
 Matches Zoho Inventory's stock transaction structure. Every transaction ties to a specific warehouse.
 
@@ -360,7 +415,7 @@ Matches Zoho Inventory's stock transaction structure. Every transaction ties to 
 
 ---
 
-### 10. Transfer Orders (`Transfer_Orders`)
+### 11. Transfer Orders (`Transfer_Orders`)
 
 Matches Zoho Inventory's transfer order module — moving stock between warehouses.
 
@@ -392,7 +447,7 @@ For each line item:
 
 ---
 
-### 11. Purchase Requisition (`Purchase_Requisitions`)
+### 12. Purchase Requisition (`Purchase_Requisitions`)
 
 Custom Zoho Creator module (Zoho Books has no native PR). Designed to feed into Zoho Books Purchase Orders via Phase 2 API sync.
 
@@ -435,7 +490,7 @@ Each step sends email notification. Procurement then reviews the auto-created PO
 
 ---
 
-### 12. Purchase Orders (`Purchase_Orders`)
+### 13. Purchase Orders (`Purchase_Orders`)
 
 1:1 aligned with Zoho Books Purchase Order API (`/books/v3/purchaseorder`). Full line-item detail, discount/tax support, address tracking, and status lifecycle. All fields map directly to Zoho Books JSON payload for Phase 2 API sync.
 
@@ -518,7 +573,7 @@ Each step sends email notification. Procurement then reviews the auto-created PO
 
 ---
 
-### 13. Goods Receipt (`Goods_Receipts`)
+### 14. Goods Receipt (`Goods_Receipts`)
 
 Matches Zoho Inventory's Goods Receipt Note (GRN) structure — supports accepted vs rejected quantities, and auto-updates inventory + PO.
 
@@ -571,7 +626,7 @@ Matches Zoho Inventory's Goods Receipt Note (GRN) structure — supports accepte
 
 ---
 
-### 14. Reports & Dashboards
+### 15. Reports & Dashboards
 
 **Zoho Creator Reports (one per audience):**
 
@@ -619,7 +674,7 @@ Matches Zoho Inventory's Goods Receipt Note (GRN) structure — supports accepte
 
 ---
 
-### 15. Invoicing (`Invoices`)
+### 16. Invoicing (`Invoices`)
 
 Matches Zoho Books invoice structure. Captures revenue per project. Future Zoho Books sync maps fields 1:1.
 
@@ -627,7 +682,7 @@ Matches Zoho Books invoice structure. Captures revenue per project. Future Zoho 
 |---|---|---|
 | Invoice No | Auto-number | `INV-0001` |
 | Project | Lookup → Projects | Required — ties revenue to a project for P&L |
-| Customer / Account | Lookup → Vendors | Billed party (vendor form serves dual purpose) |
+| Customer / Account | Lookup → Accounts | Billed party |
 | Invoice Date | Date | Defaults to today |
 | Due Date | Date | Based on payment terms |
 | Payment Terms | Dropdown | `Due on Receipt`, `Net 15`, `Net 30`, `Net 45`, `Net 60` |
@@ -668,7 +723,7 @@ Matches Zoho Books invoice structure. Captures revenue per project. Future Zoho 
 
 ---
 
-### 16. Delivery Challan (`Delivery_Challans`)
+### 17. Delivery Challan (`Delivery_Challans`)
 
 Tracks physical dispatch of goods. Customer-facing document. Future Zoho Books Delivery Challan sync.
 
@@ -676,7 +731,7 @@ Tracks physical dispatch of goods. Customer-facing document. Future Zoho Books D
 |---|---|---|
 | DC No | Auto-number | `DC-0001` |
 | Project | Lookup → Projects | |
-| Customer | Lookup → Vendors | Recipient |
+| Customer | Lookup → Accounts | Recipient |
 | Reference | Text | Customer PO / Sales Order ref |
 | Date | Date | Defaults to today |
 | Ship Via | Dropdown | `Courier`, `Freight`, `Own Vehicle`, `Pickup` |
@@ -706,7 +761,7 @@ Tracks physical dispatch of goods. Customer-facing document. Future Zoho Books D
 
 ---
 
-### 17. BOM — Bill of Materials (`BOM`)
+### 18. BOM — Bill of Materials (`BOM`)
 
 Defines component structure for manufactured/assembled items. Useful for manufacturing projects and cost estimation.
 
@@ -767,13 +822,17 @@ Expenses ──┬── Budget_Approvals (1:1 for overruns)
            └── Vendors (N:1)
 
 Vendors ──┬── Vendor_Contacts (1:N, subform)
-          ├── Vendor_Documents (1:N, subform)
-          ├── Purchase_Orders (1:N)
-          ├── Inventory_Items (1:N, preferred vendor)
-          ├── Expenses (N:1)
-          ├── Goods_Receipts (1:N)
-          ├── Invoices (1:N)
-          └── Delivery_Challans (1:N)
+           ├── Vendor_Documents (1:N, subform)
+           ├── Purchase_Orders (1:N)
+           ├── Inventory_Items (1:N, preferred vendor)
+           ├── Expenses (N:1)
+           └── Goods_Receipts (1:N)
+
+Accounts ──┬── Account_Contacts (1:N, subform)
+           ├── Account_Documents (1:N, subform)
+           ├── Projects (1:N, as Account)
+           ├── Invoices (1:N)
+           └── Delivery_Challans (1:N)
 
 Warehouses ──┬── Item_Warehouse_Stock (1:N)
              ├── Inventory_Transactions (1:N)
@@ -908,11 +967,11 @@ Everything above is Phase 1 — one Zoho Creator application with modules mirror
 
 | Item | Details |
 |------|---------|
-| Forms to create | ~24 primary forms (Projects, Vendors, Vendor_Contacts, Vendor_Documents, Warehouses, Inventory_Items, Item_Warehouse_Stock, Item_Attributes, Budget_Plans, Budget_Components, Expenses, Budget_Approvals, Inventory_Transactions, Transfer_Orders, TO_Line_Items, Purchase_Requisitions, PR_Line_Items, Purchase_Orders, PO_Line_Items, Goods_Receipts, GRN_Line_Items, Invoices, Invoice_Line_Items, Delivery_Challans, DC_Line_Items, BOM, BOM_Line_Items) |
+| Forms to create | ~30 primary forms (Projects, Vendors, Vendor_Contacts, Vendor_Documents, Accounts, Account_Contacts, Account_Documents, Warehouses, Inventory_Items, Item_Warehouse_Stock, Item_Attributes, Budget_Plans, Budget_Components, Expenses, Budget_Approvals, Inventory_Transactions, Transfer_Orders, TO_Line_Items, Purchase_Requisitions, PR_Line_Items, Purchase_Orders, PO_Line_Items, Goods_Receipts, GRN_Line_Items, Invoices, Invoice_Line_Items, Delivery_Challans, DC_Line_Items, BOM, BOM_Line_Items) |
 | Deluge workflows | ~23 (22 On Submit + 1 Scheduled Cron) |
 | User roles | 6 (Admin, PM, Finance, Procurement, Inventory, Employee) |
-| Lookup forms (most referenced) | Projects, Vendors, Inventory_Items, Warehouses |
+| Lookup forms (most referenced) | Projects, Vendors, Accounts, Inventory_Items, Warehouses |
 | Seed data | "Main Warehouse" record, sample Budget Component categories |
 | Critical performance rule | Maintain `Item_Warehouse_Stock.Current_Stock` via Deluge on every transaction — never aggregate on demand |
 
-**Start with Phase 1A in Zoho Creator console: Vendors → Projects → Warehouses → Inventory_Items**
+**Start with Phase 1A in Zoho Creator console: Vendors → Accounts → Projects → Warehouses → Inventory_Items**

@@ -201,6 +201,7 @@
     <a href="#overview">Overview</a>
     <a href="#modules">Modules</a>
     <a href="#vendors">Vendors</a>
+    <a href="#accounts">Accounts</a>
     <a href="#inventory">Inventory</a>
     <a href="#budget">Budget</a>
     <a href="#expenses">Expenses</a>
@@ -230,7 +231,7 @@
 
 <!-- MODULES -->
 <section id="modules">
-  <h2>14 Modules <span class="badge">form inventory</span></h2>
+  <h2>15 Modules <span class="badge">form inventory</span></h2>
   <div class="module-grid">
     <div class="module-card">
       <div class="num">#1</div>
@@ -246,72 +247,78 @@
     </div>
     <div class="module-card">
       <div class="num">#3</div>
+      <h4>Account Management</h4>
+      <div class="desc">Customer/client master with contacts, documents, billing/shipping addresses, credit limit, and GST treatment. Used by Projects, Invoices, and DCs.</div>
+      <div class="tags"><span>Zoho Books aligned</span></div>
+    </div>
+    <div class="module-card">
+      <div class="num">#4</div>
       <h4>Warehouses</h4>
       <div class="desc">Multi-warehouse tracking. Every inventory transaction references a warehouse. A default warehouse is seeded on app creation.</div>
       <div class="tags"><span>New in v2</span></div>
     </div>
     <div class="module-card">
-      <div class="num">#4</div>
+      <div class="num">#5</div>
       <h4>Inventory Master (Items)</h4>
       <div class="desc">SKU-based item master with goods/services type, dimensions, HSN/SAC, price lists, stock-by-warehouse tracking.</div>
       <div class="tags"><span>Zoho Inventory aligned</span></div>
     </div>
     <div class="module-card">
-      <div class="num">#5</div>
+      <div class="num">#6</div>
       <h4>Budget Planning</h4>
       <div class="desc">One active budget plan per project. Links to dynamic Budget Components which are defined per-project.</div>
       <div class="tags"><span>Validation heavy</span></div>
     </div>
     <div class="module-card">
-      <div class="num">#6</div>
+      <div class="num">#7</div>
       <h4>Budget Components</h4>
       <div class="desc">Dynamic cost categories per project (Labour, Materials, Travel, etc.). Tracks allocated vs spent via Deluge aggregation.</div>
       <div class="tags"><span>Pivot form</span></div>
     </div>
     <div class="module-card">
-      <div class="num">#7</div>
+      <div class="num">#8</div>
       <h4>Expense Management</h4>
       <div class="desc">Record actual expenses against budget components. Triggers overrun workflow if budget exceeded.</div>
       <div class="tags"><span>High volume</span></div>
     </div>
     <div class="module-card">
-      <div class="num">#8</div>
+      <div class="num">#9</div>
       <h4>Budget Approval Workflow</h4>
       <div class="desc">Captures overrun approval/rejection with full audit trail: approver, date, comments, original vs exceeded amounts.</div>
       <div class="tags"><span>Audit</span></div>
     </div>
     <div class="module-card">
-      <div class="num">#9</div>
+      <div class="num">#10</div>
       <h4>Inventory Transactions</h4>
       <div class="desc">Stock In/Out/Adjustment/Return, per-warehouse. Stock Out on a project auto-creates an Expense record.</div>
       <div class="tags"><span>Auto-Deluge</span></div>
     </div>
     <div class="module-card">
-      <div class="num">#10</div>
+      <div class="num">#11</div>
       <h4>Transfer Orders</h4>
       <div class="desc">Inter-warehouse stock movement. Completing a transfer auto-generates paired Stock Out + Stock In transactions.</div>
       <div class="tags"><span>Paired txns</span></div>
     </div>
     <div class="module-card">
-      <div class="num">#11</div>
+      <div class="num">#12</div>
       <h4>Purchase Requisition</h4>
       <div class="desc">Multi-line item internal requests with multi-stage approval (Dept Manager → Finance → Procurement).</div>
       <div class="tags"><span>3-stage approval</span></div>
     </div>
     <div class="module-card">
-      <div class="num">#12</div>
+      <div class="num">#13</div>
       <h4>Purchase Orders</h4>
       <div class="desc">Full PO with line-level discount/tax, billing/shipping addresses, Zoho Inventory status lifecycle.</div>
       <div class="tags"><span>Zoho Inventory aligned</span></div>
     </div>
     <div class="module-card">
-      <div class="num">#13</div>
+      <div class="num">#14</div>
       <h4>Goods Receipt</h4>
       <div class="desc">GRN with accepted/rejected quantities. Accepted qty auto-creates Stock In. Rejected qty logged for vendor returns.</div>
       <div class="tags"><span>Auto inventory</span></div>
     </div>
     <div class="module-card">
-      <div class="num">#14</div>
+      <div class="num">#15</div>
       <h4>Reports &amp; Dashboards</h4>
       <div class="desc">Executive dashboard KPIs, Budget vs Actual pivot, Open POs, Stock Availability, Inventory Valuation.</div>
       <div class="tags"><span>14 reports</span></div>
@@ -357,6 +364,56 @@
   </table>
 
   <h3>Sub-form: Vendor Documents</h3>
+  <table class="spec-table">
+    <tr><th>Field</th><th>Type</th></tr>
+    <tr><td>Document Name</td><td>Text</td></tr>
+    <tr><td>File</td><td>Upload</td></tr>
+    <tr><td>Expiry Date</td><td>Date</td></tr>
+    <tr><td>Notes</td><td>Text</td></tr>
+  </table>
+  <p style="margin-top:8px;"><strong>Deluge:</strong> None required — pure data capture form.</p>
+</section>
+
+<!-- ACCOUNTS -->
+<section id="accounts">
+  <h2>Account Management <span class="badge">form spec</span></h2>
+
+  <div class="alert alert-info">Zoho Books Customer aligned — multi-contact, multi-address, tax IDs, GST treatment, credit limit.</div>
+
+  <h3>Primary Form: Accounts</h3>
+  <table class="spec-table">
+    <tr><th>Field</th><th>Type</th><th>Validation / Notes</th></tr>
+    <tr><td>Account Name</td><td>Text</td><td>Required</td></tr>
+    <tr><td>Company Name</td><td>Text</td><td>Legal entity name</td></tr>
+    <tr><td>Email</td><td>Email</td><td></td></tr>
+    <tr><td>Phone / Mobile / Website</td><td>Phone / URL</td><td></td></tr>
+    <tr><td>Currency</td><td>Dropdown</td><td>USD, EUR, INR — affects invoice totals</td></tr>
+    <tr><td>Payment Terms</td><td>Dropdown</td><td>Due on Receipt, Net 15, Net 30, Net 45, Net 60</td></tr>
+    <tr><td>Opening Balance</td><td>Currency</td><td>Starting balance if carried forward</td></tr>
+    <tr><td>Credit Limit</td><td>Currency</td><td>Maximum credit allowed</td></tr>
+    <tr><td>Tax ID / PAN</td><td>Text</td><td>GSTIN / VAT / PAN</td></tr>
+    <tr><td>GST Treatment</td><td>Dropdown</td><td>business_gst, consumer_gst, overseas, SEZ, SEZ_Developer</td></tr>
+    <tr><td>Source of Supply</td><td>Text</td><td>GST state code</td></tr>
+    <tr><td>Place of Contact</td><td>Text</td><td></td></tr>
+    <tr><td>Billing Address</td><td>Address (Zoho Creator type)</td><td>Multi-field composite</td></tr>
+    <tr><td>Shipping Address</td><td>Address (Zoho Creator type)</td><td>Multi-field composite</td></tr>
+    <tr><td>Portal Access</td><td>Checkbox</td><td>Enable customer self-service portal</td></tr>
+    <tr><td>Status</td><td>Dropdown</td><td>Active, Inactive</td></tr>
+    <tr><td>Remarks</td><td>Multi-line</td><td></td></tr>
+    <tr><td>Tags</td><td>Multi-select</td><td>Custom classification</td></tr>
+  </table>
+
+  <h3>Sub-form: Account Contacts</h3>
+  <table class="spec-table">
+    <tr><th>Field</th><th>Type</th></tr>
+    <tr><td>Salutation</td><td>Dropdown: Mr, Ms, Mrs, Dr</td></tr>
+    <tr><td>First Name / Last Name</td><td>Text</td></tr>
+    <tr><td>Email / Phone / Mobile</td><td>Email / Phone</td></tr>
+    <tr><td>Designation / Department</td><td>Text</td></tr>
+    <tr><td>Is Primary</td><td>Checkbox</td></tr>
+  </table>
+
+  <h3>Sub-form: Account Documents</h3>
   <table class="spec-table">
     <tr><th>Field</th><th>Type</th></tr>
     <tr><td>Document Name</td><td>Text</td></tr>
@@ -650,6 +707,7 @@
       <ul style="font-size:0.85rem;margin-top:8px;list-style:none">
         <li>✓ Project Master</li>
         <li>✓ Vendors + Contacts + Docs</li>
+        <li>✓ Accounts + Contacts + Docs</li>
         <li>✓ Warehouses</li>
         <li>✓ Inventory Items + Stock by Warehouse</li>
       </ul>

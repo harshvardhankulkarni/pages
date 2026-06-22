@@ -6,24 +6,25 @@ Zoho Creator low-code application. All logic is in **Deluge scripts**, forms, wo
 ## What this repo holds
 Internal implementation plan: field-level module specs, Deluge pseudocode, lookup relationship maps, build phases, role permissions matrix, and deployment checklist. This is the single source of truth for the Zoho Creator console build.
 
-## 17 canonical modules
+## 18 canonical modules
 1. Project Master — `Projects`
 2. Vendor Management — `Vendors`, `Vendor_Contacts`, `Vendor_Documents`
-3. Warehouses — `Warehouses`
-4. Inventory Master — `Inventory_Items`, `Item_Warehouse_Stock`, `Item_Attributes`
-5. Budget Planning — `Budget_Plans`
-6. Budget Components — `Budget_Components`
-7. Expense Management — `Expenses`
-8. Budget Approval Workflow — `Budget_Approvals`
-9. Inventory Transactions — `Inventory_Transactions`
-10. Transfer Orders — `Transfer_Orders`, `TO_Line_Items`
-11. Purchase Requisition — `Purchase_Requisitions`, `PR_Line_Items`
-12. Purchase Orders — `Purchase_Orders`, `PO_Line_Items`
-13. Goods Receipt — `Goods_Receipts`, `GRN_Line_Items`
-14. Reports & Dashboards — Reports + Dashboard widgets
-15. Invoicing — `Invoices`, `Invoice_Line_Items`
-16. Delivery Challan — `Delivery_Challans`, `DC_Line_Items`
-17. BOM (Bill of Materials) — `BOM`, `BOM_Line_Items`
+3. Account Management — `Accounts`, `Account_Contacts`, `Account_Documents`
+4. Warehouses — `Warehouses`
+5. Inventory Master — `Inventory_Items`, `Item_Warehouse_Stock`, `Item_Attributes`
+6. Budget Planning — `Budget_Plans`
+7. Budget Components — `Budget_Components`
+8. Expense Management — `Expenses`
+9. Budget Approval Workflow — `Budget_Approvals`
+10. Inventory Transactions — `Inventory_Transactions`
+11. Transfer Orders — `Transfer_Orders`, `TO_Line_Items`
+12. Purchase Requisition — `Purchase_Requisitions`, `PR_Line_Items`
+13. Purchase Orders — `Purchase_Orders`, `PO_Line_Items`
+14. Goods Receipt — `Goods_Receipts`, `GRN_Line_Items`
+15. Reports & Dashboards — Reports + Dashboard widgets
+16. Invoicing — `Invoices`, `Invoice_Line_Items`
+17. Delivery Challan — `Delivery_Challans`, `DC_Line_Items`
+18. BOM (Bill of Materials) — `BOM`, `BOM_Line_Items`
 
 ## Key Deluge automation points (non-obvious)
 - **Budget validation**: sum of component budgets must not exceed approved project budget
@@ -68,7 +69,7 @@ Zoho Books, Zoho Inventory (optional), Zoho Analytics, Zoho Projects, email noti
 
 ## Build order quick reference
 ```
-Phase 1A: Vendors → Projects → Warehouses → Inventory_Items
+Phase 1A: Vendors → Accounts → Projects → Warehouses → Inventory_Items
 Phase 1B: Budget_Plans → Budget_Components → Inventory_Transactions
 Phase 1C: Expenses → Purchase_Requisitions
 Phase 1D: Budget_Approvals → Purchase_Orders → Goods_Receipts → Transfer_Orders

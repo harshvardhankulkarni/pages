@@ -1,4 +1,4 @@
-# Phase 1A Build Guide — Vendors → Projects → Warehouses → Inventory Items
+# Phase 1A Build Guide — Vendors → Accounts → Projects → Warehouses → Inventory Items
 
 ## Prerequisites
 - Zoho Creator account with app "Project Budget Tracking" created
@@ -69,14 +69,73 @@
 
 ---
 
-## 1.2 Projects Form (`Projects`)
+## 1.2 Accounts Form (`Accounts`)
+
+### Field Configuration
+| Label | Field Type | API Name | Required | Notes |
+|---|---|---|---|---|
+| Account Name | Single Line | `Account_Name` | Yes | Display name |
+| Company Name | Single Line | `Company_Name` | No | Legal entity name |
+| Email | Email | `Email` | No | |
+| Phone | Phone | `Phone` | No | |
+| Mobile | Phone | `Mobile` | No | |
+| Website | URL | `Website` | No | |
+| Currency | Dropdown | `Currency` | No | `USD, EUR, INR, GBP, AED` |
+| Payment Terms | Dropdown | `Payment_Terms` | No | `Due on Receipt, Net 15, Net 30, Net 45, Net 60` |
+| Opening Balance | Currency | `Opening_Balance` | No | |
+| Credit Limit | Currency | `Credit_Limit` | No | Maximum credit allowed |
+| Tax ID | Single Line | `Tax_ID` | No | GSTIN / VAT |
+| PAN | Single Line | `PAN` | No | India PAN |
+| GST Treatment | Dropdown | `GST_Treatment` | No | `business_gst, consumer_gst, overseas, SEZ, SEZ_Developer` |
+| Source of Supply | Single Line | `Source_Of_Supply` | No | GST state code |
+| Place of Contact | Single Line | `Place_Of_Contact` | No | |
+| Billing Address | Address | `Billing_Address` | No | Zoho Creator Address type (composite) |
+| Shipping Address | Address | `Shipping_Address` | No | Zoho Creator Address type (composite) |
+| Portal Access | Checkbox | `Portal_Access` | No | |
+| Status | Dropdown | `Status` | No | `Active, Inactive` — default Active |
+| Remarks | Multi Line | `Remarks` | No | |
+| Tags | Multi Select | `Tags` | No | |
+
+### Subforms (Add-as-Subform)
+
+**Account Contacts** — Form: `Account_Contacts`
+| Label | Field Type | API Name |
+|---|---|---|
+| Account | Lookup → Accounts | `Account` |
+| Salutation | Dropdown | `Salutation` — `Mr, Ms, Mrs, Dr` |
+| First Name | Single Line | `First_Name` |
+| Last Name | Single Line | `Last_Name` |
+| Email | Email | `Email` |
+| Phone | Phone | `Phone` |
+| Mobile | Phone | `Mobile` |
+| Designation | Single Line | `Designation` |
+| Department | Single Line | `Department` |
+| Is Primary | Checkbox | `Is_Primary` |
+
+**Account Documents** — Form: `Account_Documents`
+| Label | Field Type | API Name |
+|---|---|---|
+| Account | Lookup → Accounts | `Account` |
+| Document Name | Single Line | `Document_Name` |
+| File | Upload | `File` |
+| Expiry Date | Date | `Expiry_Date` |
+| Notes | Single Line | `Notes` |
+
+### Validation Rules
+1. **Account Name required** — On Submit, if `Account_Name` is blank → `throw "Account Name is required."`
+
+### Deluge Scripts
+
+---
+
+## 1.3 Projects Form (`Projects`)
 
 ### Field Configuration
 | Label | Field Type | API Name | Required | Notes |
 |---|---|---|---|---|
 | Project Name | Single Line | `Project_Name` | Yes | |
 | Project Code | Auto Number | `Project_Code` | Yes | Format: `PROJ-{0000}` |
-| Account | Lookup → Vendors | `Account` | No | Client/company |
+| Account | Lookup → Accounts | `Account` | No | Client/company |
 | Start Date | Date | `Start_Date` | No | |
 | End Date | Date | `End_Date` | No | |
 | Project Manager | User Picker | `Project_Manager` | No | |
@@ -135,7 +194,7 @@ if (status_val == "Completed" && !input.ID.isNull())
 
 ---
 
-## 1.3 Warehouses Form (`Warehouses`)
+## 1.4 Warehouses Form (`Warehouses`)
 
 ### Field Configuration
 | Label | Field Type | API Name | Required | Notes |
@@ -163,7 +222,7 @@ After form creation, manually create one default record:
 
 ---
 
-## 1.4 Inventory Items Form (`Inventory_Items`)
+## 1.5 Inventory Items Form (`Inventory_Items`)
 
 ### Field Configuration
 | Label | Field Type | API Name | Required | Notes |
@@ -279,11 +338,14 @@ After building Phase 1A, verify:
 1. Vendors form creates records with all fields saving correctly
 2. Vendor Contacts subform adds contact persons
 3. Vendor Documents subform uploads files
-4. Projects form generates PROJ-0001, PROJ-0002...
-5. Account lookup in Projects shows Vendors list
-6. Warehouses form generates WH-0001, WH-0002...
-7. Inventory Items generates SKU-0001, SKU-0002...
-8. Item_Warehouse_Stock auto-creates records for all active warehouses on new item
+4. Accounts form creates records with all fields saving correctly
+5. Account Contacts subform adds contact persons
+6. Account Documents subform uploads files
+7. Projects form generates PROJ-0001, PROJ-0002...
+8. Account lookup in Projects shows Accounts list
+9. Warehouses form generates WH-0001, WH-0002...
+10. Inventory Items generates SKU-0001, SKU-0002...
+11. Item_Warehouse_Stock auto-creates records for all active warehouses on new item
 
 ## Next Phase
 → Proceed to `PHASE_1B_BUILD.md` when all above forms are verified.

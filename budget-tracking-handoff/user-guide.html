@@ -177,21 +177,22 @@
     <p class="sub">Module-by-module instructions for using the Zoho Creator application — what to enter, when, and how records connect.</p>
     <div class="quick-links">
       <a href="#vendors">1. Vendors</a>
-      <a href="#warehouses">2. Warehouses</a>
-      <a href="#items">3. Inventory Items</a>
-      <a href="#projects">4. Projects</a>
-      <a href="#budget">5. Budget Plans</a>
-      <a href="#inv-trans">6. Inventory Transactions</a>
-      <a href="#pr">7. Purchase Requisitions</a>
-      <a href="#po">8. Purchase Orders</a>
-      <a href="#grn">9. Goods Receipt</a>
-      <a href="#transfer">10. Transfer Orders</a>
-      <a href="#expenses">11. Expenses</a>
-      <a href="#approvals">12. Budget Approvals</a>
-      <a href="#bom">13. BOM</a>
-      <a href="#dc">14. Delivery Challans</a>
-      <a href="#invoices">15. Invoices</a>
-      <a href="#reports">16. Reports</a>
+      <a href="#accounts">2. Accounts</a>
+      <a href="#warehouses">3. Warehouses</a>
+      <a href="#items">4. Inventory Items</a>
+      <a href="#projects">5. Projects</a>
+      <a href="#budget">6. Budget Plans</a>
+      <a href="#inv-trans">7. Inventory Transactions</a>
+      <a href="#pr">8. Purchase Requisitions</a>
+      <a href="#po">9. Purchase Orders</a>
+      <a href="#grn">10. Goods Receipt</a>
+      <a href="#transfer">11. Transfer Orders</a>
+      <a href="#expenses">12. Expenses</a>
+      <a href="#approvals">13. Budget Approvals</a>
+      <a href="#bom">14. BOM</a>
+      <a href="#dc">15. Delivery Challans</a>
+      <a href="#invoices">16. Invoices</a>
+      <a href="#reports">17. Reports</a>
     </div>
   </div>
 </div>
@@ -199,6 +200,7 @@
 <div class="flow-bar">
   <div class="container">
     <a href="#vendors" class="step">Vendors</a><span class="arr">→</span>
+    <a href="#accounts" class="step">Accts</a><span class="arr">→</span>
     <a href="#warehouses" class="step">WH</a><span class="arr">→</span>
     <a href="#items" class="step">Items</a><span class="arr">→</span>
     <a href="#projects" class="step">Projects</a><span class="arr">→</span>
@@ -237,12 +239,12 @@
 <section id="vendors">
   <div class="module-header">
     <span class="phase-badge" style="background:#1a3b2a;color:var(--green)">STEP 1</span>
-    <h2>Vendors <span style="color:var(--muted);font-weight:400;font-size:0.9rem">— also serves as Clients</span></h2>
+    <h2>Vendors</h2>
     <span class="form-name">Vendors</span>
   </div>
-  <div class="purpose">Vendors stores everyone you do business with — suppliers who sell you materials AND clients who buy from you. Create vendors first because almost every other module references them.</div>
+  <div class="purpose">Vendors stores your suppliers — companies that sell you materials, equipment, and services. Create vendors first before creating POs or recording expenses.</div>
 
-  <div class="al al-o"><strong>Data entry rule:</strong> Create every vendor and client here before starting a project or creating a PO. The same form handles both roles.</div>
+  <div class="al al-o"><strong>Data entry rule:</strong> Create each vendor here before creating a PO or recording an expense against them.</div>
 
   <div class="diagram">
     <span class="f">Vendors</span> ──┬── <span class="c">Vendor_Contacts</span> (subform: add multiple contact persons)<br>
@@ -266,13 +268,12 @@
     </div>
   </div>
 
-  <div class="rel-grid">
-    <div class="rel-card"><div class="dir">Referenced by →</div><div class="target">Projects</div><div style="font-size:0.68rem;color:var(--muted)">Projects.Account lookup</div></div>
-    <div class="rel-card"><div class="dir">Referenced by →</div><div class="target">Purchase Orders</div><div style="font-size:0.68rem;color:var(--muted)">PO.Vendor lookup</div></div>
-    <div class="rel-card"><div class="dir">Referenced by →</div><div class="target">Invoices</div><div style="font-size:0.68rem;color:var(--muted)">Invoice.Customer lookup</div></div>
-    <div class="rel-card"><div class="dir">Referenced by →</div><div class="target">Inventory Items</div><div style="font-size:0.68rem;color:var(--muted)">Item.Preferred_Vendor lookup</div></div>
-    <div class="rel-card"><div class="dir">Referenced by →</div><div class="target">Expenses, GRN, DC</div><div style="font-size:0.68rem;color:var(--muted)">Optional vendor reference</div></div>
-  </div>
+    <div class="rel-grid">
+      <div class="rel-card"><div class="dir">Referenced by →</div><div class="target">Purchase Orders</div><div style="font-size:0.68rem;color:var(--muted)">PO.Vendor lookup</div></div>
+      <div class="rel-card"><div class="dir">Referenced by →</div><div class="target">Inventory Items</div><div style="font-size:0.68rem;color:var(--muted)">Item.Preferred_Vendor lookup</div></div>
+      <div class="rel-card"><div class="dir">Referenced by →</div><div class="target">Expenses</div><div style="font-size:0.68rem;color:var(--muted)">Expense.Vendor lookup</div></div>
+      <div class="rel-card"><div class="dir">Referenced by →</div><div class="target">Goods Receipts</div><div style="font-size:0.68rem;color:var(--muted)">GRN.Vendor reference</div></div>
+    </div>
 
   <h4 style="font-size:0.82rem;color:var(--accent);margin-top:12px">Subforms (inside the same form)</h4>
   <div class="flow-row">
@@ -287,10 +288,63 @@
   </div>
 </section>
 
-<!-- ====== 2. WAREHOUSES ====== -->
-<section id="warehouses">
+<!-- ====== 2. ACCOUNTS ====== -->
+<section id="accounts">
   <div class="module-header">
     <span class="phase-badge" style="background:#1a3b2a;color:var(--green)">STEP 2</span>
+    <h2>Accounts (Customers/Clients)</h2>
+    <span class="form-name">Accounts</span>
+  </div>
+  <div class="purpose">Accounts stores your customers and clients — the companies you bill for projects, send invoices to, and dispatch goods to. Create accounts before setting up projects.</div>
+
+  <div class="al al-o"><strong>Data entry rule:</strong> Create an account for each client before starting a project or creating an invoice.</div>
+
+  <div class="diagram">
+    <span class="f">Accounts</span> ──┬── <span class="c">Account_Contacts</span> (subform: add multiple contact persons)<br>
+    <span class="in">├── <span class="c">Account_Documents</span> (subform: upload contracts, agreements)</div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0">
+    <div style="background:var(--surface);border-radius:6px;padding:12px">
+      <h4 style="font-size:0.82rem;color:var(--accent);margin-bottom:6px">Required fields</h4>
+      <ul style="font-size:0.76rem;color:var(--muted);list-style:none">
+        <li><span class="tag tag-cr">Required</span> Account Name</li>
+      </ul>
+    </div>
+    <div style="background:var(--surface);border-radius:6px;padding:12px">
+      <h4 style="font-size:0.82rem;color:var(--accent);margin-bottom:6px">Key fields to fill</h4>
+      <ul style="font-size:0.76rem;color:var(--muted);list-style:none">
+        <li>Billing Address, Shipping Address</li>
+        <li>Tax ID / PAN (for GST invoices)</li>
+        <li>Payment Terms (affects invoice due dates)</li>
+        <li>Currency (affects invoice totals)</li>
+        <li>Credit Limit (for credit monitoring)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="rel-grid">
+    <div class="rel-card"><div class="dir">Referenced by →</div><div class="target">Projects</div><div style="font-size:0.68rem;color:var(--muted)">Projects.Account lookup</div></div>
+    <div class="rel-card"><div class="dir">Referenced by →</div><div class="target">Invoices</div><div style="font-size:0.68rem;color:var(--muted)">Invoice.Account lookup</div></div>
+    <div class="rel-card"><div class="dir">Referenced by →</div><div class="target">Delivery Challans</div><div style="font-size:0.68rem;color:var(--muted)">DC.Account lookup</div></div>
+  </div>
+
+  <h4 style="font-size:0.82rem;color:var(--accent);margin-top:12px">Subforms (inside the same form)</h4>
+  <div class="flow-row">
+    <span class="box" style="border-color:var(--blue);color:var(--blue)">Account_Contacts</span>
+    <span class="arr">→</span>
+    <span style="color:var(--muted);font-size:0.74rem">Add contact persons: Salutation, Name, Email, Phone, Designation, Is Primary</span>
+  </div>
+  <div class="flow-row">
+    <span class="box" style="border-color:var(--blue);color:var(--blue)">Account_Documents</span>
+    <span class="arr">→</span>
+    <span style="color:var(--muted);font-size:0.74rem">Upload documents: Document Name, File, Expiry Date</span>
+  </div>
+</section>
+
+<!-- ====== 3. WAREHOUSES ====== -->
+<section id="warehouses">
+  <div class="module-header">
+    <span class="phase-badge" style="background:#1a3b2a;color:var(--green)">STEP 3</span>
     <h2>Warehouses</h2>
     <span class="form-name">Warehouses</span>
   </div>
@@ -317,10 +371,10 @@
   </div>
 </section>
 
-<!-- ====== 3. INVENTORY ITEMS ====== -->
+<!-- ====== 4. INVENTORY ITEMS ====== -->
 <section id="items">
   <div class="module-header">
-    <span class="phase-badge" style="background:#1a3b2a;color:var(--green)">STEP 3</span>
+    <span class="phase-badge" style="background:#1a3b2a;color:var(--green)">STEP 4</span>
     <h2>Inventory Items</h2>
     <span class="form-name">Inventory_Items</span>
   </div>
@@ -365,10 +419,10 @@
   </div>
 </section>
 
-<!-- ====== 4. PROJECTS ====== -->
+<!-- ====== 5. PROJECTS ====== -->
 <section id="projects">
   <div class="module-header">
-    <span class="phase-badge" style="background:#3b2f1e;color:var(--yellow)">STEP 4</span>
+    <span class="phase-badge" style="background:#3b2f1e;color:var(--yellow)">STEP 5</span>
     <h2>Projects <span style="color:var(--muted);font-weight:400;font-size:0.9rem">— the central hub</span></h2>
     <span class="form-name">Projects</span>
   </div>
@@ -388,8 +442,8 @@
   </div>
 
   <dl class="field-list">
-    <dt>Account <span class="lkup">Lookup → Vendors</span></dt>
-    <dd>Select the client/company for this project. Vendors form serves dual purpose as client list.</dd>
+    <dt>Account <span class="lkup">Lookup → Accounts</span></dt>
+    <dd>Select the client/company for this project.</dd>
     <dt>Project Manager <span class="type">User Picker</span></dt>
     <dd>The person responsible for this project.</dd>
     <dt>Total Approved Budget <span class="type">Currency</span></dt>
@@ -423,10 +477,10 @@
   </div>
 </section>
 
-<!-- ====== 5. BUDGET PLANS ====== -->
+<!-- ====== 6. BUDGET PLANS ====== -->
 <section id="budget">
   <div class="module-header">
-    <span class="phase-badge" style="background:#3b2f1e;color:var(--yellow)">STEP 5</span>
+    <span class="phase-badge" style="background:#3b2f1e;color:var(--yellow)">STEP 6</span>
     <h2>Budget Plans &amp; Components</h2>
     <span class="form-name">Budget_Plans + Budget_Components</span>
   </div>
@@ -459,10 +513,10 @@
   <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Expense submitted → system checks if new total exceeds 80%/90%/100% of Allocated Amount → auto-updates status + sends alert</span></div>
 </section>
 
-<!-- ====== 6. INVENTORY TRANSACTIONS ====== -->
+<!-- ====== 7. INVENTORY TRANSACTIONS ====== -->
 <section id="inv-trans">
   <div class="module-header">
-    <span class="phase-badge" style="background:#2e1f3b;color:var(--purple)">STEP 6</span>
+    <span class="phase-badge" style="background:#2e1f3b;color:var(--purple)">STEP 7</span>
     <h2>Inventory Transactions</h2>
     <span class="form-name">Inventory_Transactions</span>
   </div>
@@ -499,10 +553,10 @@
   <div class="al al-w"><strong>Validation:</strong> System prevents Stock Out if quantity exceeds available stock (Current_Stock − Reserved_Qty). If you see an error, check stock or release reservations first.</div>
 </section>
 
-<!-- ====== 7. PURCHASE REQUISITIONS ====== -->
+<!-- ====== 8. PURCHASE REQUISITIONS ====== -->
 <section id="pr">
   <div class="module-header">
-    <span class="phase-badge" style="background:#2e1f3b;color:var(--purple)">STEP 7</span>
+    <span class="phase-badge" style="background:#2e1f3b;color:var(--purple)">STEP 8</span>
     <h2>Purchase Requisitions</h2>
     <span class="form-name">Purchase_Requisitions</span>
   </div>
@@ -536,10 +590,10 @@
   <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">On final approval → system creates a Purchase_Order in Draft status, copies all PR line items to PO line items</span></div>
 </section>
 
-<!-- ====== 8. PURCHASE ORDERS ====== -->
+<!-- ====== 9. PURCHASE ORDERS ====== -->
 <section id="po">
   <div class="module-header">
-    <span class="phase-badge" style="background:var(--surface2);color:var(--text)">STEP 8</span>
+    <span class="phase-badge" style="background:var(--surface2);color:var(--text)">STEP 9</span>
     <h2>Purchase Orders</h2>
     <span class="form-name">Purchase_Orders</span>
   </div>
@@ -579,10 +633,10 @@
   <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">All line items received via GRN → PO auto-closes</span></div>
 </section>
 
-<!-- ====== 9. GOODS RECEIPT ====== -->
+<!-- ====== 10. GOODS RECEIPT ====== -->
 <section id="grn">
   <div class="module-header">
-    <span class="phase-badge" style="background:var(--surface2);color:var(--text)">STEP 9</span>
+    <span class="phase-badge" style="background:var(--surface2);color:var(--text)">STEP 10</span>
     <h2>Goods Receipt (GRN)</h2>
     <span class="form-name">Goods_Receipts</span>
   </div>
@@ -614,10 +668,10 @@
   <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Updates PO_Line_Item Received Qty. All items fully received → PO auto-closes</span></div>
 </section>
 
-<!-- ====== 10. TRANSFER ORDERS ====== -->
+<!-- ====== 11. TRANSFER ORDERS ====== -->
 <section id="transfer">
   <div class="module-header">
-    <span class="phase-badge" style="background:var(--surface2);color:var(--text)">STEP 10</span>
+    <span class="phase-badge" style="background:var(--surface2);color:var(--text)">STEP 11</span>
     <h2>Transfer Orders</h2>
     <span class="form-name">Transfer_Orders</span>
   </div>
@@ -644,10 +698,10 @@
   <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Status = "Completed" → creates Stock Out (From WH) + Stock In (To WH) for each line item</span></div>
 </section>
 
-<!-- ====== 11. EXPENSES ====== -->
+<!-- ====== 12. EXPENSES ====== -->
 <section id="expenses">
   <div class="module-header">
-    <span class="phase-badge" style="background:#4a1c1c;color:var(--red)">STEP 11</span>
+    <span class="phase-badge" style="background:#4a1c1c;color:var(--red)">STEP 12</span>
     <h2>Expenses</h2>
     <span class="form-name">Expenses</span>
   </div>
@@ -678,10 +732,10 @@
   </div>
 </section>
 
-<!-- ====== 12. BUDGET APPROVALS ====== -->
+<!-- ====== 13. BUDGET APPROVALS ====== -->
 <section id="approvals">
   <div class="module-header">
-    <span class="phase-badge" style="background:#4a1c1c;color:var(--red)">STEP 12</span>
+    <span class="phase-badge" style="background:#4a1c1c;color:var(--red)">STEP 13</span>
     <h2>Budget Approvals</h2>
     <span class="form-name">Budget_Approvals</span>
   </div>
@@ -704,10 +758,10 @@
   <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Rejected → Expense status = "Rejected", notifies requester</span></div>
 </section>
 
-<!-- ====== 13. BOM ====== -->
+<!-- ====== 14. BOM ====== -->
 <section id="bom">
   <div class="module-header">
-    <span class="phase-badge" style="background:#1a3b2a;color:var(--green)">STEP 13</span>
+    <span class="phase-badge" style="background:#1a3b2a;color:var(--green)">STEP 14</span>
     <h2>Bill of Materials (BOM)</h2>
     <span class="form-name">BOM</span>
   </div>
@@ -737,10 +791,10 @@
   </div>
 </section>
 
-<!-- ====== 14. DELIVERY CHALLANS ====== -->
+<!-- ====== 15. DELIVERY CHALLANS ====== -->
 <section id="dc">
   <div class="module-header">
-    <span class="phase-badge" style="background:#1a3b2a;color:var(--green)">STEP 14</span>
+    <span class="phase-badge" style="background:#1a3b2a;color:var(--green)">STEP 15</span>
     <h2>Delivery Challans</h2>
     <span class="form-name">Delivery_Challans</span>
   </div>
@@ -775,10 +829,10 @@
   </div>
 </section>
 
-<!-- ====== 15. INVOICES ====== -->
+<!-- ====== 16. INVOICES ====== -->
 <section id="invoices">
   <div class="module-header">
-    <span class="phase-badge" style="background:#1a3b2a;color:var(--green)">STEP 15</span>
+    <span class="phase-badge" style="background:#1a3b2a;color:var(--green)">STEP 16</span>
     <h2>Invoices</h2>
     <span class="form-name">Invoices</span>
   </div>
@@ -789,7 +843,7 @@
   <dl class="field-list">
     <dt>Project <span class="lkup">Lookup → Projects</span></dt>
     <dd>Required — ties revenue to a project for P&L.</dd>
-    <dt>Customer / Account <span class="lkup">Lookup → Vendors</span></dt>
+    <dt>Customer / Account <span class="lkup">Lookup → Accounts</span></dt>
     <dd>Who is being billed.</dd>
     <dt>Status</dt>
     <dd>Draft → Sent (updates project Total Invoiced) → Partially Paid → Paid (Balance Due = 0) → Overdue → Cancelled.</dd>
@@ -813,10 +867,10 @@
   <div class="workflow-card"><span class="wf-num">Button</span><span class="wf-desc">"Create DC" → auto-creates Delivery Challan with same items (when Status = Sent)</span></div>
 </section>
 
-<!-- ====== 16. REPORTS ====== -->
+<!-- ====== 17. REPORTS ====== -->
 <section id="reports">
   <div class="module-header">
-    <span class="phase-badge" style="background:var(--surface2);color:var(--text)">STEP 16</span>
+    <span class="phase-badge" style="background:var(--surface2);color:var(--text)">STEP 17</span>
     <h2>Reports &amp; Dashboards</h2>
     <span class="form-name">Executive Dashboard</span>
   </div>

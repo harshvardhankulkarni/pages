@@ -5,7 +5,7 @@ Requires all prior phases complete (forms 1-16 exist with data).
 
 ---
 
-## 1.17 Reports & Dashboards
+## 1.18 Reports & Dashboards
 
 ### Overview
 This phase creates all Zoho Creator Report and Dashboard widgets. No new forms — all reports are built on existing data.
@@ -21,7 +21,7 @@ This phase creates all Zoho Creator Report and Dashboard widgets. No new forms �
 - **Fields:**
   - `Project_Name`
   - `Project_Code`
-  - `Account` → Display Vendor Name
+  - `Account` → Display Account Name
   - `Total_Approved_Budget`
   - Summary fields:
     - Total Invoiced (from Invoices where Status ≠ Cancelled)

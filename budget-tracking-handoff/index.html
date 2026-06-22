@@ -165,7 +165,7 @@
   <div class="sub">ITOTCloud Delivery</div>
   <nav>
     <a href="#constraints">Constraints</a>
-    <a href="#modules">Modules (17)</a>
+    <a href="#modules">Modules (18)</a>
     <a href="#lookup-map">Lookup Map</a>
     <a href="#workflows">Workflows (25)</a>
     <a href="#phases">Build Order</a>
@@ -181,7 +181,7 @@
 <div class="main">
 
   <div class="kpi-bar">
-    <div class="kpi"><span class="n" style="color:var(--accent)">17</span><span class="l">Modules</span></div>
+    <div class="kpi"><span class="n" style="color:var(--accent)">18</span><span class="l">Modules</span></div>
     <div class="kpi"><span class="n" style="color:var(--green)">25</span><span class="l">Deluge Workflows</span></div>
     <div class="kpi"><span class="n" style="color:var(--purple)">27+</span><span class="l">Forms</span></div>
     <div class="kpi"><span class="n" style="color:var(--orange)">6</span><span class="l">Build Phases</span></div>
@@ -207,7 +207,7 @@
     </section>
 
     <section id="modules">
-      <h2>17 Modules <span class="t">field-level specs</span></h2>
+      <h2>18 Modules <span class="t">field-level specs</span></h2>
       <p>Click any module to expand its full field specification, Deluge logic, and relationships.</p>
 
       <div class="module-card">
@@ -224,7 +224,7 @@
               <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
               <tr><td>Project Name</td><td>Text</td><td>Required</td></tr>
               <tr><td>Project Code</td><td>Auto-number</td><td><code>PROJ-0001</code></td></tr>
-              <tr><td>Account</td><td>Lookup → Vendors <span class="tag tag-lk">Lookup</span></td><td>Client/company — Vendors form serves dual purpose</td></tr>
+              <tr><td>Account</td><td>Lookup → Accounts <span class="tag tag-lk">Lookup</span></td><td>Client/company</td></tr>
               <tr><td>Start Date</td><td>Date</td><td></td></tr>
               <tr><td>End Date</td><td>Date</td><td></td></tr>
               <tr><td>Project Manager</td><td>User picker</td><td></td></tr>
@@ -241,12 +241,12 @@
         <hd onclick="t(this)">
           <span class="num">#2</span>
           <h4>Vendor Management</h4>
-          <div class="tags"><s>Zoho aligned</s><s>Multi-contact</s><s>Dual purpose</s></div>
+          <div class="tags"><s>Zoho aligned</s><s>Multi-contact</s></div>
           <span class="arr">▸</span>
         </hd>
         <bd>
           <p><strong>Forms:</strong> <code>Vendors</code> + <code>Vendor_Contacts</code> + <code>Vendor_Documents</code></p>
-          <p>Zoho Inventory aligned. Dual purpose — also serves as Accounts/Clients for project tagging.</p>
+          <p>Zoho Inventory aligned. Stores supplier information for POs, expenses, and items.</p>
           <div class="tw">
             <table class="tbl">
               <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
@@ -270,6 +270,36 @@
       <div class="module-card">
         <hd onclick="t(this)">
           <span class="num">#3</span>
+          <h4>Account Management</h4>
+          <div class="tags"><s>Zoho Books aligned</s><s>Multi-contact</s><s>Customers</s></div>
+          <span class="arr">▸</span>
+        </hd>
+        <bd>
+          <p><strong>Forms:</strong> <code>Accounts</code> + <code>Account_Contacts</code> + <code>Account_Documents</code></p>
+          <p>Zoho Books Customer aligned. Stores client/customer information for projects, invoices, and delivery challans.</p>
+          <div class="tw">
+            <table class="tbl">
+              <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+              <tr><td>Account Name</td><td>Text</td><td>Required</td></tr>
+              <tr><td>Company Name</td><td>Text</td><td>Legal entity</td></tr>
+              <tr><td>Email / Phone / Mobile</td><td>Email + Phone</td><td></td></tr>
+              <tr><td>Currency</td><td>Dropdown</td><td>USD, EUR, INR, etc.</td></tr>
+              <tr><td>Payment Terms</td><td>Dropdown</td><td>Due on Receipt, Net 15/30/45/60</td></tr>
+              <tr><td>Credit Limit</td><td>Currency</td><td>Maximum credit allowed</td></tr>
+              <tr><td>Tax ID / PAN</td><td>Text</td><td>GSTIN / VAT / PAN</td></tr>
+              <tr><td>GST Treatment</td><td>Dropdown</td><td>business_gst, consumer_gst, overseas, SEZ</td></tr>
+              <tr><td>Billing Address</td><td>Address (Zoho type)</td><td>Multi-field composite</td></tr>
+              <tr><td>Shipping Address</td><td>Address (Zoho type)</td><td>Multi-field composite</td></tr>
+              <tr><td>Status</td><td>Dropdown</td><td><span class="s-ap">Active</span> <span class="s-cl">Inactive</span></td></tr>
+            </table>
+          </div>
+          <p><strong>Deluge:</strong> None — pure data capture.</p>
+        </bd>
+      </div>
+
+      <div class="module-card">
+        <hd onclick="t(this)">
+          <span class="num">#4</span>
           <h4>Warehouses</h4>
           <div class="tags"><s>Multi-warehouse</s><s>Seed data</s></div>
           <span class="arr">▸</span>
@@ -292,7 +322,7 @@
 
       <div class="module-card">
         <hd onclick="t(this)">
-          <span class="num">#4</span>
+          <span class="num">#5</span>
           <h4>Inventory Master — Items</h4>
           <div class="tags"><s>SKU</s><s>HSN/SAC</s><s>Zoho aligned</s></div>
           <span class="arr">▸</span>
@@ -323,7 +353,7 @@
 
       <div class="module-card">
         <hd onclick="t(this)">
-          <span class="num">#5</span>
+          <span class="num">#6</span>
           <h4>Budget Planning</h4>
           <div class="tags"><s>Validation heavy</s><s>1:1 with Project</s></div>
           <span class="arr">▸</span>
@@ -346,7 +376,7 @@
 
       <div class="module-card">
         <hd onclick="t(this)">
-          <span class="num">#6</span>
+          <span class="num">#7</span>
           <h4>Budget Components</h4>
           <div class="tags"><s>Pivot form</s><s>Alert triggers</s></div>
           <span class="arr">▸</span>
@@ -371,7 +401,7 @@
 
       <div class="module-card">
         <hd onclick="t(this)">
-          <span class="num">#7</span>
+          <span class="num">#8</span>
           <h4>Expense Management</h4>
           <div class="tags"><s>Auto-created</s><s>Critical</s></div>
           <span class="arr">▸</span>
@@ -413,7 +443,7 @@
 
       <div class="module-card">
         <hd onclick="t(this)">
-          <span class="num">#8</span>
+          <span class="num">#9</span>
           <h4>Budget Approval Workflow</h4>
           <div class="tags"><s>Audit trail</s><s>Notification</s></div>
           <span class="arr">▸</span>
@@ -449,7 +479,7 @@
 
       <div class="module-card">
         <hd onclick="t(this)">
-          <span class="num">#9</span>
+          <span class="num">#10</span>
           <h4>Inventory Transactions</h4>
           <div class="tags"><s>Auto Deluge</s><s>Budget link</s><s>Critical</s></div>
           <span class="arr">▸</span>
@@ -476,7 +506,7 @@ Release:   Reserved_Qty -= Qty</pre>
 
       <div class="module-card">
         <hd onclick="t(this)">
-          <span class="num">#10</span>
+          <span class="num">#11</span>
           <h4>Transfer Orders</h4>
           <div class="tags"><s>Paired transactions</s><s>WH-to-WH</s></div>
           <span class="arr">▸</span>
@@ -502,7 +532,7 @@ Release:   Reserved_Qty -= Qty</pre>
 
       <div class="module-card">
         <hd onclick="t(this)">
-          <span class="num">#11</span>
+          <span class="num">#12</span>
           <h4>Purchase Requisition</h4>
           <div class="tags"><s>3-stage approval</s><s>Auto-PO</s><s>Books aligned</s></div>
           <span class="arr">▸</span>
@@ -543,7 +573,7 @@ Release:   Reserved_Qty -= Qty</pre>
 
       <div class="module-card">
         <hd onclick="t(this)">
-          <span class="num">#12</span>
+          <span class="num">#13</span>
           <h4>Purchase Orders</h4>
           <div class="tags"><s>Books 1:1</s><s>28+ fields</s><s>Full lifecycle</s></div>
           <span class="arr">▸</span>
@@ -606,7 +636,7 @@ Release:   Reserved_Qty -= Qty</pre>
 
       <div class="module-card">
         <hd onclick="t(this)">
-          <span class="num">#13</span>
+          <span class="num">#14</span>
           <h4>Goods Receipt (GRN)</h4>
           <div class="tags"><s>Auto inventory</s><s>Critical</s></div>
           <span class="arr">▸</span>
@@ -636,7 +666,7 @@ Release:   Reserved_Qty -= Qty</pre>
 
       <div class="module-card">
         <hd onclick="t(this)">
-          <span class="num">#14</span>
+          <span class="num">#15</span>
           <h4>Reports &amp; Dashboards</h4>
           <div class="tags"><s>14 reports</s><s>Dashboard KPIs</s></div>
           <span class="arr">▸</span>
@@ -649,7 +679,7 @@ Release:   Reserved_Qty -= Qty</pre>
 
       <div class="module-card">
         <hd onclick="t(this)">
-          <span class="num">#15</span>
+          <span class="num">#16</span>
           <h4>Invoicing</h4>
           <div class="tags"><s>Revenue</s><s>Zoho Books ready</s><s>P&amp;L</s></div>
           <span class="arr">▸</span>
@@ -661,7 +691,7 @@ Release:   Reserved_Qty -= Qty</pre>
               <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
               <tr><td>Invoice No</td><td>Auto-number</td><td><code>INV-0001</code></td></tr>
               <tr><td>Project</td><td>Lookup → Projects <span class="tag tag-lk">Lookup</span></td><td>Ties revenue to project for P&amp;L</td></tr>
-              <tr><td>Customer / Account</td><td>Lookup → Vendors <span class="tag tag-lk">Lookup</span></td><td>Billed party</td></tr>
+              <tr><td>Customer / Account</td><td>Lookup → Accounts <span class="tag tag-lk">Lookup</span></td><td>Billed party</td></tr>
               <tr><td>Invoice Date / Due Date</td><td>Date</td><td></td></tr>
               <tr><td>Status</td><td>Dropdown</td><td><span class="s-dr">Draft</span> <span class="s-op">Sent</span> <span class="s-pn">Partially Paid</span> <span class="s-ap">Paid</span> <span class="s-ex">Overdue</span> <span class="s-cl">Cancelled</span></td></tr>
               <tr><td>Subtotal / Discount / Tax / Total</td><td>Currency</td><td></td></tr>
@@ -693,7 +723,7 @@ Release:   Reserved_Qty -= Qty</pre>
 
       <div class="module-card">
         <hd onclick="t(this)">
-          <span class="num">#16</span>
+          <span class="num">#17</span>
           <h4>Delivery Challan</h4>
           <div class="tags"><s>Logistics</s><s>Stock deduction</s></div>
           <span class="arr">▸</span>
@@ -733,7 +763,7 @@ Release:   Reserved_Qty -= Qty</pre>
 
       <div class="module-card">
         <hd onclick="t(this)">
-          <span class="num">#17</span>
+          <span class="num">#18</span>
           <h4>BOM (Bill of Materials)</h4>
           <div class="tags"><s>Manufacturing</s><s>Cost estimation</s></div>
           <span class="arr">▸</span>
@@ -788,7 +818,10 @@ Release:   Reserved_Qty -= Qty</pre>
         <br>
         <span class="f">Vendors</span> ──┬── <span class="c">Vendor_Contacts</span> + <span class="c">Vendor_Documents</span> (1:N)<br>
         <div class="in">├── <span class="c">Purchase_Orders</span> + <span class="c">Inventory_Items</span> + <span class="c">Expenses</span></div>
-        <div class="in">└── <span class="c">Goods_Receipts</span> + <span class="c">Invoices</span> + <span class="c">Delivery_Challans</span></div>
+        <div class="in">└── <span class="c">Goods_Receipts</span></div>
+        <br>
+        <span class="f">Accounts</span> ──┬── <span class="c">Account_Contacts</span> + <span class="c">Account_Documents</span> (1:N)<br>
+        <div class="in">├── <span class="c">Projects</span> + <span class="c">Invoices</span> + <span class="c">Delivery_Challans</span></div>
         <br>
         <span class="f">Warehouses</span> ──┬── <span class="c">Item_Warehouse_Stock</span> + <span class="c">Inventory_Transactions</span><br>
         <div class="in">└── <span class="c">Transfer_Orders</span> + <span class="c">PO_Line_Items</span> + <span class="c">GRN_Line_Items</span> + <span class="c">DC_Line_Items</span></div>
@@ -839,7 +872,7 @@ Release:   Reserved_Qty -= Qty</pre>
       <div class="pg">
         <a href="build-viewer.html?phase=1A" class="pc" style="border-left:3px solid var(--green);text-decoration:none;display:block">
           <h4 style="color:var(--green)">1A — Foundation</h4>
-          <ul><li>Vendors + Contacts + Docs</li><li>Project Master</li><li>Warehouses</li><li>Inventory Items + Stock</li></ul>
+          <ul><li>Vendors + Contacts + Docs</li><li>Accounts + Contacts + Docs</li><li>Project Master</li><li>Warehouses</li><li>Inventory Items + Stock</li></ul>
           <span style="font-size:0.75rem;color:var(--muted);margin-top:6px;display:inline-block">Open build guide →</span>
         </a>
         <a href="build-viewer.html?phase=1B" class="pc" style="border-left:3px solid var(--accent);text-decoration:none;display:block">
