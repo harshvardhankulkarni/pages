@@ -29,6 +29,7 @@
 
 ### Embedded Subform: Vendor Contacts (API Name: Vendor_Contacts)
 | Label | Field Type | API Name | Required | Notes |
+|---|---|---|---|---|
 | Salutation | Dropdown | `Salutation` | No | `Mr, Ms, Mrs, Dr` |
 | First Name | Single Line | `First_Name` | No | |
 | Last Name | Single Line | `Last_Name` | No | |
@@ -41,6 +42,7 @@
 
 ### Embedded Subform: Vendor Documents (API Name: Vendor_Documents)
 | Label | Field Type | API Name | Required | Notes |
+|---|---|---|---|---|
 | Document Name | Single Line | `Document_Name` | Yes | |
 | File | Upload | `File_Upload` | No | |
 | Expiry Date | Date | `Expiry_Date` | No | |
@@ -77,6 +79,7 @@
 
 ### Embedded Subform: Account Contacts (API Name: Account_Contacts)
 | Label | Field Type | API Name | Required | Notes |
+|---|---|---|---|---|
 | Salutation | Dropdown | `Salutation` | No | `Mr, Ms, Mrs, Dr` |
 | First Name | Single Line | `First_Name` | No | |
 | Last Name | Single Line | `Last_Name` | No | |
@@ -89,6 +92,7 @@
 
 ### Embedded Subform: Account Documents (API Name: Account_Documents)
 | Label | Field Type | API Name | Required | Notes |
+|---|---|---|---|---|
 | Document Name | Single Line | `Document_Name` | Yes | |
 | File | Upload | `File_Upload` | No | |
 | Expiry Date | Date | `Expiry_Date` | No | |
@@ -229,6 +233,7 @@ After form creation, manually create one default record:
 
 ### Embedded Subform: Stock by Warehouse (API Name: Item_Warehouse_Stock)
 | Label | Field Type | API Name | Required | Notes |
+|---|---|---|---|---|
 | Warehouse | Lookup → Warehouses | `Warehouse` | Yes | |
 | Current Stock | Decimal | `Current_Stock` | Yes | Maintained by Deluge |
 | Reserved Qty | Decimal | `Reserved_Qty` | No | Default 0 |
