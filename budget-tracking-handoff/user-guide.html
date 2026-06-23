@@ -280,6 +280,12 @@
       <div class="flow-row"><span class="box" style="border-color:var(--blue);color:var(--blue)">Vendor_Documents</span><span class="arr">&rarr;</span><span>Document Name, File (upload), Expiry Date</span></div>
     </bd>
   </div>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Setup Notes</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <p><strong>Deluge:</strong> None — pure data capture form. No automations required.</p>
+    </bd>
+  </div>
 </div>
 
 <!-- ====== 2. ACCOUNTS ====== -->
@@ -329,6 +335,12 @@
       <div class="flow-row"><span class="box" style="border-color:var(--blue);color:var(--blue)">Account_Documents</span><span class="arr">&rarr;</span><span>Document Name, File, Expiry Date</span></div>
     </bd>
   </div>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Setup Notes</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <p><strong>Deluge:</strong> None — pure data capture form. No automations required.</p>
+    </bd>
+  </div>
 </div>
 
 <!-- ====== 3. WAREHOUSES ====== -->
@@ -367,6 +379,12 @@
         <div class="rel-card"><div class="dir">Referenced by &rarr;</div><div class="target">Transfer Orders</div><div>From / To warehouse</div></div>
         <div class="rel-card"><div class="dir">Referenced by &rarr;</div><div class="target">GRN / PO / DC</div><div>Default receipt/dispatch location</div></div>
       </div>
+    </bd>
+  </div>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Setup Notes</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <p><strong>Seed Data:</strong> Create a "Main Warehouse" record on initial app setup before any inventory transactions.</p>
     </bd>
   </div>
 </div>
@@ -421,6 +439,13 @@
       </div>
     </bd>
   </div>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Setup Notes</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <p><strong>Deluge:</strong> Every Inventory Transaction updates <code>Item_Warehouse_Stock</code> via Deluge, which recomputes the parent <code>Item.Current_Stock</code> rollup field.</p>
+      <p><strong>Item_Warehouse_Stock fields:</strong> Item (lookup), Warehouse (lookup), Current_Stock, Reserved_Qty, Available_Stock (formula: Current − Reserved), Reorder_Level. This subform is the source of truth for all warehouse-level stock.</p>
+    </bd>
+  </div>
 </div>
 
 <!-- ====== 5. PROJECTS ====== -->
@@ -466,6 +491,13 @@
     <bd>
       <div class="flow-row"><span class="box" style="border-color:var(--green);color:var(--green)">Create Invoice</span><span class="arr">&rarr;</span><span>Opens Invoice form with Project + Account pre-filled</span></div>
       <div class="flow-row"><span class="box" style="border-color:var(--orange);color:var(--orange)">Request Part Repair</span><span class="arr">&rarr;</span><span>Opens PR with Project pre-filled, Request Type = "Part Repair"</span></div>
+    </bd>
+  </div>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Setup Notes</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <p><strong>Deluge:</strong> On Create — auto-generate Project Code (<code>PROJ-0001</code>). On Status=Completed — validate no pending Expenses or POs, then auto-create final Invoice for any unbilled items.</p>
+      <p><strong>Custom Buttons:</strong> Create Invoice, Request Part Repair (opens PR with project pre-filled).</p>
     </bd>
   </div>
 </div>
@@ -519,6 +551,13 @@
         <div class="rel-card"><div class="dir">Referenced by &rarr;</div><div class="target">Expenses</div><div>Expense.Budget_Component lookup</div></div>
         <div class="rel-card"><div class="dir">Referenced by &rarr;</div><div class="target">Budget_Approvals</div><div>Created on overrun</div></div>
       </div>
+    </bd>
+  </div>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Setup Notes</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <p><strong>Validations:</strong> No duplicate Active plans per Project. Sum of Budget_Components must not exceed Total Budget Amount.</p>
+      <p><strong>Deluge:</strong> On Submit — validate component total ≤ Total Budget. Reject submission if exceeded.</p>
     </bd>
   </div>
 </div>
@@ -577,6 +616,13 @@
       <div class="al-w">Warehouse required for all types. To_Warehouse required for Transfer.</div>
     </bd>
   </div>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Setup Notes</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <p><strong>Deluge:</strong> On Submit — for each transaction type: Stock In increases warehouse stock, Stock Out decreases it (with negative stock prevention), Reservation increments Reserved_Qty. All changes update <code>Item_Warehouse_Stock</code> then roll up to <code>Item.Current_Stock</code>.</p>
+      <p><strong>Auto-Expense:</strong> When Stock Out has a Project set, Deluge auto-creates an Expense record (Qty × Rate) for project cost tracking.</p>
+    </bd>
+  </div>
 </div>
 
 <!-- ====== 8. EXPENSES ====== -->
@@ -620,6 +666,12 @@
         <span class="st s-ap">Approved</span><span class="ar">/</span>
         <span class="st s-rj">Rejected</span>
       </div>
+    </bd>
+  </div>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Setup Notes</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <p><strong>Deluge:</strong> On Submit — updates Budget_Component.Total_Spent, recalculates utilization %, triggers email alerts at 80%, 90%, and 100% consumption. If expense exceeds component budget, creates Budget_Approval record and notifies PM + Finance Manager.</p>
     </bd>
   </div>
 </div>
@@ -674,6 +726,13 @@
       <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Final approval &rarr; creates Purchase_Order (Draft) with line items from PR</span></div>
     </bd>
   </div>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Setup Notes</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <p><strong>Deluge:</strong> On Submit — checks budget. If within budget → auto-approved. If over → creates Budget_Approval record, notifies PM + Finance Manager.</p>
+      <p><strong>Auto-PO:</strong> On final approval (3-stage: Dept Manager → Finance → Procurement), Deluge auto-creates a Purchase Order (Draft) with all PR line items copied over.</p>
+    </bd>
+  </div>
 </div>
 
 <!-- ====== 10. BUDGET APPROVALS ====== -->
@@ -709,6 +768,12 @@
     <bd>
       <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Approved &rarr; updates Budget Component allocated amount &rarr; approves the Expense</span></div>
       <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Rejected &rarr; Expense status = "Rejected", notifies requester</span></div>
+    </bd>
+  </div>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Setup Notes</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <p><strong>Deluge:</strong> On Approval — updates component budget amount, approves linked Expense. On Rejection — marks Expense as Rejected, notifies submitter.</p>
     </bd>
   </div>
 </div>
@@ -761,6 +826,14 @@
       <div class="workflow-card"><span class="wf-num">Manual</span><span class="wf-desc">PO is closed manually &mdash; no auto-close based on GRN</span></div>
     </bd>
   </div>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Setup Notes</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <p><strong>Deluge:</strong> On Status=Open — emails PO PDF to vendor. PO lifecycle: Draft → Open → Partially Invoiced → Invoiced → Closed / Cancelled.</p>
+      <p><strong>Manual Close:</strong> POs are closed manually only — no auto-close based on GRN. GRN creates Stock In but does not change PO status.</p>
+      <p><strong>Validation:</strong> PO cannot be Cancelled if linked GRN exists.</p>
+    </bd>
+  </div>
 </div>
 
 <!-- ====== 12. GOODS RECEIPT ====== -->
@@ -804,6 +877,12 @@
       <div class="workflow-card"><span class="wf-num">Manual</span><span class="wf-desc">PO closed manually after GRN</span></div>
     </bd>
   </div>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Setup Notes</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <p><strong>Deluge:</strong> On Submit — Accepted Qty triggers Stock In transaction for each GRN line item. Rejected Qty is logged for return tracking.</p>
+    </bd>
+  </div>
 </div>
 
 <!-- ====== 13. TRANSFER ORDERS ====== -->
@@ -834,6 +913,12 @@
     <bd>
       <div class="flow-row"><span class="box" style="border-color:var(--blue);color:var(--blue)">Item</span><span class="arr">+</span><span class="box" style="border-color:var(--blue);color:var(--blue)">Qty</span><span class="arr">+</span><span class="box" style="border-color:var(--blue);color:var(--blue)">Rate</span><span class="arr">=</span><span class="box" style="border-color:var(--green);color:var(--green)">Total (formula)</span></div>
       <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Status = "Completed" &rarr; Stock Out (From WH) + Stock In (To WH) for each line</span></div>
+    </bd>
+  </div>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Setup Notes</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <p><strong>Deluge:</strong> On Status=Completed — auto-generates paired Stock Out (From Warehouse) + Stock In (To Warehouse) for each TO line item.</p>
     </bd>
   </div>
 </div>
@@ -878,6 +963,12 @@
       </div>
     </bd>
   </div>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Setup Notes</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <p><strong>Deluge:</strong> On Submit — auto-calculates Total Component Cost + Total Manufacturing Cost. Prevents duplicate Active BOMs per finished item.</p>
+    </bd>
+  </div>
 </div>
 
 <!-- ====== 15. DELIVERY CHALLANS ====== -->
@@ -918,6 +1009,12 @@
         </table>
       </div>
       <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Status = "Shipped" &rarr; Stock Out for each line &rarr; updates Item_Warehouse_Stock</span></div>
+    </bd>
+  </div>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Setup Notes</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <p><strong>Deluge:</strong> On Status=Shipped — auto-creates Stock Out for each dispatched line item. Validates sufficient stock before allowing Ship status.</p>
     </bd>
   </div>
 </div>
@@ -963,6 +1060,13 @@
       </div>
       <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Status = "Sent" &rarr; updates Project Total Invoiced for P&amp;L</span></div>
       <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Status = "Paid" &rarr; sets Amount Paid, Balance Due = 0</span></div>
+    </bd>
+  </div>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Setup Notes</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <p><strong>Deluge:</strong> On Status=Sent — updates Project.Total_Invoiced for P&amp;L tracking. On Status=Paid — sets Amount_Paid, Balance_Due = 0, marks Paid.</p>
+      <p><strong>Custom Button:</strong> Create Delivery Challan — copies invoice line items to a new Delivery Challan.</p>
     </bd>
   </div>
 </div>
@@ -1011,6 +1115,13 @@
         <div class="rel-card"><div class="target">Cost Overruns</div><div>Components exceeding 100% budget</div></div>
       </div>
       <div class="al-o">Scheduled daily (midnight): KPI refresh, budget alerts, low stock alerts, overdue detection.</div>
+    </bd>
+  </div>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Setup Notes</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <p><strong>Scheduled Workflow:</strong> Daily midnight cron refreshes dashboard KPI data (budget utilization %, low stock alerts, project status rollups).</p>
+      <p><strong>Reports:</strong> 17 reports including Budget vs Actual, Project P&amp;L, Inventory Valuation, Invoice Aging, DC Register, BOM Cost Summary, Monthly Spend Trends.</p>
     </bd>
   </div>
 </div>
