@@ -189,7 +189,7 @@
     <p class="subtitle">Comprehensive developer handoff for building a Project Budget Tracking, Inventory Management, and Procurement system in Zoho Creator.</p>
     <div class="meta">
       <span><strong>Platform:</strong> Zoho Creator + Deluge</span>
-      <span><strong>Modules:</strong> 14 primary + 7 sub-forms</span>
+      <span><strong>Modules:</strong> 17 primary + embedded subforms</span>
       <span><strong>Automations:</strong> ~18 Deluge workflows</span>
       <span><strong>Phase:</strong> 1 of 2</span>
     </div>
@@ -221,7 +221,7 @@
   <p style="margin-top:10px"><strong>Who should read this:</strong> Zoho Creator developer / implementation partner building the application in the Zoho Creator console.</p>
 
   <div class="alert alert-info">
-    <strong>Key design principle:</strong> All modules live in a <strong>single Zoho Creator application</strong>. Phase 1 handles everything in-platform. Phase 2 adds Zoho Inventory / Books / Projects API integration. The data model is designed to make migration between phases a copy operation, not a redesign.
+    <strong>Key design principle:</strong> All modules live in a <strong>single Zoho Creator application</strong>. Phase 1 handles everything in-platform. Phase 2 adds Zoho Projects API integration and Zoho Analytics dashboards.
   </div>
 
   <div class="alert alert-warning" style="margin-top:12px">
@@ -231,7 +231,7 @@
 
 <!-- MODULES -->
 <section id="modules">
-  <h2>15 Modules <span class="badge">form inventory</span></h2>
+  <h2>18 Modules <span class="badge">form inventory</span></h2>
   <div class="module-grid">
     <div class="module-card">
       <div class="num">#1</div>
@@ -242,14 +242,14 @@
     <div class="module-card">
       <div class="num">#2</div>
       <h4>Vendor Management</h4>
-      <div class="desc">Multi-contact, multi-address vendor master with tax IDs, payment terms, currency, and document attachments.</div>
-      <div class="tags"><span>Zoho Inventory aligned</span></div>
+      <div class="desc">Vendor master with embedded subforms for contacts (<code>Vendor_Contacts</code>) and documents (<code>Vendor_Documents</code>), tax IDs, payment terms, and currency.</div>
+      <div class="tags"><span>Vendor master</span></div>
     </div>
     <div class="module-card">
       <div class="num">#3</div>
       <h4>Account Management</h4>
-      <div class="desc">Customer/client master with contacts, documents, billing/shipping addresses, credit limit, and GST treatment. Used by Projects, Invoices, and DCs.</div>
-      <div class="tags"><span>Zoho Books aligned</span></div>
+      <div class="desc">Customer/client master with embedded subforms for contacts (<code>Account_Contacts</code>) and documents (<code>Account_Documents</code>), billing/shipping addresses, and tax IDs.</div>
+      <div class="tags"><span>Customer master</span></div>
     </div>
     <div class="module-card">
       <div class="num">#4</div>
@@ -260,13 +260,13 @@
     <div class="module-card">
       <div class="num">#5</div>
       <h4>Inventory Master (Items)</h4>
-      <div class="desc">SKU-based item master with goods/services type, dimensions, HSN/SAC, price lists, stock-by-warehouse tracking.</div>
-      <div class="tags"><span>Zoho Inventory aligned</span></div>
+      <div class="desc">SKU-based item master with goods/services type, HSN/SAC, and embedded subform <code>Item_Warehouse_Stock</code> for per-warehouse tracking.</div>
+      <div class="tags"><span>Item master</span></div>
     </div>
     <div class="module-card">
       <div class="num">#6</div>
       <h4>Budget Planning</h4>
-      <div class="desc">One active budget plan per project. Links to dynamic Budget Components which are defined per-project.</div>
+      <div class="desc">One active budget plan per project. Links to dynamic Budget Components (embedded subform) which are defined per-project.</div>
       <div class="tags"><span>Validation heavy</span></div>
     </div>
     <div class="module-card">
@@ -296,25 +296,25 @@
     <div class="module-card">
       <div class="num">#11</div>
       <h4>Transfer Orders</h4>
-      <div class="desc">Inter-warehouse stock movement. Completing a transfer auto-generates paired Stock Out + Stock In transactions.</div>
+      <div class="desc">Inter-warehouse stock movement with embedded line items (<code>TO_Line_Items</code>). Completing a transfer auto-generates paired Stock Out + Stock In transactions.</div>
       <div class="tags"><span>Paired txns</span></div>
     </div>
     <div class="module-card">
       <div class="num">#12</div>
       <h4>Purchase Requisition</h4>
-      <div class="desc">Multi-line item internal requests with multi-stage approval (Dept Manager → Finance → Procurement).</div>
+      <div class="desc">Internal requests with embedded line items (<code>PR_Line_Items</code>) and multi-stage approval (Dept Manager → Finance → Procurement).</div>
       <div class="tags"><span>3-stage approval</span></div>
     </div>
     <div class="module-card">
       <div class="num">#13</div>
       <h4>Purchase Orders</h4>
-      <div class="desc">Full PO with line-level discount/tax, billing/shipping addresses, Zoho Inventory status lifecycle.</div>
-      <div class="tags"><span>Zoho Inventory aligned</span></div>
+      <div class="desc">Full PO with embedded line items (<code>PO_Line_Items</code>), line-level discount/tax, status lifecycle from Draft to Closed.</div>
+      <div class="tags"><span>Procurement</span></div>
     </div>
     <div class="module-card">
       <div class="num">#14</div>
       <h4>Goods Receipt</h4>
-      <div class="desc">GRN with accepted/rejected quantities. Accepted qty auto-creates Stock In. Rejected qty logged for vendor returns.</div>
+      <div class="desc">GRN with embedded line items (<code>GRN_Line_Items</code>) for accepted/rejected quantities. Accepted qty auto-creates Stock In.</div>
       <div class="tags"><span>Auto inventory</span></div>
     </div>
     <div class="module-card">
@@ -323,6 +323,24 @@
       <div class="desc">Executive dashboard KPIs, Budget vs Actual pivot, Open POs, Stock Availability, Inventory Valuation.</div>
       <div class="tags"><span>14 reports</span></div>
     </div>
+    <div class="module-card">
+      <div class="num">#16</div>
+      <h4>Invoicing</h4>
+      <div class="desc">Revenue tracking per project with embedded line items (<code>Invoice_Line_Items</code>), aging, and P&amp;L contribution.</div>
+      <div class="tags"><span>Revenue</span></div>
+    </div>
+    <div class="module-card">
+      <div class="num">#17</div>
+      <h4>Delivery Challan</h4>
+      <div class="desc">Goods dispatch tracking with embedded line items (<code>DC_Line_Items</code>). Shipped status auto-creates Stock Out.</div>
+      <div class="tags"><span>Logistics</span></div>
+    </div>
+    <div class="module-card">
+      <div class="num">#18</div>
+      <h4>BOM (Bill of Materials)</h4>
+      <div class="desc">Manufacturing recipe with embedded component line items (<code>BOM_Line_Items</code>), auto cost calculation.</div>
+      <div class="tags"><span>Manufacturing</span></div>
+    </div>
   </div>
 </section>
 
@@ -330,7 +348,7 @@
 <section id="vendors">
   <h2>Vendor Management <span class="badge">form spec</span></h2>
 
-  <div class="alert alert-info">Zoho Inventory aligned — multi-contact, multi-address, tax IDs, payment terms.</div>
+  <div class="alert alert-info">Multi-contact, multi-address vendor master with tax IDs and payment terms.</div>
 
   <h3>Primary Form: Vendors</h3>
   <table class="spec-table">
@@ -341,19 +359,13 @@
     <tr><td>Phone / Mobile / Website</td><td>Phone / URL</td><td></td></tr>
     <tr><td>Currency</td><td>Dropdown</td><td>USD, EUR, INR — affects PO totals</td></tr>
     <tr><td>Payment Terms</td><td>Dropdown</td><td>Due on Receipt, Net 15, Net 30, Net 45, Net 60</td></tr>
-    <tr><td>Payment Options</td><td>Multi-select</td><td>Cheque, Cash, Bank Transfer, Credit Card</td></tr>
-    <tr><td>Opening Balance</td><td>Currency</td><td>Starting balance if carried forward</td></tr>
     <tr><td>Tax ID / PAN</td><td>Text</td><td>GSTIN / VAT / HST / PAN</td></tr>
     <tr><td>Billing Address</td><td>Address (Zoho Creator type)</td><td>Multi-field composite</td></tr>
     <tr><td>Shipping Address</td><td>Address (Zoho Creator type)</td><td>Multi-field composite</td></tr>
-    <tr><td>Category</td><td>Dropdown</td><td>Materials, Services, Equipment, Labor, Logistics</td></tr>
-    <tr><td>Performance Rating</td><td>Decimal 1-5</td><td>Manual update after deliveries</td></tr>
     <tr><td>Status</td><td>Dropdown</td><td>Active, Inactive</td></tr>
-    <tr><td>Portal Access</td><td>Checkbox</td><td>Enable vendor self-service portal</td></tr>
-    <tr><td>Tags</td><td>Multi-select</td><td>Custom classification</td></tr>
   </table>
 
-  <h3>Sub-form: Vendor Contacts</h3>
+  <h3>Embedded Subform: Vendor Contacts</h3>
   <table class="spec-table">
     <tr><th>Field</th><th>Type</th></tr>
     <tr><td>Salutation</td><td>Dropdown: Mr, Ms, Mrs, Dr</td></tr>
@@ -363,7 +375,7 @@
     <tr><td>Is Primary</td><td>Checkbox</td></tr>
   </table>
 
-  <h3>Sub-form: Vendor Documents</h3>
+  <h3>Embedded Subform: Vendor Documents</h3>
   <table class="spec-table">
     <tr><th>Field</th><th>Type</th></tr>
     <tr><td>Document Name</td><td>Text</td></tr>
@@ -378,7 +390,7 @@
 <section id="accounts">
   <h2>Account Management <span class="badge">form spec</span></h2>
 
-  <div class="alert alert-info">Zoho Books Customer aligned — multi-contact, multi-address, tax IDs, GST treatment, credit limit.</div>
+  <div class="alert alert-info">Multi-contact, multi-address customer master with tax IDs and payment terms.</div>
 
   <h3>Primary Form: Accounts</h3>
   <table class="spec-table">
@@ -389,21 +401,14 @@
     <tr><td>Phone / Mobile / Website</td><td>Phone / URL</td><td></td></tr>
     <tr><td>Currency</td><td>Dropdown</td><td>USD, EUR, INR — affects invoice totals</td></tr>
     <tr><td>Payment Terms</td><td>Dropdown</td><td>Due on Receipt, Net 15, Net 30, Net 45, Net 60</td></tr>
-    <tr><td>Opening Balance</td><td>Currency</td><td>Starting balance if carried forward</td></tr>
-    <tr><td>Credit Limit</td><td>Currency</td><td>Maximum credit allowed</td></tr>
     <tr><td>Tax ID / PAN</td><td>Text</td><td>GSTIN / VAT / PAN</td></tr>
-    <tr><td>GST Treatment</td><td>Dropdown</td><td>business_gst, consumer_gst, overseas, SEZ, SEZ_Developer</td></tr>
-    <tr><td>Source of Supply</td><td>Text</td><td>GST state code</td></tr>
-    <tr><td>Place of Contact</td><td>Text</td><td></td></tr>
     <tr><td>Billing Address</td><td>Address (Zoho Creator type)</td><td>Multi-field composite</td></tr>
     <tr><td>Shipping Address</td><td>Address (Zoho Creator type)</td><td>Multi-field composite</td></tr>
-    <tr><td>Portal Access</td><td>Checkbox</td><td>Enable customer self-service portal</td></tr>
     <tr><td>Status</td><td>Dropdown</td><td>Active, Inactive</td></tr>
     <tr><td>Remarks</td><td>Multi-line</td><td></td></tr>
-    <tr><td>Tags</td><td>Multi-select</td><td>Custom classification</td></tr>
   </table>
 
-  <h3>Sub-form: Account Contacts</h3>
+  <h3>Embedded Subform: Account Contacts</h3>
   <table class="spec-table">
     <tr><th>Field</th><th>Type</th></tr>
     <tr><td>Salutation</td><td>Dropdown: Mr, Ms, Mrs, Dr</td></tr>
@@ -413,7 +418,7 @@
     <tr><td>Is Primary</td><td>Checkbox</td></tr>
   </table>
 
-  <h3>Sub-form: Account Documents</h3>
+  <h3>Embedded Subform: Account Documents</h3>
   <table class="spec-table">
     <tr><th>Field</th><th>Type</th></tr>
     <tr><td>Document Name</td><td>Text</td></tr>
@@ -428,7 +433,7 @@
 <section id="inventory">
   <h2>Inventory &amp; Warehouses <span class="badge">form spec</span></h2>
 
-  <div class="alert alert-info">Matches Zoho Inventory item structure: SKU, goods/services, dimensions, HSN/SAC, price lists, multi-warehouse stock.</div>
+  <div class="alert alert-info">SKU-based item master with goods/services types, HSN/SAC, and multi-warehouse stock tracking.</div>
 
   <h3>Warehouses</h3>
   <table class="spec-table">
@@ -448,21 +453,17 @@
     <tr><td>Item Type</td><td>Dropdown</td><td>Goods, Services — services skip stock</td></tr>
     <tr><td>Category</td><td>Dropdown</td><td>Raw Material, Component, Consumable, Equipment, Service, Subcontract</td></tr>
     <tr><td>Unit</td><td>Dropdown</td><td>Pcs, Kg, Ltr, Box, Meter, Hour, Day, Set, Pair</td></tr>
-    <tr><td>Dimensions (L×W×H)</td><td>Decimal ×3</td><td>cm</td></tr>
-    <tr><td>Weight</td><td>Decimal</td><td>kg</td></tr>
-    <tr><td>Brand / Manufacturer</td><td>Text</td><td></td></tr>
     <tr><td>HSN / SAC Code</td><td>Text</td><td>Tax classification</td></tr>
     <tr><td>Taxability / Tax Rate</td><td>Dropdown / Decimal</td><td>Taxable / Non-Taxable / Zero-Rated; default %</td></tr>
-    <tr><td>Purchase Price / Sales Price</td><td>Currency ×2</td><td>Default cost / reference price</td></tr>
+    <tr><td>Purchase Price</td><td>Currency</td><td>Default unit cost</td></tr>
     <tr><td>Reorder Level</td><td>Decimal</td><td>Low stock threshold</td></tr>
     <tr><td>Preferred Vendor</td><td>Lookup → Vendors</td><td></td></tr>
     <tr><td>Current Stock</td><td>Decimal</td><td>Maintained by Deluge — aggregated across all Item_Warehouse_Stock records</td></tr>
     <tr><td>Stock Value</td><td>Formula</td><td>Current_Stock × Purchase_Price</td></tr>
-    <tr><td>Image / Description</td><td>Upload / Multi-line</td><td></td></tr>
     <tr><td>Status</td><td>Dropdown</td><td>Active, Inactive</td></tr>
   </table>
 
-  <h3>Sub-form: Item_Warehouse_Stock</h3>
+  <h3>Embedded Subform: Item_Warehouse_Stock</h3>
   <table class="spec-table">
     <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
     <tr><td>Item</td><td>Lookup → Items</td><td></td></tr>
@@ -491,7 +492,7 @@
     <tr><td>TO Number</td><td>Auto-number</td><td>TO-0001</td></tr>
     <tr><td>From / To Warehouse</td><td>Lookup → Warehouses ×2</td><td>Must differ</td></tr>
     <tr><td>Status</td><td>Dropdown</td><td>Draft, In Transit, Completed, Cancelled</td></tr>
-    <tr><td>Line Items</td><td>Sub-form: Item, Qty, Rate, Total</td><td></td></tr>
+    <tr><td>Line Items</td><td>Embedded subform: Item, Qty, Rate, Total</td><td></td></tr>
   </table>
   <p><strong>Deluge (on Status = "Completed"):</strong> For each line item, generate a Stock Out (from-warehouse) + Stock In (to-warehouse) transaction. Both trigger the Inventory Transactions workflow.</p>
 </section>
@@ -559,54 +560,43 @@
 <section id="procurement">
   <h2>Procurement &amp; Purchase Orders <span class="badge">form spec</span></h2>
 
-  <div class="alert alert-info">1:1 aligned with Zoho Books Purchase Order API (<code>/books/v3/purchaseorder</code>). Every field maps to a JSON property for Phase 2 sync.</div>
-
   <h3>Purchase Requisitions</h3>
   <table class="spec-table">
-    <tr><th>Field</th><th>Type</th><th>Zoho Books API</th><th>Notes</th></tr>
-    <tr><td>Requisition No</td><td>Auto-number</td><td>—</td><td>REQ-0001</td></tr>
-    <tr><td>Request Type</td><td>Dropdown</td><td>—</td><td>General, Part Repair, Service</td></tr>
-    <tr><td>Subject / Project</td><td>Text / Lookup → Projects</td><td>— / <code>project_id</code></td><td></td></tr>
-    <tr><td>Requested By / Date / Delivery Date</td><td>User picker / Date ×2</td><td>—</td><td></td></tr>
-    <tr><td>Urgency / Justification</td><td>Dropdown / Multi-line</td><td>—</td><td>Low, Medium, High, Critical</td></tr>
-    <tr><td>Status / Approval Stage</td><td>Dropdown ×2</td><td>—</td><td>Draft→Open→Approved→Rejected→Closed + 4-stage</td></tr>
-    <tr><td>PR Line Items</td><td>Sub-form</td><td>—</td><td>Item lookup, Unit (NEW), Qty, Rate, Total</td></tr>
+    <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+    <tr><td>Requisition No</td><td>Auto-number</td><td>REQ-0001</td></tr>
+    <tr><td>Request Type</td><td>Dropdown</td><td>General, Part Repair, Service</td></tr>
+    <tr><td>Subject / Project</td><td>Text / Lookup → Projects</td><td></td></tr>
+    <tr><td>Requested By / Date / Delivery Date</td><td>User picker / Date ×2</td><td></td></tr>
+    <tr><td>Urgency / Justification</td><td>Dropdown / Multi-line</td><td>Low, Medium, High, Critical</td></tr>
+    <tr><td>Status / Approval Stage</td><td>Dropdown ×2</td><td>Draft→Open→Approved→Rejected→Closed + 4-stage</td></tr>
+    <tr><td>PR Line Items</td><td>Embedded subform</td><td>Item lookup, Unit, Qty, Rate, Total</td></tr>
   </table>
   <p><strong>Approval flow:</strong> Each stage transition sends email to next approver. On final approval → auto-create PO (Draft).</p>
 
   <h3>Purchase Orders</h3>
   <table class="spec-table">
-    <tr><th>Field</th><th>Type</th><th>Zoho Books API</th><th>Notes</th></tr>
-    <tr><td>PO Number</td><td>Auto-number</td><td><code>purchaseorder_number</code></td><td>PO-0001</td></tr>
-    <tr><td>Vendor / Vendor Email</td><td>Lookup / Email</td><td><code>vendor_id</code></td><td>Email convenience field</td></tr>
-    <tr><td>Contact Person</td><td>Lookup → Vendor_Contacts</td><td><code>contact_persons_associated</code></td><td>Books contact persons</td></tr>
-    <tr><td>Requisition / Project</td><td>Lookup ×2</td><td>— / <code>project_id</code></td><td>PR linked on auto-create</td></tr>
-    <tr><td>PO Date / Delivery Date / Due Date</td><td>Date ×3</td><td><code>date</code> / <code>delivery_date</code> / <code>due_date</code></td><td>Expected arrival: <code>expected_delivery_date</code></td></tr>
-    <tr><td>Reference Number</td><td>Text</td><td><code>reference_number</code></td><td>Vendor contract ref</td></tr>
-    <tr><td>Ship Via / Attention</td><td>Dropdown / Text</td><td><code>ship_via</code> / <code>attention</code></td><td>Courier, Freight, Air, Sea, Road, Pickup</td></tr>
-    <tr><td>Billing / Shipping Address</td><td>Multi-line ×2</td><td><code>billing_address_id</code></td><td>Copied from Vendor, editable</td></tr>
-    <tr><td>Status</td><td>Dropdown</td><td><code>status</code></td><td>Draft, Open, Part Invoiced, Billed, Closed, Cancelled</td></tr>
-    <tr><td>Currency / Exchange Rate</td><td>Lookup / Decimal</td><td><code>currency_id</code> / <code>exchange_rate</code></td><td>Base currency default</td></tr>
-    <tr><td>Is Inclusive Tax / Discount Before Tax</td><td>Checkbox ×2</td><td><code>is_inclusive_tax</code> / <code>is_discount_before_tax</code></td><td>Tax treatment flags</td></tr>
-    <tr><td>Discount</td><td>%</td><td><code>discount</code></td><td>PO-level discount</td></tr>
-    <tr><td>Subtotal / Tax Total / Total</td><td>Currency + Formula</td><td><code>sub_total</code> / <code>total_tax</code> / <code>total</code></td><td>Full financial rollup</td></tr>
-    <tr><td>Terms / Notes</td><td>Multi-line ×2</td><td><code>terms</code> / <code>notes</code></td><td></td></tr>
-    <tr><td>Location / Template / Price Book</td><td>Lookups</td><td><code>location_id</code> / <code>template_id</code> / <code>pricebook_id</code></td><td>Books location/template/pricebook</td></tr>
-    <tr><td>GST / Reverse Charge</td><td>Text + Dropdown + Checkbox</td><td><code>gst_treatment</code> / <code>gst_no</code> / <code>is_reverse_charge_applied</code></td><td>India GST fields</td></tr>
-    <tr><td>Custom Fields / Attachment</td><td>JSON / Upload</td><td><code>custom_fields</code></td><td>Books custom field values</td></tr>
+    <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+    <tr><td>PO Number</td><td>Auto-number</td><td>PO-0001</td></tr>
+    <tr><td>Vendor</td><td>Lookup → Vendors</td><td>Required</td></tr>
+    <tr><td>Requisition / Project</td><td>Lookup ×2</td><td>PR linked on auto-create</td></tr>
+    <tr><td>PO Date / Delivery Date / Due Date</td><td>Date ×3</td><td></td></tr>
+    <tr><td>Reference Number</td><td>Text</td><td>Vendor contract ref</td></tr>
+    <tr><td>Status</td><td>Dropdown</td><td>Draft, Open, Part Invoiced, Billed, Closed, Cancelled</td></tr>
+    <tr><td>Discount %</td><td>Decimal</td><td>PO-level discount</td></tr>
+    <tr><td>Subtotal / Tax Total / Total</td><td>Currency / Formula</td><td>Financial rollup</td></tr>
+    <tr><td>Terms / Notes</td><td>Multi-line ×2</td><td></td></tr>
+    <tr><td>Attachment</td><td>Upload</td><td>PO document</td></tr>
   </table>
 
   <h4>PO Line Item Spec</h4>
   <table class="spec-table">
-    <tr><th>Field</th><th>Type</th><th>Zoho Books API</th><th>Notes</th></tr>
-    <tr><td>Item / SKU / Name</td><td>Lookup / Text / Text</td><td><code>item_id</code> / <code>sku</code> / <code>name</code></td><td>Auto-filled from Item</td></tr>
-    <tr><td>Description / Unit / HSN/SAC</td><td>Text ×3</td><td><code>description</code> / <code>unit</code> / <code>hsn_or_sac</code></td><td></td></tr>
-    <tr><td>Quantity / Rate / BCY Rate</td><td>Decimal / Currency ×2</td><td><code>quantity</code> / <code>rate</code> / <code>bcy_rate</code></td><td></td></tr>
-    <tr><td>Discount % / Discount Amount</td><td>Decimal / Formula</td><td>—</td><td>Line-level</td></tr>
-    <tr><td>Tax %</td><td>Decimal</td><td><code>tax_id</code></td><td>Defaults from Item's Tax Rate</td></tr>
-    <tr><td>Tax Amount</td><td>Formula</td><td>—</td><td><code>(Qty × Rate − Discount) × Tax% / 100</code></td></tr>
-    <tr><td>Item Total</td><td>Formula</td><td><code>item_total</code></td><td><code>(Qty × Rate) + Tax Amount − Discount Amount</code></td></tr>
-    <tr><td>Tags</td><td>Multi-select</td><td><code>tags</code></td><td>Zoho Books tags</td></tr>
+    <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+    <tr><td>Item</td><td>Lookup → Inventory_Items</td><td></td></tr>
+    <tr><td>Description / Unit / HSN/SAC</td><td>Text ×3</td><td></td></tr>
+    <tr><td>Quantity / Rate</td><td>Decimal / Currency</td><td></td></tr>
+    <tr><td>Discount % / Discount Amount</td><td>Decimal / Formula</td><td>Line-level</td></tr>
+    <tr><td>Tax % / Tax Amount</td><td>Decimal / Formula</td><td>Defaults from Item's Tax Rate</td></tr>
+    <tr><td>Item Total</td><td>Formula</td><td><code>(Qty × Rate) + Tax Amount − Discount Amount</code></td></tr>
   </table>
 
   <div class="workflow-steps">
@@ -616,7 +606,7 @@
     <span class="arrow">→</span>
     <span class="step status-pending">Partially Invoiced</span>
     <span class="arrow">→</span>
-    <span class="step status-approved">Invoiced</span>
+    <span class="step status-approved">Billed</span>
     <span class="arrow">→</span>
     <span class="step status-closed">Closed</span>
     <span class="arrow">|</span>
@@ -628,10 +618,10 @@
   <table class="spec-table">
     <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
     <tr><td>GRN Number</td><td>Auto-number</td><td>GRN-0001</td></tr>
-    <tr><td>PO / Vendor</td><td>Lookup ×2</td><td>Vendor auto-filled from PO</td></tr>
+    <tr><td>PO</td><td>Lookup → Purchase_Orders</td><td></td></tr>
     <tr><td>Receipt Date / Received By</td><td>DateTime / User picker</td><td></td></tr>
     <tr><td>Status</td><td>Dropdown</td><td>Draft, Open, Closed</td></tr>
-    <tr><td>GRN Line Items</td><td>Sub-form</td><td>See below</td></tr>
+    <tr><td>GRN Line Items</td><td>Embedded subform</td><td>See below</td></tr>
   </table>
 
   <h4>GRN Line Item Spec</h4>
@@ -648,7 +638,7 @@
 
 <!-- WORKFLOWS -->
 <section id="workflows">
-  <h2>Deluge Workflow Catalog <span class="badge">25 automations</span></h2>
+  <h2>Deluge Workflow Catalog <span class="badge">18 automations</span></h2>
 
   <table class="spec-table">
     <tr><th>#</th><th>Trigger</th><th>Event</th><th>Action</th><th>Critical?</th></tr>
@@ -706,17 +696,16 @@
       <h4 style="color:var(--color-green)">Phase 1A — Foundation</h4>
       <ul style="font-size:0.85rem;margin-top:8px;list-style:none">
         <li>✓ Project Master</li>
-        <li>✓ Vendors + Contacts + Docs</li>
-        <li>✓ Accounts + Contacts + Docs</li>
+        <li>✓ Vendors (with embedded Contacts &amp; Docs subforms)</li>
+        <li>✓ Accounts (with embedded Contacts &amp; Docs subforms)</li>
         <li>✓ Warehouses</li>
-        <li>✓ Inventory Items + Stock by Warehouse</li>
+        <li>✓ Inventory Items (with embedded Stock subform)</li>
       </ul>
     </div>
     <div style="background:var(--color-surface);padding:16px;border-radius:8px;border:1px solid var(--color-border)">
       <h4 style="color:var(--color-accent)">Phase 1B — Budget</h4>
       <ul style="font-size:0.85rem;margin-top:8px;list-style:none">
-        <li>✓ Budget Planning</li>
-        <li>✓ Budget Components</li>
+        <li>✓ Budget Planning (with embedded Budget Components subform)</li>
         <li>✓ Inventory Transactions</li>
       </ul>
     </div>
@@ -732,13 +721,21 @@
       <h4 style="color:var(--color-orange)">Phase 1D — Procurement</h4>
       <ul style="font-size:0.85rem;margin-top:8px;list-style:none">
         <li>✓ Budget Approval Workflow</li>
-        <li>✓ Purchase Orders + Line Items</li>
-        <li>✓ Transfer Orders</li>
-        <li>✓ Goods Receipt</li>
+        <li>✓ Purchase Orders (with embedded Line Items subform)</li>
+        <li>✓ Transfer Orders (with embedded Line Items subform)</li>
+        <li>✓ Goods Receipt (with embedded Line Items subform)</li>
       </ul>
     </div>
     <div style="background:var(--color-surface);padding:16px;border-radius:8px;border:1px solid var(--color-border)">
-      <h4 style="color:var(--color-yellow)">Phase 1E — Reports</h4>
+      <h4 style="color:var(--color-yellow)">Phase 1E — Revenue &amp; Mfg</h4>
+      <ul style="font-size:0.85rem;margin-top:8px;list-style:none">
+        <li>✓ BOM (with embedded Line Items subform)</li>
+        <li>✓ Delivery Challans (with embedded Line Items subform)</li>
+        <li>✓ Invoicing (with embedded Line Items subform)</li>
+      </ul>
+    </div>
+    <div style="background:var(--color-surface);padding:16px;border-radius:8px;border:1px solid var(--color-border)">
+      <h4 style="color:var(--color-green)">Phase 1F — Reports &amp; Dashboards</h4>
       <ul style="font-size:0.85rem;margin-top:8px;list-style:none">
         <li>✓ All Reports (14 total)</li>
         <li>✓ Executive Dashboard</li>

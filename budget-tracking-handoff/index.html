@@ -167,7 +167,7 @@
     <a href="#constraints">Constraints</a>
     <a href="#modules">Modules (18)</a>
     <a href="#lookup-map">Lookup Map</a>
-    <a href="#workflows">Workflows (25)</a>
+    <a href="#workflows">Workflows (24)</a>
     <a href="#phases">Build Order</a>
     <a href="#roles">Roles</a>
     <a href="#risks">Risks</a>
@@ -182,8 +182,8 @@
 
   <div class="kpi-bar">
     <div class="kpi"><span class="n" style="color:var(--accent)">18</span><span class="l">Modules</span></div>
-    <div class="kpi"><span class="n" style="color:var(--green)">25</span><span class="l">Deluge Workflows</span></div>
-    <div class="kpi"><span class="n" style="color:var(--purple)">27+</span><span class="l">Forms</span></div>
+    <div class="kpi"><span class="n" style="color:var(--green)">24</span><span class="l">Deluge Workflows</span></div>
+    <div class="kpi"><span class="n" style="color:var(--purple)">17</span><span class="l">Forms</span></div>
     <div class="kpi"><span class="n" style="color:var(--orange)">6</span><span class="l">Build Phases</span></div>
     <div class="kpi"><span class="n" style="color:var(--pink)">6</span><span class="l">User Roles</span></div>
     <div class="kpi"><span class="n" style="color:var(--yellow)">1</span><span class="l">App — Ready to Build</span></div>
@@ -199,7 +199,7 @@
           <tr><td>No true foreign keys</td><td>All relationships = <strong>Lookup</strong> fields. Archive, never delete.</td></tr>
           <tr><td>No transactions</td><td>Safety checks before every write. Log failures to Debug Log form.</td></tr>
           <tr><td>Deluge runs per-record</td><td>Scheduled Workflows for mass ops. Keep On Submit lightweight.</td></tr>
-          <tr><td>Subform limits</td><td>Separate forms + Add-as-Subform for &gt;100 items.</td></tr>
+          <tr><td>Subform limits</td><td>~100 rows max per embedded subform. Use Add-as-Subform; Deluge accesses via <code>input.&lt;subform_name&gt;</code> on parent On Submit.</td></tr>
           <tr><td>No dynamic SQL</td><td>Prefer Reports over Deluge for aggregation.</td></tr>
           <tr><td>Stale lookups</td><td>Formula Lookup (recalculated on load) for live stock values.</td></tr>
         </table>
@@ -241,12 +241,12 @@
         <hd onclick="t(this)">
           <span class="num">#2</span>
           <h4>Vendor Management</h4>
-          <div class="tags"><s>Zoho aligned</s><s>Multi-contact</s></div>
+          <div class="tags"><s>Multi-contact</s></div>
           <span class="arr">▸</span>
         </hd>
         <bd>
-          <p><strong>Forms:</strong> <code>Vendors</code> + <code>Vendor_Contacts</code> + <code>Vendor_Documents</code></p>
-          <p>Zoho Inventory aligned. Stores supplier information for POs, expenses, and items.</p>
+          <p><strong>Form:</strong> <code>Vendors</code> (with embedded subforms <code>Vendor_Contacts</code>, <code>Vendor_Documents</code>)</p>
+          <p>Stores supplier information for POs, expenses, and items.</p>
           <div class="tw">
             <table class="tbl">
               <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
@@ -258,8 +258,6 @@
               <tr><td>Tax ID / PAN</td><td>Text</td><td>GSTIN / VAT / PAN</td></tr>
               <tr><td>Billing Address</td><td>Address (Zoho type)</td><td>Multi-field composite</td></tr>
               <tr><td>Shipping Address</td><td>Address (Zoho type)</td><td>Multi-field composite</td></tr>
-              <tr><td>Vendor Category</td><td>Dropdown</td><td>Materials, Services, Equipment, Labor, Logistics</td></tr>
-              <tr><td>Performance Rating</td><td>Decimal (1-5)</td><td></td></tr>
               <tr><td>Status</td><td>Dropdown</td><td><span class="s-ap">Active</span> <span class="s-cl">Inactive</span></td></tr>
             </table>
           </div>
@@ -271,12 +269,12 @@
         <hd onclick="t(this)">
           <span class="num">#3</span>
           <h4>Account Management</h4>
-          <div class="tags"><s>Zoho Books aligned</s><s>Multi-contact</s><s>Customers</s></div>
+          <div class="tags"><s>Multi-contact</s><s>Customers</s></div>
           <span class="arr">▸</span>
         </hd>
         <bd>
-          <p><strong>Forms:</strong> <code>Accounts</code> + <code>Account_Contacts</code> + <code>Account_Documents</code></p>
-          <p>Zoho Books Customer aligned. Stores client/customer information for projects, invoices, and delivery challans.</p>
+          <p><strong>Form:</strong> <code>Accounts</code> (with embedded subforms <code>Account_Contacts</code>, <code>Account_Documents</code>)</p>
+          <p>Stores client/customer information for projects, invoices, and delivery challans.</p>
           <div class="tw">
             <table class="tbl">
               <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
@@ -285,9 +283,7 @@
               <tr><td>Email / Phone / Mobile</td><td>Email + Phone</td><td></td></tr>
               <tr><td>Currency</td><td>Dropdown</td><td>USD, EUR, INR, etc.</td></tr>
               <tr><td>Payment Terms</td><td>Dropdown</td><td>Due on Receipt, Net 15/30/45/60</td></tr>
-              <tr><td>Credit Limit</td><td>Currency</td><td>Maximum credit allowed</td></tr>
               <tr><td>Tax ID / PAN</td><td>Text</td><td>GSTIN / VAT / PAN</td></tr>
-              <tr><td>GST Treatment</td><td>Dropdown</td><td>business_gst, consumer_gst, overseas, SEZ</td></tr>
               <tr><td>Billing Address</td><td>Address (Zoho type)</td><td>Multi-field composite</td></tr>
               <tr><td>Shipping Address</td><td>Address (Zoho type)</td><td>Multi-field composite</td></tr>
               <tr><td>Status</td><td>Dropdown</td><td><span class="s-ap">Active</span> <span class="s-cl">Inactive</span></td></tr>
@@ -324,11 +320,11 @@
         <hd onclick="t(this)">
           <span class="num">#5</span>
           <h4>Inventory Master — Items</h4>
-          <div class="tags"><s>SKU</s><s>HSN/SAC</s><s>Zoho aligned</s></div>
+          <div class="tags"><s>SKU</s><s>HSN/SAC</s></div>
           <span class="arr">▸</span>
         </hd>
         <bd>
-          <p><strong>Forms:</strong> <code>Inventory_Items</code> + <code>Item_Warehouse_Stock</code> + <code>Item_Attributes</code></p>
+          <p><strong>Form:</strong> <code>Inventory_Items</code> (with embedded subform <code>Item_Warehouse_Stock</code>)</p>
           <div class="tw">
             <table class="tbl">
               <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
@@ -336,17 +332,16 @@
               <tr><td>Item Type</td><td>Dropdown</td><td>Goods / Services</td></tr>
               <tr><td>Category</td><td>Dropdown</td><td>Raw Material, Component, Consumable, Equipment, Service, Subcontract</td></tr>
               <tr><td>Unit</td><td>Dropdown</td><td>Pcs, Kg, Ltr, Box, Meter, Hour, Day, Set, Pair</td></tr>
-              <tr><td>Dimensions / Weight</td><td>Decimal</td><td></td></tr>
               <tr><td>HSN/SAC Code</td><td>Text</td><td>Tax classification</td></tr>
               <tr><td>Taxability / Tax Rate</td><td>Dropdown + %</td><td></td></tr>
-              <tr><td>Purchase Price / Sales Price</td><td>Currency</td><td></td></tr>
+              <tr><td>Purchase Price</td><td>Currency</td><td></td></tr>
               <tr><td>Reorder Level</td><td>Decimal</td><td>Min stock before alert</td></tr>
               <tr><td>Preferred Vendor</td><td>Lookup → Vendors <span class="tag tag-lk">Lookup</span></td><td></td></tr>
               <tr><td>Current Stock</td><td>Decimal</td><td>Maintained by Deluge — aggregated across warehouses</td></tr>
               <tr><td>Stock Value</td><td>Formula</td><td><code>Current Stock × Purchase Price</code></td></tr>
             </table>
           </div>
-          <p><strong>Item_Warehouse_Stock:</strong> Item, Warehouse, Current_Stock, Reserved_Qty, Available_Stock (Current − Reserved), Reorder_Level. Source of truth for stock.</p>
+          <p><strong>Embedded subform fields (Item_Warehouse_Stock):</strong> Item, Warehouse, Current_Stock, Reserved_Qty, Available_Stock (Current − Reserved), Reorder_Level. Source of truth for stock.</p>
           <p><strong>Deluge:</strong> Every Inventory Transaction → update Item_Warehouse_Stock → recompute Item.Current_Stock via Deluge.</p>
         </bd>
       </div>
@@ -359,7 +354,7 @@
           <span class="arr">▸</span>
         </hd>
         <bd>
-          <p><strong>Form:</strong> <code>Budget_Plans</code> | <strong>Sub:</strong> <code>Budget_Components</code></p>
+          <p><strong>Form:</strong> <code>Budget_Plans</code> (with embedded subform <code>Budget_Components</code>)</p>
           <div class="tw">
             <table class="tbl">
               <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
@@ -512,7 +507,7 @@ Release:   Reserved_Qty -= Qty</pre>
           <span class="arr">▸</span>
         </hd>
         <bd>
-          <p><strong>Form:</strong> <code>Transfer_Orders</code> | <strong>Sub:</strong> <code>TO_Line_Items</code></p>
+          <p><strong>Form:</strong> <code>Transfer_Orders</code> (with embedded subform <code>TO_Line_Items</code>)</p>
           <div class="tw" style="margin-top:8px">
             <table class="tbl">
               <tr><th colspan="2">Validation Rules</th></tr>
@@ -534,11 +529,11 @@ Release:   Reserved_Qty -= Qty</pre>
         <hd onclick="t(this)">
           <span class="num">#12</span>
           <h4>Purchase Requisition</h4>
-          <div class="tags"><s>3-stage approval</s><s>Auto-PO</s><s>Books aligned</s></div>
+          <div class="tags"><s>3-stage approval</s><s>Auto-PO</s></div>
           <span class="arr">▸</span>
         </hd>
         <bd>
-          <p><strong>Form:</strong> <code>Purchase_Requisitions</code> | <strong>Sub:</strong> <code>PR_Line_Items</code></p>
+          <p><strong>Form:</strong> <code>Purchase_Requisitions</code> (with embedded subform <code>PR_Line_Items</code>)</p>
           <div class="tw" style="margin-top:8px">
             <table class="tbl">
               <tr><th colspan="2">Validation Rules</th></tr>
@@ -556,16 +551,16 @@ Release:   Reserved_Qty -= Qty</pre>
           </div>
           <p><strong>Deluge:</strong> On final approval → auto-create PO (Draft) with linked line items.</p>
           <div class="tw"><table class="tbl">
-            <tr><th colspan="2">PR Fields (Zoho Books aligned)</th></tr>
+            <tr><th colspan="2">PR Fields</th></tr>
             <tr><td>Req No</td><td>Auto-number <code>REQ-0001</code></td></tr>
             <tr><td>Request Type</td><td>Dropdown: General / Part Repair / Service</td></tr>
             <tr><td>Subject / Project / Requested By</td><td>Text + Lookup→Projects + User picker</td></tr>
             <tr><td>Requested Date / Delivery Date</td><td>Date (default today)</td></tr>
             <tr><td>Urgency / Justification</td><td>Dropdown Low–Critical + Multi-line</td></tr>
             <tr><td>Status / Approval Stage</td><td>Draft→Open→Approved→Rejected→Closed + 4-stage approval</td></tr>
-            <tr><th colspan="2">PR Line Items</th></tr>
+            <tr><th colspan="2" style="background:var(--bg);color:var(--muted);font-size:0.7rem">Embedded subform PR Line Items</th></tr>
             <tr><td>Item</td><td>Lookup→Inventory_Items (optional free-text)</td></tr>
-            <tr><td>Unit <span class="t-new">NEW</span></td><td>Text (maps to Books <code>unit</code>)</td></tr>
+            <tr><td>Unit <span class="t-new">NEW</span></td><td>Text</td></tr>
             <tr><td>Qty / Est. Rate / Est. Total</td><td>Decimal + Currency + Formula</td></tr>
           </table></div>
         </bd>
@@ -575,11 +570,11 @@ Release:   Reserved_Qty -= Qty</pre>
         <hd onclick="t(this)">
           <span class="num">#13</span>
           <h4>Purchase Orders</h4>
-          <div class="tags"><s>Books 1:1</s><s>28+ fields</s><s>Full lifecycle</s></div>
+          <div class="tags"><s>Full lifecycle</s></div>
           <span class="arr">▸</span>
         </hd>
         <bd>
-          <p><strong>Form:</strong> <code>Purchase_Orders</code> | <strong>Sub:</strong> <code>PO_Line_Items</code></p>
+          <p><strong>Form:</strong> <code>Purchase_Orders</code> (with embedded subform <code>PO_Line_Items</code>)</p>
           <div class="tw" style="margin-top:8px">
             <table class="tbl">
               <tr><th colspan="2">Validation Rules</th></tr>
@@ -598,38 +593,30 @@ Release:   Reserved_Qty -= Qty</pre>
             <span class="ar">|</span>
             <span class="st s-rj">Cancelled</span>
           </div>
-          <p><strong>1:1 mapped to Zoho Books PO API.</strong> Every field targets a <code>purchaseorder</code> JSON property.</p>
           <div class="tw"><table class="tbl">
-            <tr><th>Field</th><th>Zoho Books API</th><th>Type</th></tr>
-            <tr><td>PO Number</td><td><code>purchaseorder_number</code></td><td>Auto-number <code>PO-0001</code></td></tr>
-            <tr><td>Vendor / Contact Person</td><td><code>vendor_id</code> / <code>contact_persons_associated</code></td><td>Lookup→Vendors + Vendor_Contacts</td></tr>
-            <tr><td>Requisition / Project</td><td>— / <code>project_id</code></td><td>Lookup→Purchase_Requisitions + Lookup→Projects</td></tr>
-            <tr><td>PO Date / Delivery Date / Due Date</td><td><code>date</code> / <code>delivery_date</code> / <code>due_date</code></td><td>Date</td></tr>
-            <tr><td>Reference No</td><td><code>reference_number</code></td><td>Text (vendor contract ref)</td></tr>
-            <tr><td>Ship Via / Attention</td><td><code>ship_via</code> / <code>attention</code></td><td>Dropdown + Text</td></tr>
-            <tr><td>Currency / Exchange Rate</td><td><code>currency_id</code> / <code>exchange_rate</code></td><td>Lookup→Currencies + Decimal</td></tr>
-            <tr><td>Is Inclusive Tax</td><td><code>is_inclusive_tax</code></td><td>Checkbox</td></tr>
-            <tr><td>Discount / Before Tax</td><td><code>discount</code> / <code>is_discount_before_tax</code></td><td>% + Checkbox</td></tr>
-            <tr><td>Subtotal / Tax Total / Total</td><td><code>sub_total</code> / <code>total_tax</code> / <code>total</code></td><td>Currency (formula)</td></tr>
-            <tr><td>Terms / Notes</td><td><code>terms</code> / <code>notes</code></td><td>Multi-line</td></tr>
-            <tr><td>Location / Template / Price Book</td><td><code>location_id</code> / <code>template_id</code> / <code>pricebook_id</code></td><td>Lookups</td></tr>
-            <tr><td>GST Treatment / GST No</td><td><code>gst_treatment</code> / <code>gst_no</code></td><td>Dropdown + Text</td></tr>
-            <tr><td>Source/Destination of Supply</td><td><code>source_of_supply</code> / <code>destination_of_supply</code></td><td>Text (GST state codes)</td></tr>
-            <tr><td>Reverse Charge</td><td><code>is_reverse_charge_applied</code></td><td>Checkbox</td></tr>
-            <tr><td>Custom Fields</td><td><code>custom_fields</code></td><td>JSON array</td></tr>
-            <tr><td>Attachment</td><td>—</td><td>Upload</td></tr>
+            <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+            <tr><td>PO Number</td><td>Auto-number</td><td><code>PO-0001</code></td></tr>
+            <tr><td>Vendor</td><td>Lookup → Vendors</td><td>Required</td></tr>
+            <tr><td>Requisition</td><td>Lookup → Purchase_Requisitions</td><td>Optional — linked if created from PR</td></tr>
+            <tr><td>Project</td><td>Lookup → Projects</td><td></td></tr>
+            <tr><td>PO Date / Delivery Date / Due Date</td><td>Date</td><td></td></tr>
+            <tr><td>Reference No</td><td>Text</td><td>Vendor contract reference</td></tr>
+            <tr><td>Status</td><td>Dropdown</td><td>Draft → Open → Partially Invoiced → Billed → Closed → Cancelled</td></tr>
+            <tr><td>Subtotal / Discount / Discount Amt</td><td>Currency</td><td>Overall PO-level discount</td></tr>
+            <tr><td>Tax Total / Total</td><td>Currency (Formula)</td><td><code>Subtotal − Discount + Tax Total</code></td></tr>
+            <tr><td>Terms &amp; Conditions / Notes</td><td>Multi-line</td><td></td></tr>
+            <tr><td>Attachment</td><td>Upload</td><td>PO document</td></tr>
           </table></div>
           <div class="tw"><table class="tbl">
-            <tr><th colspan="3">PO Line Items (1:1 with Books <code>line_items[]</code>)</th></tr>
-            <tr><td>Item / SKU / Name</td><td><code>item_id</code> / <code>sku</code> / <code>name</code></td><td>Lookup→Items + auto-fill</td></tr>
-            <tr><td>Description / Unit / HSN/SAC</td><td><code>description</code> / <code>unit</code> / <code>hsn_or_sac</code></td><td>Text</td></tr>
-            <tr><td>Qty / Rate / BCY Rate</td><td><code>quantity</code> / <code>rate</code> / <code>bcy_rate</code></td><td>Decimal + Currency</td></tr>
-            <tr><td>Tax %</td><td><code>tax_id</code></td><td>Decimal — defaults from Item's Tax Rate</td></tr>
-            <tr><td>Discount % / Discount Amt</td><td>—</td><td>Decimal + Formula</td></tr>
-            <tr><td>Tax Amount</td><td>—</td><td>Formula: <code>(Qty × Rate − Discount) × Tax% / 100</code></td></tr>
-            <tr><td>Item Total</td><td><code>item_total</code></td><td>Formula: <code>(Qty × Rate) + Tax Amount − Discount Amount</code></td></tr>
+            <tr><th colspan="3" style="background:var(--bg);color:var(--muted);font-size:0.7rem">Embedded subform PO Line Items</th></tr>
+            <tr><td>Item</td><td>Lookup → Inventory_Items</td><td></td></tr>
+            <tr><td>Description / Unit / HSN/SAC</td><td>Text</td><td></td></tr>
+            <tr><td>Qty / Rate</td><td>Decimal + Currency</td><td></td></tr>
+            <tr><td>Discount % / Discount Amt</td><td>Decimal + Formula</td><td><code>(Qty × Rate) × (Discount% / 100)</code></td></tr>
+            <tr><td>Tax % / Tax Amount</td><td>Decimal + Formula</td><td>Defaults from Item's Tax Rate</td></tr>
+            <tr><td>Item Total</td><td>Formula</td><td><code>(Qty × Rate) + Tax Amount − Discount Amount</code></td></tr>
           </table></div>
-          <p><strong>Deluge:</strong> Open → email vendor PDF. GRN creates Stock In. Phase 2: POST to Books on Open.</p>
+          <p><strong>Deluge:</strong> Open → email vendor PDF. GRN creates Stock In.</p>
         </bd>
       </div>
 
@@ -641,7 +628,7 @@ Release:   Reserved_Qty -= Qty</pre>
           <span class="arr">▸</span>
         </hd>
         <bd>
-          <p><strong>Form:</strong> <code>Goods_Receipts</code> | <strong>Sub:</strong> <code>GRN_Line_Items</code></p>
+          <p><strong>Form:</strong> <code>Goods_Receipts</code> (with embedded subform <code>GRN_Line_Items</code>)</p>
           <div class="tw" style="margin-top:8px">
             <table class="tbl">
               <tr><th colspan="2">Validation Rules</th></tr>
@@ -670,7 +657,7 @@ Release:   Reserved_Qty -= Qty</pre>
         </hd>
         <bd>
           <p><strong>Key reports:</strong> Budget vs Actual, Project P&amp;L, Invoice Aging, DC Register, BOM Cost Summary, Stock Availability, Low Stock Alert, Executive Dashboard.</p>
-          <p><strong>Scheduled (daily):</strong> KPI refresh, budget alerts (80/90/100%), low stock alerts, auto-close aged POs, mark overdue invoices.</p>
+          <p><strong>Scheduled (daily):</strong> KPI refresh, budget alerts (80/90/100%), low stock alerts, mark overdue invoices.</p>
         </bd>
       </div>
 
@@ -678,11 +665,11 @@ Release:   Reserved_Qty -= Qty</pre>
         <hd onclick="t(this)">
           <span class="num">#16</span>
           <h4>Invoicing</h4>
-          <div class="tags"><s>Revenue</s><s>Zoho Books ready</s><s>P&amp;L</s></div>
+          <div class="tags"><s>Revenue</s><s>P&amp;L</s></div>
           <span class="arr">▸</span>
         </hd>
         <bd>
-          <p><strong>Forms:</strong> <code>Invoices</code> + <code>Invoice_Line_Items</code></p>
+          <p><strong>Form:</strong> <code>Invoices</code> (with embedded subform <code>Invoice_Line_Items</code>)</p>
           <div class="tw">
             <table class="tbl">
               <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
@@ -691,7 +678,7 @@ Release:   Reserved_Qty -= Qty</pre>
               <tr><td>Customer / Account</td><td>Lookup → Accounts <span class="tag tag-lk">Lookup</span></td><td>Billed party</td></tr>
               <tr><td>Invoice Date / Due Date</td><td>Date</td><td></td></tr>
               <tr><td>Status</td><td>Dropdown</td><td><span class="s-dr">Draft</span> <span class="s-op">Sent</span> <span class="s-pn">Partially Paid</span> <span class="s-ap">Paid</span> <span class="s-ex">Overdue</span> <span class="s-cl">Cancelled</span></td></tr>
-              <tr><td>Subtotal / Discount / Tax / Total</td><td>Currency</td><td></td></tr>
+              <tr><td>Subtotal / Tax Total / Total</td><td>Currency</td><td></td></tr>
               <tr><td>Balance Due / Amount Paid</td><td>Currency</td><td></td></tr>
             </table>
           </div>
@@ -714,7 +701,7 @@ Release:   Reserved_Qty -= Qty</pre>
             <span>|</span>
             <span class="st s-cl">Cancelled</span>
           </div>
-          <p><strong>Deluge:</strong> Sent → update Project Total Invoiced. Paid → set Amount Paid, Balance Due = 0. Custom button "Create DC".</p>
+          <p><strong>Deluge:</strong> Sent → update Project Total Invoiced. Paid → set Amount Paid, Balance Due = 0.</p>
         </bd>
       </div>
 
@@ -726,7 +713,7 @@ Release:   Reserved_Qty -= Qty</pre>
           <span class="arr">▸</span>
         </hd>
         <bd>
-          <p><strong>Form:</strong> <code>Delivery_Challans</code> | <strong>Sub:</strong> <code>DC_Line_Items</code></p>
+          <p><strong>Form:</strong> <code>Delivery_Challans</code> (with embedded subform <code>DC_Line_Items</code>)</p>
           <div class="tw">
             <table class="tbl">
               <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
@@ -766,7 +753,7 @@ Release:   Reserved_Qty -= Qty</pre>
           <span class="arr">▸</span>
         </hd>
         <bd>
-          <p><strong>Forms:</strong> <code>BOM</code> + <code>BOM_Line_Items</code></p>
+          <p><strong>Form:</strong> <code>BOM</code> (with embedded subform <code>BOM_Line_Items</code>)</p>
           <div class="tw">
             <table class="tbl">
               <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
@@ -803,7 +790,7 @@ Release:   Reserved_Qty -= Qty</pre>
       <h2>Lookup Relationship Map <span class="t">how forms connect</span></h2>
       <div class="lm">
         <span class="f">Projects</span> ──┬── <span class="c">Budget_Plans</span> (1:1)<br>
-        <div class="in">├── <span class="c">Budget_Components</span> (1:N, via Budget_Plan)</div>
+        <div class="in">├── <span class="c">Budget_Components</span> (1:N, via embedded subform in Budget_Plan)</div>
         <div class="in">├── <span class="c">Expenses</span> (1:N)</div>
         <div class="in">├── <span class="c">Inventory_Transactions</span> (1:N)</div>
         <div class="in">├── <span class="c">Purchase_Requisitions</span> (1:N)</div>
@@ -813,24 +800,24 @@ Release:   Reserved_Qty -= Qty</pre>
         <div class="in">├── <span class="c">Delivery_Challans</span> (1:N)</div>
         <div class="in">└── <span class="c">BOM</span> (1:N)</div>
         <br>
-        <span class="f">Vendors</span> ──┬── <span class="c">Vendor_Contacts</span> + <span class="c">Vendor_Documents</span> (1:N)<br>
-        <div class="in">├── <span class="c">Purchase_Orders</span> + <span class="c">Inventory_Items</span> + <span class="c">Expenses</span></div>
-        <div class="in">└── <span class="c">Goods_Receipts</span></div>
+        <span class="f">Vendors</span> ──┬── (embedded subforms: <span class="c">Vendor_Contacts</span>, <span class="c">Vendor_Documents</span>)<br>
+        <div class="in">└── <span class="c">Purchase_Orders</span> + <span class="c">Inventory_Items</span> + <span class="c">Expenses</span></div>
         <br>
-        <span class="f">Accounts</span> ──┬── <span class="c">Account_Contacts</span> + <span class="c">Account_Documents</span> (1:N)<br>
+        <span class="f">Accounts</span> ──┬── (embedded subforms: <span class="c">Account_Contacts</span>, <span class="c">Account_Documents</span>)<br>
         <div class="in">├── <span class="c">Projects</span> + <span class="c">Invoices</span> + <span class="c">Delivery_Challans</span></div>
         <br>
-        <span class="f">Warehouses</span> ──┬── <span class="c">Item_Warehouse_Stock</span> + <span class="c">Inventory_Transactions</span><br>
-        <div class="in">└── <span class="c">Transfer_Orders</span> + <span class="c">PO_Line_Items</span> + <span class="c">GRN_Line_Items</span> + <span class="c">DC_Line_Items</span></div>
+        <span class="f">Warehouses</span> ──┬── <span class="c">Inventory_Transactions</span><br>
+        <div class="in">└── <span class="c">Transfer_Orders</span> + embedded subforms in PO / GRN / DC</div>
         <br>
-        <span class="f">Inventory_Items</span> ──┬── <span class="c">Item_Warehouse_Stock</span> + <span class="c">Inventory_Transactions</span><br>
-        <div class="in">├── <span class="c">PO_Line_Items</span> + <span class="c">PR_Line_Items</span> + <span class="c">GRN_Line_Items</span> + <span class="c">TO_Line_Items</span></div>
-        <div class="in">└── <span class="c">Invoice_Line_Items</span> + <span class="c">DC_Line_Items</span> + <span class="c">BOM</span> + <span class="c">BOM_Line_Items</span></div>
+        <span class="f">Inventory_Items</span> ──┬── (embedded subform: <span class="c">Item_Warehouse_Stock</span>)<br>
+        <div class="in">├── <span class="c">Inventory_Transactions</span></div>
+        <div class="in">├── embedded subforms: <span class="c">TO_Line_Items</span>, <span class="c">PR_Line_Items</span>, <span class="c">PO_Line_Items</span>, <span class="c">GRN_Line_Items</span>, <span class="c">Invoice_Line_Items</span>, <span class="c">DC_Line_Items</span>, <span class="c">BOM_Line_Items</span></div>
+        <div class="in">└── <span class="c">BOM</span> (as finished item)</div>
       </div>
     </section>
 
     <section id="workflows">
-      <h2>25 Deluge Automations <span class="t">build from this</span></h2>
+      <h2>24 Deluge Automations <span class="t">build from this</span></h2>
       <div class="tw">
         <table class="tbl">
           <tr><th>#</th><th>Trigger</th><th>Event</th><th>Action</th><th>Critical</th></tr>
@@ -857,8 +844,7 @@ Release:   Reserved_Qty -= Qty</pre>
           <tr><td>21</td><td>DC Status = Shipped</td><td>On Submit</td><td>Auto-create Stock Out for dispatched items</td><td><span class="tag tag-cr">Yes</span></td></tr>
           <tr><td>22</td><td>BOM Submit</td><td>On Submit</td><td>Calculate Component Cost + Total Mfg Cost</td><td>—</td></tr>
           <tr><td>23</td><td>PR Fully Approved</td><td>On Submit</td><td>Auto-create Purchase Order (Draft) from PR line items</td><td><span class="tag tag-cr">Yes</span></td></tr>
-          <tr><td>24</td><td>Invoice — Create DC</td><td>Custom Button</td><td>Auto-create Delivery Challan with same project/customer/items</td><td>—</td></tr>
-          <tr><td>25</td><td>Reservation Transaction</td><td>On Submit</td><td>Increment Reserved_Qty; validate ≤ Current_Stock</td><td><span class="tag tag-cr">Yes</span></td></tr>
+          <tr><td>24</td><td>Reservation Transaction</td><td>On Submit</td><td>Increment Reserved_Qty; validate ≤ Current_Stock</td><td><span class="tag tag-cr">Yes</span></td></tr>
         </table>
       </div>
     </section>
@@ -869,7 +855,7 @@ Release:   Reserved_Qty -= Qty</pre>
       <div class="pg">
         <a href="build-viewer.html?phase=1A" class="pc" style="border-left:3px solid var(--green);text-decoration:none;display:block">
           <h4 style="color:var(--green)">1A — Foundation</h4>
-          <ul><li>Vendors + Contacts + Docs</li><li>Accounts + Contacts + Docs</li><li>Project Master</li><li>Warehouses</li><li>Inventory Items + Stock</li></ul>
+          <ul><li>Vendors (embedded Contacts &amp; Docs)</li><li>Accounts (embedded Contacts &amp; Docs)</li><li>Project Master</li><li>Warehouses</li><li>Inventory Items (embedded Stock)</li></ul>
           <span style="font-size:0.75rem;color:var(--muted);margin-top:6px;display:inline-block">Open build guide →</span>
         </a>
         <a href="build-viewer.html?phase=1B" class="pc" style="border-left:3px solid var(--accent);text-decoration:none;display:block">
@@ -884,12 +870,12 @@ Release:   Reserved_Qty -= Qty</pre>
         </a>
         <a href="build-viewer.html?phase=1D" class="pc" style="border-left:3px solid var(--orange);text-decoration:none;display:block">
           <h4 style="color:var(--orange)">1D — Procurement</h4>
-          <ul><li>Budget Approval</li><li>Purchase Orders</li><li>Transfer Orders</li><li>Goods Receipt</li></ul>
+          <ul><li>Budget Approval</li><li>Purchase Orders (embedded Line Items)</li><li>Transfer Orders (embedded Line Items)</li><li>Goods Receipt (embedded Line Items)</li></ul>
           <span style="font-size:0.75rem;color:var(--muted);margin-top:6px;display:inline-block">Open build guide →</span>
         </a>
         <a href="build-viewer.html?phase=1E" class="pc" style="border-left:3px solid var(--pink);text-decoration:none;display:block">
           <h4 style="color:var(--pink)">1E — Revenue &amp; Mfg</h4>
-          <ul><li>BOM</li><li>Delivery Challans</li><li>Invoicing</li></ul>
+          <ul><li>BOM (embedded Line Items)</li><li>Delivery Challans (embedded Line Items)</li><li>Invoicing (embedded Line Items)</li></ul>
           <span style="font-size:0.75rem;color:var(--muted);margin-top:6px;display:inline-block">Open build guide →</span>
         </a>
         <a href="build-viewer.html?phase=1F" class="pc" style="border-left:3px solid var(--yellow);text-decoration:none;display:block">
@@ -898,8 +884,8 @@ Release:   Reserved_Qty -= Qty</pre>
           <span style="font-size:0.75rem;color:var(--muted);margin-top:6px;display:inline-block">Open build guide →</span>
         </a>
       </div>
-      <div class="al al-i"><strong>Phase 1 (now):</strong> All in Zoho Creator. Field names aligned with Zoho Books/Inventory for seamless Phase 2 migration.</div>
-      <div class="al al-o"><strong>Phase 2 (future):</strong> Zoho Inventory API sync, Zoho Books accounting push, Zoho Analytics dashboards. Data model already compatible.</div>
+      <div class="al al-i"><strong>Phase 1 (now):</strong> All in Zoho Creator.</div>
+      <div class="al al-o"><strong>Phase 2 (future):</strong> Zoho Projects sync, Zoho Analytics dashboards.</div>
     </section>
 
     <section id="roles">
@@ -1255,7 +1241,7 @@ if (!existing.isNull() && existing.size() > 0)
                 <p>Three types available. Pick based on your need:</p>
                 <table class="tbl"><tr><th>Type</th><th>Trigger</th><th>Use in This Project</th></tr>
                 <tr><td><strong>Form Workflow</strong></td><td>On Load / On Submit / On Delete</td><td>Real-time validation, stock updates, auto-record creation, notifications (WF #1-15, #17, #19-25)</td></tr>
-                <tr><td><strong>Schedule</strong></td><td>Daily / Hourly cron</td><td>Budget alerts at 8 AM, low stock alerts, auto-close POs, KPI refresh (WF #16, #18)</td></tr>
+                <tr><td><strong>Schedule</strong></td><td>Daily / Hourly cron</td><td>Budget alerts at 8 AM, low stock alerts, KPI refresh (WF #16, #18)</td></tr>
                 <tr><td><strong>Blueprint</strong></td><td>User-driven stage transitions</td><td>PR 3-stage approval, PO lifecycle (Draft → Open → Billed → Closed)</td></tr></table>
                 <div class="ts-nav"><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
               </div>
@@ -1598,7 +1584,7 @@ if (!existing.isNull() && existing.size() > 0)
                 <tr><td><strong>1C</strong></td><td>Expenses, Purchase_Requisitions + Line Items</td><td>Budget check, Overrun approval, PR stage emails</td></tr>
                 <tr><td><strong>1D</strong></td><td>Budget_Approvals, Purchase_Orders + Items, GRN + Items, Transfer_Orders + Items</td><td>Approve/Reject, Auto-PO from PR, GRN→Stock In, TO paired txns</td></tr>
                 <tr><td><strong>1E</strong></td><td>BOM + Items, Delivery_Challans + Items, Invoices + Items</td><td>BOM cost calc, DC→Stock Out, Invoice→P&amp;L update, Create DC button</td></tr>
-                <tr><td><strong>1F</strong></td><td>10+ Reports, Dashboard Pages (Executive, Inventory, Procurement, Financial)</td><td>Scheduled daily: KPI refresh, budget alerts, low stock alerts, auto-close POs</td></tr></table>
+                <tr><td><strong>1F</strong></td><td>10+ Reports, Dashboard Pages (Executive, Inventory, Procurement, Financial)</td><td>Scheduled daily: KPI refresh, budget alerts, low stock alerts</td></tr></table>
                 <div class="ts-nav"><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
               </div>
             </div>
@@ -1711,7 +1697,7 @@ if (!existing.isNull() && existing.size() > 0)
 
     <footer>
       <p><strong>ITOTCloud Systems Pvt. Ltd.</strong> — Internal Implementation Blueprint</p>
-      <p style="font-size:0.7rem;margin-top:4px;color:var(--muted)">17 modules · 25 Deluge workflows · 27+ forms · 6 phases · Zoho Creator + Deluge</p>
+      <p style="font-size:0.7rem;margin-top:4px;color:var(--muted)">18 modules · 24 Deluge workflows · 17 forms · 6 phases · Zoho Creator + Deluge</p>
       <p style="font-size:0.62rem;margin-top:2px;color:var(--surface2)">Confidential — ITOTCloud Delivery Team Only</p>
     </footer>
 

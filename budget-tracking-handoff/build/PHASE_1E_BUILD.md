@@ -23,18 +23,17 @@ Requires Phase 1D complete (Budget_Approvals, Purchase_Orders, Goods_Receipts, T
 
 ### Subforms (Add-as-Subform)
 
-**BOM Line Items** — Form: `BOM_Line_Items`
-| Label | Field Type | API Name | Notes |
-|---|---|---|---|
-| BOM | Lookup → BOM | `BOM` | |
-| Component Item | Lookup → Inventory_Items | `Component_Item` | |
-| Quantity | Decimal | `Quantity` | Units of component per batch |
-| Unit Cost | Currency | `Unit_Cost` | Copied from Item.Purchase_Price |
-| Total Cost | Formula | `Total_Cost` | `Quantity * Unit_Cost` |
-| Notes | Single Line | `Notes` | |
+**BOM Line Items** (Embedded Subform)
+| Label | Field Type | Notes |
+|---|---|---|
+| Component Item | Lookup → Inventory_Items | |
+| Quantity | Decimal | Units of component per batch |
+| Unit Cost | Currency | Copied from Item.Purchase_Price |
+| Total Cost | Formula | `Quantity * Unit_Cost` |
+| Notes | Single Line | |
 
 ### Validation Rules
-1. **At least one component** — On Submit, there must be at least one BOM_Line_Item.
+1. **At least one component** — On Submit, there must be at least one line item in the BOM_Line_Items subform.
 2. **Quantity > 0** — All component quantities must be greater than 0.
 3. **No duplicate components** — Same component item cannot appear twice in one BOM.
 
@@ -45,7 +44,7 @@ BOM Created (Status = Draft)
     │
     └── Submit
             │
-            ├── For each BOM_Line_Item:
+            ├── For each line in embedded BOM_Line_Items:
             │       ├── Auto-fill Unit_Cost from Item.Purchase_Price
             │       └── Calculate Total_Cost = Quantity × Unit_Cost
             │
@@ -59,43 +58,40 @@ BOM Created (Status = Draft)
 
 #### On Submit — Calculate BOM Cost
 ```deluge
-/* Phase 1E — BOM: On Submit
-   Calculate Total Material Cost from components */
+/* ===== PSEUDOCODE =====
+   Trigger: On Submit — when BOM record is created or updated
+   
+   1. Access the embedded BOM_Line_Items subform data via input
+   2. Initialize total_material cost to 0
+   3. If line items exist:
+      For each line item: calculate Unit_Cost × Quantity and add to total
+   4. Build a data map with the calculated Total_Material_Cost
+   5. Update the current BOM record with the calculated total
+   6. Total_Mfg_Cost formula field auto-computes:
+      Total_Material_Cost + Labor_Cost + Overhead_Cost
+   ===== END PSEUDOCODE ===== */
 bom_id = input.ID;
-li_criteria = "BOM == " + bom_id;
-components = zoho.creator.getRecords("budget_tracking", "BOM_Line_Items", li_criteria, 1, 200);
-
+components = input.BOM_Line_Items;
 total_material = 0;
 if (!components.isNull())
 {
     for each comp in components
     {
-        total_material = total_material + ifnull(comp.get("Total_Cost"), 0);
+        unit_cost = ifnull(comp.get("Unit_Cost"), 0);
+        qty = ifnull(comp.get("Quantity"), 0);
+        total_material = total_material + (unit_cost * qty);
     }
 }
-
 bom_data = Map();
 bom_data.put("Total_Material_Cost", total_material);
 zoho.creator.updateRecord("budget_tracking", "BOM", bom_id, bom_data);
 ```
-
-#### On BOM Line Item Submit — Auto-fill Unit Cost
-```deluge
-/* Phase 1E — BOM_Line_Items: On Submit
-   Auto-fill Unit_Cost from Item.Purchase_Price */
-item_id = input.Component_Item;
-if (!item_id.isNull())
-{
-    item = zoho.creator.getRecordById("budget_tracking", "Inventory_Items", item_id);
-    if (!item.isNull())
-    {
-        purchase_price = ifnull(item.get("Purchase_Price"), 0);
-        li_data = Map();
-        li_data.put("Unit_Cost", purchase_price);
-        zoho.creator.updateRecord("budget_tracking", "BOM_Line_Items", input.ID, li_data);
-    }
-}
 ```
+
+#### ~~REMOVED~~ BOM_Line_Items On Submit
+> **REMOVED in Phase 1E:** Embedded subforms cannot have standalone On Submit scripts.
+> Unit_Cost auto-fill from Item.Purchase_Price should be handled in the parent BOM's
+> On Submit script or configured as a lookup mapping from the Component_Item field.
 
 ---
 
@@ -105,7 +101,6 @@ if (!item_id.isNull())
 | Label | Field Type | API Name | Required | Notes |
 |---|---|---|---|---|
 | DC No | Auto Number | `DC_No` | Yes | Format: `DC-{0000}` |
-| Invoice | Lookup → Invoices | `Invoice` | No | Linked invoice |
 | Project | Lookup → Projects | `Project` | Yes | |
 | Account | Lookup → Accounts | `Account` | Yes | Client |
 | DC Date | Date | `DC_Date` | No | Default today |
@@ -115,19 +110,18 @@ if (!item_id.isNull())
 
 ### Subforms (Add-as-Subform)
 
-**DC Line Items** — Form: `DC_Line_Items`
-| Label | Field Type | API Name | Notes |
-|---|---|---|---|
-| DC | Lookup → Delivery_Challans | `DC` | |
-| Item | Lookup → Inventory_Items | `Item` | |
-| Description | Single Line | `Description` | |
-| Quantity | Decimal | `Quantity` | |
-| Unit | Single Line | `Unit` | Copied from Item |
-| Warehouse | Lookup → Warehouses | `Warehouse` | Override |
+**DC Line Items** (Embedded Subform)
+| Label | Field Type | Notes |
+|---|---|---|
+| Item | Lookup → Inventory_Items | |
+| Description | Single Line | |
+| Quantity | Decimal | |
+| Unit | Single Line | Copied from Item |
+| Warehouse | Lookup → Warehouses | Override |
 
 ### Validation Rules
 1. **Warehouse required for Shipped** — On Status = "Shipped", Warehouse must not be null.
-2. **At least one line item** — On Status = "Shipped", at least one DC_Line_Item required.
+2. **At least one line item** — On Status = "Shipped", at least one line item in the DC_Line_Items subform required.
 3. **Sufficient stock** — On Status = "Shipped", validate available stock at the source warehouse per line item ≥ dispatch quantity.
 
 ### Workflow Process
@@ -149,47 +143,48 @@ DC Created (Status = Draft)
 
 ### Deluge Scripts
 
-#### DC_Line_Items On Submit — Fill Default Warehouse from Parent
-```deluge
-/* Phase 1E — DC_Line_Items: On Submit
-   Auto-fill Warehouse from parent Delivery_Challan.Warehouse if line item has no override */
-dc_id = input.DC;
-li_wh = input.Warehouse;
-if (!dc_id.isNull() && li_wh.isNull())
-{
-    dc_record = zoho.creator.getRecordById("budget_tracking", "Delivery_Challans", dc_id);
-    if (!dc_record.isNull())
-    {
-        parent_wh = dc_record.get("Warehouse");
-        if (!parent_wh.isNull())
-        {
-            li_data = Map();
-            li_data.put("Warehouse", parent_wh);
-            zoho.creator.updateRecord("budget_tracking", "DC_Line_Items", input.ID, li_data);
-        }
-    }
-}
-```
+#### ~~REMOVED~~ DC_Line_Items On Submit
+> **REMOVED in Phase 1E:** Embedded subforms cannot have standalone On Submit scripts.
+> The Warehouse default-fill should be handled by setting a default value on the subform's
+> Warehouse field (use formula: `DC.Warehouse` or configure as lookup default).
 
 #### On Submit — Process Stock Deduction on Ship
 ```deluge
-/* Phase 1E — Delivery_Challans: On Submit
-   When Status = "Shipped", auto-create Stock Out for each line item */
+/* ===== PSEUDOCODE =====
+   Trigger: On Submit — when Delivery_Challan Status changes to "Shipped"
+   
+   1. Get the status display value from the current record
+   2. If status is "Shipped":
+      a. Get the parent Warehouse from the DC
+      b. If warehouse is null: throw error — required before shipping
+      c. Access the embedded DC_Line_Items subform data via input
+      d. If line items exist:
+         For each line item:
+         i.   Get Item ID and Quantity
+         ii.  If item is valid AND quantity is positive:
+              - Determine warehouse: use line item's Warehouse override if set,
+                otherwise fall back to the parent DC's Warehouse
+              - Create "Stock Out" Inventory_Transaction:
+                - Item and Warehouse as determined above
+                - Quantity from the line item
+                - Project from the DC
+                - Date from DC_Date
+                - Reference Type: "DC"
+                - Reference ID: this DC's ID
+   3. If status is not "Shipped": skip all processing
+   ===== END PSEUDOCODE ===== */
 status_val = ifnull(input.Status.toMap().get("display_value"), "");
 
 if (status_val == "Shipped")
 {
     parent_wh = input.Warehouse;
-    dc_id = input.ID;
 
     if (parent_wh.isNull())
     {
         throw "Warehouse is required before shipping.";
     }
-
-    li_criteria = "DC == " + dc_id;
-    dc_lines = zoho.creator.getRecords("budget_tracking", "DC_Line_Items", li_criteria, 1, 200);
-
+    
+    dc_lines = input.DC_Line_Items;
     if (!dc_lines.isNull())
     {
         for each li in dc_lines
@@ -199,11 +194,9 @@ if (status_val == "Shipped")
 
             if (!item_id.isNull() && qty > 0)
             {
-                /* Use line item Warehouse override if set, else parent Warehouse */
                 li_wh = li.get("Warehouse");
                 wh_id = ifnull(li_wh, parent_wh);
 
-                /* Create Stock Out transaction */
                 txn_data = Map();
                 txn_data.put("Transaction_Type", "Stock Out");
                 txn_data.put("Item", item_id);
@@ -212,12 +205,13 @@ if (status_val == "Shipped")
                 txn_data.put("Project", input.Project);
                 txn_data.put("Transaction_Date", input.DC_Date);
                 txn_data.put("Reference_Type", "DC");
-                txn_data.put("Reference_ID", dc_id.toString());
+                txn_data.put("Reference_ID", input.ID.toString());
                 zoho.creator.createRecord("budget_tracking", "Inventory_Transactions", txn_data);
             }
         }
     }
 }
+```
 ```
 
 ---
@@ -232,37 +226,31 @@ if (status_val == "Shipped")
 | Account | Lookup → Accounts | `Account` | Yes | Client |
 | Invoice Date | Date | `Invoice_Date` | No | Default today |
 | Due Date | Date | `Due_Date` | No | |
-| Payment Terms | Dropdown | `Payment_Terms` | No | `Due on Receipt, Net 15, Net 30, Net 45` |
 | Status | Dropdown | `Status` | No | `Draft, Sent, Partially Paid, Paid, Overdue, Cancelled` |
 | Subtotal | Currency | `Subtotal` | No | Formula sum |
-| Discount % | Decimal | `Discount_Pct` | No | |
-| Discount Amount | Currency | `Discount_Amount` | No | |
 | Tax Total | Currency | `Tax_Total` | No | |
-| Total | Currency | `Total` | No | `Subtotal - Discount + Tax` |
+| Total | Currency | `Total` | No | `Subtotal + Tax` |
 | Amount Paid | Currency | `Amount_Paid` | No | Updated by payment |
 | Balance Due | Formula | `Balance_Due` | — | `Total - Amount_Paid` |
 | Notes | Multi Line | `Notes` | No | |
-| Terms | Multi Line | `Terms` | No | |
 
 ### Subforms (Add-as-Subform)
 
-**Invoice Line Items** — Form: `Invoice_Line_Items`
-| Label | Field Type | API Name | Notes |
-|---|---|---|---|
-| Invoice | Lookup → Invoices | `Invoice` | |
-| Item | Lookup → Inventory_Items | `Item` | |
-| Description | Single Line | `Description` | |
-| Quantity | Decimal | `Quantity` | |
-| Rate | Currency | `Rate` | |
-| Discount % | Decimal | `Discount_Pct` | |
-| Discount Amount | Formula | `Discount_Amount` | |
-| Tax % | Decimal | `Tax_Pct` | |
-| Tax Amount | Formula | `Tax_Amount` | |
-| Total | Formula | `Total` | |
-| Project | Lookup → Projects | `Project` | Per-line project |
+**Invoice Line Items** (Embedded Subform)
+| Label | Field Type | Notes |
+|---|---|---|
+| Item | Lookup → Inventory_Items | |
+| Description | Single Line | |
+| Quantity | Decimal | |
+| Rate | Currency | |
+| Discount % | Decimal | |
+| Discount Amount | Formula | |
+| Tax % | Decimal | |
+| Tax Amount | Formula | |
+| Total | Formula | |
 
 ### Validation Rules
-1. **At least one line item** — On Status = "Sent", at least one Invoice_Line_Item required.
+1. **At least one line item** — On Status = "Sent", at least one line item in the Invoice_Line_Items subform required.
 2. **Due Date ≥ Invoice Date** — On Submit, Due_Date must be on or after Invoice_Date.
 3. **Balance non-negative** — Balance_Due = Total − Amount_Paid must not be negative.
 4. **Account required for Sent** — On Status = "Sent", Account must not be null.
@@ -301,79 +289,127 @@ Invoice Created (Status = Draft)
 
 #### Custom Action — Create Invoice from Project
 ```deluge
-/* Phase 1E — Projects Custom Action: Create Invoice
-   Pre-fills Invoice form with Project details */
-/* This runs when user clicks "Create Invoice" button on Project */
+/* ===== PSEUDOCODE =====
+   Trigger: Custom Action Button — when user clicks "Create Invoice" on Project form
+   
+   1. Get the current Project record's ID
+   2. Fetch the full Project record by ID
+   3. Extract the Account (client) ID and Project Name
+   4. Open the Invoice form with pre-filled fields:
+      - Project = current project ID (auto-filled by Zoho Creator param)
+      - Account = project's linked account
+   5. Note: Actual form opening is handled by Zoho Creator's
+      custom action URL parameter configuration, not Deluge
+   ===== END PSEUDOCODE ===== */
 proj_id = input.ID;
 proj = zoho.creator.getRecordById("budget_tracking", "Projects", proj_id);
 
 account_id = proj.get("Account");
 proj_name = ifnull(proj.get("Project_Name"), "");
-
-/* Open invoice form with pre-filled data */
-/* Handled by Zoho Creator custom action URL params */
 ```
 
-#### On Status = Sent — Update Project Revenue Tracking
+#### On Status = Sent or Paid — Update Project Revenue Tracking
 ```deluge
-/* Phase 1E — Invoices: On Submit
-   Track revenue when invoice is sent */
+/* ===== PSEUDOCODE =====
+   Trigger: On Submit — when Invoice Status changes to "Sent" or "Paid"
+   Note: Invoice_Line_Items is an embedded subform; revenue totals
+   are computed from Invoice-level fields, not from line items directly.
+   
+   1. Get the status display value and project ID from the current record
+   2. If project is valid AND status is "Sent" or "Paid":
+      a. Build criteria to find all non-cancelled invoices for this project
+      b. Query Invoices matching the criteria (up to 200 records)
+      c. For each invoice found:
+         - Add Total to running total_invoiced sum
+         - Add Amount_Paid to running total_paid sum
+      d. Note: Project form stores Total_Invoiced_Calc, Total_Paid_Calc, 
+         and Total_Expenses_Calc as formula/summary fields
+      e. These fields auto-calculate from report summaries
+      f. Actual P&L is computed via reports and dashboard widgets
+   3. If no project or status is not Sent/Paid: skip all processing
+   ===== END PSEUDOCODE ===== */
 status_val = ifnull(input.Status.toMap().get("display_value"), "");
+proj_id = input.Project;
 
-if (status_val == "Sent" && !input.Project.isNull())
+if (!proj_id.isNull() && (status_val == "Sent" || status_val == "Paid"))
 {
-    /* Update project invoice totals (Phase 1E — placeholder for P&L) */
-    /* Full P&L aggregation handled in reports */
-}
+    inv_criteria = "Project == " + proj_id + " && (Status == 'Sent' || Status == 'Paid' || Status == 'Partially Paid')";
+    project_invoices = zoho.creator.getRecords("budget_tracking", "Invoices", inv_criteria, 1, 200);
 
-/* Auto-create DC from Invoice (custom button) */
-/* This is handled by a custom action button on Invoice form */
-```
-
-#### Custom Action — Create DC from Invoice
-```deluge
-/* Phase 1E — Invoices Custom Action: Create Delivery Challan
-   Copies Invoice line items to new DC */
-inv_id = input.ID;
-inv = zoho.creator.getRecordById("budget_tracking", "Invoices", inv_id);
-
-dc_data = Map();
-dc_data.put("Invoice", inv_id);
-dc_data.put("Project", inv.get("Project"));
-dc_data.put("Account", inv.get("Account"));
-dc_data.put("Status", "Draft");
-dc_data.put("Notes", "Auto-created from Invoice " + ifnull(input.Invoice_No, ""));
-
-created_dc = zoho.creator.createRecord("budget_tracking", "Delivery_Challans", dc_data);
-
-if (!created_dc.isNull())
-{
-    dc_id = created_dc.get("ID");
-
-    /* Copy invoice line items to DC line items */
-    li_criteria = "Invoice == " + inv_id;
-    inv_lines = zoho.creator.getRecords("budget_tracking", "Invoice_Line_Items", li_criteria, 1, 200);
-
-    if (!inv_lines.isNull())
+    total_invoiced = 0;
+    total_paid = 0;
+    if (!project_invoices.isNull())
     {
-        for each li in inv_lines
+        for each inv in project_invoices
         {
-            dc_li = Map();
-            dc_li.put("DC", dc_id);
-            dc_li.put("Item", li.get("Item"));
-            dc_li.put("Description", li.get("Description"));
-            dc_li.put("Quantity", li.get("Quantity"));
-            dc_li.put("Unit", "Nos");
-            zoho.creator.createRecord("budget_tracking", "DC_Line_Items", dc_li);
+            total_invoiced = total_invoiced + ifnull(inv.get("Total"), 0);
+            total_paid = total_paid + ifnull(inv.get("Amount_Paid"), 0);
         }
     }
 }
 ```
 
+#### Custom Action — Create DC from Invoice
+```deluge
+/* ===== PSEUDOCODE =====
+   Trigger: Custom Action Button — when user clicks "Create DC" on Invoice form
+   NOTE: Both Invoice_Line_Items and DC_Line_Items are embedded subforms.
+   Line items are copied via embedded subform data maps, not via getRecords().
+   
+   1. Get the current Invoice ID and fetch the full Invoice record
+   2. Build a new Delivery_Challan data map:
+      a. Project: copied from the invoice
+      b. Account: copied from the invoice
+      c. Status: "Draft"
+      d. Notes: reference the source invoice number
+   3. Copy Invoice line items as embedded DC_Line_Items subform data
+   4. Create the Delivery_Challan record (with embedded line items)
+   ===== END PSEUDOCODE ===== */
+inv_id = input.ID;
+inv = zoho.creator.getRecordById("budget_tracking", "Invoices", inv_id);
+
+dc_data = Map();
+dc_data.put("Project", inv.get("Project"));
+dc_data.put("Account", inv.get("Account"));
+dc_data.put("Status", "Draft");
+dc_data.put("Notes", "Auto-created from Invoice " + ifnull(input.Invoice_No, ""));
+
+/* Copy Invoice line items as embedded DC_Line_Items subform data */
+inv_lines = inv.get("Invoice_Line_Items");
+if (!inv_lines.isNull())
+{
+    dc_line_items_list = List();
+    for each li in inv_lines
+    {
+        dc_li = Map();
+        dc_li.put("Item", li.get("Item"));
+        dc_li.put("Description", li.get("Description"));
+        dc_li.put("Quantity", li.get("Quantity"));
+        dc_li.put("Unit", "Nos");
+        dc_line_items_list.add(dc_li);
+    }
+    dc_data.put("DC_Line_Items", dc_line_items_list);
+}
+
+created_dc = zoho.creator.createRecord("budget_tracking", "Delivery_Challans", dc_data);
+```
+```
+
 #### Scheduled Workflow — Mark Overdue Invoices
 ```deluge
-/* Phase 1E — Scheduled (Daily Midnight)
-   Mark overdue invoices */
+/* ===== PSEUDOCODE =====
+   Trigger: Scheduled (Daily Midnight) — runs once per day
+   
+   1. Get today's date
+   2. Build criteria: find all Invoices where Status = "Sent" AND
+      Due_Date is before today (past due)
+   3. Query matching invoices (up to 200 records)
+   4. If overdue invoices found:
+      For each invoice:
+      a. Build a data map with Status = "Overdue"
+      b. Update the invoice record
+   5. If no overdue invoices: exit (nothing to update)
+   ===== END PSEUDOCODE ===== */
 today_date = today();
 overdue_criteria = "Status == 'Sent' && Due_Date < '" + today_date.toString() + "'";
 overdue_invs = zoho.creator.getRecords("budget_tracking", "Invoices", overdue_criteria, 1, 200);
@@ -391,8 +427,24 @@ if (!overdue_invs.isNull())
 
 #### Project Completed — Auto-create Final Invoice
 ```deluge
-/* Phase 1E — Projects: On Submit (Status = "Completed")
-   Auto-create Invoice for unbilled items */
+/* ===== PSEUDOCODE =====
+   Trigger: On Submit — when Project Status changes to "Completed"
+   NOTE: Both DC_Line_Items and Invoice_Line_Items are embedded subforms.
+   Line items are passed as subform data maps, not via separate getRecords/createRecord calls.
+   
+   1. Get the status display value from the current record
+   2. If status is "Completed":
+      a. Get the Project ID and Account ID from the current record
+      b. If account exists:
+         i.   Query all Delivery_Challans for this project (any status)
+         ii.  If uninvoiced DCs exist:
+              - Build Invoice_Line_Items list from all DC line items
+              - Create a new Invoice record with embedded line items:
+                Project = this project, Account = this account
+                Status = "Draft", Notes = "auto-created on project completion"
+                Invoice_Line_Items = built list (Rate = 0 for manual fill)
+   3. If status is not "Completed" or no account linked: skip
+   ===== END PSEUDOCODE ===== */
 status_val = ifnull(input.Status.toMap().get("display_value"), "");
 
 if (status_val == "Completed")
@@ -402,54 +454,44 @@ if (status_val == "Completed")
 
     if (!account_id.isNull())
     {
-        /* Check if there are any Delivery Challans not yet invoiced */
-        dc_criteria = "Project == " + proj_id + " && Invoice == NULL";
+        dc_criteria = "Project == " + proj_id;
         uninvoiced_dcs = zoho.creator.getRecords("budget_tracking", "Delivery_Challans", dc_criteria, 1, 200);
 
         if (!uninvoiced_dcs.isNull() && uninvoiced_dcs.size() > 0)
         {
-            /* Create final invoice */
             inv_data = Map();
             inv_data.put("Project", proj_id);
             inv_data.put("Account", account_id);
             inv_data.put("Status", "Draft");
             inv_data.put("Notes", "Final invoice - auto-created on project completion");
 
-            created_inv = zoho.creator.createRecord("budget_tracking", "Invoices", inv_data);
-
-            if (!created_inv.isNull())
+            inv_line_items_list = List();
+            for each dc in uninvoiced_dcs
             {
-                inv_id = created_inv.get("ID");
-
-                for each dc in uninvoiced_dcs
+                dc_lines = dc.get("DC_Line_Items");
+                if (!dc_lines.isNull())
                 {
-                    /* Link DC to this invoice */
-                    dc_data = Map();
-                    dc_data.put("Invoice", inv_id);
-                    zoho.creator.updateRecord("budget_tracking", "Delivery_Challans", dc.get("ID"), dc_data);
-
-                    /* Copy DC line items to Invoice line items */
-                    dc_li_criteria = "DC == " + dc.get("ID");
-                    dc_lines = zoho.creator.getRecords("budget_tracking", "DC_Line_Items", dc_li_criteria, 1, 200);
-
-                    if (!dc_lines.isNull())
+                    for each dcli in dc_lines
                     {
-                        for each dcli in dc_lines
-                        {
-                            inv_li = Map();
-                            inv_li.put("Invoice", inv_id);
-                            inv_li.put("Item", dcli.get("Item"));
-                            inv_li.put("Description", dcli.get("Description"));
-                            inv_li.put("Quantity", dcli.get("Quantity"));
-                            inv_li.put("Rate", 0); /* Rate to be filled by user */
-                            zoho.creator.createRecord("budget_tracking", "Invoice_Line_Items", inv_li);
-                        }
+                        inv_li = Map();
+                        inv_li.put("Item", dcli.get("Item"));
+                        inv_li.put("Description", dcli.get("Description"));
+                        inv_li.put("Quantity", dcli.get("Quantity"));
+                        inv_li.put("Rate", 0);
+                        inv_line_items_list.add(inv_li);
                     }
                 }
+            }
+
+            if (inv_line_items_list.size() > 0)
+            {
+                inv_data.put("Invoice_Line_Items", inv_line_items_list);
+                created_inv = zoho.creator.createRecord("budget_tracking", "Invoices", inv_data);
             }
         }
     }
 }
+```
 ```
 
 ---
@@ -459,14 +501,13 @@ if (status_val == "Completed")
 2. Account Contacts subform adds contact persons
 3. Account Documents subform uploads files
 4. BOM creates BOM-0001, BOM-0002... with component costs calculated
-2. BOM Line Items auto-fill Unit_Cost from Item.Purchase_Price
-3. Delivery Challans creates DC-0001, DC-0002...
-4. DC Status = "Shipped" → auto-Stock Out for each line
-5. Invoices creates INV-0001, INV-0002...
-6. Invoice Status = "Overdue" set by scheduled workflow
-7. Custom button "Create DC from Invoice" copies line items correctly
-8. Project Completed → auto-creates Invoice with uninvoiced DCs
-9. Invoice financial calculations (Subtotal, Discount, Tax, Total, Balance Due) correct
+5. BOM On Submit calculates Total_Material_Cost from embedded subform
+6. Delivery Challans creates DC-0001, DC-0002...
+7. DC Status = "Shipped" → auto-Stock Out for each line via embedded subform
+8. Invoices creates INV-0001, INV-0002...
+9. Invoice Status = "Overdue" set by scheduled workflow
+10. Project Completed → auto-creates Invoice with uninvoiced DCs via embedded subform data
+11. Invoice financial calculations (Subtotal, Discount, Tax, Total, Balance Due) correct
 
 ## Next Phase
 → Proceed to `PHASE_1F_BUILD.md` when all above forms are verified.

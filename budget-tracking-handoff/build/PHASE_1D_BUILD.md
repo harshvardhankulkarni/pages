@@ -50,20 +50,38 @@ Overrun Expense Submitted
 
 #### On Status = Approved — Update Expense + Budget
 ```deluge
-/* Phase 1D — Budget_Approvals: On Submit
-   When overrun is approved, update expense and budget component */
+/* ===== PSEUDOCODE =====
+   Trigger: On Submit — when Budget_Approval Status changes to Approved or Rejected
+   
+   1. Get the status display value, expense ID, and component ID
+   
+   CASE A — Status is "Approved" AND expense exists:
+      a. Update the linked Expense record Status to "Approved"
+      b. If budget component is linked:
+         - Fetch the Budget_Component record
+         - Get current Spent_Amount
+         - Add the Requested_Amount from the approval
+         - Update Spent_Amount with the new total
+      c. Record approval metadata:
+         - Set Approval_Date to today
+         - Set Approved_By to the current logged-in user
+   
+   CASE B — Status is "Rejected" AND expense exists:
+      a. Update the linked Expense record Status to "Rejected"
+      b. (Placeholder) Send rejection email notification to submitter
+   
+   3. If status is neither Approved nor Rejected: skip all actions
+   ===== END PSEUDOCODE ===== */
 status_val = ifnull(input.Status.toMap().get("display_value"), "");
 expense_id = input.Expense;
 comp_id = input.Budget_Component;
 
 if (status_val == "Approved" && !expense_id.isNull())
 {
-    /* Approve the expense */
     exp_data = Map();
     exp_data.put("Status", "Approved");
     zoho.creator.updateRecord("budget_tracking", "Expenses", expense_id, exp_data);
 
-    /* Update Budget Component spent amount */
     if (!comp_id.isNull())
     {
         comp = zoho.creator.getRecordById("budget_tracking", "Budget_Components", comp_id);
@@ -77,7 +95,6 @@ if (status_val == "Approved" && !expense_id.isNull())
         }
     }
 
-    /* Record approval */
     appr_data = Map();
     appr_data.put("Approval_Date", today());
     appr_data.put("Approved_By", zoho.login.getCurrentUserID());
@@ -86,15 +103,9 @@ if (status_val == "Approved" && !expense_id.isNull())
 
 if (status_val == "Rejected" && !expense_id.isNull())
 {
-    /* Reject the expense */
     exp_data = Map();
     exp_data.put("Status", "Rejected");
     zoho.creator.updateRecord("budget_tracking", "Expenses", expense_id, exp_data);
-
-    /* Notify submitter */
-    /* zoho.creator.sendMail("user@company.com",
-        "Expense Rejected",
-        "Your expense has been rejected due to budget overrun being denied."); */
 }
 ```
 
@@ -102,68 +113,43 @@ if (status_val == "Rejected" && !expense_id.isNull())
 
 ## 1.11 Purchase Orders Form (`Purchase_Orders`)
 
-1:1 aligned with Zoho Books PO API. See `IMPLEMENTATION_PLAN.md` for full field mapping.
-
 ### Field Configuration
 | Label | Field Type | API Name | Required | Notes |
 |---|---|---|---|---|
 | PO Number | Auto Number | `PO_Number` | Yes | Format: `PO-{0000}` |
 | Vendor | Lookup → Vendors | `Vendor` | Yes | |
-| Vendor Email | Email | `Vendor_Email` | No | Convenience |
-| Contact Person | Lookup → Vendor_Contacts | `Contact_Person` | No | Books `contact_persons_associated` |
 | Requisition | Lookup → Purchase_Requisitions | `Requisition` | No | Linked if from PR |
 | Project | Lookup → Projects | `Project` | No | |
 | PO Date | Date | `PO_Date` | No | Default today |
 | Delivery Date | Date | `Delivery_Date` | No | |
-| Expected Arrival | Date | `Expected_Arrival` | No | |
 | Due Date | Date | `Due_Date` | No | Payment due |
 | Reference Number | Single Line | `Reference_Number` | No | Vendor contract ref |
-| Ship Via | Dropdown | `Ship_Via` | No | `Courier, Freight, Air, Sea, Road, Pickup` |
-| Attention | Single Line | `Attention` | No | |
-| Billing Address | Multi Line | `Billing_Address` | No | |
-| Shipping Address | Multi Line | `Shipping_Address` | No | |
 | Status | Dropdown | `Status` | No | `Draft, Open, Partially Invoiced, Billed, Closed, Cancelled` |
-| Currency | Dropdown | `Currency` | No | Default base |
-| Exchange Rate | Decimal | `Exchange_Rate` | No | Default 1 |
-| Is Inclusive Tax | Checkbox | `Is_Inclusive_Tax` | No | |
 | Subtotal | Currency | `Subtotal` | No | Formula sum |
 | Discount | Decimal | `Discount` | No | % or flat |
- |
-| Discount Before Tax | Checkbox | `Discount_Before_Tax` | No | |
 | Discount Amount | Currency | `Discount_Amount` | No | Formula |
 | Tax Total | Currency | `Tax_Total` | No | Formula sum |
 | Total | Currency | `Total` | No | Formula |
 | Terms | Multi Line | `Terms` | No | Printed on PO |
 | Notes | Multi Line | `Notes` | No | Internal |
 | Attachment | Upload | `Attachment` | No | |
-| Location | Lookup → Warehouses | `Location` | No | Books `location_id` |
-| GST Treatment | Dropdown | `GST_Treatment` | No | `business_gst, consumer_gst` |
-| GST No | Single Line | `GST_No` | No | Vendor GSTIN |
-| Source of Supply | Single Line | `Source_Of_Supply` | No | GST state code |
-| Destination of Supply | Single Line | `Destination_Of_Supply` | No | GST state code |
-| Reverse Charge | Checkbox | `Reverse_Charge` | No | |
-| Custom Fields | Multi Line | `Custom_Fields` | No | JSON |
 
 ### Subforms (Add-as-Subform)
 
-**PO Line Items** — Form: `PO_Line_Items`
-| Label | Field Type | API Name | Notes |
-|---|---|---|---|
-| PO | Lookup → Purchase_Orders | `PO` | |
-| Item | Lookup → Inventory_Items | `Item` | |
-| SKU | Single Line | `SKU` | Auto fill |
-| Name | Single Line | `Name` | Auto fill |
-| Description | Single Line | `Description` | |
-| Unit | Single Line | `Unit` | |
-| HSN/SAC | Single Line | `HSN_SAC` | |
-| Quantity | Decimal | `Quantity` | |
-| Unit Rate | Currency | `Unit_Rate` | |
-| BCY Rate | Currency | `BCY_Rate` | Base currency rate |
-| Discount % | Decimal | `Discount_Pct` | Line-level |
-| Discount Amount | Formula | `Discount_Amount` | |
-| Tax % | Decimal | `Tax_Pct` | Default from Item |
-| Tax Amount | Formula | `Tax_Amount` | |
-| Item Total | Formula | `Item_Total` | `(Quantity * Unit_Rate) + Tax_Amount - Discount_Amount` |
+**PO Line Items** — embedded subform (no separate API name, no standalone CRUD)
+| Label | Field Type | Notes |
+|---|---|---|
+| Item | Lookup → Inventory_Items | |
+| Description | Single Line | |
+| Unit | Single Line | |
+| HSN/SAC | Single Line | |
+| Quantity | Decimal | |
+| Unit Rate | Currency | |
+| Discount % | Decimal | Line-level |
+| Discount Amount | Formula | |
+| Tax % | Decimal | Default from Item |
+| Tax Amount | Formula | |
+| Item Total | Formula | `(Quantity * Unit_Rate) + Tax_Amount - Discount_Amount` |
 
 ### Validation Rules
 1. **Cannot cancel with linked GRNs** — On Status = "Cancelled", check for Goods_Receipts linked to this PO. If found, throw error.
@@ -205,8 +191,22 @@ PO Created (Status = Draft)
 
 #### On Submit — PO Open Workflow
 ```deluge
-/* Phase 1D — Purchase_Orders: On Submit
-   When Status = "Open", send email to vendor with PO details */
+/* ===== PSEUDOCODE =====
+   Trigger: On Submit — when Purchase_Order Status changes
+   
+   CASE A — Status changed to "Open" AND vendor is linked:
+      a. Fetch the Vendor record by ID
+      b. If vendor exists and has an email:
+         - Build email body with PO number, date, total amount, and terms
+         - (Placeholder) Send PO notification email to vendor
+   
+   CASE B — Status changed to "Cancelled":
+      a. Query Goods_Receipts linked to this PO
+      b. If any GRNs exist: throw error with count — cannot cancel
+      c. If no GRNs: allow cancellation
+   
+   3. If status is neither "Open" nor "Cancelled": skip all actions
+   ===== END PSEUDOCODE ===== */
 status_val = ifnull(input.Status.toMap().get("display_value"), "");
 po_no = ifnull(input.PO_Number, "");
 vendor_id = input.Vendor;
@@ -226,17 +226,12 @@ if (status_val == "Open" && !vendor_id.isNull())
                 + "Kindly acknowledge receipt and confirm delivery schedule.\n\n"
                 + "Terms: " + ifnull(input.Terms, "As agreed") + "\n\n"
                 + "Thank you.\nProcurement Team";
-
-            /* zoho.creator.sendMail(vendor_email,
-                "Purchase Order: " + po_no, email_body); */
         }
     }
 }
 
-/* Validate cancellation */
 if (status_val == "Cancelled")
 {
-    /* Check for linked GRNs */
     criteria = "PO == " + input.ID;
     grns = zoho.creator.getRecords("budget_tracking", "Goods_Receipts", criteria, 1, 10);
     if (!grns.isNull() && grns.size() > 0)
@@ -255,24 +250,22 @@ if (status_val == "Cancelled")
 |---|---|---|---|---|
 | GRN Number | Auto Number | `GRN_Number` | Yes | Format: `GRN-{0000}` |
 | PO | Lookup → Purchase_Orders | `PO` | Yes | |
-| Vendor | Lookup → Vendors | `Vendor` | No | Auto-filled from PO |
 | Receipt Date | Date | `Receipt_Date` | No | Defaults to today |
 | Received By | User Picker | `Received_By` | No | |
 | Status | Dropdown | `Status` | No | `Draft, Open, Closed` |
 
 ### Subforms (Add-as-Subform)
 
-**GRN Line Items** — Form: `GRN_Line_Items`
-| Label | Field Type | API Name | Notes |
-|---|---|---|---|
-| GRN | Lookup → Goods_Receipts | `GRN` | |
-| Item | Lookup → Inventory_Items | `Item` | Auto-filled |
-| PO Quantity | Decimal | `PO_Quantity` | From PO line |
-| Accepted Quantity | Decimal | `Accepted_Quantity` | |
-| Rejected Quantity | Decimal | `Rejected_Quantity` | |
-| Rejection Reason | Single Line | `Rejection_Reason` | Required if Rejected > 0 |
-| Actual Unit Cost | Currency | `Actual_Unit_Cost` | Editable |
-| Warehouse | Lookup → Warehouses | `Warehouse` | Destination |
+**GRN Line Items** — embedded subform (no separate API name, no standalone CRUD)
+| Label | Field Type | Notes |
+|---|---|---|
+| Item | Lookup → Inventory_Items | Auto-filled |
+| PO Quantity | Decimal | From PO line |
+| Accepted Quantity | Decimal | |
+| Rejected Quantity | Decimal | |
+| Rejection Reason | Single Line | Required if Rejected > 0 |
+| Actual Unit Cost | Currency | Editable |
+| Warehouse | Lookup → Warehouses | Destination |
 
 ### Validation Rules
 1. **Accepted + Rejected ≤ PO Quantity** — On Submit, validate `Accepted_Quantity + Rejected_Quantity ≤ PO_Quantity` for each line.
@@ -298,16 +291,33 @@ GRN Created (Status = Draft)
 
 #### On Submit — Process GRN
 ```deluge
-/* Phase 1D — Goods_Receipts: On Submit
-   When Status = "Open", process accepted/rejected quantities */
+/* ===== PSEUDOCODE =====
+   Trigger: On Submit — when Goods_Receipt Status changes to "Open"
+   
+   1. Get the status display value and linked PO ID
+   2. If status is "Open" AND PO is linked:
+      a. Access GRN_Line_Items via input.GRN_Line_Items (embedded subform)
+      b. If line items exist:
+         For each line item:
+         i.   Get Accepted_Quantity, Item ID, and Warehouse ID
+         ii.  If accepted > 0 AND item and warehouse are both valid:
+              - Create an Inventory_Transaction record:
+                - Type: "Stock In"
+                - Item: the accepted item
+                - Warehouse: the destination warehouse
+                - Quantity: accepted quantity
+                - Date: receipt date from the GRN
+                - Reference Type: "GRN"
+                - Reference ID: this GRN's ID
+              - If Actual_Unit_Cost is set: include Unit_Rate
+   3. If status is not "Open" or no PO: skip processing
+   ===== END PSEUDOCODE ===== */
 status_val = ifnull(input.Status.toMap().get("display_value"), "");
 po_id = input.PO;
 
 if (status_val == "Open" && !po_id.isNull())
 {
-    /* Get GRN line items */
-    grn_li_criteria = "GRN == " + input.ID;
-    grn_lines = zoho.creator.getRecords("budget_tracking", "GRN_Line_Items", grn_li_criteria, 1, 200);
+    grn_lines = input.GRN_Line_Items;
 
     if (!grn_lines.isNull())
     {
@@ -317,7 +327,6 @@ if (status_val == "Open" && !po_id.isNull())
             item_id = grn_li.get("Item");
             wh_id = grn_li.get("Warehouse");
 
-            /* Stock In for accepted items */
             if (accepted > 0 && !item_id.isNull() && !wh_id.isNull())
             {
                 txn_data = Map();
@@ -358,13 +367,12 @@ if (status_val == "Open" && !po_id.isNull())
 
 ### Subforms (Add-as-Subform)
 
-**TO Line Items** — Form: `TO_Line_Items`
-| Label | Field Type | API Name |
-|---|---|---|
-| Transfer Order | Lookup → Transfer_Orders | `Transfer_Order` |
-| Item | Lookup → Inventory_Items | `Item` |
-| Quantity | Decimal | `Quantity` |
-| Warehouse | Lookup → Warehouses | `Warehouse` |
+**TO Line Items** — embedded subform (no separate API name, no standalone CRUD)
+| Label | Field Type |
+|---|---|
+| Item | Lookup → Inventory_Items |
+| Quantity | Decimal |
+| Warehouse | Lookup → Warehouses |
 
 ### Validation Rules
 1. **Different warehouses** — From_Warehouse and To_Warehouse must be different.
@@ -388,32 +396,28 @@ TO Created (Status = Draft)
 ```
 
 ### Deluge Scripts
-
-#### TO_Line_Items On Submit — Sync Warehouse with Parent
-```deluge
-/* Phase 1D — TO_Line_Items: On Submit
-   Auto-fill Warehouse from parent Transfer_Order.From_Warehouse for consistency */
-to_id = input.Transfer_Order;
-if (!to_id.isNull())
-{
-    to_record = zoho.creator.getRecordById("budget_tracking", "Transfer_Orders", to_id);
-    if (!to_record.isNull())
-    {
-        from_wh = to_record.get("From_Warehouse");
-        if (!from_wh.isNull())
-        {
-            li_data = Map();
-            li_data.put("Warehouse", from_wh);
-            zoho.creator.updateRecord("budget_tracking", "TO_Line_Items", input.ID, li_data);
-        }
-    }
-}
-```
-
 #### On Submit — Process Transfer Completion
 ```deluge
-/* Phase 1D — Transfer_Orders: On Submit
-   When Status = "Completed", generate paired Stock Out / Stock In transactions */
+/* ===== PSEUDOCODE =====
+   Trigger: On Submit — when Transfer_Order Status changes to "Completed"
+   
+   1. Get the status display value
+   2. If status is "Completed":
+      a. Get From_Warehouse and To_Warehouse from the record
+      b. If either is null: throw error — both warehouses required
+      c. Access TO_Line_Items via input.TO_Line_Items (embedded subform)
+      d. If line items exist:
+         For each line item:
+         i.   Get Item ID and Quantity
+         ii.  If item is valid AND quantity is positive:
+              - Create "Stock Out" transaction at source warehouse:
+                - Reference Type: "TO", Reference ID: this TO
+                - Notes indicate destination warehouse
+              - Create "Stock In" transaction at destination warehouse:
+                - Reference Type: "TO", Reference ID: this TO
+                - Notes indicate source warehouse
+   3. If status is not "Completed": skip all processing
+   ===== END PSEUDOCODE ===== */
 status_val = ifnull(input.Status.toMap().get("display_value"), "");
 
 if (status_val == "Completed")
@@ -426,30 +430,17 @@ if (status_val == "Completed")
         throw "Both From and To Warehouse are required.";
     }
 
-    /* Get TO line items */
-    li_criteria = "Transfer_Order == " + input.ID;
-    to_lines = zoho.creator.getRecords("budget_tracking", "TO_Line_Items", li_criteria, 1, 200);
+    to_lines = input.TO_Line_Items;
 
     if (!to_lines.isNull())
     {
         for each li in to_lines
         {
-            /* Sync subform Warehouse with parent From_Warehouse for consistency */
-            li_id = li.get("ID");
-            li_wh = li.get("Warehouse");
-            if (li_wh != from_wh)
-            {
-                li_data = Map();
-                li_data.put("Warehouse", from_wh);
-                zoho.creator.updateRecord("budget_tracking", "TO_Line_Items", li_id, li_data);
-            }
-
             item_id = li.get("Item");
             qty = ifnull(li.get("Quantity"), 0);
 
             if (!item_id.isNull() && qty > 0)
             {
-                /* Stock Out from source */
                 out_data = Map();
                 out_data.put("Transaction_Type", "Stock Out");
                 out_data.put("Item", item_id);
@@ -461,7 +452,6 @@ if (status_val == "Completed")
                 out_data.put("Notes", "Transfer to " + to_wh.toString());
                 zoho.creator.createRecord("budget_tracking", "Inventory_Transactions", out_data);
 
-                /* Stock In at destination */
                 in_data = Map();
                 in_data.put("Transaction_Type", "Stock In");
                 in_data.put("Item", item_id);

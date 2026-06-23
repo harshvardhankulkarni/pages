@@ -22,13 +22,31 @@ Requires Phase 1A complete (Projects, Warehouses, Inventory_Items forms exist).
 
 ### Validation Rules
 1. **Unique active plan per project** — On Submit, if `Status == "Active"`, check no other Active plan exists for the same Project → `throw "An active budget plan already exists for this project."`
+2. **Component sum ≤ Total Budget** — On Submit, sum of all Budget_Components Allocated_Amount must not exceed Total_Budget. Validated via `input.Budget_Components` iteration.
 
 ### Deluge Scripts
 
 #### On Submit — Validate Budget Period
 ```deluge
-/* Phase 1B — Budget_Plans: On Submit
-   Validate budget period dates */
+/* ===== PSEUDOCODE =====
+   Trigger: On Submit — when Budget_Plan record is created or updated
+   
+   1. Check if both Budget_Period_Start and Budget_Period_End are filled
+   2. If end date is before start date: throw validation error
+   3. Get the display value of the Status field
+   4. If Status is "Active" and a Project is linked:
+      a. Build a criteria to find other Active plans for the same Project
+      b. If editing an existing record, exclude the current record ID
+      c. Query for duplicate active plans
+      d. If another active plan exists: throw error — must close existing plan first
+   5. Validate component totals: iterate input.Budget_Components (embedded subform)
+      a. Sum all Allocated_Amount values
+      b. If sum exceeds Total_Budget: throw validation error
+   6. If Status is "Active":
+      a. Create a data map with the Total_Budget value
+      b. Update the linked Project record's Total_Approved_Budget field
+   7. If Status is not "Active" or no Project linked: skip budget sync
+   ===== END PSEUDOCODE ===== */
 if (!input.Budget_Period_Start.isNull() && !input.Budget_Period_End.isNull())
 {
     if (input.Budget_Period_End < input.Budget_Period_Start)
@@ -37,7 +55,6 @@ if (!input.Budget_Period_Start.isNull() && !input.Budget_Period_End.isNull())
     }
 }
 
-/* Validate no duplicate active plans for same project */
 status_val = ifnull(input.Status.toMap().get("display_value"), "");
 if (status_val == "Active" && !input.Project.isNull())
 {
@@ -54,7 +71,23 @@ if (status_val == "Active" && !input.Project.isNull())
     }
 }
 
-/* Update project's Total Approved Budget when plan is approved */
+/* Phase 1B — Validate component totals do not exceed plan budget
+   Budget_Components is an embedded subform — data available via input */
+total_budget = ifnull(input.Total_Budget, 0);
+components = input.Budget_Components;
+total_allocated = 0;
+if (!components.isNull())
+{
+    for each comp in components
+    {
+        total_allocated = total_allocated + ifnull(comp.get("Allocated_Amount"), 0);
+    }
+}
+if (total_allocated > total_budget)
+{
+    throw "Component total (" + total_allocated.toString() + ") exceeds Budget Plan total (" + total_budget.toString() + ").";
+}
+
 if (status_val == "Active")
 {
     proj_data = Map();
@@ -63,65 +96,20 @@ if (status_val == "Active")
 }
 ```
 
----
 
-## 1.6 Budget Components Form (`Budget_Components`)
+### Subforms (Add-as-Subform)
 
-Separate form (not subform) linked via Add-as-Subform on Budget_Plans.
+**Budget Components** — embedded subform (no separate API name, no standalone CRUD)
+| Label | Field Type | Required | Notes |
+|---|---|---|---|
+| Component Name | Single Line | Yes | e.g., "Materials", "Labor" |
+| Category | Dropdown | No | `Material, Labor, Equipment, Overhead, Contingency, Other` |
+| Allocated Amount | Currency | Yes | Budget for this component |
+| Spent Amount | Currency | No | Updated by Expense/Stock Out |
+| Remaining Amount | Formula | — | `Allocated_Amount - Spent_Amount` |
+| Utilization % | Formula | — | `(Spent_Amount / Allocated_Amount) * 100` |
 
-### Field Configuration
-| Label | Field Type | API Name | Required | Notes |
-|---|---|---|---|---|
-| Budget Plan | Lookup → Budget_Plans | `Budget_Plan` | Yes | |
-| Component Name | Single Line | `Component_Name` | Yes | e.g., "Materials", "Labor" |
-| Category | Dropdown | `Category` | No | `Material, Labor, Equipment, Overhead, Contingency, Other` |
-| Allocated Amount | Currency | `Allocated_Amount` | Yes | Budget for this component |
-| Spent Amount | Currency | `Spent_Amount` | No | Updated by Expense/Stock Out |
-| Remaining Amount | Formula | `Remaining_Amount` | — | `Allocated_Amount - Spent_Amount` |
-| Utilization % | Formula | `Utilization_Pct` | — | `(Spent_Amount / Allocated_Amount) * 100` |
-
-### Validation Rules
-1. **Component sum ≤ Total Budget** — On Submit, check sum of all component Allocated_Amount ≤ parent Budget_Plan.Total_Budget.
-
-### Deluge Scripts
-
-#### On Submit — Validate Budget Component Total
-```deluge
-/* Phase 1B — Budget_Components: On Submit
-   Validate component sum does not exceed plan total budget */
-plan_id = input.Budget_Plan;
-
-/* Get the parent budget plan */
-plan = zoho.creator.getRecordById("budget_tracking", "Budget_Plans", plan_id);
-if (!plan.isNull())
-{
-    total_budget = ifnull(plan.get("Total_Budget"), 0);
-
-    /* Sum all components for this plan */
-    criteria = "Budget_Plan == " + plan_id;
-    if (!input.ID.isNull())
-    {
-        criteria = criteria + " && ID != " + input.ID;
-    }
-    components = zoho.creator.getRecords("budget_tracking", "Budget_Components", criteria, 1, 200);
-
-    total_allocated = ifnull(input.Allocated_Amount, 0);
-    if (!components.isNull())
-    {
-        for each comp in components
-        {
-            total_allocated = total_allocated + ifnull(comp.get("Allocated_Amount"), 0);
-        }
-    }
-
-    if (total_allocated > total_budget)
-    {
-        remaining = total_budget - (total_allocated - ifnull(input.Allocated_Amount, 0));
-        throw "Component total (" + total_allocated.toString() + ") exceeds Budget Plan total (" + total_budget.toString()
-            + "). Remaining unallocated: " + remaining.toString();
-    }
-}
-```
+No separate Deluge scripts — validation occurs in parent Budget_Plans On Submit via `input.Budget_Components`.
 
 ---
 
@@ -157,8 +145,22 @@ Core stock movement tracking — every stock change is logged here.
 
 #### On Submit — Validate Stock Availability
 ```deluge
-/* Phase 1B — Inventory_Transactions: On Submit
-   Validate stock availability before Stock Out / Transfer / Reservation */
+/* ===== PSEUDOCODE =====
+   Trigger: On Submit — before Inventory_Transaction record is saved
+   
+   1. Get the transaction type display value from the dropdown
+   2. Get the quantity, item ID, and warehouse ID from the current record
+   3. If quantity is positive AND item AND warehouse are both linked:
+      a. Check if transaction type is "Stock Out", "Transfer", or "Reservation"
+      b. If yes: query Item_Warehouse_Stock for this item+warehouse combination
+      c. If stock record exists:
+         - Get Current_Stock and Reserved_Qty
+         - For "Reservation": available = Current_Stock - Reserved_Qty (unreserved)
+         - For "Stock Out" and "Transfer": available = Current_Stock (total stock)
+      d. If requested quantity exceeds available stock: throw insufficient stock error
+   4. If transaction type is not a stock-consuming type (Stock In, Adjustment, Release):
+      skip availability check
+   ===== END PSEUDOCODE ===== */
 txn_type = ifnull(input.Transaction_Type.toMap().get("display_value"), "");
 qty = ifnull(input.Quantity, 0);
 item_id = input.Item;
@@ -168,7 +170,6 @@ if (qty > 0 && !item_id.isNull() && !wh_id.isNull())
 {
     if (txn_type == "Stock Out" || txn_type == "Transfer" || txn_type == "Reservation")
     {
-        /* Get current stock for this item+warehouse */
         criteria = "Item == " + item_id + " && Warehouse == " + wh_id;
         stock_records = zoho.creator.getRecords("budget_tracking", "Item_Warehouse_Stock", criteria, 1, 1);
 
@@ -186,7 +187,7 @@ if (qty > 0 && !item_id.isNull() && !wh_id.isNull())
             }
             else
             {
-                available = current; /* Stock Out checks total, not just unreserved */
+                available = current;
             }
         }
 
@@ -200,23 +201,51 @@ if (qty > 0 && !item_id.isNull() && !wh_id.isNull())
 
 #### On Post Submit — Update Item_Warehouse_Stock
 ```deluge
-/* Phase 1B — Inventory_Transactions: On Post Submit
-   Update Item_Warehouse_Stock based on transaction type */
+/* ===== PSEUDOCODE =====
+   Trigger: On Post Submit — after Inventory_Transaction record is saved
+   
+   1. Get the transaction type display value, quantity, item, warehouse, and destination warehouse
+   2. If item is valid AND quantity is positive:
+   
+      CASE A — "Stock In":
+         a. Query Item_Warehouse_Stock for this item+source warehouse
+         b. If found: increment Current_Stock by the transaction quantity
+      
+      CASE B — "Stock Out" or "Reservation":
+         a. Query Item_Warehouse_Stock for this item+source warehouse
+         b. If found:
+            - "Stock Out": decrement Current_Stock by the quantity
+            - "Reservation": increment Reserved_Qty by the quantity
+      
+      CASE C — "Release":
+         a. Query Item_Warehouse_Stock for this item+warehouse
+         b. If found: decrement Reserved_Qty by the quantity (floor at 0)
+      
+      CASE D — "Adjustment":
+         a. Query Item_Warehouse_Stock for this item+warehouse
+         b. If found: set Current_Stock to the quantity value (absolute, not delta)
+      
+      CASE E — "Transfer" (both source and destination warehouses):
+         a. Source: decrement Current_Stock by quantity
+         b. Destination: increment Current_Stock by quantity
+         c. If no stock record exists at destination: create one with the quantity
+      
+      CASE F — "Stock Out" with a Project linked:
+         a. Placeholder for Phase 2 (auto-create Expense record)
+         b. Currently: stock update handled above, no further action
+   
+   3. If item is null or quantity is 0 or negative: skip all updates
+   ===== END PSEUDOCODE ===== */
 txn_type = ifnull(input.Transaction_Type.toMap().get("display_value"), "");
 qty = ifnull(input.Quantity, 0);
 item_id = input.Item;
 wh_id = input.Warehouse;
 to_wh_id = input.To_Warehouse;
 
-/* Helper function to get or create stock record function */
-/* For readability we inline the logic */
-
 if (!item_id.isNull() && qty > 0)
 {
-    /* --- Source Warehouse Updates --- */
     if (txn_type == "Stock In" && !wh_id.isNull())
     {
-        /* Increase stock */
         criteria = "Item == " + item_id + " && Warehouse == " + wh_id;
         stock_records = zoho.creator.getRecords("budget_tracking", "Item_Warehouse_Stock", criteria, 1, 1);
         if (!stock_records.isNull() && stock_records.size() > 0)
@@ -253,7 +282,6 @@ if (!item_id.isNull() && qty > 0)
     }
     else if (txn_type == "Release" && !wh_id.isNull())
     {
-        /* Decrease reserved quantity */
         criteria = "Item == " + item_id + " && Warehouse == " + wh_id;
         stock_records = zoho.creator.getRecords("budget_tracking", "Item_Warehouse_Stock", criteria, 1, 1);
         if (!stock_records.isNull() && stock_records.size() > 0)
@@ -269,22 +297,19 @@ if (!item_id.isNull() && qty > 0)
     }
     else if (txn_type == "Adjustment" && !wh_id.isNull())
     {
-        /* Set stock to the quantity value (absolute adjustment) */
         criteria = "Item == " + item_id + " && Warehouse == " + wh_id;
         stock_records = zoho.creator.getRecords("budget_tracking", "Item_Warehouse_Stock", criteria, 1, 1);
         if (!stock_records.isNull() && stock_records.size() > 0)
         {
             srec = stock_records.get(0);
             data = Map();
-            data.put("Current_Stock", qty); /* Quantity field holds the new stock level */
+            data.put("Current_Stock", qty);
             zoho.creator.updateRecord("budget_tracking", "Item_Warehouse_Stock", srec.get("ID"), data);
         }
     }
 
-    /* --- Transfer: Source Out + Destination In --- */
     if (txn_type == "Transfer" && !wh_id.isNull() && !to_wh_id.isNull())
     {
-        /* Source: decrease stock */
         criteria = "Item == " + item_id + " && Warehouse == " + wh_id;
         src_records = zoho.creator.getRecords("budget_tracking", "Item_Warehouse_Stock", criteria, 1, 1);
         if (!src_records.isNull() && src_records.size() > 0)
@@ -296,7 +321,6 @@ if (!item_id.isNull() && qty > 0)
             zoho.creator.updateRecord("budget_tracking", "Item_Warehouse_Stock", srec.get("ID"), data);
         }
 
-        /* Destination: increase stock (create if not exists) */
         criteria2 = "Item == " + item_id + " && Warehouse == " + to_wh_id;
         dst_records = zoho.creator.getRecords("budget_tracking", "Item_Warehouse_Stock", criteria2, 1, 1);
         if (!dst_records.isNull() && dst_records.size() > 0)
@@ -309,7 +333,6 @@ if (!item_id.isNull() && qty > 0)
         }
         else
         {
-            /* Create new stock record at destination */
             data = Map();
             data.put("Item", item_id);
             data.put("Warehouse", to_wh_id);
@@ -319,11 +342,8 @@ if (!item_id.isNull() && qty > 0)
         }
     }
 
-    /* --- Auto-create Stock In for Stock Out with Project (inventory deduction) --- */
     if (txn_type == "Stock Out" && !input.Project.isNull() && !wh_id.isNull())
     {
-        /* Phase 2 — will auto-create Expense record here */
-        /* For now, the transaction is logged and stock is updated above */
     }
 }
 ```

@@ -32,8 +32,28 @@ This phase creates all Zoho Creator Report and Dashboard widgets. No new forms �
 
 **Deluge — Scheduled KPI Refresh (Daily)**
 ```deluge
-/* Phase 1F — Scheduled (Daily 1 AM)
-   Refresh Project P&L summary data into Projects form for reporting */
+/* ===== PSEUDOCODE =====
+   Trigger: Scheduled (Daily 1 AM) — refresh project P&L summary data
+   
+   1. Fetch all Projects (up to 200 records)
+   2. If projects exist:
+      For each project:
+      a. Get the project ID
+      b. Sum approved expenses:
+         - Query Expenses where Project matches AND Status = "Approved"
+         - For each expense found: add Amount to total_expenses
+      c. Sum invoiced amounts:
+         - Query Invoices where Project matches AND Status in
+           ("Sent", "Partially Paid", "Paid")
+         - For each invoice found:
+           Add Total to total_invoiced
+           Add Amount_Paid to total_paid
+      d. Store calculated totals in the Projects form:
+         - Update Total_Expenses_Calc with total_expenses
+         - Update Total_Invoiced_Calc with total_invoiced
+         - Update Total_Paid_Calc with total_paid
+   3. If no projects exist: exit (nothing to refresh)
+   ===== END PSEUDOCODE ===== */
 active_projects = zoho.creator.getRecords("budget_tracking", "Projects", "", 1, 200);
 
 if (!active_projects.isNull())
@@ -42,7 +62,6 @@ if (!active_projects.isNull())
     {
         proj_id = proj.get("ID");
 
-        /* Sum approved expenses */
         exp_criteria = "Project == " + proj_id + " && Status == 'Approved'";
         expenses = zoho.creator.getRecords("budget_tracking", "Expenses", exp_criteria, 1, 200);
         total_expenses = 0;
@@ -54,7 +73,6 @@ if (!active_projects.isNull())
             }
         }
 
-        /* Sum invoiced amounts (sent invoices) */
         inv_criteria = "Project == " + proj_id + " && (Status == 'Sent' || Status == 'Partially Paid' || Status == 'Paid')";
         invoices = zoho.creator.getRecords("budget_tracking", "Invoices", inv_criteria, 1, 200);
         total_invoiced = 0;
@@ -68,8 +86,11 @@ if (!active_projects.isNull())
             }
         }
 
-        /* Store in Projects for reporting */
-        /* Use formula fields or summary fields in report */
+        proj_data = Map();
+        proj_data.put("Total_Expenses_Calc", total_expenses);
+        proj_data.put("Total_Invoiced_Calc", total_invoiced);
+        proj_data.put("Total_Paid_Calc", total_paid);
+        zoho.creator.updateRecord("budget_tracking", "Projects", proj_id, proj_data);
     }
 }
 ```
@@ -113,8 +134,21 @@ if (!active_projects.isNull())
 
 **Deluge — Scheduled Low Stock Notification**
 ```deluge
-/* Phase 1F — Scheduled (Daily 8 AM)
-   Send low stock alerts */
+/* ===== PSEUDOCODE =====
+   Trigger: Scheduled (Daily 8 AM) — send low stock notifications
+   
+   1. Query Item_Warehouse_Stock where Current_Stock > 0 AND
+      Current_Stock <= Reorder_Level (items at or below reorder threshold)
+   2. If low stock items exist:
+      a. Initialize alert body with header listing item count
+      b. For each low stock item:
+         i.   Fetch the Inventory_Item record by ID to get Item_Name
+         ii.  Fetch the Warehouse record by ID to get Warehouse_Name
+         iii. Append formatted alert line: item name @ warehouse name
+              (Stock: X, Reorder: Y)
+      c. (Placeholder) Send email alert to inventory manager
+   3. If no low stock items: exit (nothing to alert)
+   ===== END PSEUDOCODE ===== */
 low_stock = zoho.creator.getRecords("budget_tracking", "Item_Warehouse_Stock",
     "Current_Stock > 0 && Current_Stock <= Reorder_Level", 1, 200);
 
@@ -143,8 +177,6 @@ if (!low_stock.isNull() && low_stock.size() > 0)
             + " (Stock: " + ifnull(item.get("Current_Stock"), 0).toString()
             + ", Reorder: " + ifnull(item.get("Reorder_Level"), 0).toString() + ")\n";
     }
-
-    /* zoho.creator.sendMail("inventory@company.com", "Low Stock Alert", alert_body); */
 }
 ```
 
@@ -245,47 +277,18 @@ if (!low_stock.isNull() && low_stock.size() > 0)
 
 ### Scheduled Workflow: KPI Refresh (Daily Midnight)
 ```deluge
-/* Phase 1F — Scheduled (Daily Midnight)
-   Refresh all KPI summary data */
+/* ===== PSEUDOCODE =====
+   Trigger: Scheduled (Daily Midnight) — refresh KPI summary data
+   
+   1. POs are manually closed only — no auto-close.
+      PO lifecycle simplified: Open → Close (manual only).
+      GRN tracks accepted quantities but does not auto-close POs.
+   
+   2. Mark overdue invoices — already handled in Phase 1E scheduled workflow
+   
+   3. Budget alerts — already handled in Phase 1C scheduled workflow
+   ===== END PSEUDOCODE ===== */
 
-/* 1. Auto-close aged POs (fully received + 30 days old) */
-thirty_days_ago = today().subtract(30, "days").toString();
-old_pos = zoho.creator.getRecords("budget_tracking", "Purchase_Orders",
-    "Status == 'Open'", 1, 200);
-
-if (!old_pos.isNull())
-{
-    for each po in old_pos
-    {
-        po_id = po.get("ID");
-
-        /* Check all line items received */
-        li_criteria = "PO == " + po_id;
-        po_lines = zoho.creator.getRecords("budget_tracking", "PO_Line_Items", li_criteria, 1, 200);
-        all_received = true;
-
-        if (!po_lines.isNull())
-        {
-            for each line in po_lines
-            {
-                qty = ifnull(line.get("Quantity"), 0);
-                recv = ifnull(line.get("Received_Quantity"), 0);
-                if (recv < qty) { all_received = false; break; }
-            }
-        }
-
-        if (all_received)
-        {
-            po_data = Map();
-            po_data.put("Status", "Closed");
-            zoho.creator.updateRecord("budget_tracking", "Purchase_Orders", po_id, po_data);
-        }
-    }
-}
-
-/* 2. Mark overdue invoices (already handled in Phase 1E) */
-
-/* 3. Budget alerts (already in Phase 1C scheduled workflow) */
 ```
 
 ---
@@ -297,7 +300,7 @@ if (!old_pos.isNull())
 4. Project P&L report shows correct revenue − expense per project
 5. Low Stock Alert report triggers correctly
 6. Invoice Aging report shows correct aging buckets
-7. Scheduled workflow auto-closes aged POs
+7. (POs are closed manually — no auto-close in schedule)
 8. Scheduled KPI refresh runs without errors
 
 ---

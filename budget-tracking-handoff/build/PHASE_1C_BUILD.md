@@ -56,15 +56,35 @@ Expense Submitted
 
 #### On Submit — Budget Check & Auto-Approval
 ```deluge
-/* Phase 1C — Expenses: On Submit
-   Check budget consumption and auto-approve or flag overrun */
+/* ===== PSEUDOCODE =====
+   Trigger: On Submit — when Expense record is created or updated
+   
+   1. Get the expense amount, budget component ID, and project ID from input
+   2. If budget component is set AND amount is positive:
+      a. Fetch the Budget_Component record by ID
+      b. If not found: throw error "Budget Component not found"
+      c. Get Allocated_Amount and current Spent_Amount from the component
+      d. Fetch the parent Budget_Plan record
+      e. If plan exists:
+         - Verify the component's plan project matches the expense project
+         - If mismatch: throw error "does not belong to this project"
+         - Verify the plan Status is "Active"
+         - If not active: throw error "budget plan is not Active"
+      f. Calculate projected new spent amount and utilization percentage
+      g. If new spent exceeds allocated:
+         - Update expense Status to "Overrun-Pending Approval"
+         - Create a Budget_Approval record with Pending status
+         - Include expense, project, component, amounts, and utilization
+      h. If within budget:
+         - Update expense Status to "Approved" (auto-approve)
+   3. If no component or amount is 0: skip all budget checks
+   ===== END PSEUDOCODE ===== */
 expense_amount = ifnull(input.Amount, 0);
 comp_id = input.Budget_Component;
 proj_id = input.Project;
 
 if (!comp_id.isNull() && expense_amount > 0)
 {
-    /* Get budget component */
     comp = zoho.creator.getRecordById("budget_tracking", "Budget_Components", comp_id);
     if (comp.isNull())
     {
@@ -74,7 +94,6 @@ if (!comp_id.isNull() && expense_amount > 0)
     allocated = ifnull(comp.get("Allocated_Amount"), 0);
     spent = ifnull(comp.get("Spent_Amount"), 0);
 
-    /* Validate component belongs to this project's budget plan */
     plan_id = comp.get("Budget_Plan");
     plan = zoho.creator.getRecordById("budget_tracking", "Budget_Plans", plan_id);
     if (!plan.isNull())
@@ -97,12 +116,10 @@ if (!comp_id.isNull() && expense_amount > 0)
 
     if (new_spent > allocated)
     {
-        /* Overrun — set status to pending approval */
         status_data = Map();
         status_data.put("Status", "Overrun-Pending Approval");
         zoho.creator.updateRecord("budget_tracking", "Expenses", input.ID, status_data);
 
-        /* Create budget approval request */
         approval_data = Map();
         approval_data.put("Expense", input.ID);
         approval_data.put("Project", proj_id);
@@ -115,7 +132,6 @@ if (!comp_id.isNull() && expense_amount > 0)
     }
     else
     {
-        /* Within budget — auto-approve */
         status_data = Map();
         status_data.put("Status", "Approved");
         zoho.creator.updateRecord("budget_tracking", "Expenses", input.ID, status_data);
@@ -125,8 +141,19 @@ if (!comp_id.isNull() && expense_amount > 0)
 
 #### On Post Submit — Update Budget Component Spent Amount
 ```deluge
-/* Phase 1C — Expenses: On Post Submit
-   Update Budget_Component.Spent_Amount */
+/* ===== PSEUDOCODE =====
+   Trigger: On Post Submit — after Expense record is saved
+   
+   1. Get the expense amount, budget component ID, and expense status from input
+   2. If component is valid AND amount is positive AND status is "Approved":
+      a. Fetch the Budget_Component record by ID
+      b. If component exists:
+         - Get the current Spent_Amount value
+         - Add this expense amount to the spent total
+         - Update the component's Spent_Amount with the new total
+   3. If status is not "Approved" (Overrun-Pending, Rejected, Draft, etc.):
+      skip — amount is not yet committed to the budget
+   ===== END PSEUDOCODE ===== */
 expense_amount = ifnull(input.Amount, 0);
 comp_id = input.Budget_Component;
 expense_status = ifnull(input.Status.toMap().get("display_value"), "");
@@ -146,8 +173,27 @@ if (!comp_id.isNull() && expense_amount > 0 && expense_status == "Approved")
 
 #### Scheduled Workflow — Daily Budget Alerts
 ```deluge
-/* Phase 1C — Scheduled (Daily Midnight)
-   Send budget alerts at 80%, 90%, 100% consumption */
+/* ===== PSEUDOCODE =====
+   Trigger: Scheduled (Daily Midnight) — runs once per day
+   
+   1. Fetch all Budget_Plans with Status = "Active" (up to 200 records)
+   2. If active plans exist:
+      For each plan:
+      a. Query all Budget_Components linked to this plan
+      b. If components exist:
+         For each component:
+         i.   Get Allocated_Amount and current Spent_Amount
+         ii.  If allocated > 0, calculate utilization percentage
+         iii. If utilization >= 100%:
+              - Build email subject and body with component details
+              - (Placeholder) Send email alert — uncomment sendMail call with admin address
+         iv.  If utilization >= 90%:
+              - (Placeholder) Send 90% threshold warning email
+         v.   If utilization >= 80%:
+              - (Placeholder) Send 80% threshold warning email
+         vi.  If utilization < 80%: no alert needed
+   3. If no active plans: exit (nothing to check)
+   ===== END PSEUDOCODE ===== */
 active_plans = zoho.creator.getRecords("budget_tracking", "Budget_Plans", "Status == 'Active'", 1, 200);
 
 if (!active_plans.isNull())
@@ -171,21 +217,16 @@ if (!active_plans.isNull())
 
                     if (pct >= 100)
                     {
-                        /* Send 100% alert */
                         comp_name = ifnull(comp.get("Component_Name"), "Unknown");
                         subject = "Budget Exhausted: " + comp_name;
                         msg = "Component '" + comp_name + "' has reached 100% utilization. Amount: "
                             + spent.toString() + " / " + allocated.toString();
-                        /* zoho.creator.sendMail("admin@company.com", subject, msg); */
-                        /* Log to notification form or email */
                     }
                     else if (pct >= 90)
                     {
-                        /* Send 90% alert */
                     }
                     else if (pct >= 80)
                     {
-                        /* Send 80% alert */
                     }
                 }
             }
@@ -198,7 +239,7 @@ if (!active_plans.isNull())
 
 ## 1.9 Purchase Requisitions Form (`Purchase_Requisitions`)
 
-Custom module (Zoho Books has no native PR). Feeds into Purchase Orders.
+Feeds into Purchase Orders via auto-PO on approval.
 
 ### Field Configuration
 | Label | Field Type | API Name | Required | Notes |
@@ -218,17 +259,16 @@ Custom module (Zoho Books has no native PR). Feeds into Purchase Orders.
 
 ### Subforms (Add-as-Subform)
 
-**PR Line Items** — Form: `PR_Line_Items`
-| Label | Field Type | API Name | Notes |
-|---|---|---|---|
-| Requisition | Lookup → Purchase_Requisitions | `Requisition` | |
-| Item | Lookup → Inventory_Items | `Item` | Optional — free-text description fallback |
-| Item Description | Single Line | `Item_Description` | Free text |
-| Quantity | Decimal | `Quantity` | |
-| Estimated Unit Rate | Currency | `Estimated_Unit_Rate` | |
-| Estimated Total | Formula | `Estimated_Total` | `Quantity * Estimated_Unit_Rate` |
-| Item Type | Single Line | `Item_Type` | Copied from Item |
-| Unit | Single Line | `Unit` | Copied from Item |
+**PR Line Items** — embedded subform (no separate API name, no standalone CRUD)
+| Label | Field Type | Notes |
+|---|---|---|
+| Item | Lookup → Inventory_Items | Optional — free-text description fallback |
+| Item Description | Single Line | Free text |
+| Quantity | Decimal | |
+| Estimated Unit Rate | Currency | |
+| Estimated Total | Formula | `Quantity * Estimated_Unit_Rate` |
+| Item Type | Single Line | Copied from Item |
+| Unit | Single Line | Copied from Item |
 
 ### Validation Rules
 1. **Required fields on Submit** — Subject, Project, and at least one line item required when Status = "Open".
@@ -271,8 +311,16 @@ PR Created (Status = Draft)
 
 #### On Submit — Multi-Stage Approval Email
 ```deluge
-/* Phase 1C — Purchase_Requisitions: On Submit
-   Send email notification on status change */
+/* ===== PSEUDOCODE =====
+   Trigger: On Submit — when Purchase_Requisition is created/updated
+   
+   1. Get the status display value, approval stage, requisition number, and subject
+   2. If status is "Open" (first submission after Draft):
+      a. Build email body with requisition details (number, subject, estimated total)
+      b. (Placeholder) Send notification email to Department Manager
+      c. Update the Approval_Stage to "Pending Dept Approval"
+   3. If status is not "Open": skip — no notification needed
+   ===== END PSEUDOCODE ===== */
 status_val = ifnull(input.Status.toMap().get("display_value"), "");
 approval_stage = ifnull(input.Approval_Stage.toMap().get("display_value"), "");
 req_no = ifnull(input.Requisition_No, "");
@@ -280,18 +328,12 @@ subject_line = ifnull(input.Subject, "No Subject");
 
 if (status_val == "Open")
 {
-    /* First submission — notify Department Manager */
-    /* Email to dept manager role */
     email_body = "A new Purchase Requisition requires your approval:\n\n"
         + "Requisition: " + req_no + "\n"
         + "Subject: " + subject_line + "\n"
         + "Amount: " + ifnull(input.Estimated_Total, 0).toString() + "\n\n"
         + "Please review and approve in the system.";
 
-    /* zoho.creator.sendMail("dept.manager@company.com",
-        "PR Approval Required: " + req_no, email_body); */
-
-    /* Set initial approval stage */
     stage_data = Map();
     stage_data.put("Approval_Stage", "Pending Dept Approval");
     zoho.creator.updateRecord("budget_tracking", "Purchase_Requisitions", input.ID, stage_data);
@@ -300,8 +342,42 @@ if (status_val == "Open")
 
 #### On Approval Stage Change — Cascade to Next Approver
 ```deluge
-/* Phase 1C — Purchase_Requisitions: On Submit
-   Approval stage progression */
+/* ===== PSEUDOCODE =====
+   Trigger: On Submit — when Approval_Stage field changes on Purchase_Requisition
+   
+   1. Get the current approval stage display value and requisition number
+   2. Initialize next_email and next_stage as empty strings
+   
+   CASE A — Current stage is "Pending Dept Approval":
+      a. Set next email to finance manager
+      b. Set next stage to "Pending Finance Approval"
+   
+   CASE B — Current stage is "Pending Finance Approval":
+      a. Set next email to procurement team
+      b. Set next stage to "Pending Procurement"
+   
+   CASE C — Current stage is "Pending Procurement" (final approval):
+      a. Set next stage to "Approved"
+      b. Build Purchase_Order data map with:
+         - Linked requisition ID
+         - Project from the PR
+         - Status = "Draft"
+         - Notes referencing the PR number
+      c. Access PR_Line_Items via input.PR_Line_Items (embedded subform)
+      d. If line items exist:
+         - Try to get the first item's Preferred_Vendor
+         - If vendor found: add to PO data
+         - Build PO_Line_Items list as embedded subform data
+         - Add PO_Line_Items to the PO data map
+      e. Create the Purchase_Order record with embedded PO_Line_Items
+   
+   3. If next_stage is not empty AND not "Approved":
+      a. Build email body notifying the next approver
+      b. (Placeholder) Send notification email
+   
+   4. If next_stage is not empty:
+      a. Update the Approval_Stage field on the PR
+   ===== END PSEUDOCODE ===== */
 approval_stage = ifnull(input.Approval_Stage.toMap().get("display_value"), "");
 req_no = ifnull(input.Requisition_No, "");
 
@@ -322,7 +398,6 @@ else if (approval_stage == "Pending Procurement")
 {
     next_stage = "Approved";
 
-    /* Auto-create Purchase Order */
     pr_id = input.ID;
     po_data = Map();
     po_data.put("Requisition", pr_id);
@@ -330,13 +405,11 @@ else if (approval_stage == "Pending Procurement")
     po_data.put("Status", "Draft");
     po_data.put("Notes", "Auto-created from PR: " + req_no);
 
-    /* Get vendor from PR items if available */
-    items_criteria = "Requisition == " + pr_id;
-    line_items = zoho.creator.getRecords("budget_tracking", "PR_Line_Items", items_criteria, 1, 200);
+    /* PR_Line_Items is embedded subform — access via input */
+    line_items = input.PR_Line_Items;
 
     if (!line_items.isNull() && line_items.size() > 0)
     {
-        /* Take first item's preferred vendor if available */
         first_item = line_items.get(0);
         item_id = first_item.get("Item");
         if (!item_id.isNull())
@@ -351,39 +424,31 @@ else if (approval_stage == "Pending Procurement")
                 }
             }
         }
-    }
 
-    /* Create the PO */
-    created_po = zoho.creator.createRecord("budget_tracking", "Purchase_Orders", po_data);
-
-    /* Copy PR line items to PO line items */
-    if (!line_items.isNull() && !created_po.isNull())
-    {
-        po_id = created_po.get("ID");
+        /* Include PO_Line_Items as embedded subform data in the PO */
+        po_line_items_list = List();
         for each li in line_items
         {
             po_li = Map();
-            po_li.put("PO", po_id);
             po_li.put("Item", li.get("Item"));
             po_li.put("Description", li.get("Item_Description"));
             po_li.put("Quantity", li.get("Quantity"));
             po_li.put("Unit_Rate", li.get("Estimated_Unit_Rate"));
-            po_li.put("Account", li.get("Account"));
             po_li.put("Unit", li.get("Unit"));
-            zoho.creator.createRecord("budget_tracking", "PO_Line_Items", po_li);
+            po_line_items_list.add(po_li);
         }
+        po_data.put("PO_Line_Items", po_line_items_list);
     }
+
+    created_po = zoho.creator.createRecord("budget_tracking", "Purchase_Orders", po_data);
 }
 
-/* Send email notification to next approver */
 if (next_stage != "" && next_stage != "Approved")
 {
     email_body = "Purchase Requisition " + req_no + " has been approved at stage '" + approval_stage
         + "'. Please review for " + next_stage + ".";
-    /* zoho.creator.sendMail(next_email, "PR Next Approval: " + req_no, email_body); */
 }
 
-/* Update approval stage */
 if (next_stage != "")
 {
     stage_data = Map();

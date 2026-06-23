@@ -20,47 +20,34 @@
 | Website | URL | `Website` | No | |
 | Currency | Dropdown | `Currency` | No | `USD, EUR, INR, GBP, AED` |
 | Payment Terms | Dropdown | `Payment_Terms` | No | `Due on Receipt, Net 15, Net 30, Net 45, Net 60` |
-| Payment Options | Multi Select | `Payment_Options` | No | `Cheque, Cash, Bank Transfer, Credit Card, Online Payment` |
-| Opening Balance | Currency | `Opening_Balance` | No | |
-| Account Number | Single Line | `Account_Number` | No | |
 | Tax ID | Single Line | `Tax_ID` | No | GSTIN / VAT |
 | PAN | Single Line | `PAN` | No | India PAN |
 | Billing Address | Address | `Billing_Address` | No | Zoho Creator Address type (composite) |
 | Shipping Address | Address | `Shipping_Address` | No | Zoho Creator Address type (composite) |
-| Vendor Category | Dropdown | `Vendor_Category` | No | `Materials, Services, Equipment, Labor, Logistics` |
-| Performance Rating | Decimal | `Performance_Rating` | No | 1-5 scale |
 | Status | Dropdown | `Status` | No | `Active, Inactive` — default Active |
-| Portal Access | Checkbox | `Portal_Access` | No | |
 | Remarks | Multi Line | `Remarks` | No | |
 
-### Subforms (Add-as-Subform)
+### Subform: Vendor Contacts
+| Label | Field Type | Notes |
+| Salutation | Dropdown | `Mr, Ms, Mrs, Dr` |
+| First Name | Single Line | |
+| Last Name | Single Line | |
+| Email | Email | |
+| Phone | Phone | |
+| Mobile | Phone | |
+| Designation | Single Line | |
+| Department | Single Line | |
+| Is Primary | Checkbox | |
 
-**Vendor Contacts** — Form: `Vendor_Contacts`
-| Label | Field Type | API Name |
-|---|---|---|
-| Vendor | Lookup → Vendors | `Vendor` |
-| Salutation | Dropdown | `Salutation` — `Mr, Ms, Mrs, Dr` |
-| First Name | Single Line | `First_Name` |
-| Last Name | Single Line | `Last_Name` |
-| Email | Email | `Email` |
-| Phone | Phone | `Phone` |
-| Mobile | Phone | `Mobile` |
-| Designation | Single Line | `Designation` |
-| Department | Single Line | `Department` |
-| Is Primary | Checkbox | `Is_Primary` |
-
-**Vendor Documents** — Form: `Vendor_Documents`
-| Label | Field Type | API Name |
-|---|---|---|
-| Vendor | Lookup → Vendors | `Vendor` |
-| Document Name | Single Line | `Document_Name` |
-| File | Upload | `File` |
-| Expiry Date | Date | `Expiry_Date` |
-| Notes | Single Line | `Notes` |
+### Subform: Vendor Documents
+| Label | Field Type | Notes |
+| Document Name | Single Line | |
+| File | Upload | |
+| Expiry Date | Date | |
+| Notes | Single Line | |
 
 ### Validation Rules
 1. **Vendor Name required** — On Submit, if `Vendor_Name` is blank → `throw "Vendor Name is required."`
-2. **Performance Rating range** — On Submit, if `Performance_Rating` is not null and (`Performance_Rating < 1` or `Performance_Rating > 5`) → `throw "Performance Rating must be between 1 and 5."`
 
 ### Deluge Scripts
 
@@ -81,43 +68,31 @@
 | Website | URL | `Website` | No | |
 | Currency | Dropdown | `Currency` | No | `USD, EUR, INR, GBP, AED` |
 | Payment Terms | Dropdown | `Payment_Terms` | No | `Due on Receipt, Net 15, Net 30, Net 45, Net 60` |
-| Opening Balance | Currency | `Opening_Balance` | No | |
-| Credit Limit | Currency | `Credit_Limit` | No | Maximum credit allowed |
 | Tax ID | Single Line | `Tax_ID` | No | GSTIN / VAT |
 | PAN | Single Line | `PAN` | No | India PAN |
-| GST Treatment | Dropdown | `GST_Treatment` | No | `business_gst, consumer_gst, overseas, SEZ, SEZ_Developer` |
-| Source of Supply | Single Line | `Source_Of_Supply` | No | GST state code |
-| Place of Contact | Single Line | `Place_Of_Contact` | No | |
 | Billing Address | Address | `Billing_Address` | No | Zoho Creator Address type (composite) |
 | Shipping Address | Address | `Shipping_Address` | No | Zoho Creator Address type (composite) |
-| Portal Access | Checkbox | `Portal_Access` | No | |
 | Status | Dropdown | `Status` | No | `Active, Inactive` — default Active |
 | Remarks | Multi Line | `Remarks` | No | |
 
-### Subforms (Add-as-Subform)
+### Subform: Account Contacts
+| Label | Field Type | Notes |
+| Salutation | Dropdown | `Mr, Ms, Mrs, Dr` |
+| First Name | Single Line | |
+| Last Name | Single Line | |
+| Email | Email | |
+| Phone | Phone | |
+| Mobile | Phone | |
+| Designation | Single Line | |
+| Department | Single Line | |
+| Is Primary | Checkbox | |
 
-**Account Contacts** — Form: `Account_Contacts`
-| Label | Field Type | API Name |
-|---|---|---|
-| Account | Lookup → Accounts | `Account` |
-| Salutation | Dropdown | `Salutation` — `Mr, Ms, Mrs, Dr` |
-| First Name | Single Line | `First_Name` |
-| Last Name | Single Line | `Last_Name` |
-| Email | Email | `Email` |
-| Phone | Phone | `Phone` |
-| Mobile | Phone | `Mobile` |
-| Designation | Single Line | `Designation` |
-| Department | Single Line | `Department` |
-| Is Primary | Checkbox | `Is_Primary` |
-
-**Account Documents** — Form: `Account_Documents`
-| Label | Field Type | API Name |
-|---|---|---|
-| Account | Lookup → Accounts | `Account` |
-| Document Name | Single Line | `Document_Name` |
-| File | Upload | `File` |
-| Expiry Date | Date | `Expiry_Date` |
-| Notes | Single Line | `Notes` |
+### Subform: Account Documents
+| Label | Field Type | Notes |
+| Document Name | Single Line | |
+| File | Upload | |
+| Expiry Date | Date | |
+| Notes | Single Line | |
 
 ### Validation Rules
 1. **Account Name required** — On Submit, if `Account_Name` is blank → `throw "Account Name is required."`
@@ -158,13 +133,25 @@ Create two buttons in Form Settings → Custom Actions:
 
 #### On Submit — Validate Project Completion
 ```deluge
-/* Phase 1A — Projects: On Submit
-   When Status changes to "Completed", check for open dependencies */
+/* ===== PSEUDOCODE =====
+   Trigger: On Submit — when Project record is saved with Status = "Completed"
+   
+   1. Get the display value of the Status field from the current record
+   2. Check if Status is "Completed" AND the record already exists (not a new insert)
+   3. If condition met:
+      a. Query all Expenses for this Project where Status = "Submitted"
+      b. If any open expenses exist: throw error listing the count
+      c. Query all Purchase Orders for this Project where Status = "Open"
+      d. If any open POs exist: throw error listing the count
+      e. Query all Purchase Requisitions for this Project where Status = "Open"
+      f. If any open PRs exist: throw error listing the count
+   4. If no open dependencies found: allow completion (no action needed)
+   5. If Status is not "Completed": skip — no validation required
+   ===== END PSEUDOCODE ===== */
 status_val = ifnull(input.Status.toMap().get("display_value"), "");
 
 if (status_val == "Completed" && !input.ID.isNull())
 {
-    /* Check for open Expenses */
     exp_criteria = "Project == " + input.ID + " && Status == 'Submitted'";
     open_expenses = zoho.creator.getRecords("budget_tracking", "Expenses", exp_criteria, 1, 200);
     if (!open_expenses.isNull() && open_expenses.size() > 0)
@@ -172,7 +159,6 @@ if (status_val == "Completed" && !input.ID.isNull())
         throw "Cannot complete project: " + open_expenses.size().toString() + " expense(s) are still open.";
     }
 
-    /* Check for open Purchase Orders */
     po_criteria = "Project == " + input.ID + " && Status == 'Open'";
     open_pos = zoho.creator.getRecords("budget_tracking", "Purchase_Orders", po_criteria, 1, 200);
     if (!open_pos.isNull() && open_pos.size() > 0)
@@ -180,7 +166,6 @@ if (status_val == "Completed" && !input.ID.isNull())
         throw "Cannot complete project: " + open_pos.size().toString() + " PO(s) are still open.";
     }
 
-    /* Check for open Purchase Requisitions */
     pr_criteria = "Project == " + input.ID + " && Status == 'Open'";
     open_prs = zoho.creator.getRecords("budget_tracking", "Purchase_Requisitions", pr_criteria, 1, 200);
     if (!open_prs.isNull() && open_prs.size() > 0)
@@ -230,43 +215,24 @@ After form creation, manually create one default record:
 | Item Type | Dropdown | `Item_Type` | No | `Goods, Services` |
 | Category | Dropdown | `Category` | No | `Raw Material, Component, Consumable, Equipment, Service, Subcontract` |
 | Unit | Dropdown | `Unit` | No | `Pcs, Kg, Ltr, Box, Meter, Hour, Day, Set, Pair, Nos` |
-| Length | Decimal | `Length` | No | cm |
-| Width | Decimal | `Width` | No | cm |
-| Height | Decimal | `Height` | No | cm |
-| Weight | Decimal | `Weight` | No | kg |
-| Brand | Single Line | `Brand` | No | |
-| Manufacturer | Single Line | `Manufacturer` | No | |
 | HSN/SAC Code | Single Line | `HSN_SAC_Code` | No | Tax classification |
 | Taxability | Dropdown | `Taxability` | No | `Taxable, Non-Taxable, Zero-Rated` |
 | Tax Rate | Decimal | `Tax_Rate` | No | Default tax % |
 | Purchase Price | Currency | `Purchase_Price` | No | Default unit cost |
-| Sales Price | Currency | `Sales_Price` | No | For reference |
 | Reorder Level | Decimal | `Reorder_Level` | No | Min stock alert |
 | Preferred Vendor | Lookup → Vendors | `Preferred_Vendor` | No | Default vendor for POs |
 | Current Stock | Decimal | `Current_Stock` | No | Maintained by Deluge |
 | Stock Value | Formula | `Stock_Value` | — | `Current_Stock * Purchase_Price` |
 | Description | Multi Line | `Description` | No | |
-| Image | Upload | `Image` | No | |
 | Status | Dropdown | `Status` | No | `Active, Inactive` — default Active |
 
-### Subforms (Add-as-Subform)
-
-**Stock by Warehouse** — Form: `Item_Warehouse_Stock`
-| Label | Field Type | API Name | Notes |
-|---|---|---|---|
-| Item | Lookup → Inventory_Items | `Item` | |
-| Warehouse | Lookup → Warehouses | `Warehouse` | |
-| Current Stock | Decimal | `Current_Stock` | Maintained by Deluge |
-| Reserved Qty | Decimal | `Reserved_Qty` | Default 0 |
-| Available Stock | Formula | `Available_Stock` | `Current_Stock - Reserved_Qty` |
-| Reorder Level | Decimal | `Reorder_Level` | Override item default |
-
-**Item Attributes** — Form: `Item_Attributes`
-| Label | Field Type | API Name |
-|---|---|---|
-| Item | Lookup → Inventory_Items | `Item` |
-| Attribute Name | Single Line | `Attribute_Name` |
-| Value | Single Line | `Value` |
+### Subform: Stock by Warehouse
+| Label | Field Type | Notes |
+| Warehouse | Lookup → Warehouses | |
+| Current Stock | Decimal | Maintained by Deluge |
+| Reserved Qty | Decimal | Default 0 |
+| Available Stock | Formula | `Current_Stock - Reserved_Qty` |
+| Reorder Level | Decimal | Override item default |
 
 ### Validation Rules
 1. **Item Name required** — On Submit, if `Item_Name` is blank → `throw "Item Name is required."`
@@ -274,54 +240,11 @@ After form creation, manually create one default record:
 3. **Goods require Unit** — On Submit, if `Item_Type == "Goods"` and `Unit` is blank → `throw "Unit is required for Goods items."`
 
 ### Deluge Scripts
-
-No Deluge scripts for Vendors in Phase 1A — Zoho Creator Address type handles the composite address fields natively.
-
-#### On Submit — Initialize Stock for All Warehouses
 ```deluge
-/* Phase 1A — Inventory_Items: On Submit
-   When a new item is created, create Item_Warehouse_Stock records
-   for all active warehouses with 0 stock */
-
-if (input.ID.isNull())
-{
-    /* This is a new record — will run after save */
-    /* We use On Post Submit for this logic */
-}
-```
-
-#### On Post Submit — Create Stock Records
-```deluge
-/* Phase 1A — Inventory_Items: On Post Submit
-   Create Item_Warehouse_Stock for all active warehouses */
-item_id = input.ID;
-item_type = ifnull(input.Item_Type, "");
-
-if (item_type == "Goods")
-{
-    /* Fetch all active warehouses */
-    warehouses = zoho.creator.getRecords("budget_tracking", "Warehouses", "Status == 'Active'", 1, 200);
-
-    if (!warehouses.isNull())
-    {
-        for each wh in warehouses
-        {
-            /* Check if stock record already exists */
-            stock_criteria = "Item == " + item_id + " && Warehouse == " + wh.get("ID");
-            existing = zoho.creator.getRecords("budget_tracking", "Item_Warehouse_Stock", stock_criteria, 1, 1);
-
-            if (existing.isNull() || existing.size() == 0)
-            {
-                stock_data = Map();
-                stock_data.put("Item", item_id);
-                stock_data.put("Warehouse", wh.get("ID"));
-                stock_data.put("Current_Stock", 0);
-                stock_data.put("Reserved_Qty", 0);
-                zoho.creator.createRecord("budget_tracking", "Item_Warehouse_Stock", stock_data);
-            }
-        }
-    }
-}
+/* Embedded subform: Stock_by_Warehouse
+   Users manually enter stock quantities per warehouse.
+   No auto-creation — Deluge does not manage embedded subform records.
+   Stock_Value is a Formula field: Current_Stock * Purchase_Price */
 ```
 
 ---
@@ -338,7 +261,7 @@ After building Phase 1A, verify:
 8. Account lookup in Projects shows Accounts list
 9. Warehouses form generates WH-0001, WH-0002...
 10. Inventory Items generates SKU-0001, SKU-0002...
-11. Item_Warehouse_Stock auto-creates records for all active warehouses on new item
+11. Stock_by_Warehouse subform accepts manual warehouse entries
 
 ## Next Phase
 → Proceed to `PHASE_1B_BUILD.md` when all above forms are verified.

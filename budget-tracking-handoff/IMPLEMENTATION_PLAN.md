@@ -18,7 +18,7 @@
 | No true foreign keys | All relationships are **Lookup fields** referencing another form's `Form.Name` field. Plan for orphaned records — archive, don't delete. |
 | No transactions | If a multi-step Deluge workflow fails mid-way (e.g., deduct stock + create expense record), partial updates persist. Add **safety checks in Deluge**: verify state before each write, log failures to a Debug Log form. |
 | Deluge runs per-record, not set-based | Avoid looping large datasets in `on form submit`. Use **Scheduled Workflows** (cron) for mass operations: budget alerts, auto-PO closure, monthly rollups. |
-| Subform limitations | Subforms are great for < 100 line items. For Budget Components (vary by project) and PO Line Items, use **separate forms** with lookups + Add-As-Subform view. Better for reporting. |
+| Subform limitations | Subforms are great for < 100 line items. All line items, contacts, and documents use **embedded subforms** inside the parent form. Budget Components is a separate form (not a subform) for rich reporting. |
 | No dynamic SQL | All aggregation is `Map` + `List` in Deluge or Zoho Creator Report widgets. Prefer Reports over Deluge for performance. |
 | Role-based access is per-form, not record-level | For department-specific data (e.g., Procurement sees only their POs), use **form filters** on report views or dedicated forms per role. |
 | Formula fields can't look up external data | Complex validation (budget checks) must go in **Deluge workflows on form submit**, not formula fields. |
@@ -76,9 +76,7 @@ Phase 1F:  Reports & Dashboards (all modules incl. Project P&L)
 
 ---
 
-### 2. Vendor Management (`Vendors`)
-
-Matches Zoho Inventory's vendor master structure.
+### 2. Vendor Management (`Vendors` — with embedded Contacts + Documents subforms)
 
 | Field | Type | Notes |
 |---|---|---|
@@ -90,50 +88,22 @@ Matches Zoho Inventory's vendor master structure.
 | Website | URL | |
 | Currency | Dropdown | `USD`, `EUR`, `INR`, etc. — affects PO totals |
 | Payment Terms | Dropdown | `Due on Receipt`, `Net 15`, `Net 30`, `Net 45`, `Net 60` |
-| Payment Options | Multi-select | `Cheque`, `Cash`, `Bank Transfer`, `Credit Card`, `Online Payment` |
-| Opening Balance | Currency | Starting balance if carried forward |
-| Account Number | Text | Internal account reference |
 | Tax ID | Text | GSTIN / VAT / HST registration number |
 | PAN | Text | Permanent Account Number (India) |
 | Billing Address | Address | Zoho Creator Address type (composite) |
 | Shipping Address | Address | Zoho Creator Address type (composite) |
-| Vendor Category | Dropdown | `Materials`, `Services`, `Equipment`, `Labor`, `Logistics` |
-| Performance Rating | Decimal (1-5) | Manually updated after deliveries |
 | Status | Dropdown | `Active`, `Inactive` |
-| Portal Access | Checkbox | Enable vendor self-service portal |
 | Remarks | Multi-line | |
 
-**Contact Persons — Separate form `Vendor_Contacts` with Add-as-Subform:**
+**Embedded subform — Contacts:** Salutation, First Name, Last Name, Email, Phone, Mobile, Designation, Department, Is Primary
 
-| Field | Type |
-|---|---|
-| Vendor | Lookup → Vendors |
-| Salutation | Dropdown: `Mr`, `Ms`, `Mrs`, `Dr` |
-| First Name | Text |
-| Last Name | Text |
-| Email | Email |
-| Phone | Phone |
-| Mobile | Phone |
-| Designation | Text |
-| Department | Text |
-| Skype ID | Text |
-| Is Primary | Checkbox |
-
-**Documents — Separate form `Vendor_Documents` with Add-as-Subform:**
-
-| Field | Type |
-|---|---|
-| Vendor | Lookup → Vendors |
-| Document Name | Text |
-| File | Upload |
-| Expiry Date | Date |
-| Notes | Text |
+**Embedded subform — Documents:** Document Name, File, Expiry Date, Notes
 
 ---
 
-### 3. Account Management (`Accounts`)
+### 3. Account Management (`Accounts` — with embedded Contacts + Documents subforms)
 
-Matches Zoho Books Customer module structure. Stores customer/client information separate from Vendors. Used by Projects, Invoices, and Delivery Challans.
+Stores customer/client information separate from Vendors. Used by Projects, Invoices, and Delivery Challans.
 
 | Field | Type | Notes |
 |---|---|---|
@@ -145,43 +115,16 @@ Matches Zoho Books Customer module structure. Stores customer/client information
 | Website | URL | |
 | Currency | Dropdown | `USD`, `EUR`, `INR`, `GBP`, `AED` |
 | Payment Terms | Dropdown | `Due on Receipt`, `Net 15`, `Net 30`, `Net 45`, `Net 60` |
-| Opening Balance | Currency | Starting balance if carried forward |
-| Credit Limit | Currency | Maximum credit allowed |
 | Tax ID | Text | GSTIN / VAT registration number |
 | PAN | Text | Permanent Account Number (India) |
-| GST Treatment | Dropdown | `business_gst`, `consumer_gst`, `overseas`, `SEZ`, `SEZ_Developer` |
-| Source of Supply | Text | GST state code |
-| Place of Contact | Text | |
 | Billing Address | Address | Zoho Creator Address type (composite) |
 | Shipping Address | Address | Zoho Creator Address type (composite) |
-| Portal Access | Checkbox | Enable customer self-service portal |
 | Status | Dropdown | `Active`, `Inactive` — default Active |
 | Remarks | Multi-line | |
 
-**Contact Persons — Separate form `Account_Contacts` with Add-as-Subform:**
+**Embedded subform — Contacts:** Salutation, First Name, Last Name, Email, Phone, Mobile, Designation, Department, Is Primary
 
-| Field | Type |
-|---|---|
-| Account | Lookup → Accounts |
-| Salutation | Dropdown: `Mr`, `Ms`, `Mrs`, `Dr` |
-| First Name | Text |
-| Last Name | Text |
-| Email | Email |
-| Phone | Phone |
-| Mobile | Phone |
-| Designation | Text |
-| Department | Text |
-| Is Primary | Checkbox |
-
-**Documents — Separate form `Account_Documents` with Add-as-Subform:**
-
-| Field | Type |
-|---|---|
-| Account | Lookup → Accounts |
-| Document Name | Text |
-| File | Upload |
-| Expiry Date | Date |
-| Notes | Text |
+**Embedded subform — Documents:** Document Name, File, Expiry Date, Notes
 
 ---
 
@@ -205,9 +148,9 @@ A **default warehouse** is seeded on app creation so single-warehouse users neve
 
 ---
 
-### 5. Inventory Master — Items (`Inventory_Items`)
+### 5. Inventory Master (`Inventory_Items` — with embedded Item_Warehouse_Stock subform)
 
-Matches Zoho Inventory's item master structure. Items are goods or services tracked at the SKU level.
+Items are goods or services tracked at the SKU level.
 
 | Field | Type | Notes |
 |---|---|---|
@@ -216,55 +159,37 @@ Matches Zoho Inventory's item master structure. Items are goods or services trac
 | Item Type | Dropdown | `Goods`, `Services` — services have no stock tracking |
 | Category | Dropdown | `Raw Material`, `Component`, `Consumable`, `Equipment`, `Service`, `Subcontract` |
 | Unit | Dropdown | `Pcs`, `Kg`, `Ltr`, `Box`, `Meter`, `Hour`, `Day`, `Set`, `Pair` |
-| Dimensions — Length | Decimal (cm) | |
-| Dimensions — Width | Decimal (cm) | |
-| Dimensions — Height | Decimal (cm) | |
-| Weight | Decimal (kg) | |
-| Brand | Text | |
-| Manufacturer | Text | |
 | HSN/SAC Code | Text | Tax classification code |
 | Taxability | Dropdown | `Taxable`, `Non-Taxable`, `Zero-Rated` |
 | Tax Rate | Decimal (%) | Default tax % applied in POs |
 | Purchase Price | Currency | Default unit cost for purchases |
-| Sales Price | Currency | For internal reference |
 | Reorder Level | Decimal | Min stock before alert |
 | Preferred Vendor | Lookup → Vendors | Default vendor for POs |
 | Current Stock | Decimal | Maintained by Deluge — updated on every Inventory Transaction via SUM aggregation across Item_Warehouse_Stock |
 | Stock Value | Formula | `Current Stock * Purchase Price` |
 | Description | Multi-line | Internal notes |
-| Image | Upload | Item photo |
 | Status | Dropdown | `Active`, `Inactive` |
 
-**Stock by Warehouse — Separate form `Item_Warehouse_Stock` with Add-as-Subform:**
-
-| Field | Type |
-|---|---|
-| Item | Lookup  Inventory_Items |
-| Warehouse | Lookup  Warehouses |
-| Current Stock | Decimal (maintained by Deluge on each transaction) |
-| Reserved Qty | Decimal (maintained by Deluge — Reservation/Release transactions) |
-| Available Stock | Formula (read-only) | `Current Stock − Reserved Qty` |
-| Reorder Level | Decimal (warehouse-specific, overrides item default) |
+**Embedded subform — Stock by Warehouse:** Item (Lookup → Inventory_Items), Warehouse (Lookup → Warehouses), Current Stock, Reserved Qty, Available Stock (Formula), Reorder Level
 
 **Deluge approach for `Current_Stock` and `Reserved_Qty` :**
 ```
 On every Inventory Transaction:
-  Update Item_Warehouse_Stock for the specific warehouse:
+  Locate the matching Item_Warehouse_Stock subform row within the Item record:
     Stock In:              Current_Stock += Quantity
     Stock Out:             Current_Stock -= Quantity; Reserved_Qty -= Quantity (capped)
     Adjustment:            Current_Stock = Adjusted_Qty (Reserved_Qty unchanged)
     Return to Vendor:      Current_Stock -= Quantity
     Reservation:           Reserved_Qty += Quantity; validate Reserved_Qty <= Current_Stock
     Release:               Reserved_Qty -= Quantity
-  Then update Inventory_Item.Current_Stock = SUM of all Item_Warehouse_Stock records via Deluge
+  Then update Inventory_Item.Current_Stock = SUM of all Item_Warehouse_Stock subform rows
 ```
 
 This gives both warehouse-level visibility and item-level totals without on-demand aggregation.
 
-**Item Attributes (optional — for variants like size/color):**
-Create a form `Item_Attributes` with fields: Item (lookup), Attribute Name (e.g., "Size"), Attribute Value (e.g., "XL"). Linked via Add-as-Subform.
-
 ---
+
+
 
 ### 6. Budget Planning (`Budget_Plans`)
 
@@ -369,7 +294,7 @@ On Expense Submit (if within budget):
 
 ### 10. Inventory Transactions (`Inventory_Transactions`)
 
-Matches Zoho Inventory's stock transaction structure. Every transaction ties to a specific warehouse.
+Every stock movement is recorded as an Inventory Transaction tied to a specific warehouse.
 
 | Field | Type | Notes |
 |---|---|---|
@@ -389,8 +314,8 @@ Matches Zoho Inventory's stock transaction structure. Every transaction ties to 
 
 **Deluge Workflow (on Submit):**
 ```
-1. Locate Item_Warehouse_Stock record for (Item, Warehouse)
-2. Calculate new stock:
+1. Fetch the Inventory_Item record (via Item lookup field); locate the matching Item_Warehouse_Stock subform row for the selected Warehouse
+2. Calculate new stock on that row:
    - Stock In:              Current_Stock += Quantity
    - Stock Out:             Current_Stock -= Quantity;  Reserved_Qty -= min(Reserved_Qty, Quantity)
    - Adjustment:            Current_Stock = Adjusted_Qty
@@ -398,8 +323,8 @@ Matches Zoho Inventory's stock transaction structure. Every transaction ties to 
    - Reservation:           Reserved_Qty += Quantity;  validate Reserved_Qty <= Current_Stock
    - Release:               Reserved_Qty -= Quantity
 3. Validate Current_Stock >= 0 AND unreserved stock (Current_Stock - Reserved_Qty) >= 0 for Stock Out
-4. Update Item_Warehouse_Stock.Current_Stock and Reserved_Qty
-5. Update Inventory_Item.Current_Stock via Deluge = SUM of all Item_Warehouse_Stock records for this Item
+4. Update the subform row's Current_Stock and Reserved_Qty
+5. Update Inventory_Item.Current_Stock = SUM of all subform rows for this Item
 6. If Type = "Stock Out" AND Project is set:
       Create Expense record automatically:
         Amount = Quantity * Rate
@@ -413,9 +338,9 @@ Matches Zoho Inventory's stock transaction structure. Every transaction ties to 
 
 ---
 
-### 11. Transfer Orders (`Transfer_Orders`)
+### 11. Transfer Orders (`Transfer_Orders` — with embedded Line Items subform)
 
-Matches Zoho Inventory's transfer order module — moving stock between warehouses.
+Moving stock between warehouses.
 
 | Field | Type | Notes |
 |---|---|---|
@@ -425,19 +350,11 @@ Matches Zoho Inventory's transfer order module — moving stock between warehous
 | To Warehouse | Lookup → Warehouses | Destination |
 | Status | Dropdown | `Draft`, `In Transit`, `Completed`, `Cancelled` |
 
-**Line Items — Separate form `TO_Line_Items` with Add-as-Subform:**
-
-| Field | Type |
-|---|---|
-| Transfer Order | Lookup → Transfer_Orders |
-| Item | Lookup → Inventory_Items |
-| Quantity | Decimal |
-| Rate | Currency |
-| Total | Formula |
+**Embedded subform — Line Items:** Item (Lookup → Inventory_Items), Quantity, Rate, Total (Formula)
 
 **Deluge Workflow (on Status = "Completed"):**
 ```
-For each line item:
+For each row in input.TO_Line_Items subform:
   Create Stock Out transaction from From_Warehouse (Type = "Stock Transfer")
   Create Stock In  transaction to   To_Warehouse   (Type = "Stock Transfer")
   → Both trigger the Inventory_Transactions workflow → update stock counts
@@ -445,9 +362,9 @@ For each line item:
 
 ---
 
-### 12. Purchase Requisition (`Purchase_Requisitions`)
+### 12. Purchase Requisition (`Purchase_Requisitions` — with embedded Line Items subform)
 
-Custom Zoho Creator module (Zoho Books has no native PR). Designed to feed into Zoho Books Purchase Orders via Phase 2 API sync.
+Handles internal purchase requests and approval workflow.
 
 | Field | Type | Notes |
 |---|---|---|
@@ -464,162 +381,88 @@ Custom Zoho Creator module (Zoho Books has no native PR). Designed to feed into 
 | Approval Stage | Dropdown | `Pending Dept Approval`, `Pending Finance Approval`, `Pending Procurement`, `Approved` |
 | Notes | Multi-line | Internal notes |
 
-**Line Items — Separate form `PR_Line_Items` with Add-as-Subform:**
-
-| Field | Type | Notes |
-|---|---|---|
-| Requisition | Lookup → Purchase_Requisitions | |
-| Item | Lookup → Inventory_Items | Optional — can enter free-text description |
-| Item Description | Text | Free text if Item not selected |
-| Quantity | Decimal | |
-| Estimated Unit Rate | Currency | |
-| Estimated Total | Formula | `Quantity * Estimated Unit Rate` |
-| Item Type | Text | Copied from Item or manual |
-| Unit | Text | Copied from Item or manual; maps to Zoho Books `unit` |
+**Embedded subform — Line Items:** Item (Lookup → Inventory_Items, optional), Item Description, Quantity, Estimated Unit Rate, Estimated Total (Formula), Item Type, Unit
 
 **Multi-stage Approval + Auto-PO Workflow:**
 1. User submits (Status = "Open")
 2. Department Manager approves → Approval_Stage = "Pending Finance Approval"
 3. Finance approves → Approval_Stage = "Pending Procurement"
 4. Procurement approves → Approval_Stage = "Approved"
-5. **Auto-create PO** (Deluge on final approval): create Purchase_Order in Draft status, copy all PR_Line_Items → PO_Line_Items, link PO.Requisition = this PR
+5. **Auto-create PO** (Deluge on final approval): create Purchase_Order in Draft status, copy all PR Line Items subform rows → PO Line Items subform rows, link PO.Requisition = this PR
 
 Each step sends email notification. Procurement then reviews the auto-created PO and sends to vendor.
 
 ---
 
-### 13. Purchase Orders (`Purchase_Orders`)
+### 13. Purchase Orders (`Purchase_Orders` — with embedded Line Items subform)
 
-1:1 aligned with Zoho Books Purchase Order API (`/books/v3/purchaseorder`). Full line-item detail, discount/tax support, address tracking, and status lifecycle. All fields map directly to Zoho Books JSON payload for Phase 2 API sync.
+| Field | Type | Notes |
+|---|---|---|
+| PO Number | Auto-number | `PO-0001` |
+| Vendor | Lookup → Vendors | Required |
+| Requisition | Lookup → Purchase_Requisitions | Optional — linked if created from PR |
+| Project | Lookup → Projects | |
+| PO Date | Date | Defaults to today |
+| Delivery Date | Date | Expected delivery |
+| Due Date | Date | Payment due date |
+| Reference Number | Text | Vendor's reference or contract no. |
+| Status | Dropdown | `Draft`, `Open`, `Partially Invoiced`, `Billed`, `Closed`, `Cancelled` |
+| Subtotal | Currency | Sum of line item totals |
+| Discount (%) | Decimal | Overall PO-level discount |
+| Discount Amount | Currency | Calculated |
+| Tax Total | Currency | Sum of line item taxes |
+| Total | Currency | `Subtotal - Discount + Tax Total` |
+| Terms & Conditions | Multi-line | Printed on PO |
+| Notes | Multi-line | Internal instructions |
+| Attachment | Upload | PO document file |
 
-| Field | Type | Zoho Books API Field | Notes |
-|---|---|---|---|
-| PO Number | Auto-number | `purchaseorder_number` | `PO-0001` — auto-numbering in Zoho Books |
-| Vendor | Lookup → Vendors | `vendor_id` | Required |
-| Vendor Email | Email | — | Copied from Vendor; convenience field |
-| Contact Person | Lookup → Vendor_Contacts | `contact_persons_associated` | Maps to Zoho Books contact persons array |
-| Requisition | Lookup → Purchase_Requisitions | — | Optional — linked if created from PR |
-| Project | Lookup → Projects | `project_id` (line items) | |
-| PO Date | Date | `date` | Defaults to today; YYYY-MM-DD |
-| Delivery Date | Date | `delivery_date` | Expected delivery |
-| Expected Arrival Date | Date | `expected_delivery_date` | |
-| Due Date | Date | `due_date` | Payment due date |
-| Reference Number | Text | `reference_number` | Vendor's reference or contract no. |
-| Ship Via | Dropdown | `ship_via` | `Courier`, `Freight`, `Air`, `Sea`, `Road`, `Pickup` |
-| Attention | Text | `attention` | Person to receive |
-| Billing Address | Multi-line | `billing_address_id` | Copied from Vendor, editable |
-| Shipping Address | Multi-line | — | Copied from Vendor, editable |
-| Status | Dropdown | `status` | `Draft`, `Open`, `Partially Invoiced`, `Invoiced`, `Closed`, `Cancelled` |
-| Currency | Lookup → Currencies | `currency_id` | Defaults to org base currency |
-| Exchange Rate | Decimal | `exchange_rate` | Defaults to 1 |
-| Is Inclusive Tax | Checkbox | `is_inclusive_tax` | Tax included in item rates |
-| Subtotal | Currency | `sub_total` | Sum of line item totals |
-| Discount (%) | Decimal | `discount` | Overall PO-level discount (e.g. `10` or `10%`) |
-| Discount Before Tax | Checkbox | `is_discount_before_tax` | Apply discount before tax calc |
-| Discount Amount | Currency | — | Calculated |
-| Tax Total | Currency | `total_tax` | Sum of line item taxes |
-| Total | Currency | `total` | `Subtotal - Discount + Tax Total` |
-| Terms & Conditions | Multi-line | `terms` | Printed on PO |
-| Notes | Multi-line | `notes` | Internal instructions |
-| Attachment | Upload | — | PO document file |
-| Location | Lookup → Warehouses | `location_id` | Zoho Books location/warehouse |
-| Template | Lookup → Templates | `template_id` | Zoho Books PDF template |
-| Price Book | Lookup → Price Books | `pricebook_id` | Zoho Books price book |
-| GST Treatment | Dropdown | `gst_treatment` | India: `business_gst`, `consumer_gst`, etc. |
-| GST No | Text | `gst_no` | Vendor GSTIN |
-| Source of Supply | Text | `source_of_supply` | GST state code |
-| Destination of Supply | Text | `destination_of_supply` | GST state code |
-| Reverse Charge | Checkbox | `is_reverse_charge_applied` | India reverse charge |
-| Custom Fields | JSON | `custom_fields` | Zoho Books custom field values |
-
-**Line Items — Separate form `PO_Line_Items` with Add-as-Subform:**
-
-| Field | Type | Zoho Books API Field | Notes |
-|---|---|---|---|
-| PO | Lookup → Purchase_Orders | — | |
-| Line Item ID | Text | `line_item_id` | Zoho Books internal ID (Phase 2 sync) |
-| Item | Lookup → Inventory_Items | `item_id` | |
-| SKU | Text | `sku` | Auto-filled from Item |
-| Name | Text | `name` | Auto-filled from Item Name, editable |
-| Description | Text | `description` | Item description |
-| Unit | Text | `unit` | `Nos`, `Kg`, `Hours`, etc. |
-| HSN/SAC | Text | `hsn_or_sac` | Tax classification code |
-| Quantity | Decimal | `quantity` | |
-| Unit Rate | Currency | `rate` | |
-| BCY Rate | Currency | `bcy_rate` | Rate in base currency |
-| Discount (%) | Decimal | — | Line-level discount |
-| Discount Amount | Formula | — | `(Unit Rate * Quantity) * (Discount% / 100)` |
-| Tax (%) | Decimal | `tax_id` | Defaults from Item's Tax Rate |
-| Tax Amount | Formula | — | `((Unit Rate * Quantity) - Discount Amount) * (Tax% / 100)` |
-| Item Total | Formula | `item_total` | `(Unit Rate * Quantity) + Tax Amount - Discount Amount` |
+**Embedded subform — Line Items:** Item (Lookup → Inventory_Items), Description, Unit, HSN/SAC, Quantity, Unit Rate, Discount (%), Discount Amount (Formula), Tax (%), Tax Amount (Formula), Item Total (Formula)
 
 
-**PO Lifecycle (matches Zoho Books status model):**
-- **Draft**: Being created, not yet submitted → `status: "draft"`
-- **Open**: Approved and sent to vendor → `status: "open"`
-- **Partially Invoiced**: Some line items billed (Phase 2)
-- **Invoiced**: Fully billed (Phase 2) → `status: "billed"`
+**PO Lifecycle:**
+- **Draft**: Being created, not yet submitted
+- **Open**: Approved and sent to vendor
+- **Partially Invoiced**: Some line items billed
+- **Billed**: Fully invoiced
 - **Closed**: Items received, PO fulfilled
-- **Cancelled**: Voided before completion → via Cancel PO endpoint
+- **Cancelled**: Voided before completion
 
 **Deluge Workflow:**
 - On Status = "Open": trigger email to vendor with PO PDF
-- On Goods Receipt: update `Received_Quantity` in line items
-- When Status ≠ "Closed" and all line items `Received_Quantity >= Quantity`: auto-set Status to "Closed"
 - On Status = "Cancelled": validate no GRN linked to this PO
-- **Phase 2**: On Status = "Open" → POST to Zoho Books `purchaseorder` endpoint to sync
+- PO Lifecycle: `Draft → Open → Closed` (manual close only — no auto-close based on GRN)
 
 ---
 
-### 14. Goods Receipt (`Goods_Receipts`)
+### 14. Goods Receipt (`Goods_Receipts` — with embedded Line Items subform)
 
-Matches Zoho Inventory's Goods Receipt Note (GRN) structure — supports accepted vs rejected quantities, and auto-updates inventory + PO.
+Supports accepted vs rejected quantities, and auto-updates inventory + PO.
 
 | Field | Type | Notes |
 |---|---|---|
 | GRN Number | Auto-number | `GRN-0001` |
-| PO | Lookup → Purchase_Orders | Required — auto-fills Vendor from PO |
-| Vendor | Lookup → Vendors | Copied from PO |
+| PO | Lookup → Purchase_Orders | Required |
 | Receipt Date | Date/Time | Defaults to now |
 | Received By | User picker | Defaults to current user |
 | Status | Dropdown | `Draft`, `Open`, `Closed` |
 
-**Line Items — Separate form `GRN_Line_Items` with Add-as-Subform:**
-
-| Field | Type | Notes |
-|---|---|---|---|
-| GRN | Lookup → Goods_Receipts | |
-| Item | Lookup → Inventory_Items | Auto-filled from PO Line Item |
-| PO Quantity | Decimal (Read Only) | Quantity ordered on PO |
-| Accepted Quantity | Decimal | Quantity received in good condition |
-| Rejected Quantity | Decimal | Quantity damaged or不合格 |
-| Reason for Rejection | Text | Required if Rejected Qty > 0 |
-| Actual Unit Cost | Currency | Copied from PO, editable if cost changed |
-| Total | Formula | `Accepted Quantity * Actual Unit Cost` |
-| Warehouse | Lookup → Warehouses | Where to stock the accepted items |
-| Condition Notes | Text | |
+**Embedded subform — Line Items:** Item (Lookup → Inventory_Items), PO Quantity (Read Only), Accepted Quantity, Rejected Quantity, Reason for Rejection, Actual Unit Cost, Total (Formula), Warehouse (Lookup → Warehouses), Condition Notes
 
 **Deluge Workflow (on Submit when Status = "Open"):**
 ```
-1. For each line item:
-     If Accepted_Quantity > 0:
-       Create Stock In transaction:
-         Item = Line Item.Item
-         Warehouse = Line Item.Warehouse
-         Quantity = Accepted_Quantity
-         Rate = Actual_Unit_Cost
-         Reference = GRN Number
-         Type = "Stock In"
-       → Inventory_Transactions workflow fires → updates stock
+1. For each row in input.GRN_Line_Items subform:
+      If row.Accepted_Quantity > 0:
+        Create Stock In transaction:
+          Item = row.Item
+          Warehouse = row.Warehouse
+          Quantity = row.Accepted_Quantity
+          Rate = row.Actual_Unit_Cost
+          Reference = GRN Number
+          Type = "Stock In"
+        → Inventory_Transactions workflow fires → updates stock
 
-     Update PO_Line_Item:
-       Received_Quantity += Accepted_Quantity
-
-2. Check PO completion:
-   If all PO_Line_Items have Received_Quantity >= PO_Line_Item.Quantity:
-     PO.Status = "Closed"
-
-3. Update PO line item actual costs if Actual_Unit_Cost differs from PO rate
+      (PO Line Items no longer track Received_Quantity — GRN is the receipt record)
+      Update PO line item actual costs if row.Actual_Unit_Cost differs from PO rate
 ```
 
 ---
@@ -637,16 +480,16 @@ Matches Zoho Inventory's Goods Receipt Note (GRN) structure — supports accepte
 | Project P&L | Pivot (Project, Total Revenue, Total Expense, Profit/Loss) | Invoices + Expenses | PM, Finance |
 | Open POs | Tabular (filter: Status != Closed, Cancelled) | Purchase_Orders | Procurement |
 | Vendor Spend | Summary (group by Vendor) | Purchase_Orders | Procurement, Finance |
-| Stock Availability | Tabular (group by Warehouse) | Item_Warehouse_Stock | Inventory Manager |
-| Low Stock Alert | Tabular (filter: Stock <= Reorder Level) | Item_Warehouse_Stock | Inventory Manager |
+| Stock Availability | Tabular (group by Warehouse) | Inventory_Items (Item_Warehouse_Stock subform) | Inventory Manager |
+| Low Stock Alert | Tabular (filter: Stock <= Reorder Level) | Inventory_Items (Item_Warehouse_Stock subform) | Inventory Manager |
 | Stock Consumption by Project | Summary | Inventory_Transactions | PM, Inventory |
 | Inventory Valuation | Summary | Inventory_Items | Finance |
 | Stock Movement by Warehouse | Summary by Item + Warehouse | Inventory_Transactions | Inventory Manager |
 | Open Transfer Orders | Tabular (filter: Status = In Transit) | Transfer_Orders | Inventory Manager |
 | Invoice Aging | Tabular (group by Due Date, Status != Paid) | Invoices | Finance |
 | DC Register | Tabular (filter by date range) | Delivery_Challans | Inventory, Logistics |
-| Vendor List with Contacts | Tabular | Vendors + Vendor_Contacts | Procurement |
-| BOM Cost Summary | Summary (group by Item) | BOM + BOM_Line_Items | Production |
+| Vendor List with Contacts | Tabular | Vendors (Contacts subform) | Procurement |
+| BOM Cost Summary | Summary (group by Item) | BOM (Line Items subform) | Production |
 | Executive Dashboard | Dashboard with KPI cards + charts | All | All |
 
 **Dashboard KPIs — Deluge Scheduled Workflow to calculate and store in a Summary_Data form:**
@@ -658,7 +501,7 @@ Matches Zoho Inventory's Goods Receipt Note (GRN) structure — supports accepte
 - Open PO Value = Sum of POs with Status = "Open"
 - Inventory Value = Sum of (Current_Stock × Purchase_Price) across all items
 - Cost Overruns = Count of Budget_Components where Status = "Exceeded"
-- Low Stock Items = Count of Item_Warehouse_Stock where Current_Stock <= Reorder_Level
+- Low Stock Items = Count of Item_Warehouse_Stock subform rows where Current_Stock <= Reorder_Level
 - Active POs = Count of POs where Status IN ("Open", "Partially Invoiced")
 - Pending Receipts = Count of POs where Status = "Open" and past Delivery_Date
 - Overdue Invoices = Count of Invoices where Due Date < Today and Status != "Paid"
@@ -667,14 +510,14 @@ Matches Zoho Inventory's Goods Receipt Note (GRN) structure — supports accepte
 - Recalculate all KPI values
 - Check for budget alerts (80%, 90%, 100%)
 - Check for low stock items and send alerts
-- Auto-close POs where all items Received_Quantity >= Quantity and older than 30 days
+- (POs are manually closed only — no auto-close logic)
 - Mark Invoices as "Overdue" if Due Date passed and Status IN ("Sent", "Partially Paid")
 
 ---
 
-### 16. Invoicing (`Invoices`)
+### 16. Invoicing (`Invoices` — with embedded Line Items subform)
 
-Matches Zoho Books invoice structure. Captures revenue per project. Future Zoho Books sync maps fields 1:1.
+Captures revenue per project.
 
 | Field | Type | Notes |
 |---|---|---|
@@ -683,47 +526,29 @@ Matches Zoho Books invoice structure. Captures revenue per project. Future Zoho 
 | Customer / Account | Lookup → Accounts | Billed party |
 | Invoice Date | Date | Defaults to today |
 | Due Date | Date | Based on payment terms |
-| Payment Terms | Dropdown | `Due on Receipt`, `Net 15`, `Net 30`, `Net 45`, `Net 60` |
 | PO Reference | Text | Customer PO number if applicable |
-| Delivery Challan Ref | Lookup → Delivery_Challans (optional) | Link to DC if applicable |
 | Status | Dropdown | `Draft`, `Sent`, `Partially Paid`, `Paid`, `Overdue`, `Cancelled` |
 | Subtotal | Currency | Sum of line item totals |
-| Discount (%) | Decimal | Overall invoice discount |
-| Discount Amount | Currency | Calculated |
 | Tax Total | Currency | Sum of line item taxes |
-| Total | Currency | `Subtotal - Discount + Tax Total` |
+| Total | Currency | `Subtotal + Tax Total` |
 | Balance Due | Currency (Formula) | `Total - Amount Paid` |
 | Amount Paid | Currency | Updated on payment receipt |
 | Notes | Multi-line | Internal |
-| Terms & Conditions | Multi-line | |
 | Attachment | Upload | Invoice PDF |
 
-**Line Items — Separate form `Invoice_Line_Items` with Add-as-Subform:**
-
-| Field | Type | Notes |
-|---|---|---|
-| Invoice | Lookup → Invoices | |
-| Item | Lookup → Inventory_Items | Optional — can enter free-text |
-| Description | Text | Auto-filled from Item, editable |
-| Quantity | Decimal | |
-| Rate | Currency | |
-| Discount (%) | Decimal | Line-level |
-| Discount Amount | Formula | |
-| Tax (%) | Decimal | |
-| Tax Amount | Formula | |
-| Total | Formula | `(Quantity * Rate) - Discount + Tax` |
+**Embedded subform — Line Items:** Item (Lookup → Inventory_Items, optional), Description, Quantity, Rate, Discount (%), Discount Amount (Formula), Tax (%), Tax Amount (Formula), Total (Formula)
 
 **Deluge / Custom Actions:**
 - On Status = "Sent": update Project Budget Component's Total Invoiced (for P&L reporting)
 - On Status = "Paid": update Amount Paid, auto-set Balance Due = 0
 - On Status = "Cancelled": validate no payments received
-- **Custom Button "Create DC"** (when Status = "Sent" + line items have stock Items): auto-create Delivery Challan with same Project, Customer, and line items copied to DC_Line_Items; link DC.Ref to Invoice
+- **Custom Button "Create DC"** (when Status = "Sent" + line items have stock Items): auto-create Delivery Challan with same Project, Customer, and line items copied to DC's embedded Line Items subform; link DC.Ref to Invoice
 
 ---
 
-### 17. Delivery Challan (`Delivery_Challans`)
+### 17. Delivery Challan (`Delivery_Challans` — with embedded Line Items subform)
 
-Tracks physical dispatch of goods. Customer-facing document. Future Zoho Books Delivery Challan sync.
+Tracks physical dispatch of goods to customers.
 
 | Field | Type | Notes |
 |---|---|---|
@@ -740,26 +565,17 @@ Tracks physical dispatch of goods. Customer-facing document. Future Zoho Books D
 | Remarks | Multi-line | |
 | Attachment | Upload | Signed DC copy |
 
-**Line Items — Separate form `DC_Line_Items` with Add-as-Subform:**
-
-| Field | Type | Notes |
-|---|---|---|
-| Delivery Challan | Lookup → Delivery_Challans | |
-| Item | Lookup → Inventory_Items | |
-| Description | Text | |
-| Quantity | Decimal | |
-| Unit | Text | Copied from Item |
-| Condition | Text | `Good`, `Damaged`, `Partial` |
+**Embedded subform — Line Items:** Item (Lookup → Inventory_Items), Description, Quantity, Unit, Condition
 
 **Deluge / Custom Actions:**
-- On Create: validate stock availability for each line item
-- On Status = "Shipped": reduce stock for each line item (auto create Stock Out transaction)
+- On Create: validate stock availability for each row in input.DC_Line_Items subform
+- On Status = "Shipped": reduce stock for each row (auto create Stock Out transaction)
 - On Status = "Shipped" + no Invoice linked: prompt user to create Invoice
 - Can also be created automatically from Invoice via "Create DC" button on Invoice form
 
 ---
 
-### 18. BOM — Bill of Materials (`BOM`)
+### 18. BOM — Bill of Materials (`BOM` — with embedded Line Items subform)
 
 Defines component structure for manufactured/assembled items. Useful for manufacturing projects and cost estimation.
 
@@ -777,18 +593,7 @@ Defines component structure for manufactured/assembled items. Useful for manufac
 | Version | Decimal | Track revisions |
 | Notes | Multi-line | |
 
-**Line Items — Separate form `BOM_Line_Items` with Add-as-Subform:**
-
-| Field | Type | Notes |
-|---|---|---|
-| BOM | Lookup → BOM | |
-| Component Item | Lookup → Inventory_Items | Raw material / sub-component |
-| Quantity Required | Decimal | Per BOM Quantity output |
-| Unit | Text | Copied from Item |
-| Unit Cost | Currency | Current purchase price or standard cost |
-| Total Cost | Formula | `Quantity Required * Unit Cost` |
-| Scrap % | Decimal | Allowance for waste |
-| Notes | Text | |
+**Embedded subform — Line Items:** Component Item (Lookup → Inventory_Items), Quantity Required, Unit, Unit Cost, Total Cost (Formula), Scrap %, Notes
 
 **Deluge:**
 - On Submit: calculate Total Component Cost = SUM of line item Total Costs
@@ -823,8 +628,7 @@ Vendors ──┬── Vendor_Contacts (1:N, subform)
            ├── Vendor_Documents (1:N, subform)
            ├── Purchase_Orders (1:N)
            ├── Inventory_Items (1:N, preferred vendor)
-           ├── Expenses (N:1)
-           └── Goods_Receipts (1:N)
+           └── Expenses (N:1)
 
 Accounts ──┬── Account_Contacts (1:N, subform)
            ├── Account_Documents (1:N, subform)
@@ -832,24 +636,15 @@ Accounts ──┬── Account_Contacts (1:N, subform)
            ├── Invoices (1:N)
            └── Delivery_Challans (1:N)
 
-Warehouses ──┬── Item_Warehouse_Stock (1:N)
-             ├── Inventory_Transactions (1:N)
-             ├── Transfer_Orders — From (1:N)
-             ├── Transfer_Orders — To (1:N)
-             ├── PO_Line_Items (default receipt warehouse)
-             ├── GRN_Line_Items (receipt warehouse)
-             └── DC_Line_Items (dispatch warehouse)
+Warehouses ──┬── Item_Warehouse_Stock (1:N, embedded subform)
+              ├── Inventory_Transactions (1:N)
+              ├── Transfer_Orders — From (1:N)
+              ├── Transfer_Orders — To (1:N)
 
-Inventory_Items ──┬── Item_Warehouse_Stock (1:N)
-                  ├── Inventory_Transactions (1:N)
-                  ├── PO_Line_Items (1:N)
-                  ├── PR_Line_Items (1:N)
-                  ├── GRN_Line_Items (1:N)
-                  ├── TO_Line_Items (1:N)
-                  ├── Invoice_Line_Items (1:N)
-                  ├── DC_Line_Items (1:N)
-                  ├── BOM (1:N, as finished item)
-                  └── BOM_Line_Items (1:N, as component)
+Inventory_Items ──┬── Item_Warehouse_Stock (1:N, embedded subform)
+                   ├── Inventory_Transactions (1:N)
+                   ├── BOM (1:N, as finished item)
+                   └── BOM_Line_Items (1:N, embedded subform, as component)
 
 Item_Warehouse_Stock ──┬── Items (N:1)
                        └── Warehouses (N:1)
@@ -859,35 +654,32 @@ Inventory_Transactions ──┬── Items (N:1)
                          └── Projects (N:1, Stock Out only)
 
 Transfer_Orders ──┬── Warehouses — From (N:1)
-                  ├── Warehouses — To (N:1)
-                  └── TO_Line_Items (1:N)
-                       └── Items (N:1)
+                   ├── Warehouses — To (N:1)
+                   └── TO_Line_Items (embedded subform, 1:N)
+                        └── Items (N:1)
 
-Purchase_Requisitions ──┬── PR_Line_Items (1:N)
-                         └── Items (N:1)
-                       └── Purchase_Orders (1:N)  ← when converted
+Purchase_Requisitions ──┬── PR_Line_Items (embedded subform, 1:N)
+                          └── Items (N:1)
+                        └── Purchase_Orders (1:N)  ← when converted
 
-Purchase_Orders ──┬── PO_Line_Items (1:N)
-                  │     └── Items (N:1)
-                  │     └── Warehouses (N:1)
-                  ├── Goods_Receipts (1:N)
-                  └── Requisition (optional, N:1)
+Purchase_Orders ──┬── PO_Line_Items (embedded subform, 1:N)
+                   │     └── Items (N:1)
+                   ├── Goods_Receipts (1:N)
+                   └── Requisition (optional, N:1)
 
-Goods_Receipts ──── GRN_Line_Items (1:N)
-                       ├── Items (N:1)
-                       ├── PO_Line_Items (N:1)
-                       └── Warehouses (N:1)
+Goods_Receipts ──── GRN_Line_Items (embedded subform, 1:N)
+                        ├── Items (N:1)
+                        └── Warehouses (N:1)
 
-Invoices ──── Invoice_Line_Items (1:N)
-                 ├── Items (N:1)
-                 └── Delivery_Challans (N:1, optional)
+Invoices ──── Invoice_Line_Items (embedded subform, 1:N)
+                   └── Items (N:1)
 
-Delivery_Challans ──── DC_Line_Items (1:N)
-                         ├── Items (N:1)
-                         └── Warehouses (N:1, dispatch warehouse)
+Delivery_Challans ──── DC_Line_Items (embedded subform, 1:N)
+                          ├── Items (N:1)
+                          └── Warehouses (N:1, dispatch warehouse)
 
-BOM ──── BOM_Line_Items (1:N)
-           └── Items (N:1, as component)
+BOM ──── BOM_Line_Items (embedded subform, 1:N)
+            └── Items (N:1, as component)
 ```
 
 ---
@@ -901,50 +693,40 @@ BOM ──── BOM_Line_Items (1:N)
 | Expense Submit | On Submit | Budget check → auto-approve or trigger overrun workflow |
 | Expense Overrun | On Submit | Create Budget_Approval record, send notification |
 | Budget Approval Status Change | On Submit | Update Expense status, notify requester |
-| Inventory Transaction (Stock In/Out/Adj) | On Submit | Update Item_Warehouse_Stock, recompute Item.Current_Stock via Deluge |
+| Inventory Transaction (Stock In/Out/Adj) | On Submit | Update Item_Warehouse_Stock subform row; recompute Item.Current_Stock via Deluge |
 | Inventory Transaction (Stock Out + Project) | On Submit | Also auto-create Expense record |
-| Transfer Order Status = "Completed" | On Submit | Generate paired Stock Out / Stock In transactions |
-| Goods Receipt Status = "Open" | On Submit | Create Stock In for Accepted Qty, update PO_Line_Item.Received_Qty |
+| Transfer Order Status = "Completed" | On Submit | Generate paired Stock Out / Stock In transactions (from TO Line Items subform) |
+| Goods Receipt Status = "Open" | On Submit | Create Stock In for Accepted Qty from GRN_Line_Items subform rows |
 | Goods Receipt (all items received) | On Submit | Auto-set PO.Status = "Closed" |
 | PO Status = "Open" | On Submit | Send email to vendor with PO details |
 | PR Approval Stage Change | On Submit | Send notification to next approver in chain |
-| PR Fully Approved (Stage = "Approved") | On Submit | Auto-create Purchase Order (Draft), copy line items, link PO.Requisition to PR |
-| Invoice — Create DC | Custom Button | Auto-create Delivery Challan with same Project, Customer, and line items |
-| Inventory Reservation | On Submit | Increment Reserved_Qty on Item_Warehouse_Stock; validate ≤ Current_Stock |
-| Inventory Release | On Submit | Decrement Reserved_Qty |
+| PR Fully Approved (Stage = "Approved") | On Submit | Auto-create Purchase Order (Draft); copy line items from PR subform, link PO.Requisition to PR |
+| Invoice — Create DC | Custom Button | Auto-create Delivery Challan with same Project, Customer, and line items from Invoice subform |
+| Inventory Reservation | On Submit | Increment Reserved_Qty on Item_Warehouse_Stock subform row; validate ≤ Current_Stock |
+| Inventory Release | On Submit | Decrement Reserved_Qty on Item_Warehouse_Stock subform row |
 | Project Status = "Completed" | On Submit | Validate no pending expenses/POs; auto-create final Invoice for unbilled items |
 | Invoice Sent | On Submit | Update project P&L — add to Total Invoiced for revenue tracking |
 | Invoice Paid | On Submit | Update Amount Paid, set Balance Due = 0, Status = "Paid" |
 | DC Status = "Shipped" | On Submit | Auto-create Stock Out transaction for dispatched items |
 | DC Shipped (no Invoice) | On Submit | Prompt user to create Invoice |
 | BOM Submit | On Submit | Calculate Total Component Cost, Total Manufacturing Cost |
-| Scheduled (Daily) | Cron | Budget alerts (80/90/100%), low stock alerts, KPI refresh, auto-close POs, mark overdue invoices |
+| Scheduled (Daily) | Cron | Budget alerts (80/90/100%), low stock alerts, KPI refresh, mark overdue invoices |
 
 ---
 
 ## F. Phase 1 vs Phase 2 Strategy
 
 **Phase 1 (All in Zoho Creator):**
-Everything above is Phase 1 — one Zoho Creator application with modules mirroring Zoho Inventory's data model. No external integrations. The forms, fields, and statuses are designed to make Phase 2 migration seamless.
+Everything above is Phase 1 — one Zoho Creator application with no external integrations.
 
 **Phase 2 (Optional Integrations):**
-- **Zoho Inventory** sync: Connect via API so Inventory Items, Purchase Orders, and Vendor records sync bidirectionally. The Phase 1 data model is already aligned — mostly field mapping.
 - **Zoho Projects** sync: Link Zoho Projects tasks to budget tracking. Log time as expense against the budget.
-- **Zoho Books** sync: Push Invoices, Delivery Challans, POs, and Expenses to Zoho Books for accounting. Each new module was designed for 1:1 field mapping:
-  - `Invoices` → Zoho Books Invoices (customer invoices)
-  - `Delivery_Challans` → Zoho Books Delivery Challan
-  - `Expenses` → Zoho Books Expenses
-  - `Purchase_Orders` → Zoho Books Purchase Orders
-  - `Vendors` → Zoho Books Contacts (with vendor type)
-  - `Projects` → Zoho Books Projects (for project-based accounting)
-  - Enables true "Invoiced" PO status, GST returns, and financial statements
 - **Zoho Analytics**: For advanced dashboards beyond Zoho Creator Reports (drill-down, cross-filter, custom charts).
 
 **Why Phase 1 in Zoho Creator alone is sufficient:**
 - All modules share the same application, so lookups are fast with no API latency
 - Zoho Creator Reports + Dashboards cover 90% of reporting needs
 - You maintain full control over data and workflows without managing API auth
-- The data model is already Zoho-Inventory-compatible — migration is a copy operation, not a redesign
 
 ---
 
@@ -965,7 +747,7 @@ Everything above is Phase 1 — one Zoho Creator application with modules mirror
 
 | Item | Details |
 |------|---------|
-| Forms to create | ~30 primary forms (Projects, Vendors, Vendor_Contacts, Vendor_Documents, Accounts, Account_Contacts, Account_Documents, Warehouses, Inventory_Items, Item_Warehouse_Stock, Item_Attributes, Budget_Plans, Budget_Components, Expenses, Budget_Approvals, Inventory_Transactions, Transfer_Orders, TO_Line_Items, Purchase_Requisitions, PR_Line_Items, Purchase_Orders, PO_Line_Items, Goods_Receipts, GRN_Line_Items, Invoices, Invoice_Line_Items, Delivery_Challans, DC_Line_Items, BOM, BOM_Line_Items) |
+| Forms to create | ~18 primary forms (Projects, Vendors, Accounts, Warehouses, Inventory_Items, Budget_Plans, Budget_Components, Expenses, Budget_Approvals, Inventory_Transactions, Transfer_Orders, Purchase_Requisitions, Purchase_Orders, Goods_Receipts, Invoices, Delivery_Challans, BOM) — each with embedded subforms for line items, contacts, documents |
 | Deluge workflows | ~23 (22 On Submit + 1 Scheduled Cron) |
 | User roles | 6 (Admin, PM, Finance, Procurement, Inventory, Employee) |
 | Lookup forms (most referenced) | Projects, Vendors, Accounts, Inventory_Items, Warehouses |

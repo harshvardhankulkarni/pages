@@ -12,29 +12,32 @@ This repo contains the **internal implementation plan** for our Project Budget T
 
 **Platform:** Zoho Creator (low-code)
 **Logic layer:** Deluge scripts, form workflows, reports
-**Integration target (Phase 2):** Zoho Inventory, Zoho Books, Zoho Projects, Zoho Analytics
+**Integration target (Phase 2):** Zoho Projects, Zoho Analytics
 
-## The 17-Module Architecture
+## The 18-Module Architecture
+
+Subforms are **embedded** inside the parent form — they are NOT separate forms. Users enter subform data while filling the main form.
 
 | # | Module | Form Name | Key Purpose |
 |---|--------|-----------|-------------|
 | 1 | Project Master | `Projects` | Central project registry, auto-numbered codes |
-| 2 | Vendor Management | `Vendors` + `Vendor_Contacts` + `Vendor_Documents` | Zoho Inventory-aligned vendor master |
-| 3 | Warehouses | `Warehouses` | Multi-warehouse stock locations |
-| 4 | Inventory Master | `Inventory_Items` + `Item_Warehouse_Stock` + `Item_Attributes` | SKU catalog, HSN/SAC, per-warehouse stock |
-| 5 | Budget Planning | `Budget_Plans` | Per-project budget plans |
-| 6 | Budget Components | `Budget_Components` | Dynamic cost breakdown per project |
-| 7 | Expense Management | `Expenses` | Actual spend against budget components |
-| 8 | Budget Approval | `Budget_Approvals` | Overrun approval workflow |
-| 9 | Inventory Transactions | `Inventory_Transactions` | Stock In/Out/Adjustment/Return |
-| 10 | Transfer Orders | `Transfer_Orders` + `TO_Line_Items` | Inter-warehouse stock transfer |
-| 11 | Purchase Requisition | `Purchase_Requisitions` + `PR_Line_Items` | Multi-stage approval PRs |
-| 12 | Purchase Orders | `Purchase_Orders` + `PO_Line_Items` | Full PO lifecycle, line-level discount/tax |
-| 13 | Goods Receipt | `Goods_Receipts` + `GRN_Line_Items` | Accepted/rejected qty, auto Stock In |
-| 14 | Reports & Dashboards | Reports + Dashboard widgets | KPIs, Budget vs Actual, stock alerts |
-| 15 | Invoicing | `Invoices` + `Invoice_Line_Items` | Revenue tracking, Zoho Books compatible |
-| 16 | Delivery Challan | `Delivery_Challans` + `DC_Line_Items` | Goods dispatch tracking |
-| 17 | BOM | `BOM` + `BOM_Line_Items` | Bill of Materials for manufacturing |
+| 2 | Vendor Management | `Vendors` (embedded subforms: `Vendor_Contacts`, `Vendor_Documents`) | Vendor master with contacts and documents |
+| 3 | Account Management | `Accounts` (embedded subforms: `Account_Contacts`, `Account_Documents`) | Customer master with contacts and documents |
+| 4 | Warehouses | `Warehouses` | Multi-warehouse stock locations |
+| 5 | Inventory Master | `Inventory_Items` (embedded subform: `Item_Warehouse_Stock`) | SKU catalog, HSN/SAC, per-warehouse stock |
+| 6 | Budget Planning | `Budget_Plans` (embedded subform: `Budget_Components`) | Per-project budget plans |
+| 7 | Budget Components | `Budget_Components` | Dynamic cost breakdown per project |
+| 8 | Expense Management | `Expenses` | Actual spend against budget components |
+| 9 | Budget Approval | `Budget_Approvals` | Overrun approval workflow |
+| 10 | Inventory Transactions | `Inventory_Transactions` | Stock In/Out/Adjustment/Return |
+| 11 | Transfer Orders | `Transfer_Orders` (embedded subform: `TO_Line_Items`) | Inter-warehouse stock transfer |
+| 12 | Purchase Requisition | `Purchase_Requisitions` (embedded subform: `PR_Line_Items`) | Multi-stage approval PRs |
+| 13 | Purchase Orders | `Purchase_Orders` (embedded subform: `PO_Line_Items`) | Full PO lifecycle, line-level discount/tax |
+| 14 | Goods Receipt | `Goods_Receipts` (embedded subform: `GRN_Line_Items`) | Accepted/rejected qty, auto Stock In |
+| 15 | Reports & Dashboards | Reports + Dashboard widgets | KPIs, Budget vs Actual, stock alerts |
+| 16 | Invoicing | `Invoices` (embedded subform: `Invoice_Line_Items`) | Revenue tracking per project |
+| 17 | Delivery Challan | `Delivery_Challans` (embedded subform: `DC_Line_Items`) | Goods dispatch tracking |
+| 18 | BOM | `BOM` (embedded subform: `BOM_Line_Items`) | Bill of Materials for manufacturing |
 
 ## Build Phases
 
@@ -47,7 +50,9 @@ This repo contains the **internal implementation plan** for our Project Budget T
 | 1E | BOM → Delivery Challan → Invoicing | Revenue & manufacturing | After 1D |
 | 1F | Reports & Dashboards (all modules incl. Project P&L) | Intelligence | After 1E |
 
-## Key Deluge Automations (25 total)
+## Key Deluge Automations (24 total)
+
+Subforms are embedded — Deluge accesses them via `input.<subform_name>` during On Submit workflows. There is no standalone CRUD on subform records.
 
 | # | Automation | Trigger | File ref |
 |---|------------|---------|----------|
@@ -59,8 +64,8 @@ This repo contains the **internal implementation plan** for our Project Budget T
 | 6 | Stock Sync — update Item_Warehouse_Stock + roll up | Inventory Transaction | §C.9 |
 | 7 | Stock Out → Auto-create Expense record | Stock Out + Project set | §C.9 (highest value) |
 | 8 | Transfer Complete → paired Stock Out/In | TO Status = Completed | §C.10 |
-| 9 | GRN → Stock In for accepted qty + PO update | GRN Status = Open | §C.13 |
-| 10 | All items received → auto-close PO | GRN completion check | §C.13 |
+| 9 | GRN → Stock In for accepted qty | GRN Status = Open | §C.13 |
+| 10 | (POs manually closed only — no auto-close) | — | §C.13 |
 | 11 | PO Open → email vendor | PO Status = Open | §C.12 |
 | 12 | PR Approval Stage → notify next approver | PR stage change | §C.11 |
 | 13 | Daily Cron — alerts, KPI refresh, overdue invoices | Scheduled (midnight) | §C.14 |
@@ -69,8 +74,7 @@ This repo contains the **internal implementation plan** for our Project Budget T
 | 16 | DC Shipped → auto-create Stock Out | DC Status = Shipped | §C.16 |
 | 17 | BOM Submit → calculate component + mfg costs | BOM Submit | §C.17 |
 | 18 | PR Approved → auto-create PO (Draft) | PR final approval | §C.11 |
-| 19 | Invoice → Create DC (custom button) | Invoice Sent + stock items | §C.15 |
-| 20 | Stock Reservation → increment Reserved_Qty | Reservation transaction | §C.9 |
+| 19 | Stock Reservation → increment Reserved_Qty | Reservation transaction | §C.9 |
 | 21 | Project Completed → auto-final Invoice | Project status change | §C.1 |
 | 22 | Transaction Validation — prevent negative stock | Inventory Transaction submit | §C.9 |
 | 23 | PO Cancelled — validate no linked GRN | PO Status = Cancelled | §C.12 |
@@ -90,20 +94,20 @@ This repo contains the **internal implementation plan** for our Project Budget T
 2. **When writing Deluge** → follow the pseudo-code in each module's workflow section
 3. **When linking forms** → reference the lookup map in `IMPLEMENTATION_PLAN.md` §D
 4. **When testing** → follow the build order, seed "Main Warehouse" first
-5. **Phase 2 planning** → don't break Phase 1 form designs — the data model is already Zoho Inventory compatible
+5. **Phase 2 planning** → don't break Phase 1 form designs
 6. **Update this repo** when design decisions change during implementation
 
 ## Key Documents
 
 | Document | Purpose |
 |----------|---------|
-| `IMPLEMENTATION_PLAN.md` | Complete field-level specs for all 17 modules, Deluge workflows, lookup map, risks |
+| `IMPLEMENTATION_PLAN.md` | Complete field-level specs for all 18 modules, Deluge workflows, lookup map, risks |
 | `AGENTS.md` | Compact AI assistant guide — module list, automation points, roles |
 | `index.html` | Interactive HTML blueprint with sidebar nav, KPI bar, module cards, lookup map, build phases, role matrix, and tab+stepper implementation guide |
 | `README.md` | This file — team onboarding and navigation |
 | `build-viewer.html` | Markdown viewer for `build/` phase guides — loads via `?phase=1A` through `1F` |
 | `build/PHASE_1A_BUILD.md` – `1F_BUILD.md` | Phase-wise console build guides with Deluge scripts, field configs, validation rules, and verification checklists (2,101 lines total) |
-| `user-guide.html` | End-user guide — 16 modules in data entry order, relationship diagrams, flow charts, report descriptions |
+| `user-guide.html` | End-user guide — 17 modules in data entry order, relationship diagrams, flow charts, report descriptions |
 | `handoff-spec.html` | Developer handoff spec for engineering team — component specs, design tokens, interaction states |
 
 ---

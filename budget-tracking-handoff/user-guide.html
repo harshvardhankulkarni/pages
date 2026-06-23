@@ -247,8 +247,8 @@
   <div class="al al-o"><strong>Data entry rule:</strong> Create each vendor here before creating a PO or recording an expense against them.</div>
 
   <div class="diagram">
-    <span class="f">Vendors</span> ──┬── <span class="c">Vendor_Contacts</span> (subform: add multiple contact persons)<br>
-    <span class="in">├── <span class="c">Vendor_Documents</span> (subform: upload contracts, tax docs)</div>
+    <span class="f">Vendors</span> ──┬── <span class="c">Vendor_Contacts</span> (embedded subform: add multiple contact persons)<br>
+    <span class="in">├── <span class="c">Vendor_Documents</span> (embedded subform: upload contracts, tax docs)</div>
 
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0">
     <div style="background:var(--surface);border-radius:6px;padding:12px">
@@ -272,7 +272,6 @@
       <div class="rel-card"><div class="dir">Referenced by →</div><div class="target">Purchase Orders</div><div style="font-size:0.68rem;color:var(--muted)">PO.Vendor lookup</div></div>
       <div class="rel-card"><div class="dir">Referenced by →</div><div class="target">Inventory Items</div><div style="font-size:0.68rem;color:var(--muted)">Item.Preferred_Vendor lookup</div></div>
       <div class="rel-card"><div class="dir">Referenced by →</div><div class="target">Expenses</div><div style="font-size:0.68rem;color:var(--muted)">Expense.Vendor lookup</div></div>
-      <div class="rel-card"><div class="dir">Referenced by →</div><div class="target">Goods Receipts</div><div style="font-size:0.68rem;color:var(--muted)">GRN.Vendor reference</div></div>
     </div>
 
   <h4 style="font-size:0.82rem;color:var(--accent);margin-top:12px">Subforms (inside the same form)</h4>
@@ -300,8 +299,8 @@
   <div class="al al-o"><strong>Data entry rule:</strong> Create an account for each client before starting a project or creating an invoice.</div>
 
   <div class="diagram">
-    <span class="f">Accounts</span> ──┬── <span class="c">Account_Contacts</span> (subform: add multiple contact persons)<br>
-    <span class="in">├── <span class="c">Account_Documents</span> (subform: upload contracts, agreements)</div>
+    <span class="f">Accounts</span> ──┬── <span class="c">Account_Contacts</span> (embedded subform: add multiple contact persons)<br>
+    <span class="in">├── <span class="c">Account_Documents</span> (embedded subform: upload contracts, agreements)</div>
 
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0">
     <div style="background:var(--surface);border-radius:6px;padding:12px">
@@ -317,7 +316,6 @@
         <li>Tax ID / PAN (for GST invoices)</li>
         <li>Payment Terms (affects invoice due dates)</li>
         <li>Currency (affects invoice totals)</li>
-        <li>Credit Limit (for credit monitoring)</li>
       </ul>
     </div>
   </div>
@@ -383,8 +381,7 @@
   <div class="al al-w"><strong>Goods vs Services:</strong> Set Item Type = "Goods" for physical items that need stock tracking. Set "Services" for non-stock items (labour, consulting). Only Goods get warehouse stock records.</div>
 
   <div class="diagram">
-    <span class="f">Inventory_Items</span> ──┬── <span class="c">Item_Warehouse_Stock</span> (subform: stock per warehouse)<br>
-    <span class="in">├── <span class="c">Item_Attributes</span> (subform: optional variants like size/color)</div>
+    <span class="f">Inventory_Items</span> ──┬── <span class="c">Item_Warehouse_Stock</span> (embedded subform: stock per warehouse)</div>
 
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0">
     <div style="background:var(--surface);border-radius:6px;padding:12px">
@@ -489,7 +486,7 @@
   <div class="al al-w"><strong>One active plan per project:</strong> The system prevents creating a second active budget plan for the same project. Close or revise the existing plan first.</div>
 
   <div class="diagram">
-    <span class="f">Budget_Plans</span> ── <span class="c">Budget_Components</span> (subform)<br>
+    <span class="f">Budget_Plans</span> ── <span class="c">Budget_Components</span> (embedded subform)<br>
     <span class="in">│   Component Name: "Materials" — Allocated: 5,00,000</span><br>
     <span class="in">│   Component Name: "Labour"   — Allocated: 3,00,000</span><br>
     <span class="in">│   Component Name: "Travel"   — Allocated: 50,000</span><br>
@@ -576,7 +573,7 @@
     <dd>Low/Medium/High/Critical — helps approvers prioritize.</dd>
   </dl>
 
-  <h4 style="font-size:0.82rem;color:var(--accent);margin-top:12px">PR Line Items (subform)</h4>
+  <h4 style="font-size:0.82rem;color:var(--accent);margin-top:12px">PR Line Items (embedded subform)</h4>
   <div class="tw">
     <table class="tbl">
       <tr><th>Field</th><th>Notes</th></tr>
@@ -601,23 +598,23 @@
 
   <div class="diagram">
     <span class="b">PO Lifecycle:</span><br>
-    <span class="c">Draft</span> <span class="y">→</span> <span class="c">Open</span> <span class="y">→</span> <span class="y">Partially Invoiced</span> <span class="y">→</span> <span class="c">Invoiced</span> <span class="y">→</span> <span class="c">Closed</span><br>
+    <span class="c">Draft</span> <span class="y">→</span> <span class="c">Open</span> <span class="y">→</span> <span class="y">Partially Invoiced</span> <span class="y">→</span> <span class="c">Billed</span> <span class="y">→</span> <span class="c">Closed</span><br>
     <span class="in">└── <span class="r">Cancelled</span> (can only cancel if no GRN linked)</div>
 
   <dl class="field-list">
     <dt>Vendor <span class="lkup">Lookup → Vendors</span></dt>
-    <dd>Select supplier. Their billing/shipping address auto-fills.</dd>
+    <dd>Select supplier.</dd>
     <dt>Requisition <span class="lkup">Lookup → PR</span></dt>
     <dd>Auto-linked when PO is created from PR. Shows the originating request.</dd>
     <dt>Project <span class="lkup">Lookup → Projects</span></dt>
     <dd>Allocate PO costs to a project.</dd>
     <dt>PO Date / Delivery Date / Due Date</dt>
     <dd>Track expected delivery and payment schedule.</dd>
-    <dt>Discount (%) / Discount Before Tax</dt>
+    <dt>Discount (%)</dt>
     <dd>Overall PO-level discount (not per-line).</dd>
   </dl>
 
-  <h4 style="font-size:0.82rem;color:var(--accent);margin-top:12px">PO Line Items (subform)</h4>
+  <h4 style="font-size:0.82rem;color:var(--accent);margin-top:12px">PO Line Items (embedded subform)</h4>
   <div class="tw">
     <table class="tbl">
       <tr><th>Field</th><th>Auto-fill from Item</th><th>Notes</th></tr>
@@ -630,7 +627,7 @@
   </div>
 
   <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Status = "Open" → system sends PO PDF to vendor email</span></div>
-  <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">All line items received via GRN → PO auto-closes</span></div>
+  <div class="workflow-card"><span class="wf-num">Manual</span><span class="wf-desc">PO is closed manually — no auto-close based on GRN</span></div>
 </section>
 
 <!-- ====== 10. GOODS RECEIPT ====== -->
@@ -646,12 +643,12 @@
 
   <dl class="field-list">
     <dt>PO <span class="lkup">Lookup → Purchase_Orders</span></dt>
-    <dd>Select the PO — Vendor auto-fills from it.</dd>
+    <dd>Select the PO to receive goods against.</dd>
     <dt>Status</dt>
     <dd>Draft → Open (triggers stock updates) → Closed.</dd>
   </dl>
 
-  <h4 style="font-size:0.82rem;color:var(--accent);margin-top:12px">GRN Line Items (subform)</h4>
+  <h4 style="font-size:0.82rem;color:var(--accent);margin-top:12px">GRN Line Items (embedded subform)</h4>
   <div class="tw">
     <table class="tbl">
       <tr><th>Field</th><th>Notes</th></tr>
@@ -665,7 +662,7 @@
   </div>
 
   <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Status = "Open" → Accepted Qty creates Stock In transaction → updates Item_Warehouse_Stock</span></div>
-  <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Updates PO_Line_Item Received Qty. All items fully received → PO auto-closes</span></div>
+  <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Accepted Qty creates Stock In transaction. PO is closed manually.</span></div>
 </section>
 
 <!-- ====== 11. TRANSFER ORDERS ====== -->
@@ -684,7 +681,7 @@
     <dd>Draft → In Transit → Completed (triggers stock movement) → Cancelled.</dd>
   </dl>
 
-  <h4 style="font-size:0.82rem;color:var(--accent);margin-top:12px">TO Line Items (subform)</h4>
+  <h4 style="font-size:0.82rem;color:var(--accent);margin-top:12px">TO Line Items (embedded subform)</h4>
   <div class="flow-row">
     <span class="box" style="border-color:var(--blue);color:var(--blue)">Item</span>
     <span class="arr">+</span>
@@ -778,7 +775,7 @@
     <dd>Formula: Component Cost + Labor + Overhead.</dd>
   </dl>
 
-  <h4 style="font-size:0.82rem;color:var(--accent);margin-top:12px">BOM Line Items (subform)</h4>
+  <h4 style="font-size:0.82rem;color:var(--accent);margin-top:12px">BOM Line Items (embedded subform)</h4>
   <div class="tw">
     <table class="tbl">
       <tr><th>Field</th><th>Notes</th></tr>
@@ -798,7 +795,7 @@
     <h2>Delivery Challans</h2>
     <span class="form-name">Delivery_Challans</span>
   </div>
-  <div class="purpose">DC tracks physical dispatch of goods to a customer. Can be created manually or auto-generated from an Invoice via the "Create DC" button.</div>
+  <div class="purpose">DC tracks physical dispatch of goods to a customer.</div>
 
   <div class="al al-w"><strong>Stock deduction on dispatch:</strong> When DC Status = "Shipped", the system automatically creates Stock Out transactions for all line items. Validate stock before shipping.</div>
 
@@ -811,7 +808,7 @@
     <dd>Draft → Shipped (deducts stock) → Delivered → Cancelled.</dd>
   </dl>
 
-  <h4 style="font-size:0.82rem;color:var(--accent);margin-top:12px">DC Line Items (subform)</h4>
+  <h4 style="font-size:0.82rem;color:var(--accent);margin-top:12px">DC Line Items (embedded subform)</h4>
   <div class="tw">
     <table class="tbl">
       <tr><th>Field</th><th>Notes</th></tr>
@@ -822,11 +819,6 @@
   </div>
 
   <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Status = "Shipped" → Stock Out for each line item → updates Item_Warehouse_Stock</span></div>
-  <div class="flow-row" style="margin-top:8px">
-    <span class="box" style="border-color:var(--green);color:var(--green)">Create DC from Invoice</span>
-    <span class="arr">→</span>
-    <span style="color:var(--muted);font-size:0.74rem">Custom button on Invoice form — auto-creates DC with same project, customer, and line items</span>
-  </div>
 </section>
 
 <!-- ====== 16. INVOICES ====== -->
@@ -851,20 +843,19 @@
     <dd>Formula: Total − Amount Paid. Auto-updates on payment.</dd>
   </dl>
 
-  <h4 style="font-size:0.82rem;color:var(--accent);margin-top:12px">Invoice Line Items (subform)</h4>
+  <h4 style="font-size:0.82rem;color:var(--accent);margin-top:12px">Invoice Line Items (embedded subform)</h4>
   <div class="tw">
     <table class="tbl">
       <tr><th>Field</th><th>Notes</th></tr>
       <tr><td>Item <span class="lkup">Lookup → Inventory_Items</span></td><td>Optional — can enter free-text description</td></tr>
       <tr><td>Quantity / Rate</td><td>Billing quantity and unit price</td></tr>
-      <tr><td>Discount % / Tax %</td><td>Line-level</td></tr>
-      <tr><td>Total</td><td>Formula: (Qty × Rate) − Discount + Tax</td></tr>
+      <tr><td>Tax %</td><td>Line-level</td></tr>
+      <tr><td>Total</td><td>Formula: (Qty × Rate) + Tax</td></tr>
     </table>
   </div>
 
   <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Status = "Sent" → updates project's Total Invoiced for P&L</span></div>
   <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Status = "Paid" → sets Amount Paid, Balance Due = 0</span></div>
-  <div class="workflow-card"><span class="wf-num">Button</span><span class="wf-desc">"Create DC" → auto-creates Delivery Challan with same items (when Status = Sent)</span></div>
 </section>
 
 <!-- ====== 17. REPORTS ====== -->
@@ -903,7 +894,7 @@
     <div class="rel-card"><div class="target">Cost Overruns</div><div style="font-size:0.68rem;color:var(--muted)">Count of budget components exceeding 100%</div></div>
   </div>
 
-  <div class="al al-o"><strong>Scheduled daily (midnight):</strong> KPI refresh, budget alerts at 80/90/100%, low stock alerts, auto-close aged POs, mark overdue invoices — runs automatically.</div>
+  <div class="al al-o"><strong>Scheduled daily (midnight):</strong> KPI refresh, budget alerts at 80/90/100%, low stock alerts, mark overdue invoices — runs automatically.</div>
 </section>
 
 <!-- ====== DATA FLOW SUMMARY ====== -->
@@ -919,7 +910,7 @@
     <span class="c">Stock Out Transaction</span> <span class="y">→</span> <span class="c">Expense Auto-Created</span> <span class="y">→</span> <span class="c">Budget Check Runs</span> <span class="y">→</span> <span class="y">(if over)</span> <span class="c">Budget Approval Created</span><br><br>
 
     <span class="b" style="color:var(--accent)">Revenue Flow:</span><br>
-    <span class="c">Invoice Created</span> <span class="y">→</span> <span class="c">DC Created (optional)</span> <span class="y">→</span> <span class="c">Invoice Sent</span> <span class="y">→</span> <span class="c">Payment Received</span> <span class="y">→</span> <span class="c">Project P&amp;L Updated</span><br><br>
+    <span class="c">Invoice Created</span> <span class="y">→</span> <span class="c">Invoice Sent</span> <span class="y">→</span> <span class="c">Payment Received</span> <span class="y">→</span> <span class="c">Project P&amp;L Updated</span><br><br>
 
     <span class="b" style="color:var(--accent)">P&amp;L Calculation (per project):</span><br>
     <span class="c">Profit/Loss</span> = <span class="c">Total Invoiced</span> − <span class="r">Total Expenses</span> − <span class="r">Stock Consumed (auto-expenses)</span></div>
