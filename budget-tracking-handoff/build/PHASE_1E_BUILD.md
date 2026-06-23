@@ -21,16 +21,14 @@ Requires Phase 1D complete (Budget_Approvals, Purchase_Orders, Goods_Receipts, T
 | Status | Dropdown | `Status` | No | `Draft, Active, Archived` |
 | Notes | Multi Line | `Notes` | No | |
 
-### Subforms (Add-as-Subform)
-
-**BOM Line Items** (Embedded Subform)
-| Label | Field Type | Notes |
-|---|---|---|
-| Component Item | Lookup → Inventory_Items | |
-| Quantity | Decimal | Units of component per batch |
-| Unit Cost | Currency | Copied from Item.Purchase_Price |
-| Total Cost | Formula | `Quantity * Unit_Cost` |
-| Notes | Single Line | |
+### Embedded Subform: BOM Line Items (API Name: BOM_Line_Items)
+| Label | Field Type | API Name | Required | Notes |
+|---|---|---|---|---|
+| Component Item | Lookup → Inventory_Items | `Component_Item` | Yes | |
+| Quantity | Decimal | `Quantity` | Yes | Units of component per batch |
+| Unit Cost | Currency | `Unit_Cost` | Yes | Copied from Item.Purchase_Price |
+| Total Cost | Formula | `Total_Cost` | No (Formula) | `Quantity * Unit_Cost` |
+| Notes | Multi Line | `Notes` | No | |
 
 ### Validation Rules
 1. **At least one component** — On Submit, there must be at least one line item in the BOM_Line_Items subform.
@@ -109,16 +107,14 @@ zoho.creator.updateRecord("budget_tracking", "BOM", bom_id, bom_data);
 | Warehouse | Lookup → Warehouses | `Warehouse` | Yes | Source warehouse |
 | Notes | Multi Line | `Notes` | No | |
 
-### Subforms (Add-as-Subform)
-
-**DC Line Items** (Embedded Subform)
-| Label | Field Type | Notes |
-|---|---|---|
-| Item | Lookup → Inventory_Items | |
-| Description | Single Line | |
-| Quantity | Decimal | |
-| Unit | Single Line | Copied from Item |
-| Warehouse | Lookup → Warehouses | Override |
+### Embedded Subform: DC Line Items (API Name: DC_Line_Items)
+| Label | Field Type | API Name | Required | Notes |
+|---|---|---|---|---|
+| Item | Lookup → Inventory_Items | `Item` | Yes | |
+| Description | Single Line | `Description` | No | |
+| Quantity | Decimal | `Quantity` | Yes | |
+| Unit | Single Line | `Unit` | No | Formula: Item.Unit (auto-fills from selected Item) |
+| Warehouse | Lookup → Warehouses | `Warehouse` | No | Override |
 
 ### Validation Rules
 1. **Warehouse required for Shipped** — On Status = "Shipped", Warehouse must not be null.
@@ -236,20 +232,18 @@ if (status_val == "Shipped")
 | Balance Due | Formula | `Balance_Due` | — | `Total - Amount_Paid` |
 | Notes | Multi Line | `Notes` | No | |
 
-### Subforms (Add-as-Subform)
-
-**Invoice Line Items** (Embedded Subform)
-| Label | Field Type | Notes |
-|---|---|---|
-| Item | Lookup → Inventory_Items | |
-| Description | Single Line | |
-| Quantity | Decimal | |
-| Rate | Currency | |
-| Discount % | Decimal | |
-| Discount Amount | Formula | |
-| Tax % | Decimal | |
-| Tax Amount | Formula | |
-| Total | Formula | |
+### Embedded Subform: Invoice Line Items (API Name: Invoice_Line_Items)
+| Label | Field Type | API Name | Required | Notes |
+|---|---|---|---|---|
+| Item | Lookup → Inventory_Items | `Item` | Yes | |
+| Description | Single Line | `Description` | No | |
+| Quantity | Decimal | `Quantity` | Yes | |
+| Rate | Currency | `Rate` | Yes | |
+| Discount Percent | Decimal | `Discount_Percent` | No | |
+| Discount Amount | Formula | `Discount_Amount` | No (Formula) | `(Quantity * Rate) * (Discount_Percent / 100)` — Calculated discount amount |
+| Tax Percent | Decimal | `Tax_Percent` | No | |
+| Tax Amount | Formula | `Tax_Amount` | No (Formula) | `((Quantity * Rate) - Discount_Amount) * (Tax_Percent / 100)` — Calculated tax on net amount |
+| Total | Formula | `Total` | No (Formula) | `(Quantity * Rate) - Discount_Amount + Tax_Amount` — Line total after discount and tax |
 
 ### Validation Rules
 1. **At least one line item** — On Status = "Sent", at least one line item in the Invoice_Line_Items subform required.

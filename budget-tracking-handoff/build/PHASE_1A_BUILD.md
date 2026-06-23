@@ -27,24 +27,24 @@
 | Status | Dropdown | `Status` | No | `Active, Inactive` — default Active |
 | Remarks | Multi Line | `Remarks` | No | |
 
-### Subform: Vendor Contacts
-| Label | Field Type | Notes |
-| Salutation | Dropdown | `Mr, Ms, Mrs, Dr` |
-| First Name | Single Line | |
-| Last Name | Single Line | |
-| Email | Email | |
-| Phone | Phone | |
-| Mobile | Phone | |
-| Designation | Single Line | |
-| Department | Single Line | |
-| Is Primary | Checkbox | |
+### Embedded Subform: Vendor Contacts (API Name: Vendor_Contacts)
+| Label | Field Type | API Name | Required | Notes |
+| Salutation | Dropdown | `Salutation` | No | `Mr, Ms, Mrs, Dr` |
+| First Name | Single Line | `First_Name` | No | |
+| Last Name | Single Line | `Last_Name` | No | |
+| Email | Email | `Email` | No | |
+| Phone | Phone | `Phone` | No | |
+| Mobile | Phone | `Mobile` | No | |
+| Designation | Single Line | `Designation` | No | |
+| Department | Single Line | `Department` | No | |
+| Is Primary | Checkbox | `Is_Primary` | No | |
 
-### Subform: Vendor Documents
-| Label | Field Type | Notes |
-| Document Name | Single Line | |
-| File | Upload | |
-| Expiry Date | Date | |
-| Notes | Single Line | |
+### Embedded Subform: Vendor Documents (API Name: Vendor_Documents)
+| Label | Field Type | API Name | Required | Notes |
+| Document Name | Single Line | `Document_Name` | Yes | |
+| File | Upload | `File_Upload` | No | |
+| Expiry Date | Date | `Expiry_Date` | No | |
+| Notes | Single Line | `Notes` | No | |
 
 ### Validation Rules
 1. **Vendor Name required** — On Submit, if `Vendor_Name` is blank → `alert "Vendor Name is required."`
@@ -75,24 +75,24 @@
 | Status | Dropdown | `Status` | No | `Active, Inactive` — default Active |
 | Remarks | Multi Line | `Remarks` | No | |
 
-### Subform: Account Contacts
-| Label | Field Type | Notes |
-| Salutation | Dropdown | `Mr, Ms, Mrs, Dr` |
-| First Name | Single Line | |
-| Last Name | Single Line | |
-| Email | Email | |
-| Phone | Phone | |
-| Mobile | Phone | |
-| Designation | Single Line | |
-| Department | Single Line | |
-| Is Primary | Checkbox | |
+### Embedded Subform: Account Contacts (API Name: Account_Contacts)
+| Label | Field Type | API Name | Required | Notes |
+| Salutation | Dropdown | `Salutation` | No | `Mr, Ms, Mrs, Dr` |
+| First Name | Single Line | `First_Name` | No | |
+| Last Name | Single Line | `Last_Name` | No | |
+| Email | Email | `Email` | No | |
+| Phone | Phone | `Phone` | No | |
+| Mobile | Phone | `Mobile` | No | |
+| Designation | Single Line | `Designation` | No | |
+| Department | Single Line | `Department` | No | |
+| Is Primary | Checkbox | `Is_Primary` | No | |
 
-### Subform: Account Documents
-| Label | Field Type | Notes |
-| Document Name | Single Line | |
-| File | Upload | |
-| Expiry Date | Date | |
-| Notes | Single Line | |
+### Embedded Subform: Account Documents (API Name: Account_Documents)
+| Label | Field Type | API Name | Required | Notes |
+| Document Name | Single Line | `Document_Name` | Yes | |
+| File | Upload | `File_Upload` | No | |
+| Expiry Date | Date | `Expiry_Date` | No | |
+| Notes | Single Line | `Notes` | No | |
 
 ### Validation Rules
 1. **Account Name required** — On Submit, if `Account_Name` is blank → `alert "Account Name is required."`
@@ -227,13 +227,13 @@ After form creation, manually create one default record:
 | Description | Multi Line | `Description` | No | |
 | Status | Dropdown | `Status` | No | `Active, Inactive` — default Active |
 
-### Subform: Stock by Warehouse
-| Label | Field Type | Notes |
-| Warehouse | Lookup → Warehouses | |
-| Current Stock | Decimal | Maintained by Deluge |
-| Reserved Qty | Decimal | Default 0 |
-| Available Stock | Formula | `Current_Stock - Reserved_Qty` |
-| Reorder Level | Decimal | Override item default |
+### Embedded Subform: Stock by Warehouse (API Name: Item_Warehouse_Stock)
+| Label | Field Type | API Name | Required | Notes |
+| Warehouse | Lookup → Warehouses | `Warehouse` | Yes | |
+| Current Stock | Decimal | `Current_Stock` | Yes | Maintained by Deluge |
+| Reserved Qty | Decimal | `Reserved_Qty` | No | Default 0 |
+| Available Stock | Formula | `Available_Stock` | No | `Current_Stock - Reserved_Qty` |
+| Reorder Level | Decimal | `Reorder_Level` | Yes | Override item default |
 
 ### Validation Rules
 1. **Item Name required** — On Submit, if `Item_Name` is blank → `alert "Item Name is required."`
@@ -242,7 +242,7 @@ After form creation, manually create one default record:
 
 ### Deluge Scripts
 ```deluge
-/* Embedded subform: Stock_by_Warehouse
+/* Embedded subform: Item_Warehouse_Stock (parent: Inventory_Items)
    Users manually enter stock quantities per warehouse.
    No auto-creation — Deluge does not manage embedded subform records.
    Stock_Value is a Formula field: Current_Stock * Purchase_Price */
@@ -262,7 +262,7 @@ After building Phase 1A, verify:
 8. Account lookup in Projects shows Accounts list
 9. Warehouses form generates WH-0001, WH-0002...
 10. Inventory Items generates SKU-0001, SKU-0002...
-11. Stock_by_Warehouse subform accepts manual warehouse entries
+11. Item_Warehouse_Stock subform accepts manual warehouse entries
 
 ## Next Phase
 → Proceed to `PHASE_1B_BUILD.md` when all above forms are verified.

@@ -135,27 +135,26 @@ if (status_val == "Rejected" && !expense_id.isNull())
 | Notes | Multi Line | `Notes` | No | Internal |
 | Attachment | Upload | `Attachment` | No | |
 
-### Subforms (Add-as-Subform)
+### Embedded Subform: PO Line Items (API Name: PO_Line_Items)
 
-**PO Line Items** — embedded subform (no separate API name, no standalone CRUD)
-| Label | Field Type | Notes |
-|---|---|---|
-| Item | Lookup → Inventory_Items | |
-| Description | Single Line | |
-| Unit | Single Line | |
-| HSN/SAC | Single Line | |
-| Quantity | Decimal | |
-| Unit Rate | Currency | |
-| Discount % | Decimal | Line-level |
-| Discount Amount | Formula | |
-| Tax % | Decimal | Default from Item |
-| Tax Amount | Formula | |
-| Item Total | Formula | `(Quantity * Unit_Rate) + Tax_Amount - Discount_Amount` |
+| Label | Field Type | API Name | Required | Notes |
+|---|---|---|---|---|
+| Item | Lookup → Inventory_Items | `Item` | Yes | |
+| Description | Single Line | `Description` | No | |
+| Unit | Single Line | `Unit` | No | |
+| HSN/SAC | Single Line | `HSN_SAC` | No | |
+| Quantity | Decimal | `Quantity` | Yes | |
+| Unit Rate | Currency | `Unit_Rate` | Yes | |
+| Discount % | Decimal | `Discount_Percent` | No | Line-level |
+| Discount Amount | Formula | `Discount_Amount` | No | Formula: (Discount_Percent / 100) * (Quantity * Unit_Rate) |
+| Tax % | Decimal | `Tax_Percent` | No | Default from Item |
+| Tax Amount | Formula | `Tax_Amount` | No | Formula: ((Quantity * Unit_Rate - Discount_Amount) * (Tax_Percent / 100)) |
+| Item Total | Formula | `Item_Total` | No | Formula: (Quantity * Unit_Rate) + Tax_Amount - Discount_Amount |
 
 ### Validation Rules
 1. **Cannot cancel with linked GRNs** — On Status = "Cancelled", check for Goods_Receipts linked to this PO. If found, alert error.
 2. **Open requires Vendor** — On Status = "Open", Vendor field must not be null.
-3. **At least one line item** — On Status = "Open" or "Closed", there must be at least one PO_Line_Item.
+3. **At least one line item** — On Status = "Open" or "Closed", there must be at least one PO_Line_Items.
 
 ### Approval Process (PO Lifecycle)
 
@@ -256,22 +255,23 @@ if (status_val == "Cancelled")
 | Received By | User Picker | `Received_By` | No | |
 | Status | Dropdown | `Status` | No | `Draft, Open, Closed` |
 
-### Subforms (Add-as-Subform)
+### Embedded Subform: GRN Line Items (API Name: GRN_Line_Items)
 
-**GRN Line Items** — embedded subform (no separate API name, no standalone CRUD)
-| Label | Field Type | Notes |
-|---|---|---|
-| Item | Lookup → Inventory_Items | Auto-filled |
-| PO Quantity | Decimal | From PO line |
-| Accepted Quantity | Decimal | |
-| Rejected Quantity | Decimal | |
-| Rejection Reason | Single Line | Required if Rejected > 0 |
-| Actual Unit Cost | Currency | Editable |
-| Warehouse | Lookup → Warehouses | Destination |
+| Label | Field Type | API Name | Required | Notes |
+|---|---|---|---|---|
+| Item | Lookup → Inventory_Items | `Item` | Yes | Auto-filled |
+| PO Quantity | Decimal | `PO_Quantity` | No | Copied from PO (Read Only) |
+| Accepted Quantity | Decimal | `Accepted_Quantity` | No | |
+| Rejected Quantity | Decimal | `Rejected_Quantity` | No | |
+| Reason for Rejection | Single Line | `Reason_for_Rejection` | No | Required if Rejected > 0 |
+| Actual Unit Cost | Currency | `Actual_Unit_Cost` | No | Editable |
+| Warehouse | Lookup → Warehouses | `Warehouse` | No | Destination |
+| Total | Formula | `Total` | No | Formula: Accepted_Quantity * Actual_Unit_Cost |
+| Condition Notes | Multi Line | `Condition_Notes` | No | Goods condition notes upon receipt |
 
 ### Validation Rules
 1. **Accepted + Rejected ≤ PO Quantity** — On Submit, validate `Accepted_Quantity + Rejected_Quantity ≤ PO_Quantity` for each line.
-2. **Rejection Reason required** — If `Rejected_Quantity > 0`, `Rejection_Reason` must not be empty.
+2. **Reason for Rejection required** — If `Rejected_Quantity > 0`, `Reason_for_Rejection` must not be empty.
 3. **PO must be Open** — GRN can only be created against POs with Status = "Open".
 4. **Warehouse required for accepted items** — If `Accepted_Quantity > 0`, Warehouse must be set.
 
@@ -368,18 +368,18 @@ if (status_val == "Open" && !po_id.isNull())
 | Status | Dropdown | `Status` | No | `Draft, Open, Completed, Cancelled` |
 | Notes | Multi Line | `Notes` | No | |
 
-### Subforms (Add-as-Subform)
+### Embedded Subform: TO Line Items (API Name: TO_Line_Items)
 
-**TO Line Items** — embedded subform (no separate API name, no standalone CRUD)
-| Label | Field Type |
-|---|---|
-| Item | Lookup → Inventory_Items |
-| Quantity | Decimal |
-| Warehouse | Lookup → Warehouses |
+| Label | Field Type | API Name | Required | Notes |
+|---|---|---|---|---|
+| Item | Lookup → Inventory_Items | `Item` | Yes | |
+| Quantity | Decimal | `Quantity` | Yes | |
+| Rate | Currency | `Rate` | Yes | Unit rate of the item |
+| Total | Formula | `Total` | No | Formula: Quantity * Rate |
 
 ### Validation Rules
 1. **Different warehouses** — From_Warehouse and To_Warehouse must be different.
-2. **At least one line item** — On Status = "Completed", at least one TO_Line_Item required.
+2. **At least one line item** — On Status = "Completed", at least one TO_Line_Items required.
 3. **Sufficient stock** — On Status = "Completed", validate `From_Warehouse` has enough stock for each item.
 
 ### Workflow Process
@@ -390,7 +390,6 @@ TO Created (Status = Draft)
     └── Mark Completed → Status = Completed
             │
             ├── Validate From ≠ To Warehouse
-            ├── Sync each TO_Line_Item.Warehouse → From_Warehouse
             ├── Validate stock availability at From_Warehouse
             │
             └── For each line item:

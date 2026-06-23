@@ -98,17 +98,16 @@ if (status_val == "Active")
 ```
 
 
-### Subforms (Add-as-Subform)
+### Embedded Subform: Budget Components (API Name: Budget_Components)
 
-**Budget Components** — embedded subform (no separate API name, no standalone CRUD)
-| Label | Field Type | Required | Notes |
-|---|---|---|---|
-| Component Name | Single Line | Yes | e.g., "Materials", "Labor" |
-| Category | Dropdown | No | `Material, Labor, Equipment, Overhead, Contingency, Other` |
-| Allocated Amount | Currency | Yes | Budget for this component |
-| Spent Amount | Currency | No | Updated by Expense/Stock Out |
-| Remaining Amount | Formula | — | `Allocated_Amount - Spent_Amount` |
-| Utilization % | Formula | — | `(Spent_Amount / Allocated_Amount) * 100` |
+| Label | Field Type | API Name | Required | Notes |
+|---|---|---|---|---|
+| Component Name | Single Line | `Component_Name` | Yes | e.g., "Materials", "Labor" |
+| Category | Dropdown | `Category` | No | `Material, Labor, Equipment, Overhead, Contingency, Other` |
+| Allocated Amount | Currency | `Allocated_Amount` | Yes | Budget for this component |
+| Spent Amount | Currency | `Spent_Amount` | No | Updated by Expense/Stock Out |
+| Remaining Amount | Formula (Currency) | `Remaining_Amount` | No | `Allocated_Amount - Spent_Amount` — Auto-calculated, no user input |
+| Utilization Percent | Formula (Percent) | `Utilization_Percent` | No | `if(Allocated_Amount > 0, (Spent_Amount / Allocated_Amount) * 100, 0)` — Auto-calculated, no user input |
 
 No separate Deluge scripts — validation occurs in parent Budget_Plans On Submit via `input.Budget_Components`.
 

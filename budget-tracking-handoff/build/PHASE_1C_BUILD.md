@@ -260,18 +260,17 @@ Feeds into Purchase Orders via auto-PO on approval.
 | Approval Stage | Dropdown | `Approval_Stage` | No | `Pending Dept Approval, Pending Finance Approval, Pending Procurement, Approved` |
 | Notes | Multi Line | `Notes` | No | Internal |
 
-### Subforms (Add-as-Subform)
-
-**PR Line Items** — embedded subform (no separate API name, no standalone CRUD)
-| Label | Field Type | Notes |
-|---|---|---|
-| Item | Lookup → Inventory_Items | Optional — free-text description fallback |
-| Item Description | Single Line | Free text |
-| Quantity | Decimal | |
-| Estimated Unit Rate | Currency | |
-| Estimated Total | Formula | `Quantity * Estimated_Unit_Rate` |
-| Item Type | Single Line | Copied from Item |
-| Unit | Single Line | Copied from Item |
+### Embedded Subform: PR Line Items (API Name: PR_Line_Items)
+| Label | Field Type | API Name | Required | Notes |
+|---|---|---|---|---|
+| Item | Lookup → Inventory_Items | Item | No | Lookup → Inventory_Items. One of Item or Item Description required — add validation rule |
+| Item Description | Single Line | Item_Description | No | Free-text fallback |
+| Quantity | Decimal | Quantity | Yes | |
+| Unit | Single Line | Unit | No | Formula: Item.Unit (auto-fills from selected Item) |
+| Estimated Unit Rate | Currency | Estimated_Unit_Rate | Yes | |
+| Item Type | Single Line | Item_Type | No | Formula: Item.Item_Type (auto-fills from selected Item) |
+| Total | Currency | Total | No | Formula: Quantity * Estimated_Unit_Rate |
+| Notes | Multi Line | Notes | No | |
 
 ### Validation Rules
 1. **Required fields on Submit** — Subject, Project, and at least one line item required when Status = "Open".
