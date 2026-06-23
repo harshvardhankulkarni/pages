@@ -11,11 +11,11 @@ Requires Phase 1B complete (Budget_Plans, Budget_Components, Inventory_Transacti
 | Label | Field Type | API Name | Required | Notes |
 |---|---|---|---|---|
 | Expense No | Auto Number | `Expense_No` | Yes | Format: `EXP-{0000}` |
-| Expense Type | Dropdown | `Expense_Type` | Yes | `Material Purchase, Service, Travel, Equipment, Labor, Miscellaneous` |
 | Project | Lookup → Projects | `Project` | Yes | |
 | Budget Component | Lookup → Budget_Components | `Budget_Component` | Yes | Which budget line this hits |
 | Vendor | Lookup → Vendors | `Vendor` | No | |
 | Amount | Currency | `Amount` | Yes | Total expense amount |
+| Expense Type | Dropdown | `Expense_Type` | Yes | `Material, Labour, Equipment, Travel, Subcontract, Overhead, Other` — Category for reporting |
 | Expense Date | Date | `Expense_Date` | No | Defaults to today |
 | Description | Multi Line | `Description` | No | |
 | Billable | Checkbox | `Billable` | No | Can be billed to client |

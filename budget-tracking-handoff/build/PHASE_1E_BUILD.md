@@ -12,7 +12,7 @@ Requires Phase 1D complete (Budget_Approvals, Purchase_Orders, Goods_Receipts, T
 |---|---|---|---|---|
 | BOM No | Auto Number | `BOM_No` | Yes | Format: `BOM-{0000}` |
 | BOM Name | Single Line | `BOM_Name` | Yes | |
-| Product Item | Lookup → Inventory_Items | `Product_Item` | Yes | The finished good |
+| Finished Item | Lookup → Inventory_Items | `Finished_Item` | Yes | The finished good |
 | Quantity | Decimal | `Quantity` | No | Batch size (default 1) |
 | Labor Cost | Currency | `Labor_Cost` | No | |
 | Overhead Cost | Currency | `Overhead_Cost` | No | |
@@ -307,7 +307,7 @@ proj_name = ifnull(proj.get("Project_Name"), "");
 
 #### On Status = Sent or Paid — Update Project Revenue Tracking
 ```deluge
-/* JUSTIFICATION: On Submit workflow that queries invoices for a project and updates calculated revenue totals (Total_Invoiced_Calc, Total_Paid_Calc) on the Projects form. */
+/* JUSTIFICATION: On Submit workflow that queries invoices for a project and updates revenue Currency fields (Total_Invoiced, Total_Paid) on the Projects form. */
 /* ===== PSEUDOCODE =====
    Trigger: On Submit — when Invoice Status changes to "Sent" or "Paid"
    Note: Invoice_Line_Items is an embedded subform; revenue totals
@@ -320,8 +320,9 @@ proj_name = ifnull(proj.get("Project_Name"), "");
       c. For each invoice found:
          - Add Total to running total_invoiced sum
          - Add Amount_Paid to running total_paid sum
-      d. Note: Project form stores Total_Invoiced_Calc, Total_Paid_Calc, 
-         and Total_Expenses_Calc as formula/summary fields
+      d. Note: These are Currency fields on Projects updated by the Scheduled Workflow.
+         The formula fields Total_Invoiced / Total_Paid / Total_Expenses are REMOVED —
+         the Scheduled Workflow writes directly to these Currency fields.
       e. These fields auto-calculate from report summaries
       f. Actual P&L is computed via reports and dashboard widgets
    3. If no project or status is not Sent/Paid: skip all processing

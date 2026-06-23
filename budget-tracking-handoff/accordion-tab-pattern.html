@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Accordion + Tab Bar Pattern</title>
+<style>
+  :root {
+    --bg: #0b1120; --surface: #1a2435; --surface2: #253040;
+    --border: #2d3a4d; --text: #e8edf5; --muted: #8a9bb5;
+    --accent: #22d3ee; --green: #4ade80; --yellow: #fbbf24;
+    --red: #f87171; --purple: #a78bfa; --orange: #fb923c;
+    --blue: #60a5fa;
+    --font-mono: 'JetBrains Mono','Fira Code',Consolas,monospace;
+    --font-sans: system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: var(--font-sans); line-height: 1.6;
+    padding: 40px 24px;
+  }
+  .container { max-width: 800px; margin: 0 auto; }
+
+  /* --- ACCORDION CARD --- */
+  .accordion {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 12px;
+    overflow: hidden;
+  }
+
+  /* Hidden checkbox toggle */
+  .accordion-toggle { display: none; }
+
+  .accordion-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .accordion-header:hover { background: rgba(255,255,255,0.03); }
+
+  .accordion-header .phase-badge {
+    font-size: 0.6rem; font-family: var(--font-mono);
+    padding: 2px 8px; border-radius: 4px; font-weight: 600;
+    background: #1a3b2a; color: var(--green);
+    flex-shrink: 0;
+  }
+  .accordion-header .num {
+    font-family: var(--font-mono); font-size: 0.75rem;
+    color: var(--muted); flex-shrink: 0;
+  }
+  .accordion-header h3 {
+    font-size: 1rem; font-weight: 600; flex: 1;
+  }
+  .accordion-header .form-name {
+    font-family: var(--font-mono); font-size: 0.7rem;
+    color: var(--muted); background: var(--surface2);
+    padding: 2px 8px; border-radius: 4px;
+  }
+  .accordion-header .arrow {
+    color: var(--muted); font-size: 0.75rem;
+    transition: transform 0.2s; flex-shrink: 0;
+  }
+
+  /* Rotate arrow when expanded */
+  .accordion-toggle:checked + .accordion-header .arrow {
+    transform: rotate(90deg);
+  }
+
+  .accordion-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.25s ease;
+    border-top: 0px solid var(--border);
+  }
+
+  .accordion-toggle:checked ~ .accordion-body {
+    max-height: 2000px;
+    border-top-width: 1px;
+    border-top-style: solid;
+    border-top-color: var(--border);
+  }
+
+  /* --- TAB BAR (radio-based, no JS) --- */
+  .tab-bar {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    padding: 0 16px;
+    gap: 0;
+  }
+
+  .tab-radio { display: none; }
+
+  .tab-label {
+    padding: 10px 16px;
+    font-size: 0.78rem;
+    font-family: var(--font-mono);
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: 0.12s;
+    margin-bottom: -1px;
+    user-select: none;
+  }
+  .tab-label:hover { color: var(--text); }
+
+  .tab-radio:checked + .tab-label {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  .tab-content {
+    display: none;
+    padding: 20px;
+  }
+
+  /* Show content when its corresponding radio is checked */
+  #tab1:checked ~ #content1,
+  #tab2:checked ~ #content2,
+  #tab3:checked ~ #content3 { display: block; }
+
+  /* --- CARD CONTENT STYLES (reused from user-guide) --- */
+  .purpose { color: var(--muted); font-size: 0.85rem; margin-bottom: 14px; }
+
+  .field-list { margin: 8px 0; }
+  .field-list dt {
+    font-size: 0.78rem; font-weight: 600; margin-top: 8px;
+    padding: 6px 10px; background: var(--surface2); border-radius: 4px;
+    border-left: 3px solid var(--accent);
+  }
+  .field-list dd {
+    font-size: 0.76rem; color: var(--muted); padding: 3px 10px 3px 16px;
+  }
+  .field-list dd .type { font-family: var(--font-mono); color: var(--yellow); font-size: 0.68rem; }
+  .field-list dd .lkup { color: var(--blue); font-family: var(--font-mono); font-size: 0.68rem; }
+
+  .rel-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 8px; margin: 12px 0;
+  }
+  .rel-card {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 6px; padding: 10px; font-size: 0.76rem;
+  }
+  .rel-card .dir { color: var(--muted); font-size: 0.65rem; font-family: var(--font-mono); }
+  .rel-card .target { color: var(--accent); font-weight: 600; }
+
+  .diagram {
+    background: #080e18; border: 1px solid var(--border);
+    border-radius: 8px; padding: 16px 20px; margin: 12px 0;
+    font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.8;
+    overflow-x: auto; color: #c8d0e0;
+  }
+  .diagram .f { color: var(--accent); font-weight: 600; }
+  .diagram .c { color: var(--green); }
+  .diagram .lk { color: var(--blue); }
+  .diagram .y { color: var(--yellow); }
+
+  .flow-row {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    padding: 10px 14px; background: var(--surface2); border-radius: 8px;
+    margin: 10px 0; font-size: 0.78rem;
+  }
+  .flow-row .box {
+    padding: 4px 10px; border-radius: 5px; font-family: var(--font-mono);
+    font-size: 0.72rem; border: 1px solid var(--border);
+  }
+
+  .al { padding: 10px 14px; border-radius: 6px; font-size: 0.8rem; margin: 10px 0; border-left: 3px solid; }
+  .al-i { background: #1e3a5f; border-color: var(--accent); color: #bae6fd; }
+  .al-w { background: #3b2f1e; border-color: var(--yellow); color: #fef3c7; }
+  .al-o { background: #1a3b2a; border-color: var(--green); color: #bbf7d0; }
+
+  .tw { overflow-x: auto; margin: 8px 0; }
+  .tbl { width: 100%; border-collapse: collapse; font-size: 0.78rem; min-width: 350px; }
+  .tbl th {
+    text-align: left; padding: 6px 10px; background: var(--surface2);
+    color: var(--muted); font-weight: 600; font-size: 0.65rem;
+    text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 1px solid var(--border);
+  }
+  .tbl td { padding: 6px 10px; border-bottom: 1px solid rgba(45,58,77,0.5); vertical-align: top; color: var(--text); }
+  .tbl tr:hover td { background: rgba(34,211,238,0.04); }
+
+  .tag { display: inline-block; font-size: 0.58rem; font-family: var(--font-mono); padding: 1px 6px; border-radius: 3px; margin: 1px; }
+  .tag-lk { background: #1e3a5f; color: #93c5fd; }
+  .tag-cr { background: #4a1c1c; color: #fca5a5; }
+  .tag-nt { background: #2e1f3b; color: #d8b4fe; }
+
+  .tc-list { list-style: none; margin: 8px 0; }
+  .tc-list li {
+    padding: 10px 14px; background: var(--surface2); border-radius: 6px;
+    margin-bottom: 8px; font-size: 0.82rem;
+    border-left: 3px solid var(--purple);
+  }
+  .tc-list li strong { color: var(--accent); }
+  .tc-list li .exp { color: var(--green); display: block; font-size: 0.75rem; margin-top: 4px; }
+
+  .edge-list { list-style: none; margin: 8px 0; }
+  .edge-list li {
+    padding: 8px 12px; background: var(--bg); border-radius: 4px;
+    margin-bottom: 4px; font-size: 0.78rem; color: var(--muted);
+    border-left: 3px solid var(--red);
+  }
+  .edge-list li strong { color: var(--red); }
+
+  .data-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 8px; margin: 12px 0;
+  }
+  .data-card {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 6px; padding: 10px 12px; font-size: 0.76rem;
+  }
+  .data-card .d-label { color: var(--muted); font-size: 0.65rem; font-family: var(--font-mono); }
+  .data-card .d-value { color: var(--text); font-weight: 600; margin-top: 2px; }
+
+  .steps { margin: 12px 0; padding: 0; list-style: none; }
+  .steps li {
+    padding: 6px 0 6px 24px; position: relative; font-size: 0.82rem; color: var(--muted);
+  }
+  .steps li::before {
+    content: ""; position: absolute; left: 0; top: 12px;
+    width: 10px; height: 10px; border-radius: 50%; background: var(--surface2);
+    border: 2px solid var(--accent);
+  }
+
+  h4 { font-size: 0.85rem; font-weight: 600; color: var(--accent); margin: 14px 0 8px; }
+
+  /* Nested accordion for testing guide scenarios */
+  .sub-acc { margin: 8px 0; }
+  .sub-acc-toggle { display: none; }
+  .sub-acc-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; background: var(--surface2); border-radius: 6px;
+    cursor: pointer; font-size: 0.82rem; font-weight: 600;
+    transition: 0.12s; user-select: none;
+  }
+  .sub-acc-header:hover { background: rgba(255,255,255,0.05); }
+  .sub-acc-header .sa-arrow {
+    color: var(--muted); font-size: 0.7rem;
+    transition: transform 0.2s; flex-shrink: 0;
+  }
+  .sub-acc-toggle:checked + .sub-acc-header .sa-arrow {
+    transform: rotate(90deg);
+  }
+  .sub-acc-body {
+    max-height: 0; overflow: hidden;
+    transition: max-height 0.2s ease;
+  }
+  .sub-acc-toggle:checked ~ .sub-acc-body {
+    max-height: 2000px;
+  }
+
+  .desc { font-size: 0.85rem; color: var(--muted); }
+
+  .legend {
+    display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px;
+    padding: 12px 16px; background: var(--surface); border-radius: 8px;
+    font-size: 0.76rem; color: var(--muted);
+  }
+  .legend span { display: flex; align-items: center; gap: 6px; }
+
+  @media (max-width: 640px) {
+    .tab-label { padding: 8px 10px; font-size: 0.7rem; }
+    .rel-grid { grid-template-columns: 1fr; }
+    .data-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <h1 style="font-size:1.6rem;font-weight:800;margin-bottom:6px">Accordion + <span style="color:var(--accent)">Tab Bar</span> Pattern</h1>
+  <p style="color:var(--muted);margin-bottom:24px">CSS-only accordion (checkbox toggle) with nested radio-button tab bar. No JavaScript.</p>
+
+  <div class="legend">
+    <span><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#1e3a5f"></span> Fields tab</span>
+    <span><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#1f3b2a"></span> Relationships tab</span>
+    <span><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:#3b2f1e"></span> Workflow tab</span>
+  </div>
+
+  <!-- ==================== USER GUIDE EXAMPLE ==================== -->
+  <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:12px;color:var(--green)">User Guide Pattern</h2>
+
+  <div class="accordion">
+
+    <!-- Hidden checkbox: accordion toggle -->
+    <input type="checkbox" id="acc-ug-01" class="accordion-toggle" checked>
+
+    <label for="acc-ug-01" class="accordion-header">
+      <span class="phase-badge">STEP 6</span>
+      <span class="num">#6</span>
+      <h3>Budget Plans &amp; Components</h3>
+      <span class="form-name">Budget_Plans</span>
+      <span class="arrow">&#9654;</span>
+    </label>
+
+    <div class="accordion-body">
+
+      <!-- RADIO-BASED TAB BAR (CSS-only) -->
+      <div class="tab-bar">
+        <input type="radio" name="ug-tabs" id="ug-tab1" class="tab-radio" checked>
+        <label for="ug-tab1" class="tab-label">Fields</label>
+
+        <input type="radio" name="ug-tabs" id="ug-tab2" class="tab-radio">
+        <label for="ug-tab2" class="tab-label">Relationships</label>
+
+        <input type="radio" name="ug-tabs" id="ug-tab3" class="tab-radio">
+        <label for="ug-tab3" class="tab-label">Workflow</label>
+      </div>
+
+      <!-- Tab 1: Fields -->
+      <div id="content1" class="tab-content">
+        <div class="purpose">Budget Plans define how much money is allocated to a project. Budget Components break that into categories (Labour, Materials, Travel, etc.). Expenses check against these budgets automatically.</div>
+        <div class="al al-w"><strong>One active plan per project:</strong> The system prevents creating a second active budget plan for the same project. Close or revise the existing plan first.</div>
+
+        <h4>Budget Plan Fields</h4>
+        <dl class="field-list">
+          <dt>Plan Name <span class="type">Auto-generated</span></dt>
+          <dd>Generated from project name + date.</dd>
+          <dt>Project <span class="lkup">Lookup → Projects</span></dt>
+          <dd>Select the project. One active plan per project enforced by Deluge.</dd>
+          <dt>Total Budget Amount <span class="type">Currency</span></dt>
+          <dd>Copied from Project.Total_Approved_Budget or entered manually. Ceiling for all components.</dd>
+          <dt>Status <span class="type">Dropdown</span></dt>
+          <dd>Draft → Active (triggers sync to Project) → Revised → Closed.</dd>
+        </dl>
+
+        <h4>Budget Component Fields (embedded subform)</h4>
+        <dl class="field-list">
+          <dt>Component Name <span class="type">Text</span></dt>
+          <dd>e.g. "Construction Material", "Labour", "Travel", "Equipment".</dd>
+          <dt>Allocated Amount <span class="type">Currency</span></dt>
+          <dd>Budget for this category. Sum across all components must not exceed plan's total.</dd>
+          <dt>Total Spent <span class="type">Deluge Formula</span></dt>
+          <dd>Aggregated from approved Expenses linked to this component. Updated in real-time.</dd>
+          <dt>Consumption % <span class="type">Formula</span></dt>
+          <dd>(Total Spent / Allocated) × 100. Drives the alert status.</dd>
+          <dt>Status <span class="type">Auto-computed</span></dt>
+          <dd>Within Budget → 80% Alert → 90% Alert → Exceeded. Updated on every expense submission.</dd>
+        </dl>
+
+        <div class="al al-o"><strong>Sum constraint:</strong> Σ(Budget_Components.Allocated_Amount) ≤ Budget_Plans.Total_Budget_Amount. Validated on submit via Deluge.</div>
+      </div>
+
+      <!-- Tab 2: Relationships -->
+      <div id="content2" class="tab-content">
+        <div class="diagram">
+          <span class="f">Projects</span> ── <span class="lk">has one active</span> ── <span class="f">Budget_Plans</span><br>
+          <span class="in">│</span><br>
+          <span class="in">└── <span class="c">Budget_Components</span> (embedded subform)<br>
+          <span class="in">│&nbsp;&nbsp;&nbsp;&nbsp;Component: "Materials" — Allocated: 5,00,000</span><br>
+          <span class="in">│&nbsp;&nbsp;&nbsp;&nbsp;Component: "Labour"&nbsp;&nbsp; — Allocated: 3,00,000</span><br>
+          <span class="in">│&nbsp;&nbsp;&nbsp;&nbsp;Component: "Travel"&nbsp;&nbsp;&nbsp; — Allocated: 50,000</span><br>
+          <span class="in">│&nbsp;&nbsp;&nbsp;&nbsp;<span class="y">Σ Components ≤ Plan Total</span></span><br>
+          <span class="in">└── <span class="lk">referenced by</span> ── <span class="f">Expenses</span><br>
+          <span class="in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Expense.Budget_Component lookup</span><br>
+          <span class="in">└── <span class="lk">creates on overrun</span> ── <span class="f">Budget_Approvals</span><br>
+          <span class="in">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Auto-created when expense exceeds allocation</span>
+        </div>
+
+        <div class="rel-grid">
+          <div class="rel-card">
+            <div class="dir">Parent form</div>
+            <div class="target">Projects</div>
+            <div style="font-size:0.68rem;color:var(--muted)">Budget_Plans.Project lookup</div>
+          </div>
+          <div class="rel-card">
+            <div class="dir">Referenced by</div>
+            <div class="target">Expenses</div>
+            <div style="font-size:0.68rem;color:var(--muted)">Expense.Budget_Component lookup</div>
+          </div>
+          <div class="rel-card">
+            <div class="dir">Creates</div>
+            <div class="target">Budget_Approvals</div>
+            <div style="font-size:0.68rem;color:var(--muted)">Auto-created on overrun</div>
+          </div>
+          <div class="rel-card">
+            <div class="dir">Embedded in</div>
+            <div class="target">Budget_Plans</div>
+            <div style="font-size:0.68rem;color:var(--muted)">Budget_Components subform</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 3: Workflow -->
+      <div id="content3" class="tab-content">
+        <div class="purpose">What happens automatically when you interact with Budget Plans and Components.</div>
+
+        <h4>Status lifecycle</h4>
+        <div class="flow-row">
+          <span class="box" style="border-color:var(--muted);color:var(--muted)">Draft</span>
+          <span class="arr" style="color:var(--muted)">→</span>
+          <span class="box" style="border-color:var(--yellow);color:var(--yellow)">Active</span>
+          <span class="arr" style="color:var(--muted)">→</span>
+          <span class="box" style="border-color:var(--orange);color:var(--orange)">Revised</span>
+          <span class="arr" style="color:var(--muted)">→</span>
+          <span class="box" style="border-color:var(--red);color:var(--red)">Closed</span>
+        </div>
+
+        <h4>Auto-workflows</h4>
+        <div class="flow-row">
+          <span class="box" style="border-color:var(--green);color:var(--green)">On Activate</span>
+          <span style="color:var(--muted);font-size:0.74rem">Syncs Total_Budget → Project.Total_Approved_Budget. Enforces unique active plan check.</span>
+        </div>
+        <div class="flow-row">
+          <span class="box" style="border-color:var(--purple);color:var(--purple)">On Submit</span>
+          <span style="color:var(--muted);font-size:0.74rem">Validates Σ(Components) ≤ Total_Budget. Rejects with alert if exceeded.</span>
+        </div>
+        <div class="flow-row">
+          <span class="box" style="border-color:var(--accent);color:var(--accent)">On Expense Submit</span>
+          <span style="color:var(--muted);font-size:0.74rem">Checks new Spent_Amount + Amount vs Allocated. Updates status: 80% → yellow, 90% → orange, 100% → red + overrun flow.</span>
+        </div>
+        <div class="flow-row">
+          <span class="box" style="border-color:var(--red);color:var(--red)">Daily Cron</span>
+          <span style="color:var(--muted);font-size:0.74rem">Midnight: refreshes budget KPIs on dashboard, sends alert emails for components at 80/90/100%.</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== TESTING GUIDE EXAMPLE ==================== -->
+  <h2 style="font-size:1.1rem;font-weight:700;margin:32px 0 12px;color:var(--purple)">Testing Guide Pattern</h2>
+
+  <div class="accordion">
+
+    <input type="checkbox" id="acc-tg-01" class="accordion-toggle" checked>
+
+    <label for="acc-tg-01" class="accordion-header">
+      <span class="phase-badge" style="background:#2e1f3b;color:var(--purple)">PHASE 1D</span>
+      <h3>Budget Approvals, POs, GRN, Transfer Orders</h3>
+      <span class="form-name">Phase 1D — Procurement</span>
+      <span class="arrow">&#9654;</span>
+    </label>
+
+    <div class="accordion-body">
+
+      <div class="tab-bar">
+        <input type="radio" name="tg-tabs" id="tg-tab1" class="tab-radio" checked>
+        <label for="tg-tab1" class="tab-label">Scenarios</label>
+
+        <input type="radio" name="tg-tabs" id="tg-tab2" class="tab-radio">
+        <label for="tg-tab2" class="tab-label">Data</label>
+
+        <input type="radio" name="tg-tabs" id="tg-tab3" class="tab-radio">
+        <label for="tg-tab3" class="tab-label">Edge Cases</label>
+      </div>
+
+      <!-- Tab 1: Test Scenarios -->
+      <div id="tg-content1" class="tab-content">
+
+        <div class="al al-i"><strong>Prerequisites:</strong> Expense EXP-0002 (Overrun-Pending) must exist. PR REQ-0001 must be approved with PO auto-created. Budget Plan BUD-0001 must be Active.</div>
+
+        <h4>TC-1D-01: Approve Budget Overrun</h4>
+        <ol class="steps">
+          <li>Open <code>Budget_Approvals</code> form</li>
+          <li>Find the auto-created record for expense <code>EXP-0002</code> (Construction Material overrun)</li>
+          <li>Set Status = <code>Approved</code>, Notes = "Approved for Phase 1 foundation work"</li>
+          <li>Submit</li>
+        </ol>
+        <div class="al al-o"><strong>Expected:</strong> EXP-0002 Status → Approved. Budget_Component "Construction Material" Spent = 27000. Approval No = APPR-0001.</div>
+
+        <h4>TC-1D-02: Purchase Order — Edit and Open</h4>
+        <ol class="steps">
+          <li>Open the auto-created PO (Draft) from PR approval</li>
+          <li>Verify PO_Line_Items: Cement Bag Qty 100 @ 8.50, Steel Rods Qty 50 @ 12.00</li>
+          <li>Set Vendor = <code>TechSupply Co.</code>, Payment Terms = <code>Net 30</code></li>
+          <li>Change Status to <code>Open</code>, Submit</li>
+        </ol>
+        <div class="al al-o"><strong>Expected:</strong> PO-0001 created. On Open → vendor email notification fires.</div>
+
+        <h4>TC-1D-05: Goods Receipt — Full Receipt</h4>
+        <ol class="steps">
+          <li>Open <code>Goods_Receipts</code> form, PO = <code>PO-0002</code></li>
+          <li>In GRN_Line_Items: Steel Rods, Accepted = 195, Rejected = 5, Warehouse = Main</li>
+          <li>Status = <code>Open</code>, Submit</li>
+        </ol>
+        <div class="al al-o"><strong>Expected:</strong> GRN-0001. Stock In auto-created: Steel Rods +195 at Main. Current Stock: 950 + 195 = 1145.</div>
+
+        <h4>TC-1D-06: Transfer Order — Create and Complete</h4>
+        <ol class="steps">
+          <li>Open <code>Transfer_Orders</code>, From = <code>Main Warehouse</code>, To = <code>Returns Bay</code></li>
+          <li>TO_Line_Items: Cement Bag Qty 20 @ 8.50</li>
+          <li>Status = <code>Completed</code>, Submit</li>
+        </ol>
+        <div class="al al-o"><strong>Expected:</strong> TO-0001. Paired Stock Out (Main -20) + Stock In (Returns Bay +20). Main Cement: 510 → 490. Returns Bay: 0 → 20.</div>
+
+      </div>
+
+      <!-- Tab 2: Sample Data -->
+      <div id="tg-content2" class="tab-content">
+
+        <div class="purpose">Prerequisite records that must exist in the system before running Phase 1D test scenarios.</div>
+
+        <h4>Prerequisite Records</h4>
+        <div class="data-grid">
+          <div class="data-card">
+            <div class="d-label">Project</div>
+            <div class="d-value">Office Renovation 2026</div>
+            <div style="font-size:0.65rem;color:var(--muted)">PROJ-0001 · Budget 50,000</div>
+          </div>
+          <div class="data-card">
+            <div class="d-label">Budget Plan</div>
+            <div class="d-value">BUD-0001</div>
+            <div style="font-size:0.65rem;color:var(--muted)">Status: Active · Total: 50,000</div>
+          </div>
+          <div class="data-card">
+            <div class="d-label">Budget Components</div>
+            <div class="d-value">Construction Material</div>
+            <div style="font-size:0.65rem;color:var(--muted)">Allocated: 25,000 · Spent: 5,000</div>
+          </div>
+          <div class="data-card">
+            <div class="d-label">Components (cont.)</div>
+            <div class="d-value">Labour / Equipment</div>
+            <div style="font-size:0.65rem;color:var(--muted)">15,000 / 5,000 allocated</div>
+          </div>
+          <div class="data-card">
+            <div class="d-label">Expense (overrun)</div>
+            <div class="d-value">EXP-0002</div>
+            <div style="font-size:0.65rem;color:var(--muted)">22,000 · Status: Overrun-Pending</div>
+          </div>
+          <div class="data-card">
+            <div class="d-label">Purchase Requisition</div>
+            <div class="d-value">REQ-0001 (Approved)</div>
+            <div style="font-size:0.65rem;color:var(--muted)">Cement 100 + Steel 50 → auto-created PO</div>
+          </div>
+          <div class="data-card">
+            <div class="d-label">Vendor</div>
+            <div class="d-value">TechSupply Co.</div>
+            <div style="font-size:0.65rem;color:var(--muted)">Net 30 · USD</div>
+          </div>
+          <div class="data-card">
+            <div class="d-label">Warehouses</div>
+            <div class="d-value">Main / Secondary / Returns</div>
+            <div style="font-size:0.65rem;color:var(--muted)">3 warehouses active</div>
+          </div>
+        </div>
+
+        <h4>Stock Snapshot (before Phase 1D tests)</h4>
+        <div class="tw">
+          <table class="tbl">
+            <tr><th>Item</th><th>Warehouse</th><th>Current Stock</th><th>Reserved</th></tr>
+            <tr><td>Cement Bag (50kg)</td><td>Main Warehouse</td><td>510</td><td>20</td></tr>
+            <tr><td>Steel Rods (12mm)</td><td>Main Warehouse</td><td>950</td><td>0</td></tr>
+            <tr><td>Steel Rods (12mm)</td><td>Secondary Store</td><td>300</td><td>0</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tab 3: Edge Cases -->
+      <div id="tg-content3" class="tab-content">
+
+        <div class="purpose">Failure conditions and boundary cases to verify during Phase 1D testing.</div>
+
+        <h4>Budget Approvals</h4>
+        <ul class="edge-list">
+          <li><strong>Approve without Expense:</strong> Try to set Status = Approved without selecting an Expense → alert</li>
+        </ul>
+
+        <h4>Purchase Orders</h4>
+        <ul class="edge-list">
+          <li><strong>Open without Vendor:</strong> Set Status = Open before selecting Vendor → alert "Vendor is required"</li>
+          <li><strong>Zero qty line item:</strong> Add line item with Quantity = 0 → should be blocked by validation</li>
+          <li><strong>Cancel with GRN linked:</strong> Create GRN against PO, then try Cancel → alert "Cannot cancel PO with linked GRN records"</li>
+        </ul>
+
+        <h4>Goods Receipt</h4>
+        <ul class="edge-list">
+          <li><strong>Accepted + Rejected > PO Qty:</strong> Enter Accepted (150) + Rejected (60) > PO Qty (200) → alert</li>
+          <li><strong>Rejected without reason:</strong> Enter Rejected Qty > 0, leave Reason blank → alert</li>
+          <li><strong>PO not Open:</strong> Try GRN against a Draft or Cancelled PO → block</li>
+          <li><strong>Accepted but no Warehouse:</strong> Accepted Qty > 0, Warehouse blank → alert</li>
+        </ul>
+
+        <h4>Transfer Orders</h4>
+        <ul class="edge-list">
+          <li><strong>Same warehouse:</strong> From = To warehouse → alert "From and To warehouse must be different"</li>
+          <li><strong>Insufficient stock:</strong> Transfer qty exceeds available at From → alert</li>
+          <li><strong>Negative stock after transfer:</strong> System must prevent Current_Stock &lt; 0 at From warehouse</li>
+        </ul>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== ARCHITECTURE NOTES ==================== -->
+  <h2 style="font-size:1.1rem;font-weight:700;margin:32px 0 12px;color:var(--yellow)">How It Works</h2>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div style="background:var(--surface);padding:16px;border-radius:8px;border:1px solid var(--border)">
+      <h4 style="font-size:0.85rem;color:var(--accent)">Accordion</h4>
+      <p style="font-size:0.76rem;color:var(--muted);margin-top:4px">
+        Uses a hidden <code>&lt;input type="checkbox"&gt;</code> sibling before the header label.
+        The <code>:checked ~ .accordion-body</code> selector toggles <code>max-height</code>.
+        Only one card open at a time is NOT enforced (use radios if needed).
+      </p>
+    </div>
+    <div style="background:var(--surface);padding:16px;border-radius:8px;border:1px solid var(--border)">
+      <h4 style="font-size:0.85rem;color:var(--accent)">Tab Bar</h4>
+      <p style="font-size:0.76rem;color:var(--muted);margin-top:4px">
+        Uses hidden <code>&lt;input type="radio"&gt;</code> with shared <code>name</code> attribute per card.
+        Labels toggle radios. <code>:checked ~ #contentN</code> sibling selectors show/hide tab panels.
+        Only one tab active at a time. No JS needed.
+      </p>
+    </div>
+    <div style="background:var(--surface);padding:16px;border-radius:8px;border:1px solid var(--border)">
+      <h4 style="font-size:0.85rem;color:var(--accent)">Key CSS selectors</h4>
+      <pre style="font-size:0.7rem;margin:4px 0 0;background:var(--bg);padding:8px;border-radius:4px">
+.accordion-toggle:checked ~ .accordion-body {
+  max-height: 2000px;
+}
+.tab-radio:checked + .tab-label {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+#tab1:checked ~ #content1 { display: block; }</pre>
+    </div>
+    <div style="background:var(--surface);padding:16px;border-radius:8px;border:1px solid var(--border)">
+      <h4 style="font-size:0.85rem;color:var(--accent)">Tab wiring (HTML order)</h4>
+      <pre style="font-size:0.7rem;margin:4px 0 0;background:var(--bg);padding:8px;border-radius:4px">
+&lt;input id="tab1" class="tab-radio" name="t"&gt;
+&lt;label for="tab1"&gt;Fields&lt;/label&gt;
+&lt;input id="tab2" class="tab-radio" name="t"&gt;
+&lt;label for="tab2"&gt;Relationships&lt;/label&gt;
+&lt;div id="content1"&gt;...&lt;/div&gt;
+&lt;div id="content2"&gt;...&lt;/div&gt;</pre>
+      <p style="font-size:0.72rem;color:var(--muted);margin-top:4px">⚠ Radio inputs and content divs must be <strong>siblings</strong> under same parent for <code>~</code> selector to work.</p>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -1,734 +1,471 @@
-<!-- 
-  Design C — Two-Panel Split Layout
-  ------------------------------------
-  Radically different from Design A (tabs) and Design B (stepper).
-  Mimics the page's own sidebar+main layout but scoped inside a section.
-  
-  Left panel:  Compact vertical accordion nav — number + title per item,
-               click to expand sub-topics inline AND update right panel.
-  Right panel: Detail card with scroll — tables, code blocks, content.
-  Mobile:      Single column — left panel becomes a <select> dropdown at top.
-
-  Uses the page's CSS custom properties for seamless integration.
--->
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design C — Two-Level Accordion Navigation</title>
 <style>
-  .zc-split {
-    --zc-bg: #0b1120;
-    --zc-surface: #1a2435;
-    --zc-surface2: #253040;
-    --zc-border: #2d3a4d;
-    --zc-text: #e8edf5;
-    --zc-muted: #8a9bb5;
-    --zc-accent: #22d3ee;
-    --zc-green: #4ade80;
-    --zc-radius: 8px;
-    --zc-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-
-    display: flex;
-    gap: 0;
-    background: var(--zc-bg);
-    border-radius: var(--zc-radius);
-    border: 1px solid var(--zc-border);
-    overflow: hidden;
-    font-family: var(--zc-font);
-    color: var(--zc-text);
-    line-height: 1.5;
-    min-height: 480px;
+  :root {
+    --bg: #0b1120; --surface: #1a2435; --surface2: #253040;
+    --border: #2d3a4d; --text: #e8edf5; --muted: #8a9bb5;
+    --accent: #22d3ee; --green: #4ade80; --yellow: #fbbf24;
+    --red: #f87171; --purple: #a78bfa; --orange: #fb923c;
+    --pink: #f472b6; --blue: #60a5fa;
+    --font-mono: 'JetBrains Mono','Fira Code',Consolas,monospace;
+    --font-sans: system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+    --sidebar-w: 220px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: var(--font-sans); line-height: 1.6;
+    display: flex; min-height: 100vh;
   }
 
-  /* ===== LEFT PANEL ===== */
-  .zc-split-nav {
-    width: 240px;
-    min-width: 240px;
-    background: rgba(26, 36, 53, 0.65);
-    backdrop-filter: blur(4px);
-    border-right: 1px solid var(--zc-border);
-    padding: 12px 0;
-    overflow-y: auto;
-    flex-shrink: 0;
+  /* ===== SIDEBAR ===== */
+  .sidebar {
+    width: var(--sidebar-w); min-width: var(--sidebar-w);
+    background: var(--surface); border-right: 1px solid var(--border);
+    position: fixed; top: 0; left: 0;
+    height: 100vh; overflow-y: auto; z-index: 100;
+    display: flex; flex-direction: column;
   }
-
-  .zc-split-nav-item {
-    cursor: pointer;
-    user-select: none;
+  .sidebar h1 {
+    font-size: 0.85rem; font-weight: 700; color: var(--accent);
+    padding: 20px 16px 0; letter-spacing: -0.01em;
   }
-
-  .zc-split-nav-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 16px;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--zc-muted);
-    transition: background 0.15s, color 0.15s;
-    border-left: 3px solid transparent;
-  }
-
-  .zc-split-nav-header:hover {
-    background: rgba(34, 211, 238, 0.06);
-    color: var(--zc-text);
-  }
-
-  .zc-split-nav-header.active {
-    color: var(--zc-accent);
-    border-left-color: var(--zc-accent);
-    background: rgba(34, 211, 238, 0.08);
-  }
-
-  .zc-split-nav-num {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background: var(--zc-surface2);
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--zc-muted);
-    flex-shrink: 0;
-    transition: background 0.15s, color 0.15s;
-  }
-
-  .zc-split-nav-header.active .zc-split-nav-num {
-    background: var(--zc-accent);
-    color: var(--zc-bg);
-  }
-
-  .zc-split-nav-header:hover .zc-split-nav-num {
-    color: var(--zc-text);
-  }
-
-  .zc-split-nav-arrow {
-    margin-left: auto;
-    font-size: 10px;
-    color: var(--zc-muted);
-    transition: transform 0.2s;
-    flex-shrink: 0;
-  }
-
-  .zc-split-nav-arrow.open {
-    transform: rotate(90deg);
-  }
-
-  /* Sub-items list */
-  .zc-split-subs {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.25s ease;
-  }
-
-  .zc-split-subs.open {
-    max-height: 300px;
-  }
-
-  .zc-split-sub {
-    padding: 7px 16px 7px 54px;
-    font-size: 12.5px;
-    color: var(--zc-muted);
-    cursor: pointer;
-    transition: color 0.15s, background 0.15s;
-    position: relative;
-  }
-
-  .zc-split-sub::before {
-    content: '';
-    position: absolute;
-    left: 41px;
-    top: 0;
-    bottom: 0;
-    width: 1px;
-    background: var(--zc-border);
-  }
-
-  .zc-split-sub:last-child::before {
-    bottom: 50%;
-  }
-
-  .zc-split-sub:hover {
-    color: var(--zc-text);
-    background: rgba(34, 211, 238, 0.04);
-  }
-
-  .zc-split-sub.active {
-    color: var(--zc-accent);
-  }
-
-  .zc-split-sub.active::after {
-    content: '';
-    position: absolute;
-    left: 39px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: var(--zc-accent);
-  }
-
-  /* ===== RIGHT PANEL ===== */
-  .zc-split-detail {
-    flex: 1;
-    min-width: 0;
-    padding: 28px 32px;
-    overflow-y: auto;
-    background: var(--zc-surface);
-  }
-
-  .zc-split-detail h2 {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--zc-text);
-    margin: 0 0 6px;
-  }
-
-  .zc-split-detail .subtitle {
-    font-size: 13px;
-    color: var(--zc-muted);
-    margin: 0 0 20px;
-  }
-
-  .zc-split-detail h3 {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--zc-text);
-    margin: 24px 0 10px;
-  }
-
-  .zc-split-detail p {
-    font-size: 13.5px;
-    color: var(--zc-muted);
-    margin: 0 0 14px;
-    line-height: 1.6;
-  }
-
-  .zc-split-detail ul {
-    padding: 0 0 0 18px;
-    margin: 0 0 16px;
-  }
-
-  .zc-split-detail li {
-    font-size: 13px;
-    color: var(--zc-muted);
-    margin-bottom: 6px;
-  }
-
-  /* Tables */
-  .zc-split-detail table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 12px 0 18px;
-    font-size: 13px;
-  }
-
-  .zc-split-detail th {
-    text-align: left;
-    padding: 9px 12px;
-    background: var(--zc-surface2);
-    color: var(--zc-text);
-    font-weight: 600;
-    border-bottom: 2px solid var(--zc-border);
-  }
-
-  .zc-split-detail td {
-    padding: 8px 12px;
-    border-bottom: 1px solid var(--zc-border);
-    color: var(--zc-muted);
-  }
-
-  .zc-split-detail tr:hover td {
-    background: rgba(34, 211, 238, 0.03);
-  }
-
-  /* Code blocks */
-  .zc-split-detail pre {
-    background: var(--zc-bg);
-    border: 1px solid var(--zc-border);
-    border-radius: 6px;
-    padding: 14px 16px;
-    overflow-x: auto;
-    font-size: 12.5px;
-    font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
-    color: #cdd6f4;
-    margin: 10px 0 16px;
-    line-height: 1.55;
-  }
-
-  .zc-split-detail code {
-    font-family: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
-    font-size: 12.5px;
-    background: rgba(34, 211, 238, 0.08);
-    color: var(--zc-accent);
-    padding: 1px 5px;
-    border-radius: 3px;
-  }
-
-  .zc-split-detail pre code {
-    background: none;
-    color: inherit;
-    padding: 0;
-    border-radius: 0;
-  }
-
-  /* Inline tag / badge */
-  .zc-tag {
-    display: inline-block;
-    font-size: 11px;
-    font-weight: 500;
-    padding: 2px 8px;
-    border-radius: 4px;
-    background: rgba(74, 222, 128, 0.12);
-    color: var(--zc-green);
-    margin-right: 4px;
-  }
-
-  .zc-tag.cyan {
-    background: rgba(34, 211, 238, 0.1);
-    color: var(--zc-accent);
-  }
-
-  /* ===== MOBILE: dropdown replaces left panel ===== */
-  .zc-split-mobile-select {
-    display: none;
-    width: 100%;
-    padding: 10px 14px;
-    background: var(--zc-surface);
-    border: 1px solid var(--zc-border);
-    border-radius: var(--zc-radius);
-    color: var(--zc-text);
-    font-family: var(--zc-font);
-    font-size: 13px;
-    cursor: pointer;
-    appearance: none;
-    -webkit-appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%238a9bb5'%3E%3Cpath d='M2 4l4 4 4-4'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
+  .sidebar .sub {
+    font-size: 0.62rem; color: var(--muted);
+    padding: 2px 16px 16px; border-bottom: 1px solid var(--border);
     margin-bottom: 8px;
   }
-
-  .zc-split-mobile-select:focus {
-    outline: none;
-    border-color: var(--zc-accent);
+  .sidebar nav { flex: 1; padding: 0 8px; }
+  .sidebar .sec-label {
+    font-size: 0.55rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--muted);
+    padding: 14px 8px 4px; opacity: 0.5;
+  }
+  .sidebar a {
+    display: block; color: var(--muted); text-decoration: none;
+    font-size: 0.72rem; padding: 5px 10px; border-radius: 5px;
+    margin-bottom: 1px; transition: 0.1s; cursor: pointer;
+    border-left: 2px solid transparent;
+  }
+  .sidebar a:hover { color: var(--accent); background: var(--surface2); }
+  .sidebar a.active {
+    color: var(--accent); background: var(--surface2);
+    border-left-color: var(--accent); font-weight: 600;
+  }
+  .sidebar .ftr {
+    padding: 12px 16px; border-top: 1px solid var(--border);
+    font-size: 0.55rem; color: var(--muted); margin-top: auto;
   }
 
-  .zc-split-mobile-select option {
-    background: var(--zc-surface);
-    color: var(--zc-text);
+  /* ===== MAIN ===== */
+  .main { margin-left: var(--sidebar-w); flex: 1; min-width: 0; }
+  .content { max-width: 960px; padding: 32px 32px 60px; }
+
+  .page-header { margin-bottom: 24px; }
+  .page-header h2 {
+    font-size: 1.3rem; font-weight: 700; display: flex;
+    align-items: center; gap: 10px;
+  }
+  .page-header .meta {
+    font-size: 0.76rem; color: var(--muted); margin-top: 4px;
+  }
+
+  /* ===== NESTED ACCORDION CARDS ===== */
+  .accordion-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; margin-bottom: 6px; overflow: hidden;
+  }
+  .accordion-card .hd {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; cursor: pointer; user-select: none;
+    transition: background 0.12s;
+  }
+  .accordion-card .hd:hover { background: var(--surface2); }
+  .accordion-card .hd .num {
+    font-family: var(--font-mono); font-size: 0.68rem;
+    color: var(--muted); min-width: 26px;
+  }
+  .accordion-card .hd h4 {
+    font-size: 0.85rem; font-weight: 600; flex: 1; color: var(--text);
+  }
+  .accordion-card .hd .arrow {
+    font-size: 0.68rem; color: var(--muted);
+    transition: transform 0.2s;
+  }
+  .accordion-card .hd .arrow.open { transform: rotate(90deg); }
+  .accordion-card .bd {
+    display: none; padding: 0 14px 14px;
+    border-top: 1px solid var(--border); padding-top: 10px;
+  }
+  .accordion-card .bd.open { display: block; }
+
+  .badge {
+    display: inline-block; font-size: 0.55rem; font-family: var(--font-mono);
+    padding: 1px 7px; border-radius: 3px; margin: 1px;
+  }
+  .badge-lk { background: #1e3a5f; color: #93c5fd; }
+  .badge-cr { background: #4a1c1c; color: #fca5a5; }
+  .badge-cg { background: #1f3b2a; color: #86efac; }
+
+  .tw { overflow-x: auto; margin: 6px 0 12px; }
+  .tbl { width: 100%; border-collapse: collapse; font-size: 0.76rem; min-width: 400px; }
+  .tbl th {
+    text-align: left; padding: 5px 8px; background: var(--surface2);
+    color: var(--muted); font-weight: 600; font-size: 0.62rem;
+    text-transform: uppercase; letter-spacing: 0.03em;
+    border-bottom: 1px solid var(--border); white-space: nowrap;
+  }
+  .tbl td { padding: 5px 8px; border-bottom: 1px solid var(--surface2); vertical-align: top; color: var(--text); }
+  .tbl .mu { color: var(--muted); }
+
+  .callout {
+    padding: 10px 14px; border-radius: 6px; font-size: 0.78rem;
+    margin: 10px 0; border-left: 3px solid;
+  }
+  .callout-i { background: #1e3a5f; border-color: var(--accent); color: #bae6fd; }
+  .callout-w { background: #3b2f1e; border-color: var(--yellow); color: #fef3c7; }
+  .callout-o { background: #1a3b2a; border-color: var(--green); color: #bbf7d0; }
+
+  pre {
+    background: #080e18; padding: 12px; border-radius: 6px;
+    overflow-x: auto; font-size: 0.72rem; line-height: 1.5;
+    border: 1px solid var(--border); margin: 8px 0;
+    color: #c8d0e0; font-family: var(--font-mono);
+  }
+
+  .steps { margin: 12px 0; padding: 0; list-style: none; }
+  .steps li {
+    padding: 6px 0 6px 22px; position: relative; font-size: 0.8rem; color: var(--muted);
+  }
+  .steps li::before {
+    content: ""; position: absolute; left: 0; top: 11px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--surface2); border: 2px solid var(--accent);
+  }
+
+  .tc-tag {
+    font-family: var(--font-mono); font-size: 0.65rem;
+    padding: 1px 6px; border-radius: 3px;
+  }
+  .tc-pass { background: #1a3b2a; color: var(--green); }
+  .tc-edge { background: #3b2f1e; color: var(--yellow); }
+
+  footer {
+    text-align: center; padding: 24px 0; color: var(--muted);
+    font-size: 0.68rem; border-top: 1px solid var(--border); margin-top: 32px;
   }
 
   @media (max-width: 768px) {
-    .zc-split {
-      flex-direction: column;
-      min-height: auto;
-    }
-
-    .zc-split-nav {
-      display: none;
-    }
-
-    .zc-split-mobile-select {
-      display: block;
-    }
-
-    .zc-split-detail {
-      padding: 20px;
-    }
-  }
-
-  /* Scrollbar styling */
-  .zc-split-nav::-webkit-scrollbar,
-  .zc-split-detail::-webkit-scrollbar {
-    width: 5px;
-  }
-
-  .zc-split-nav::-webkit-scrollbar-track,
-  .zc-split-detail::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .zc-split-nav::-webkit-scrollbar-thumb,
-  .zc-split-detail::-webkit-scrollbar-thumb {
-    background: var(--zc-border);
-    border-radius: 3px;
-  }
-
-  .zc-split-nav::-webkit-scrollbar-thumb:hover,
-  .zc-split-detail::-webkit-scrollbar-thumb:hover {
-    background: var(--zc-muted);
+    .sidebar { width: 100%; min-width: 0; position: relative; height: auto; }
+    .sidebar nav { display: block; max-height: 300px; overflow-y: auto; }
+    .main { margin-left: 0; }
+    .content { padding: 20px 14px 40px; }
   }
 </style>
+</head>
+<body>
 
-<!-- ===== MOBILE DROPDOWN (hidden on desktop) ===== -->
-<select class="zc-split-mobile-select" id="zcMobileSelect" aria-label="Select a topic">
-  <optgroup label="1. Setup &amp; Configuration">
-    <option value="1-0">1.1 Environment Prerequisites</option>
-    <option value="1-1">1.2 Account &amp; Billing Setup</option>
-  </optgroup>
-  <optgroup label="2. Workspace &amp; Users">
-    <option value="2-0">2.1 Workspace Creation</option>
-    <option value="2-1">2.2 Role-Based Access</option>
-  </optgroup>
-  <optgroup label="3. Forms &amp; Fields">
-    <option value="3-0">3.1 Form Designer</option>
-    <option value="3-1">3.2 Field Types &amp; Validation</option>
-  </optgroup>
-  <optgroup label="4. Workflow &amp; Automation">
-    <option value="4-0">4.1 Workflow Builder</option>
-    <option value="4-1">4.2 Deluge Scripting</option>
-  </optgroup>
-</select>
+<!-- SIDEBAR — same pattern reused for User Guide and Testing Guide -->
+<aside class="sidebar">
+  <h1>Budget Tracking</h1>
+  <div class="sub">Documentation Hub</div>
+  <nav id="sidebar-nav">
+    <!-- Section: User Guide (17 modules) -->
+    <div class="sec-label">User Guide — Modules</div>
+    <a class="active" data-page="user-vendors">1. Vendors</a>
+    <a data-page="user-accounts">2. Accounts</a>
+    <a data-page="user-warehouses">3. Warehouses</a>
+    <a data-page="user-items">4. Inventory Items</a>
+    <a data-page="user-projects">5. Projects</a>
+    <a data-page="user-budget">6. Budget Plans</a>
+    <a data-page="user-inv-trans">7. Inventory Transactions</a>
+    <a data-page="user-pr">8. Purchase Requisitions</a>
+    <a data-page="user-po">9. Purchase Orders</a>
+    <a data-page="user-grn">10. Goods Receipt</a>
+    <a data-page="user-transfer">11. Transfer Orders</a>
+    <a data-page="user-expenses">12. Expenses</a>
+    <a data-page="user-approvals">13. Budget Approvals</a>
+    <a data-page="user-bom">14. BOM</a>
+    <a data-page="user-dc">15. Delivery Challans</a>
+    <a data-page="user-invoices">16. Invoices</a>
+    <a data-page="user-reports">17. Reports</a>
 
-<!-- ===== SPLIT PANEL ===== -->
-<div class="zc-split" id="zcSplit">
-
-  <!-- LEFT: Vertical Accordion Nav -->
-  <nav class="zc-split-nav" id="zcNav" role="tablist" aria-label="Guide sections">
-
-    <!-- Item 1 -->
-    <div class="zc-split-nav-item" data-section="1">
-      <div class="zc-split-nav-header" role="tab" tabindex="0" aria-controls="subs-1" aria-expanded="false">
-        <span class="zc-split-nav-num">1</span>
-        <span>Setup &amp; Configuration</span>
-        <span class="zc-split-nav-arrow">&#9654;</span>
-      </div>
-      <ul class="zc-split-subs" id="subs-1" role="tabpanel">
-        <li class="zc-split-sub" data-topic="1-0">1.1 Environment Prerequisites</li>
-        <li class="zc-split-sub active" data-topic="1-1">1.2 Account &amp; Billing Setup</li>
-      </ul>
-    </div>
-
-    <!-- Item 2 -->
-    <div class="zc-split-nav-item" data-section="2">
-      <div class="zc-split-nav-header" role="tab" tabindex="0" aria-controls="subs-2" aria-expanded="false">
-        <span class="zc-split-nav-num">2</span>
-        <span>Workspace &amp; Users</span>
-        <span class="zc-split-nav-arrow">&#9654;</span>
-      </div>
-      <ul class="zc-split-subs" id="subs-2" role="tabpanel">
-        <li class="zc-split-sub" data-topic="2-0">2.1 Workspace Creation</li>
-        <li class="zc-split-sub" data-topic="2-1">2.2 Role-Based Access</li>
-      </ul>
-    </div>
-
-    <!-- Item 3 -->
-    <div class="zc-split-nav-item" data-section="3">
-      <div class="zc-split-nav-header active" role="tab" tabindex="0" aria-controls="subs-3" aria-expanded="true">
-        <span class="zc-split-nav-num">3</span>
-        <span>Forms &amp; Fields</span>
-        <span class="zc-split-nav-arrow open">&#9654;</span>
-      </div>
-      <ul class="zc-split-subs open" id="subs-3" role="tabpanel">
-        <li class="zc-split-sub active" data-topic="3-0">3.1 Form Designer</li>
-        <li class="zc-split-sub" data-topic="3-1">3.2 Field Types &amp; Validation</li>
-      </ul>
-    </div>
-
-    <!-- Item 4 -->
-    <div class="zc-split-nav-item" data-section="4">
-      <div class="zc-split-nav-header" role="tab" tabindex="0" aria-controls="subs-4" aria-expanded="false">
-        <span class="zc-split-nav-num">4</span>
-        <span>Workflow &amp; Automation</span>
-        <span class="zc-split-nav-arrow">&#9654;</span>
-      </div>
-      <ul class="zc-split-subs" id="subs-4" role="tabpanel">
-        <li class="zc-split-sub" data-topic="4-0">4.1 Workflow Builder</li>
-        <li class="zc-split-sub" data-topic="4-1">4.2 Deluge Scripting</li>
-      </ul>
-    </div>
-
+    <div class="sec-label">Testing Guide — Phases</div>
+    <a data-page="test-1a">Phase 1A — Foundation</a>
+    <a data-page="test-1b">Phase 1B — Budget &amp; Stock</a>
+    <a data-page="test-1c">Phase 1C — Expenses &amp; PR</a>
+    <a data-page="test-1d">Phase 1D — PO, GRN, TO</a>
+    <a data-page="test-1e">Phase 1E — BOM, DC, Invoice</a>
+    <a data-page="test-1f">Phase 1F — Reports</a>
   </nav>
+  <div class="ftr">v1.0 &middot; Click sidebar items to switch content</div>
+</aside>
 
-  <!-- RIGHT: Detail Panel -->
-  <main class="zc-split-detail" id="zcDetail" role="tabpanel">
+<!-- MAIN CONTENT AREA — replaced entirely on sidebar click -->
+<div class="main" id="main-area">
+  <div class="content" id="page-content">
 
-    <!-- Topic 3-0 is shown by default -->
-    <div id="topicContent">
-      <!-- Content injected by JS -->
+    <!-- ================================================================== -->
+    <!-- PAGE: User Guide — Vendors (Module #1)                             -->
+    <!-- Demonstrates nested accordion: fields, subforms, relationships     -->
+    <!-- ================================================================== -->
+    <div id="user-vendors" class="page active-page">
+      <div class="page-header">
+        <h2>Vendors <span style="font-size:0.65rem;font-family:var(--font-mono);color:var(--muted);font-weight:400">Form: Vendors</span></h2>
+        <div class="meta">Create vendors first — every PO and expense references a vendor.</div>
+      </div>
+
+      <!-- Accordion: Purpose & When-to-create -->
+      <div class="accordion-card">
+        <div class="hd" onclick="toggleCard(this)">
+          <span class="num">▸</span>
+          <h4>Overview &amp; Purpose</h4>
+          <span class="arrow open">▸</span>
+        </div>
+        <div class="bd open">
+          <p style="color:var(--muted);font-size:0.82rem">Vendors stores your suppliers — companies that sell materials, equipment, and services. Create before POs or expenses.</p>
+          <div class="callout callout-o"><strong>Rule:</strong> Create each vendor before recording a PO or expense against them.</div>
+        </div>
+      </div>
+
+      <!-- Accordion: Key Fields -->
+      <div class="accordion-card">
+        <div class="hd" onclick="toggleCard(this)">
+          <span class="num">▸</span>
+          <h4>Key Fields</h4>
+          <span class="arrow">▸</span>
+        </div>
+        <div class="bd">
+          <div class="tw">
+            <table class="tbl">
+              <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+              <tr><td>Vendor Name</td><td>Text</td><td><span class="badge badge-cr">Required</span></td></tr>
+              <tr><td>Company Name</td><td>Text</td><td>Legal entity</td></tr>
+              <tr><td>Email / Phone / Mobile</td><td>Email + Phone</td><td></td></tr>
+              <tr><td>Payment Terms</td><td>Dropdown</td><td>Due on Receipt, Net 15/30/45/60</td></tr>
+              <tr><td>Currency</td><td>Dropdown</td><td>USD, EUR, INR</td></tr>
+              <tr><td>Tax ID / PAN</td><td>Text</td><td>GSTIN / VAT</td></tr>
+              <tr><td>Status</td><td>Dropdown</td><td>Active / Inactive</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Accordion: Relationships -->
+      <div class="accordion-card">
+        <div class="hd" onclick="toggleCard(this)">
+          <span class="num">▸</span>
+          <h4>Relationships</h4>
+          <span class="arrow">▸</span>
+        </div>
+        <div class="bd">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div style="background:var(--surface2);border-radius:6px;padding:10px;font-size:0.76rem">
+              <span style="color:var(--muted);font-size:0.62rem">REFERENCED BY</span>
+              <div style="margin-top:4px"><span style="color:var(--accent);font-weight:600">Purchase Orders</span> — PO.Vendor lookup</div>
+              <div><span style="color:var(--accent);font-weight:600">Inventory Items</span> — Item.Preferred_Vendor</div>
+              <div><span style="color:var(--accent);font-weight:600">Expenses</span> — Expense.Vendor lookup</div>
+            </div>
+            <div style="background:var(--surface2);border-radius:6px;padding:10px;font-size:0.76rem">
+              <span style="color:var(--muted);font-size:0.62rem">EMBEDDED SUBFORMS</span>
+              <div style="margin-top:4px"><span style="color:var(--green);font-weight:600">Vendor_Contacts</span> — add contact persons</div>
+              <div><span style="color:var(--green);font-weight:600">Vendor_Documents</span> — upload contracts</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Accordion: Subforms Detail -->
+      <div class="accordion-card">
+        <div class="hd" onclick="toggleCard(this)">
+          <span class="num">▸</span>
+          <h4>Vendor_Contacts Subform</h4>
+          <span class="arrow">▸</span>
+        </div>
+        <div class="bd">
+          <div class="tw">
+            <table class="tbl">
+              <tr><th>Field</th><th>Type</th></tr>
+              <tr><td>Salutation</td><td>Dropdown</td></tr>
+              <tr><td>First Name / Last Name</td><td>Text</td></tr>
+              <tr><td>Email / Phone</td><td>Email + Phone</td></tr>
+              <tr><td>Designation</td><td>Text</td></tr>
+              <tr><td>Is Primary</td><td>Checkbox</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Accordion: Automation -->
+      <div class="accordion-card">
+        <div class="hd" onclick="toggleCard(this)">
+          <span class="num">▸</span>
+          <h4>Automations</h4>
+          <span class="arrow">▸</span>
+        </div>
+        <div class="bd">
+          <p style="color:var(--muted);font-size:0.8rem">None — Vendors is pure data capture.</p>
+        </div>
+      </div>
     </div>
 
-  </main>
+    <!-- ================================================================== -->
+    <!-- PAGE: Testing Guide — Phase 1A (Vendors, Accounts, etc.)          -->
+    <!-- Demonstrates nested accordion: test scenarios within a phase       -->
+    <!-- ================================================================== -->
+    <div id="test-1a" class="page" style="display:none">
+      <div class="page-header">
+        <h2>Phase 1A — Foundation Forms</h2>
+        <div class="meta">Vendors, Accounts, Projects, Warehouses, Inventory Items</div>
+      </div>
 
+      <!-- Prerequisites accordion -->
+      <div class="accordion-card">
+        <div class="hd" onclick="toggleCard(this)">
+          <span class="num">▸</span>
+          <h4>Prerequisites</h4>
+          <span class="arrow open">▸</span>
+        </div>
+        <div class="bd open">
+          <p style="color:var(--muted);font-size:0.8rem">None — these are the foundation forms. Create three warehouses first:</p>
+          <pre>Warehouse 1: "Main Warehouse", Status: Active
+Warehouse 2: "Secondary Store", Status: Active
+Warehouse 3: "Returns Bay", Status: Active</pre>
+        </div>
+      </div>
+
+      <!-- Test scenario accordion cards -->
+      <div class="accordion-card">
+        <div class="hd" onclick="toggleCard(this)">
+          <span class="num">TC-1A-01</span>
+          <h4>Create Vendor with Contacts &amp; Documents</h4>
+          <span class="arrow open">▸</span>
+        </div>
+        <div class="bd open">
+          <div style="font-size:0.82rem;color:var(--muted);margin-bottom:8px;font-weight:600;color:var(--accent)">Steps:</div>
+          <ol class="steps">
+            <li>Open Vendors form</li>
+            <li>Enter: Vendor Name = TechSupply Co., Email = orders@techsupply.com, Payment Terms = Net 30</li>
+            <li>In Vendor_Contacts subform: add Raj Patel (Primary) and Priya Sharma</li>
+            <li>In Vendor_Documents: upload GST Certificate</li>
+            <li>Submit</li>
+          </ol>
+          <div class="callout callout-o"><strong>Expected:</strong> Record saved with auto-ID. Contacts and document visible.</div>
+          <div class="callout callout-w"><strong>Edge cases:</strong> Blank name → alert. 5+ contacts → all save. Large file → still uploads.</div>
+        </div>
+      </div>
+
+      <div class="accordion-card">
+        <div class="hd" onclick="toggleCard(this)">
+          <span class="num">TC-1A-03</span>
+          <h4>Create Account with Contacts &amp; Documents</h4>
+          <span class="arrow">▸</span>
+        </div>
+        <div class="bd">
+          <ol class="steps">
+            <li>Open Accounts form</li>
+            <li>Enter: Account Name = ABC Manufacturing, Payment Terms = Net 45</li>
+            <li>Add contact: Vikram Singh (Primary)</li>
+            <li>Upload Signed MSA document</li>
+            <li>Submit</li>
+          </ol>
+          <div class="callout callout-o"><strong>Expected:</strong> Record saved with contacts and document.</div>
+        </div>
+      </div>
+
+      <div class="accordion-card">
+        <div class="hd" onclick="toggleCard(this)">
+          <span class="num">TC-1A-05</span>
+          <h4>Create Project</h4>
+          <span class="arrow">▸</span>
+        </div>
+        <div class="bd">
+          <ol class="steps">
+            <li>Open Projects form</li>
+            <li>Project Name = Office Renovation 2026, Account = ABC Manufacturing</li>
+            <li>Start = 01-Jun-2026, End = 31-Dec-2026, Budget = 50000</li>
+            <li>Status = Active, Submit</li>
+          </ol>
+          <div class="callout callout-o"><strong>Expected:</strong> PROJ-0001 auto-generated.</div>
+          <div class="callout callout-w"><strong>Edge:</strong> End before Start → alert. Blank name → required.</div>
+        </div>
+      </div>
+
+      <div class="accordion-card">
+        <div class="hd" onclick="toggleCard(this)">
+          <span class="num">TC-1A-07</span>
+          <h4>Inventory Item — Goods with Stock</h4>
+          <span class="arrow">▸</span>
+        </div>
+        <div class="bd">
+          <ol class="steps">
+            <li>Open Inventory_Items form</li>
+            <li>Item Name = Cement Bag (50kg), Type = Goods, Category = Raw Material</li>
+            <li>Purchase Price = 8.50, Reorder Level = 100</li>
+            <li>In Item_Warehouse_Stock: Main WH → 500, Secondary Store → 200</li>
+            <li>Submit</li>
+          </ol>
+          <div class="callout callout-o"><strong>Expected:</strong> SKU-0001. Stock Value = 500 × 8.50 = 4250. Available = 500.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hidden placeholder pages for other modules -->
+    <div id="user-accounts" class="page" style="display:none"><div class="page-header"><h2>Accounts</h2><div class="meta">Customer/client records. Click another sidebar item.</div></div></div>
+    <div id="test-1b" class="page" style="display:none"><div class="page-header"><h2>Phase 1B — Budget &amp; Stock</h2><div class="meta">Budget Plans, Inventory Transactions. Click another sidebar item.</div></div></div>
+
+    <footer>
+      ITOTCloud &middot; Project Budget Tracking Documentation
+    </footer>
+  </div>
 </div>
 
 <script>
-  (function() {
-    'use strict';
+// Accordion toggle (Level 2: nested cards within a page)
+function toggleCard(headerEl) {
+  const card = headerEl.closest('.accordion-card');
+  const body = card.querySelector('.bd');
+  const arrow = card.querySelector('.arrow');
+  body.classList.toggle('open');
+  arrow.classList.toggle('open');
+}
 
-    // ===== CONTENT DATA =====
-    var DATA = {
-      '1-0': {
-        title: 'Environment Prerequisites',
-        subtitle: 'Verify system and browser requirements before starting.',
-        sections: [
-          { type: 'html', content: '<p>Ensure your environment meets Zoho Creator\'s minimum requirements. Below are the recommended specifications for development and production use.</p>' },
-          { type: 'table', head: ['Requirement', 'Minimum', 'Recommended'],
-            rows: [
-              ['Browser', 'Chrome 90 / Firefox 90 / Edge 90', 'Chrome 110+'],
-              ['Internet', '5 Mbps download', '25 Mbps download'],
-              ['Screen', '1280 &times; 720', '1920 &times; 1080'],
-              ['RAM (client)', '4 GB', '8 GB'],
-            ]
-          },
-          { type: 'html', content: '<h3>Supported Browsers</h3><ul><li>Google Chrome (latest 2 versions)</li><li>Mozilla Firefox (latest 2 versions)</li><li>Microsoft Edge (Chromium-based)</li><li>Safari 14+ (macOS only)</li></ul>' },
-        ]
-      },
-      '1-1': {
-        title: 'Account &amp; Billing Setup',
-        subtitle: 'Configure your Zoho Creator account and subscription.',
-        sections: [
-          { type: 'html', content: '<p>Navigate to the Zoho Creator admin console to set up your organization account and billing details.</p>' },
-          { type: 'html', content: '<h3>Setup Steps</h3><ol><li>Sign in at <code>creator.zoho.com</code> with your Zoho credentials.</li><li>Choose <strong>Organization</strong> &rarr; <strong>Subscription</strong> from the admin menu.</li><li>Select a plan tier (Free, Standard, Professional, or Enterprise).</li><li>Enter billing information and tax ID if applicable.</li><li>Confirm and activate.</li></ol>' },
-          { type: 'html', content: '<h3>Plan Comparison</h3>' },
-          { type: 'table', head: ['Feature', 'Free', 'Professional', 'Enterprise'],
-            rows: [
-              ['Apps', '1', 'Unlimited', 'Unlimited'],
-              ['Records', '500', '50,000', 'Unlimited'],
-              ['Users', '2', '10', 'Unlimited'],
-              ['API Calls', '1,000/mo', '10,000/mo', '100,000/mo'],
-              ['Support', 'Community', 'Email', 'Priority'],
-            ]
-          },
-        ]
-      },
-      '2-0': {
-        title: 'Workspace Creation',
-        subtitle: 'Create and configure your first Zoho Creator workspace.',
-        sections: [
-          { type: 'html', content: '<p>A Workspace is a logical container for your applications, forms, and data. Every Creator project starts with a workspace.</p>' },
-          { type: 'html', content: '<h3>Creating a Workspace</h3><ol><li>Click <strong>Create Workspace</strong> on the dashboard.</li><li>Enter a unique name (e.g. <code>Acme-CRM</code>).</li><li>Optionally assign a workspace admin.</li><li>Set the default time zone and locale.</li><li>Click <strong>Create</strong>.</li></ol>' },
-          { type: 'html', content: '<p><span class="zc-tag">TIP</span> Use a consistent naming convention: <code>{Project}-{Env}</code> (e.g. <code>Inventory-Prod</code>).</p>' },
-        ]
-      },
-      '2-1': {
-        title: 'Role-Based Access',
-        subtitle: 'Define user roles and permission sets.',
-        sections: [
-          { type: 'html', content: '<p>Zoho Creator supports granular role-based access control (RBAC) at the workspace, app, form, and field level.</p>' },
-          { type: 'table', head: ['Role', 'Scope', 'Permissions'],
-            rows: [
-              ['Admin', 'Workspace', 'Full CRUD, manage users, billing, settings'],
-              ['Manager', 'App', 'CRUD on assigned apps, view reports'],
-              ['Editor', 'Form', 'Create / edit records, no settings'],
-              ['Viewer', 'Report', 'Read-only access to reports and dashboards'],
-            ]
-          },
-          { type: 'html', content: '<h3>Assigning Roles</h3><p>Go to <strong>Settings</strong> &rarr; <strong>Users &amp; Permissions</strong>. Select a user, choose a role, and scope it to specific apps or forms.</p>' },
-        ]
-      },
-      '3-0': {
-        title: 'Form Designer',
-        subtitle: 'Drag-and-drop form builder for data entry.',
-        sections: [
-          { type: 'html', content: '<p>The Form Designer provides a WYSIWYG canvas for building data entry forms. Fields are dragged from the left palette onto the canvas.</p>' },
-          { type: 'html', content: '<h3>Key Actions</h3><ul><li><strong>Add Field</strong> &mdash; drag from the palette or click +.</li><li><strong>Reorder</strong> &mdash; grab the six-dot handle on any field.</li><li><strong>Configure</strong> &mdash; click a field to open its properties panel.</li><li><strong>Section</strong> &mdash; add collapsible groups with the Section tool.</li></ul>' },
-          { type: 'html', content: '<h3>Form Settings Reference</h3>' },
-          { type: 'table', head: ['Setting', 'Description', 'Default'],
-            rows: [
-              ['Form Name', 'Internal identifier for the form', 'Untitled Form'],
-              ['Submit Label', 'Text on the submit button', 'Submit'],
-              ['Allow Edit', 'Permit record editing after submission', 'Yes'],
-              ['Allow Delete', 'Permit record deletion', 'No'],
-              ['Captcha', 'Enable reCAPTCHA on form', 'No'],
-            ]
-          },
-        ]
-      },
-      '3-1': {
-        title: 'Field Types &amp; Validation',
-        subtitle: 'Available field types and input validation rules.',
-        sections: [
-          { type: 'html', content: '<p>Zoho Creator offers 20+ field types. Choose the right type to enforce data integrity at the input level.</p>' },
-          { type: 'table', head: ['Field Type', 'Use Case', 'Validation'],
-            rows: [
-              ['Single Line', 'Names, emails, short text', 'Max length, regex'],
-              ['Multi Line', 'Descriptions, comments', 'Max length'],
-              ['Number', 'Quantities, prices', 'Min / max, decimals'],
-              ['Date', 'Deadlines, birth dates', 'Range, format'],
-              ['Dropdown', 'Status, category selection', 'Values list'],
-              ['Lookup', 'Reference another form\'s record', 'Related form'],
-            ]
-          },
-          { type: 'html', content: '<h3>Adding Validation</h3><p>Select a field, open <strong>Properties</strong> &rarr; <strong>Validation</strong>, and define rules using the formula editor or regex.</p>' },
-          { type: 'html', content: '<pre><code>// Example: Custom regex for phone field\n^\\+?[1-9]\\d{1,14}$</code></pre>' },
-        ]
-      },
-      '4-0': {
-        title: 'Workflow Builder',
-        subtitle: 'Automate business processes with visual workflows.',
-        sections: [
-          { type: 'html', content: '<p>The Workflow Builder lets you create trigger-action rules. When a form event occurs, a chain of actions executes automatically.</p>' },
-          { type: 'html', content: '<h3>Workflow Structure</h3><ol><li><strong>Trigger</strong> &mdash; On Create, On Edit, On Delete, or Scheduled.</li><li><strong>Condition</strong> &mdash; Optional filter expression.</li><li><strong>Actions</strong> &mdash; Update record, send email, call webhook, etc.</li></ol>' },
-          { type: 'html', content: '<p><span class="zc-tag cyan">EXAMPLE</span> Send a welcome email when a new user signs up via the Registration form.</p>' },
-          { type: 'html', content: '<pre><code>// Deluge: Send welcome email\nrecipient = input.Email;\nsubject = "Welcome to " + input.Company;\nbody = "Hi " + input.Name + ",\\n\\nYour account is active.";\nsendmail\n[\n  to : recipient,\n  subject : subject,\n  message : body\n];</code></pre>' },
-        ]
-      },
-      '4-1': {
-        title: 'Deluge Scripting',
-        subtitle: 'Write server-side scripts for custom logic.',
-        sections: [
-          { type: 'html', content: '<p>Deluge is Zoho\'s server-side scripting language. It supports variables, loops, conditionals, and integrations with external APIs.</p>' },
-          { type: 'html', content: '<h3>Common Patterns</h3>' },
-          { type: 'table', head: ['Pattern', 'Syntax', 'Example'],
-            rows: [
-              ['Variable', '<code>varName = value;</code>', '<code>count = 0;</code>'],
-              ['If/Else', '<code>if (cond) { } else { }</code>', '<code>if (age &gt; 18) { }</code>'],
-              ['For Loop', '<code>for each item in collection { }</code>', '<code>for each rec in records { }</code>'],
-              ['API Call', '<code>invokeUrl</code>', '<code>resp = invokeUrl url;</code>'],
-            ]
-          },
-          { type: 'html', content: '<pre><code>// Example: Calculate discount\nprice = input.Price;\nqty = input.Quantity;\ntotal = price * qty;\nif (total &gt; 1000) {\n  discount = total * 0.10;\n  total = total - discount;\n}\ninput.Total = total;</code></pre>' },
-        ]
-      },
-    };
+// Sidebar navigation (Level 1: replace entire main content)
+(function() {
+  const links = document.querySelectorAll('#sidebar-nav a');
+  const pages = document.querySelectorAll('.page');
 
-    // ===== DOM refs =====
-    var nav = document.getElementById('zcNav');
-    var detail = document.getElementById('zcDetail');
-    var topicContent = document.getElementById('topicContent');
-    var mobileSelect = document.getElementById('zcMobileSelect');
+  links.forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
 
-    // ===== Render content for a given topic key =====
-    function renderTopic(key) {
-      var data = DATA[key];
-      if (!data) return;
+      // Deactivate all links
+      links.forEach(l => l.classList.remove('active'));
 
-      var html = '<h2>' + data.title + '</h2>';
-      if (data.subtitle) {
-        html += '<p class="subtitle">' + data.subtitle + '</p>';
-      }
+      // Hide all pages
+      pages.forEach(p => p.style.display = 'none');
 
-      data.sections.forEach(function(s) {
-        if (s.type === 'html') {
-          html += s.content;
-        } else if (s.type === 'table') {
-          html += '<table><thead><tr>';
-          s.head.forEach(function(h) { html += '<th>' + h + '</th>'; });
-          html += '</tr></thead><tbody>';
-          s.rows.forEach(function(r) {
-            html += '<tr>';
-            r.forEach(function(c) { html += '<td>' + c + '</td>'; });
-            html += '</tr>';
-          });
-          html += '</tbody></table>';
-        }
-      });
+      // Activate clicked link
+      this.classList.add('active');
 
-      topicContent.innerHTML = html;
-    }
-
-    // ===== Update active states in nav =====
-    function setActiveTopic(topicKey) {
-      // deactivate all subs and headers
-      var subs = nav.querySelectorAll('.zc-split-sub');
-      subs.forEach(function(s) { s.classList.remove('active'); });
-
-      // deactivate all section headers
-      var headers = nav.querySelectorAll('.zc-split-nav-header');
-      headers.forEach(function(h) { h.classList.remove('active'); });
-
-      // activate matching sub
-      var activeSub = nav.querySelector('.zc-split-sub[data-topic="' + topicKey + '"]');
-      if (activeSub) {
-        activeSub.classList.add('active');
-        // also highlight its parent header
-        var parentItem = activeSub.closest('.zc-split-nav-item');
-        if (parentItem) {
-          var header = parentItem.querySelector('.zc-split-nav-header');
-          if (header) header.classList.add('active');
-        }
-      }
-
-      // update mobile select
-      if (mobileSelect) mobileSelect.value = topicKey;
-
-      renderTopic(topicKey);
-    }
-
-    // ===== Toggle sub-items accordion =====
-    function toggleSection(headerEl) {
-      var item = headerEl.closest('.zc-split-nav-item');
-      if (!item) return;
-
-      var subs = item.querySelector('.zc-split-subs');
-      var arrow = headerEl.querySelector('.zc-split-nav-arrow');
-      if (!subs || !arrow) return;
-
-      var isOpen = subs.classList.contains('open');
-
-      // close all sections
-      nav.querySelectorAll('.zc-split-subs').forEach(function(s) { s.classList.remove('open'); });
-      nav.querySelectorAll('.zc-split-nav-arrow').forEach(function(a) { a.classList.remove('open'); });
-
-      if (!isOpen) {
-        subs.classList.add('open');
-        arrow.classList.add('open');
-        headerEl.setAttribute('aria-expanded', 'true');
-      } else {
-        headerEl.setAttribute('aria-expanded', 'false');
-      }
-    }
-
-    // ===== Event: click nav header (toggle accordion) =====
-    nav.addEventListener('click', function(e) {
-      var header = e.target.closest('.zc-split-nav-header');
-      if (header) {
-        toggleSection(header);
-        return;
-      }
-
-      // click on sub-item
-      var sub = e.target.closest('.zc-split-sub');
-      if (sub) {
-        var topicKey = sub.getAttribute('data-topic');
-        if (topicKey) setActiveTopic(topicKey);
+      // Show target page
+      const pageId = this.dataset.page;
+      const target = document.getElementById(pageId);
+      if (target) {
+        target.style.display = 'block';
+        // Scroll main area to top
+        document.getElementById('main-area').scrollTop = 0;
+        document.querySelector('.main').scrollTop = 0;
       }
     });
-
-    // ===== Event: keyboard on headers =====
-    nav.addEventListener('keydown', function(e) {
-      var header = e.target.closest('.zc-split-nav-header');
-      if (!header) return;
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        toggleSection(header);
-      }
-    });
-
-    // ===== Event: mobile select change =====
-    if (mobileSelect) {
-      mobileSelect.addEventListener('change', function() {
-        var val = this.value;
-        if (val) setActiveTopic(val);
-      });
-    }
-
-    // ===== Initialize: show first item of first expanded section =====
-    var defaultTopic = '3-0';
-    var initialSub = nav.querySelector('.zc-split-sub.active');
-    if (initialSub) {
-      defaultTopic = initialSub.getAttribute('data-topic');
-    }
-    setActiveTopic(defaultTopic);
-
-    // ensure the parent section of default is open
-    var activeSubEl = nav.querySelector('.zc-split-sub.active');
-    if (activeSubEl) {
-      var parentItem = activeSubEl.closest('.zc-split-nav-item');
-      if (parentItem) {
-        var subs = parentItem.querySelector('.zc-split-subs');
-        var arrow = parentItem.querySelector('.zc-split-nav-arrow');
-        if (subs && !subs.classList.contains('open')) {
-          subs.classList.add('open');
-          if (arrow) arrow.classList.add('open');
-        }
-      }
-    }
-
-  })();
+  });
+})();
 </script>
+
+</body>
+</html>

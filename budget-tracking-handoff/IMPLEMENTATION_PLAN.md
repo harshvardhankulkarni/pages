@@ -92,6 +92,8 @@ Phase 1F:  Reports & Dashboards (all modules incl. Project P&L)
 | PAN | Text | Permanent Account Number (India) |
 | Billing Address | Address | Zoho Creator Address type (composite) |
 | Shipping Address | Address | Zoho Creator Address type (composite) |
+| Category | Dropdown | `Raw Material`, `Service`, `Equipment`, `Logistics`, `Consulting`, `Other` |
+| Performance Rating | Dropdown | `Excellent`, `Good`, `Average`, `Poor` |
 | Status | Dropdown | `Active`, `Inactive` |
 | Remarks | Multi-line | |
 
@@ -215,17 +217,17 @@ This gives both warehouse-level visibility and item-level totals without on-dema
 | Component Name | Text | e.g., "Labor", "Materials" |
 | Project | Lookup → Projects | Denormalized for reporting ease |
 | Allocated Amount | Currency | |
-| Total Spent | Currency (Formula) | Aggregated from Expense Management records |
-| Remaining | Formula | `Allocated Amount - Total Spent` |
-| Consumption % | Formula | `(Total Spent / Allocated Amount) * 100` |
-| Status | Dropdown | `Within Budget`, `80% Alert`, `90% Alert`, `Exceeded` |
+| Spent Amount | Currency | Updated by Deluge on Expense Submit / Stock Out |
+| Remaining | Formula | `Allocated Amount - Spent Amount` |
+| Consumption % | Formula | `(Spent Amount / Allocated Amount) * 100` |
+| Status | Dropdown | `Within Budget`, `80% Alert`, `90% Alert`, `Exceeded` | Auto-calculated by Deluge based on Consumption % |
 
 **Key Relationship:** This is the central pivot form. Expenses reference it. Reports group by it.
 
 **Deluge Workflow for Status:**
 ```
 On Expense Submit (if within budget):
-  Update Budget_Component.Total_Spent
+  Update Budget_Component.Spent_Amount
   Recalculate consumption %
   If >= 100%: Status = "Exceeded", trigger alert
   If >= 90%:  Status = "90% Alert", trigger alert
@@ -246,16 +248,17 @@ On Expense Submit (if within budget):
 | Vendor | Lookup → Vendors (optional) | |
 | Description | Multi-line | |
 | Supporting Document | Upload | File attachment |
+| Expense Type | Dropdown | `Material`, `Labour`, `Equipment`, `Travel`, `Subcontract`, `Overhead`, `Other` |
 | Status | Dropdown | `Draft`, `Submitted`, `Approved`, `Overrun-Pending Approval`, `Rejected`, `Modified` |
 
 **Deluge Workflow (on Submit):**
 ```
 1. Read Allocated_Amount from Budget_Component
-2. Read Total_Spent from Budget_Component
-3. New_Total = Total_Spent + Expense.Amount
+2. Read Spent_Amount from Budget_Component
+3. New_Total = Spent_Amount + Expense.Amount
 4. If New_Total <= Allocated_Amount:
      Set Status = "Approved"
-     Update Budget_Component.Total_Spent = New_Total
+     Update Budget_Component.Spent_Amount = New_Total
      Update Budget_Component status based on % consumed
    Else:
      Set Status = "Overrun-Pending Approval"
@@ -404,6 +407,7 @@ Each step sends email notification. Procurement then reviews the auto-created PO
 | Delivery Date | Date | Expected delivery |
 | Due Date | Date | Payment due date |
 | Reference Number | Text | Vendor's reference or contract no. |
+| PO Total | Formula | `Sum(PO_Line_Items.Line_Total)` | Auto-computed total of all line items |
 | Status | Dropdown | `Draft`, `Open`, `Partially Invoiced`, `Billed`, `Closed`, `Cancelled` |
 | Subtotal | Currency | Sum of line item totals |
 | Discount (%) | Decimal | Overall PO-level discount |
@@ -478,8 +482,8 @@ Supports accepted vs rejected quantities, and auto-updates inventory + PO.
 | Project P&L | Pivot (Project, Total Revenue, Total Expense, Profit/Loss) | Invoices + Expenses | PM, Finance |
 | Open POs | Tabular (filter: Status != Closed, Cancelled) | Purchase_Orders | Procurement |
 | Vendor Spend | Summary (group by Vendor) | Purchase_Orders | Procurement, Finance |
-| Stock Availability | Tabular (group by Warehouse) | Inventory_Items (Item_Warehouse_Stock subform) | Inventory Manager |
-| Low Stock Alert | Tabular (filter: Stock <= Reorder Level) | Inventory_Items (Item_Warehouse_Stock subform) | Inventory Manager |
+| Stock Availability | List View on Inventory_Items | Inventory_Items | Show Item_Warehouse_Stock.Current_Stock as subform aggregate column |
+| Low Stock Alert | Summary on Inventory_Items | Inventory_Items | Filter: Item_Warehouse_Stock.Current_Stock ≤ Item_Warehouse_Stock.Reorder_Level |
 | Stock Consumption by Project | Summary | Inventory_Transactions | PM, Inventory |
 | Inventory Valuation | Summary | Inventory_Items | Finance |
 | Stock Movement by Warehouse | Summary by Item + Warehouse | Inventory_Transactions | Inventory Manager |
@@ -487,16 +491,16 @@ Supports accepted vs rejected quantities, and auto-updates inventory + PO.
 | Invoice Aging | Tabular (group by Due Date, Status != Paid) | Invoices | Finance |
 | DC Register | Tabular (filter by date range) | Delivery_Challans | Inventory, Logistics |
 | Vendor List with Contacts | Tabular | Vendors (Contacts subform) | Procurement |
-| BOM Cost Summary | Summary (group by Item) | BOM (Line Items subform) | Production |
+| BOM Cost Summary | Summary (group by Finished_Item) | BOM (Line Items subform) | Production |
 | Executive Dashboard | Dashboard with KPI cards + charts | All | All |
 
 **Dashboard KPIs — Deluge Scheduled Workflow to calculate and store in a Summary_Data form:**
 - Total Project Budget = Sum of all active Budget_Plans.Total_Budget_Amount
-- Total Spent = Sum of approved Expenses.Amount
+- Spent Amount = Sum of approved Expenses.Amount
 - Total Invoiced = Sum of Invoices where Status IN ("Sent", "Partially Paid", "Paid")
-- Budget Utilization % = `Total Spent / Total Project Budget * 100`
+- Budget Utilization % = `Spent Amount / Total Project Budget * 100`
 - Project P&L = `Total Invoiced per Project - Total Expenses per Project`
-- Open PO Value = Sum of POs with Status = "Open"
+| Open PO Value | Sum(PO_Line_Items.Line_Total) × PO.Currency | Purchase_Orders | Formula field PO_Total on Purchase_Orders = Sum(PO_Line_Items.Line_Total) |
 - Inventory Value = Sum of (Current_Stock × Purchase_Price) across all items
 - Cost Overruns = Count of Budget_Components where Status = "Exceeded"
 - Low Stock Items = Count of Item_Warehouse_Stock subform rows where Current_Stock <= Reorder_Level

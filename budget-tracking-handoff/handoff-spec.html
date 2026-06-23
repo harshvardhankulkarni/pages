@@ -540,9 +540,9 @@
     <tr><td>Component Name</td><td>Text</td><td>e.g. Labour, Materials, Travel</td></tr>
     <tr><td>Project</td><td>Lookup → Projects</td><td>Denormalized for reporting</td></tr>
     <tr><td>Allocated Amount</td><td>Currency</td><td></td></tr>
-    <tr><td>Total Spent</td><td>Formula / Deluge</td><td>Aggregated from Expenses</td></tr>
-    <tr><td>Remaining</td><td>Formula</td><td>Allocated − Total Spent</td></tr>
-    <tr><td>Consumption %</td><td>Formula</td><td>(Total Spent / Allocated) × 100</td></tr>
+    <tr><td>Spent Amount</td><td>Formula / Deluge</td><td>Aggregated from Expenses</td></tr>
+    <tr><td>Remaining</td><td>Formula</td><td>Allocated − Spent Amount</td></tr>
+    <tr><td>Consumption %</td><td>Formula</td><td>(Spent Amount / Allocated) × 100</td></tr>
     <tr><td>Status</td><td>Dropdown (auto)</td><td>Within Budget, 80% Alert, 90% Alert, Exceeded</td></tr>
   </table>
   <p style="font-size:0.8rem;color:var(--color-text-muted)"><strong>Note:</strong> Budget Plan lookup is implicit — Budget Components is an embedded subform of Budget Plans.</p>
@@ -564,7 +564,7 @@
     <tr><td>Description / Supporting Doc</td><td>Multi-line / Upload</td><td></td></tr>
     <tr><td>Status</td><td>Dropdown</td><td>Draft, Submitted, Approved, Overrun-Pending Approval, Rejected, Modified</td></tr>
   </table>
-  <div class="alert alert-warning"><strong>Critical Deluge (on submit):</strong> Compare new total (Total_Spent + Amount) vs Allocated_Amount. If within budget → auto-approve, update Budget_Component.Total_Spent, update Status based on %. If over → Status = "Overrun-Pending Approval", create Budget_Approval record, notify PM + Finance Manager.</div>
+  <div class="alert alert-warning"><strong>Critical Deluge (on submit):</strong> Compare new total (Spent_Amount + Amount) vs Allocated_Amount. If within budget → auto-approve, update Budget_Component.Spent_Amount, update Status based on %. If over → Status = "Overrun-Pending Approval", create Budget_Approval record, notify PM + Finance Manager.</div>
 
   <h3>Budget Approvals (Audit Trail)</h3>
   <table class="spec-table">
@@ -871,7 +871,7 @@
 
   <div class="alert alert-warning"><strong>Partial Deluge failure:</strong> If a multi-step workflow (e.g. create Stock Out + create Expense) fails mid-way, partial data persists. Add safety checks: verify state before each write. Log failures to a <code>Deluge_Error_Log</code> form (text fields for Form Name, Record ID, Error Message, Timestamp).</div>
 
-  <div class="alert alert-warning"><strong>Concurrent expense submissions:</strong> Two users submitting expenses against the same Budget Component simultaneously could both pass the budget check if it runs at the same moment. Zoho Creator's record-level locking mitigates this, but add a retry pattern: re-read Total_Spent inside the workflow, re-check, and fail with "Budget exceeded by another transaction — please resubmit" if needed.</div>
+  <div class="alert alert-warning"><strong>Concurrent expense submissions:</strong> Two users submitting expenses against the same Budget Component simultaneously could both pass the budget check if it runs at the same moment. Zoho Creator's record-level locking mitigates this, but add a retry pattern: re-read Spent_Amount inside the workflow, re-check, and fail with "Budget exceeded by another transaction — please resubmit" if needed.</div>
 
   <div class="alert alert-warning"><strong>Stale lookup values:</strong> Lookup fields cache the value at the time the record was created. For live stock counts, use a <strong>Formula Lookup</strong> field (recalculated on every form load) instead of a regular Lookup.</div>
 

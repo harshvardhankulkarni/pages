@@ -437,7 +437,7 @@
           <tr><th style="width:30%">Risk</th><th>Mitigation</th></tr>
           <tr><td>Deluge timeout on large datasets</td><td>Scheduled Workflows for mass ops. Keep On Submit lightweight.</td></tr>
           <tr><td>Negative stock</td><td>Validate <code>Current_Stock &ge; Quantity</code> before Stock Out.</td></tr>
-          <tr><td>Concurrent expense submissions</td><td>Record locking + Deluge retry: re-read Total_Spent after lock.</td></tr>
+          <tr><td>Concurrent expense submissions</td><td>Record locking + Deluge retry: re-read Spent_Amount after lock.</td></tr>
           <tr><td>Partial workflow failure</td><td>Safety checks before every write. Log to <code>Deluge_Error_Log</code> form.</td></tr>
           <tr><td>Stale lookup values</td><td>Formula Lookup for live stock counts instead of regular Lookup.</td></tr>
           <tr><td>Deleting referenced records</td><td>Archive (Status=Inactive) instead of delete.</td></tr>
@@ -926,7 +926,7 @@ if (!existing.isNull() && existing.size() > 0)
                 <p>Summary reports can include fields from related forms via Lookup relationships:</p>
                 <ul>
                   <li><strong>Project P&amp;L</strong>: Summary on <code>Invoices</code> with Sum(Total) grouped by <code>Project.Project_Name</code></li>
-                  <li><strong>Budget vs Actual</strong>: Summary on <code>Budget_Components</code> with Sum(Allocated) and Sum(Total_Spent) by <code>Budget_Plan.Project</code></li>
+                   <li><strong>Budget vs Actual</strong>: Summary on <code>Budget_Plans</code> (via embedded Budget_Components) with Sum(Budget_Components.Allocated) and Sum(Budget_Components.Spent_Amount) by <code>Project.Project_Name</code></li>
                   <li><strong>Invoice Aging</strong>: Summary on <code>Invoices</code>, Status=Sent, grouped by age bucket</li>
                 </ul>
                 <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
@@ -972,8 +972,8 @@ if (!existing.isNull() && existing.size() > 0)
                 <p>KPI = single metric with label and optional trend arrow:</p>
                 <table class="tbl"><tr><th>KPI</th><th>Source</th><th>Aggregation</th><th>Filter</th></tr>
                 <tr><td>Total Project Budget</td><td>Budget_Plans</td><td>Sum(Total_Budget_Amount)</td><td>Status=Active</td></tr>
-                <tr><td>Total Spent</td><td>Expenses</td><td>Sum(Amount)</td><td>Status=Approved</td></tr>
-                <tr><td>Open PO Value</td><td>PO_Line_Items</td><td>Sum(Total)</td><td>PO.Status=Open</td></tr>
+                <tr><td>Spent Amount</td><td>Expenses</td><td>Sum(Amount)</td><td>Status=Approved</td></tr>
+                <tr><td>Open PO Value</td><td>Purchase_Orders</td><td>Sum(PO_Total)</td><td>Status='Open'</td></tr>
                 <tr><td>Inventory Value</td><td>Inventory_Items</td><td>Sum(Stock_Value)</td><td>Status=Active</td></tr>
                 <tr><td>Cost Overruns</td><td>Budget_Components</td><td>Count</td><td>Status=Exceeded</td></tr>
                 <tr><td>Pending Approvals</td><td>Budget_Approvals</td><td>Count</td><td>Status=Pending</td></tr></table>

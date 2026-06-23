@@ -32,7 +32,7 @@ This phase creates all Zoho Creator Report and Dashboard widgets. No new forms �
 
 **Deluge — Scheduled KPI Refresh (Daily)**
 ```deluge
-/* JUSTIFICATION: Scheduled daily workflow that refreshes project P&L summary fields (Total_Expenses_Calc, Total_Invoiced_Calc, Total_Paid_Calc) by querying related Expenses and Invoices. */
+/* JUSTIFICATION: Scheduled daily workflow that refreshes project P&L Currency fields (Total_Spent_Project, Total_Invoiced, Total_Paid) by querying related Expenses and Invoices. */
 /* ===== PSEUDOCODE =====
    Trigger: Scheduled (Daily 1 AM) — refresh project P&L summary data
    
@@ -50,9 +50,9 @@ This phase creates all Zoho Creator Report and Dashboard widgets. No new forms �
            Add Total to total_invoiced
            Add Amount_Paid to total_paid
       d. Store calculated totals in the Projects form:
-         - Update Total_Expenses_Calc with total_expenses
-         - Update Total_Invoiced_Calc with total_invoiced
-         - Update Total_Paid_Calc with total_paid
+          - Update Total_Spent_Project with total_expenses
+          - Update Total_Invoiced with total_invoiced
+          - Update Total_Paid with total_paid
    3. If no projects exist: exit (nothing to refresh)
    ===== END PSEUDOCODE ===== */
 active_projects = zoho.creator.getRecords("budget_tracking", "Projects", "", 1, 200);
@@ -88,9 +88,9 @@ if (!active_projects.isNull())
         }
 
         proj_data = Map();
-        proj_data.put("Total_Expenses_Calc", total_expenses);
-        proj_data.put("Total_Invoiced_Calc", total_invoiced);
-        proj_data.put("Total_Paid_Calc", total_paid);
+        proj_data.put("Total_Spent_Project", total_expenses);
+        proj_data.put("Total_Invoiced", total_invoiced);
+        proj_data.put("Total_Paid", total_paid);
         zoho.creator.updateRecord("budget_tracking", "Projects", proj_id, proj_data);
     }
 }
@@ -117,21 +117,17 @@ if (!active_projects.isNull())
 ---
 
 ### Report 3: Stock Availability
-**Type:** Summary Report on Item_Warehouse_Stock
+**Type:** Summary Report on Inventory_Items
 **Configuration:**
-- **Group By:** Item.Item_Name
-- **Values:** Sum of Current_Stock, Sum of Reserved_Qty, Sum of Available_Stock
-- **Filter:** Current_Stock > 0
-- **Display:** Table grouped by warehouse
+- **Fields:** Item_Name, Item_Warehouse_Stock.Current_Stock, Item_Warehouse_Stock.Reserved_Qty, Item_Warehouse_Stock.Available_Stock (via subform aggregate columns)
 
 ---
 
 ### Report 4: Low Stock Alert
-**Type:** Summary Report on Item_Warehouse_Stock
+**Type:** Summary Report on Inventory_Items
 **Configuration:**
-- **Filter:** `Current_Stock <= Reorder_Level AND Current_Stock > 0`
-- **Group By:** Warehouse.Warehouse_Name
-- **Values:** Item.Item_Name, Current_Stock, Reorder_Level
+- **Fields:** Item_Name, Item_Warehouse_Stock.Current_Stock, Item_Warehouse_Stock.Reorder_Level
+- **Filter:** Item_Warehouse_Stock.Current_Stock <= Item_Warehouse_Stock.Reorder_Level (via subform filter)
 
 **Deluge — Scheduled Low Stock Notification**
 ```deluge
@@ -214,7 +210,7 @@ if (alert_body != "")
 ### Report 7: BOM Cost Summary
 **Type:** Summary Report on BOM
 **Configuration:**
-- **Fields:** BOM_No, BOM_Name, Product_Item, Quantity, Total_Material_Cost, Labor_Cost, Overhead_Cost, Total_Mfg_Cost
+- **Fields:** BOM_No, BOM_Name, Finished_Item, Quantity, Total_Material_Cost, Labor_Cost, Overhead_Cost, Total_Mfg_Cost
 - **Display:** Card view showing cost breakdown per BOM
 
 ---
@@ -228,21 +224,11 @@ if (alert_body != "")
 
 ---
 
-### Report 9: Expense Analysis
-**Type:** Summary Report on Expenses
-**Configuration:**
-- **Group By:** Expense_Type, Project.Project_Name
-- **Values:** Sum of Amount, Count of expenses
-- **Filter:** Status = 'Approved'
-- **Display:** Pie chart by Expense_Type, bar chart by Project
+| Expense Analysis | Summary | Expenses | Expense_Type, Amount, Status, Project |
 
 ---
 
-### Report 10: Vendor Performance
-**Type:** Summary Report on Vendors
-**Configuration:**
-- **Fields:** Vendor_Name, Category, Performance_Rating, Total PO Value (from POs)
-- **Display:** Card view sorted by Performance_Rating desc
+| Vendor Performance | Summary | Vendors | Category, Performance_Rating, PO count |
 
 ---
 
@@ -255,7 +241,7 @@ if (alert_body != "")
 | Total Budget Allocated | Budget_Components | Sum of Allocated_Amount where Budget_Plan.Status = 'Active' |
 | Total Spent | Budget_Components | Sum of Spent_Amount where Budget_Plan.Status = 'Active' |
 | Budget Utilization % | Budget_Components | (Total Spent / Total Budget) × 100 |
-| Open PO Value | Purchase_Orders | Sum of Total where Status = 'Open' |
+| Open PO Value | Purchase_Orders | Sum of PO_Total where Status='Open' |
 | Pending GRNs | Purchase_Orders | Count of Open POs with any line not fully received |
 | Inventory Value | Inventory_Items | Sum of Stock_Value where Status = 'Active' |
 
