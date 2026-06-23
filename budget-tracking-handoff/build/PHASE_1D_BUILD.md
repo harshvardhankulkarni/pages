@@ -50,6 +50,7 @@ Overrun Expense Submitted
 
 #### On Status = Approved — Update Expense + Budget
 ```deluge
+/* JUSTIFICATION: Approve/reject cascade updates Expense status and Budget_Component Spent_Amount across forms — cannot be handled by embedded subform submission */
 /* ===== PSEUDOCODE =====
    Trigger: On Submit — when Budget_Approval Status changes to Approved or Rejected
    
@@ -152,7 +153,7 @@ if (status_val == "Rejected" && !expense_id.isNull())
 | Item Total | Formula | `(Quantity * Unit_Rate) + Tax_Amount - Discount_Amount` |
 
 ### Validation Rules
-1. **Cannot cancel with linked GRNs** — On Status = "Cancelled", check for Goods_Receipts linked to this PO. If found, throw error.
+1. **Cannot cancel with linked GRNs** — On Status = "Cancelled", check for Goods_Receipts linked to this PO. If found, alert error.
 2. **Open requires Vendor** — On Status = "Open", Vendor field must not be null.
 3. **At least one line item** — On Status = "Open" or "Closed", there must be at least one PO_Line_Item.
 
@@ -191,6 +192,7 @@ PO Created (Status = Draft)
 
 #### On Submit — PO Open Workflow
 ```deluge
+/* JUSTIFICATION: Vendor email notification and cancellation guard with GRN check require standalone form processing */
 /* ===== PSEUDOCODE =====
    Trigger: On Submit — when Purchase_Order Status changes
    
@@ -202,7 +204,7 @@ PO Created (Status = Draft)
    
    CASE B — Status changed to "Cancelled":
       a. Query Goods_Receipts linked to this PO
-      b. If any GRNs exist: throw error with count — cannot cancel
+      b. If any GRNs exist: alert error with count — cannot cancel
       c. If no GRNs: allow cancellation
    
    3. If status is neither "Open" nor "Cancelled": skip all actions
@@ -236,7 +238,7 @@ if (status_val == "Cancelled")
     grns = zoho.creator.getRecords("budget_tracking", "Goods_Receipts", criteria, 1, 10);
     if (!grns.isNull() && grns.size() > 0)
     {
-        throw "Cannot cancel PO: " + grns.size().toString() + " Goods Receipt(s) are linked.";
+        alert "Cannot cancel PO: " + grns.size().toString() + " Goods Receipt(s) are linked.";
     }
 }
 ```
@@ -291,6 +293,7 @@ GRN Created (Status = Draft)
 
 #### On Submit — Process GRN
 ```deluge
+/* JUSTIFICATION: Stock In transaction creation from accepted GRN line items requires standalone form processing to create audit log entries */
 /* ===== PSEUDOCODE =====
    Trigger: On Submit — when Goods_Receipt Status changes to "Open"
    
@@ -398,13 +401,14 @@ TO Created (Status = Draft)
 ### Deluge Scripts
 #### On Submit — Process Transfer Completion
 ```deluge
+/* JUSTIFICATION: Paired Stock Out/Stock In transaction creation from embedded subform data requires standalone form processing */
 /* ===== PSEUDOCODE =====
    Trigger: On Submit — when Transfer_Order Status changes to "Completed"
    
    1. Get the status display value
    2. If status is "Completed":
       a. Get From_Warehouse and To_Warehouse from the record
-      b. If either is null: throw error — both warehouses required
+      b. If either is null: alert error — both warehouses required
       c. Access TO_Line_Items via input.TO_Line_Items (embedded subform)
       d. If line items exist:
          For each line item:
@@ -427,7 +431,7 @@ if (status_val == "Completed")
 
     if (from_wh.isNull() || to_wh.isNull())
     {
-        throw "Both From and To Warehouse are required.";
+        alert "Both From and To Warehouse are required.";
     }
 
     to_lines = input.TO_Line_Items;

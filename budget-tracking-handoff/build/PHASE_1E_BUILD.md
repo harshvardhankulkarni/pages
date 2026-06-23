@@ -58,6 +58,7 @@ BOM Created (Status = Draft)
 
 #### On Submit — Calculate BOM Cost
 ```deluge
+/* JUSTIFICATION: Processes embedded BOM_Line_Items subform data to calculate and update Total_Material_Cost on the parent BOM record. */
 /* ===== PSEUDOCODE =====
    Trigger: On Submit — when BOM record is created or updated
    
@@ -150,13 +151,14 @@ DC Created (Status = Draft)
 
 #### On Submit — Process Stock Deduction on Ship
 ```deluge
+/* JUSTIFICATION: Processes embedded DC_Line_Items subform data to create Inventory_Transactions (Stock Out) when Delivery Challan status changes to "Shipped". */
 /* ===== PSEUDOCODE =====
    Trigger: On Submit — when Delivery_Challan Status changes to "Shipped"
    
    1. Get the status display value from the current record
    2. If status is "Shipped":
       a. Get the parent Warehouse from the DC
-      b. If warehouse is null: throw error — required before shipping
+      b. If warehouse is null: alert error — required before shipping
       c. Access the embedded DC_Line_Items subform data via input
       d. If line items exist:
          For each line item:
@@ -181,7 +183,7 @@ if (status_val == "Shipped")
 
     if (parent_wh.isNull())
     {
-        throw "Warehouse is required before shipping.";
+        alert "Warehouse is required before shipping.";
     }
     
     dc_lines = input.DC_Line_Items;
@@ -289,6 +291,7 @@ Invoice Created (Status = Draft)
 
 #### Custom Action — Create Invoice from Project
 ```deluge
+/* JUSTIFICATION: Custom action button that opens the Invoice form pre-filled with Project and Account context from the selected Project record. */
 /* ===== PSEUDOCODE =====
    Trigger: Custom Action Button — when user clicks "Create Invoice" on Project form
    
@@ -310,6 +313,7 @@ proj_name = ifnull(proj.get("Project_Name"), "");
 
 #### On Status = Sent or Paid — Update Project Revenue Tracking
 ```deluge
+/* JUSTIFICATION: On Submit workflow that queries invoices for a project and updates calculated revenue totals (Total_Invoiced_Calc, Total_Paid_Calc) on the Projects form. */
 /* ===== PSEUDOCODE =====
    Trigger: On Submit — when Invoice Status changes to "Sent" or "Paid"
    Note: Invoice_Line_Items is an embedded subform; revenue totals
@@ -351,6 +355,7 @@ if (!proj_id.isNull() && (status_val == "Sent" || status_val == "Paid"))
 
 #### Custom Action — Create DC from Invoice
 ```deluge
+/* JUSTIFICATION: Custom action button that creates a Delivery_Challan record with embedded DC_Line_Items copied from the Invoice's Invoice_Line_Items subform data. */
 /* ===== PSEUDOCODE =====
    Trigger: Custom Action Button — when user clicks "Create DC" on Invoice form
    NOTE: Both Invoice_Line_Items and DC_Line_Items are embedded subforms.
@@ -397,6 +402,7 @@ created_dc = zoho.creator.createRecord("budget_tracking", "Delivery_Challans", d
 
 #### Scheduled Workflow — Mark Overdue Invoices
 ```deluge
+/* JUSTIFICATION: Scheduled daily workflow that updates Invoice status to "Overdue" when Due_Date has passed and status is still "Sent". */
 /* ===== PSEUDOCODE =====
    Trigger: Scheduled (Daily Midnight) — runs once per day
    
@@ -427,6 +433,7 @@ if (!overdue_invs.isNull())
 
 #### Project Completed — Auto-create Final Invoice
 ```deluge
+/* JUSTIFICATION: On Submit workflow that creates a final Invoice with embedded Invoice_Line_Items from uninvoiced DCs when a Project status changes to "Completed". */
 /* ===== PSEUDOCODE =====
    Trigger: On Submit — when Project Status changes to "Completed"
    NOTE: Both DC_Line_Items and Invoice_Line_Items are embedded subforms.

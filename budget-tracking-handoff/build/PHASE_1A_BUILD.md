@@ -47,7 +47,7 @@
 | Notes | Single Line | |
 
 ### Validation Rules
-1. **Vendor Name required** — On Submit, if `Vendor_Name` is blank → `throw "Vendor Name is required."`
+1. **Vendor Name required** — On Submit, if `Vendor_Name` is blank → `alert "Vendor Name is required."`
 
 ### Deluge Scripts
 
@@ -95,7 +95,7 @@
 | Notes | Single Line | |
 
 ### Validation Rules
-1. **Account Name required** — On Submit, if `Account_Name` is blank → `throw "Account Name is required."`
+1. **Account Name required** — On Submit, if `Account_Name` is blank → `alert "Account Name is required."`
 
 ### Deluge Scripts
 
@@ -127,12 +127,13 @@ Create two buttons in Form Settings → Custom Actions:
    - Action: Open form `Purchase_Requisitions` with `Project` pre-filled = current record ID, `Request_Type` = "Part Repair"
 
 ### Validation Rules
-1. **End Date after Start Date** — On Submit, if `End_Date` is not null and `Start_Date` is not null and `End_Date < Start_Date` → `throw "End Date must be after Start Date."`
+1. **End Date after Start Date** — On Submit, if `End_Date` is not null and `Start_Date` is not null and `End_Date < Start_Date` → `alert "End Date must be after Start Date."`
 
 ### Deluge Scripts
 
 #### On Submit — Validate Project Completion
 ```deluge
+/* JUSTIFICATION: Completion validation requires cross-form queries across Expenses, POs, and PRs — cannot be handled by embedded subform submission alone */
 /* ===== PSEUDOCODE =====
    Trigger: On Submit — when Project record is saved with Status = "Completed"
    
@@ -140,11 +141,11 @@ Create two buttons in Form Settings → Custom Actions:
    2. Check if Status is "Completed" AND the record already exists (not a new insert)
    3. If condition met:
       a. Query all Expenses for this Project where Status = "Submitted"
-      b. If any open expenses exist: throw error listing the count
+      b. If any open expenses exist: alert error listing the count
       c. Query all Purchase Orders for this Project where Status = "Open"
-      d. If any open POs exist: throw error listing the count
+      d. If any open POs exist: alert error listing the count
       e. Query all Purchase Requisitions for this Project where Status = "Open"
-      f. If any open PRs exist: throw error listing the count
+      f. If any open PRs exist: alert error listing the count
    4. If no open dependencies found: allow completion (no action needed)
    5. If Status is not "Completed": skip — no validation required
    ===== END PSEUDOCODE ===== */
@@ -156,21 +157,21 @@ if (status_val == "Completed" && !input.ID.isNull())
     open_expenses = zoho.creator.getRecords("budget_tracking", "Expenses", exp_criteria, 1, 200);
     if (!open_expenses.isNull() && open_expenses.size() > 0)
     {
-        throw "Cannot complete project: " + open_expenses.size().toString() + " expense(s) are still open.";
+        alert "Cannot complete project: " + open_expenses.size().toString() + " expense(s) are still open.";
     }
 
     po_criteria = "Project == " + input.ID + " && Status == 'Open'";
     open_pos = zoho.creator.getRecords("budget_tracking", "Purchase_Orders", po_criteria, 1, 200);
     if (!open_pos.isNull() && open_pos.size() > 0)
     {
-        throw "Cannot complete project: " + open_pos.size().toString() + " PO(s) are still open.";
+        alert "Cannot complete project: " + open_pos.size().toString() + " PO(s) are still open.";
     }
 
     pr_criteria = "Project == " + input.ID + " && Status == 'Open'";
     open_prs = zoho.creator.getRecords("budget_tracking", "Purchase_Requisitions", pr_criteria, 1, 200);
     if (!open_prs.isNull() && open_prs.size() > 0)
     {
-        throw "Cannot complete project: " + open_prs.size().toString() + " PR(s) are still open.";
+        alert "Cannot complete project: " + open_prs.size().toString() + " PR(s) are still open.";
     }
 }
 ```
@@ -193,7 +194,7 @@ if (status_val == "Completed" && !input.ID.isNull())
 | Status | Dropdown | `Status` | No | `Active, Inactive` — default Active |
 
 ### Validation Rules
-1. **Warehouse Name required** — On Submit, if `Warehouse_Name` is blank → `throw "Warehouse Name is required."`
+1. **Warehouse Name required** — On Submit, if `Warehouse_Name` is blank → `alert "Warehouse Name is required."`
 
 ### Deluge Scripts
 No Deluge scripts required for Phase 1A Warehouses. Auto-number handled by field type.
@@ -235,9 +236,9 @@ After form creation, manually create one default record:
 | Reorder Level | Decimal | Override item default |
 
 ### Validation Rules
-1. **Item Name required** — On Submit, if `Item_Name` is blank → `throw "Item Name is required."`
-2. **Positive Purchase Price** — On Submit, if `Purchase_Price` is not null and `Purchase_Price < 0` → `throw "Purchase Price cannot be negative."`
-3. **Goods require Unit** — On Submit, if `Item_Type == "Goods"` and `Unit` is blank → `throw "Unit is required for Goods items."`
+1. **Item Name required** — On Submit, if `Item_Name` is blank → `alert "Item Name is required."`
+2. **Positive Purchase Price** — On Submit, if `Purchase_Price` is not null and `Purchase_Price < 0` → `alert "Purchase Price cannot be negative."`
+3. **Goods require Unit** — On Submit, if `Item_Type == "Goods"` and `Unit` is blank → `alert "Unit is required for Goods items."`
 
 ### Deluge Scripts
 ```deluge

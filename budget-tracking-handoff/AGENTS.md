@@ -29,6 +29,14 @@ Subforms are **embedded** inside the parent form — they are NOT separate forms
 17. Delivery Challan — `Delivery_Challans` (embedded subform: `DC_Line_Items`)
 18. BOM (Bill of Materials) — `BOM` (embedded subform: `BOM_Line_Items`)
 
+## Deluge Scripting Conventions
+- **User-facing validation**: Use `alert "message";` NOT `throw "message"` — `throw` throws a system exception, `alert` shows a popup and stops submission
+- **Embedded subform access**: Use `parent_rec = zoho.creator.getRecordById("app", "Parent_Form", id); rows = parent_rec.get("Subform_Name");` to read embedded subform data — no direct `getRecords` on subform API names
+- **Embedded subform update**: Iterate rows, `row.put("Field", new_val)` to modify, rebuild as `List`, update parent record with `data_map.put("Subform_Name", updated_list)` — this preserves row IDs
+- **JUSTIFICATION comments**: Every Deluge script must have a `/* JUSTIFICATION: ... */` comment explaining why this script must exist (cannot be handled by embedded subform submission alone)
+- **Standalone form scripts**: `Inventory_Transactions` is standalone (audit log); its On Post Submit syncs stock back to embedded `Item_Warehouse_Stock` via getRecordById + subform iteration — justified as real-time stock sync
+- **Scheduled workflow subform access**: Same pattern — fetch parent form records, iterate, access `.get("Subform_Name")` for each
+
 ## Key Deluge automation points (non-obvious)
 - **Budget validation**: sum of component budgets must not exceed approved project budget
 - **Auto-inventory deduction**: Stock Out on a project → auto-create Expense record and update budget

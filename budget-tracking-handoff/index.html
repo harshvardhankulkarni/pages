@@ -1203,10 +1203,10 @@ Inventory_Items ──┬── Item_Warehouse_Stock + PO/GRN/DC/Txn items</code
             <div class="ts-step" data-ts="2">
               <div class="ts-hd" onclick="igGo(this,2)"><div class="ts-circle"><span class="ts-num">2</span></div><h4>Cross-Field Validation (Deluge)</h4></div>
               <div class="ts-bd">
-                <p>Use Form Workflow → <strong>On Submit</strong> with Deluge <code>throw</code> for cross-field rules:</p>
+                <p>Use Form Workflow → <strong>On Submit</strong> with Deluge <code>alert</code> for cross-field rules:</p>
 <pre><code>if (input.End_Date != null && input.Start_Date != null
     && input.End_Date &lt; input.Start_Date)
-    throw "End Date must be on or after Start Date.";</code></pre>
+    alert "End Date must be on or after Start Date.";</code></pre>
                 <p>Examples in this project:</p>
                 <ul>
                   <li>Budget Components total &le; Total Budget Amount</li>
@@ -1223,7 +1223,7 @@ Inventory_Items ──┬── Item_Warehouse_Stock + PO/GRN/DC/Txn items</code
 existing = zoho.creator.getRecords("budget_tracking",
     "Budget_Plans", criteria, 1, 1);
 if (!existing.isNull() && existing.size() > 0)
-    throw "An active Budget Plan already exists for this project.";</code></pre>
+    alert "An active Budget Plan already exists for this project.";</code></pre>
                 <p>Prevents duplicate active plans per project, duplicate SKUs, duplicate active BOMs.</p>
                 <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button></div>
               </div>
@@ -1282,7 +1282,7 @@ if (!existing.isNull() && existing.size() > 0)
                 <tr><td>Create Record</td><td><code>zoho.creator.createRecord("app","form", data_map)</code></td></tr>
                 <tr><td>Update Record</td><td><code>zoho.creator.updateRecord("app","form", id, data_map)</code></td></tr>
                 <tr><td>Null check</td><td><code>ifnull(value, default)</code> or <code>!value.isNull()</code></td></tr>
-                <tr><td>Throw error</td><td><code>throw "message"</code></td></tr>
+                <tr><td>Alert error</td><td><code>alert "message"</code></td></tr>
                 <tr><td>Map</td><td><code>m = Map(); m.put("key", val);</code></td></tr>
                 <tr><td>Dropdown display</td><td><code>input.Field.toMap().get("display_value")</code></td></tr>
                 <tr><td>Try/Catch</td><td><code>try { } catch (e) { info e; }</code></td></tr></table>

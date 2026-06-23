@@ -32,6 +32,7 @@ This phase creates all Zoho Creator Report and Dashboard widgets. No new forms �
 
 **Deluge — Scheduled KPI Refresh (Daily)**
 ```deluge
+/* JUSTIFICATION: Scheduled daily workflow that refreshes project P&L summary fields (Total_Expenses_Calc, Total_Invoiced_Calc, Total_Paid_Calc) by querying related Expenses and Invoices. */
 /* ===== PSEUDOCODE =====
    Trigger: Scheduled (Daily 1 AM) — refresh project P&L summary data
    
@@ -134,49 +135,53 @@ if (!active_projects.isNull())
 
 **Deluge — Scheduled Low Stock Notification**
 ```deluge
+/* JUSTIFICATION: Scheduled daily workflow that checks stock levels across all Inventory_Items via the embedded Item_Warehouse_Stock subform and alerts when stock falls at or below reorder level. */
 /* ===== PSEUDOCODE =====
    Trigger: Scheduled (Daily 8 AM) — send low stock notifications
    
-   1. Query Item_Warehouse_Stock where Current_Stock > 0 AND
-      Current_Stock <= Reorder_Level (items at or below reorder threshold)
-   2. If low stock items exist:
-      a. Initialize alert body with header listing item count
-      b. For each low stock item:
-         i.   Fetch the Inventory_Item record by ID to get Item_Name
-         ii.  Fetch the Warehouse record by ID to get Warehouse_Name
-         iii. Append formatted alert line: item name @ warehouse name
-              (Stock: X, Reorder: Y)
-      c. (Placeholder) Send email alert to inventory manager
-   3. If no low stock items: exit (nothing to alert)
+   1. Fetch all active Inventory_Items (up to 200 records)
+   2. For each item, access the embedded Item_Warehouse_Stock subform
+   3. For each stock row where Current_Stock > 0 AND <= Reorder_Level:
+      a. Build alert line with Item_Name, Warehouse_Name, Current_Stock, Reorder_Level
+   4. If any low stock items found: (Placeholder) send email alert
+   5. If no low stock items: exit (nothing to alert)
    ===== END PSEUDOCODE ===== */
-low_stock = zoho.creator.getRecords("budget_tracking", "Item_Warehouse_Stock",
-    "Current_Stock > 0 && Current_Stock <= Reorder_Level", 1, 200);
+active_items = zoho.creator.getRecords("budget_tracking", "Inventory_Items", "Status == 'Active'", 1, 200);
+alert_body = "";
 
-if (!low_stock.isNull() && low_stock.size() > 0)
+if (!active_items.isNull())
 {
-    alert_body = "Low Stock Alert - " + low_stock.size().toString() + " item(s):\n\n";
-    for each item in low_stock
+    for each item in active_items
     {
-        item_name = "";
-        item_id = item.get("Item");
-        if (!item_id.isNull())
+        item_name = ifnull(item.get("Item_Name"), "Unknown");
+        stock_rows = item.get("Item_Warehouse_Stock");
+        if (!stock_rows.isNull())
         {
-            i = zoho.creator.getRecordById("budget_tracking", "Inventory_Items", item_id);
-            if (!i.isNull()) { item_name = ifnull(i.get("Item_Name"), "Unknown"); }
+            for each srow in stock_rows
+            {
+                current = ifnull(srow.get("Current_Stock"), 0);
+                reorder = ifnull(srow.get("Reorder_Level"), 0);
+                if (current > 0 && current <= reorder)
+                {
+                    wh_name = "Unknown";
+                    wh_id = srow.get("Warehouse");
+                    if (!wh_id.isNull())
+                    {
+                        w = zoho.creator.getRecordById("budget_tracking", "Warehouses", wh_id);
+                        if (!w.isNull()) { wh_name = ifnull(w.get("Warehouse_Name"), "Unknown"); }
+                    }
+                    alert_body = alert_body + "- " + item_name + " @ " + wh_name
+                        + " (Stock: " + current.toString()
+                        + ", Reorder: " + reorder.toString() + ")\n";
+                }
+            }
         }
-
-        wh_name = "";
-        wh_id = item.get("Warehouse");
-        if (!wh_id.isNull())
-        {
-            w = zoho.creator.getRecordById("budget_tracking", "Warehouses", wh_id);
-            if (!w.isNull()) { wh_name = ifnull(w.get("Warehouse_Name"), "Unknown"); }
-        }
-
-        alert_body = alert_body + "- " + item_name + " @ " + wh_name
-            + " (Stock: " + ifnull(item.get("Current_Stock"), 0).toString()
-            + ", Reorder: " + ifnull(item.get("Reorder_Level"), 0).toString() + ")\n";
     }
+}
+
+if (alert_body != "")
+{
+    alert_body = "Low Stock Alert - items:\n\n" + alert_body;
 }
 ```
 

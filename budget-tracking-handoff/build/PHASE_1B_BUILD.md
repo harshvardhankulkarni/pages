@@ -21,27 +21,28 @@ Requires Phase 1A complete (Projects, Warehouses, Inventory_Items forms exist).
 | Notes | Multi Line | `Notes` | No | |
 
 ### Validation Rules
-1. **Unique active plan per project** — On Submit, if `Status == "Active"`, check no other Active plan exists for the same Project → `throw "An active budget plan already exists for this project."`
+1. **Unique active plan per project** — On Submit, if `Status == "Active"`, check no other Active plan exists for the same Project → `alert "An active budget plan already exists for this project."`
 2. **Component sum ≤ Total Budget** — On Submit, sum of all Budget_Components Allocated_Amount must not exceed Total_Budget. Validated via `input.Budget_Components` iteration.
 
 ### Deluge Scripts
 
 #### On Submit — Validate Budget Period
 ```deluge
+/* JUSTIFICATION: Budget sync to Projects and component total validation require cross-form updates — cannot be handled by embedded subform submission alone */
 /* ===== PSEUDOCODE =====
    Trigger: On Submit — when Budget_Plan record is created or updated
    
    1. Check if both Budget_Period_Start and Budget_Period_End are filled
-   2. If end date is before start date: throw validation error
+   2. If end date is before start date: alert validation error
    3. Get the display value of the Status field
    4. If Status is "Active" and a Project is linked:
       a. Build a criteria to find other Active plans for the same Project
       b. If editing an existing record, exclude the current record ID
       c. Query for duplicate active plans
-      d. If another active plan exists: throw error — must close existing plan first
+      d. If another active plan exists: alert error — must close existing plan first
    5. Validate component totals: iterate input.Budget_Components (embedded subform)
       a. Sum all Allocated_Amount values
-      b. If sum exceeds Total_Budget: throw validation error
+      b. If sum exceeds Total_Budget: alert validation error
    6. If Status is "Active":
       a. Create a data map with the Total_Budget value
       b. Update the linked Project record's Total_Approved_Budget field
@@ -51,7 +52,7 @@ if (!input.Budget_Period_Start.isNull() && !input.Budget_Period_End.isNull())
 {
     if (input.Budget_Period_End < input.Budget_Period_Start)
     {
-        throw "Budget Period End must be after Budget Period Start.";
+        alert "Budget Period End must be after Budget Period Start.";
     }
 }
 
@@ -67,7 +68,7 @@ if (status_val == "Active" && !input.Project.isNull())
     existing_active = zoho.creator.getRecords("budget_tracking", "Budget_Plans", criteria, 1, 10);
     if (!existing_active.isNull() && existing_active.size() > 0)
     {
-        throw "An active budget plan already exists for this project. Close it before creating a new one.";
+        alert "An active budget plan already exists for this project. Close it before creating a new one.";
     }
 }
 
@@ -85,7 +86,7 @@ if (!components.isNull())
 }
 if (total_allocated > total_budget)
 {
-    throw "Component total (" + total_allocated.toString() + ") exceeds Budget Plan total (" + total_budget.toString() + ").";
+    alert "Component total (" + total_allocated.toString() + ") exceeds Budget Plan total (" + total_budget.toString() + ").";
 }
 
 if (status_val == "Active")
@@ -136,15 +137,16 @@ Core stock movement tracking — every stock change is logged here.
 | Created By | User Picker | `Created_By` | No | |
 
 ### Validation Rules
-1. **Positive Quantity** — On Submit, if `Quantity <= 0` → `throw "Quantity must be positive."`
-2. **Warehouse required** — On Submit, if `Transaction_Type != "Transfer"` and `Warehouse` is null → `throw "Warehouse is required."`
-3. **To Warehouse for Transfer** — On Submit, if `Transaction_Type == "Transfer"` and `To_Warehouse` is null → `throw "To Warehouse is required for transfers."`
+1. **Positive Quantity** — On Submit, if `Quantity <= 0` → `alert "Quantity must be positive."`
+2. **Warehouse required** — On Submit, if `Transaction_Type != "Transfer"` and `Warehouse` is null → `alert "Warehouse is required."`
+3. **To Warehouse for Transfer** — On Submit, if `Transaction_Type == "Transfer"` and `To_Warehouse` is null → `alert "To Warehouse is required for transfers."`
 4. **Stock Out cannot exceed available** — On Submit, if `Transaction_Type` is `Stock Out, Transfer, Reservation` → check warehouse stock level.
 
 ### Deluge Scripts
 
 #### On Submit — Validate Stock Availability
 ```deluge
+/* JUSTIFICATION: Stock availability validation requires reading Inventory_Items embedded subform — cannot be handled by embedded subform submission alone */
 /* ===== PSEUDOCODE =====
    Trigger: On Submit — before Inventory_Transaction record is saved
    
@@ -157,7 +159,7 @@ Core stock movement tracking — every stock change is logged here.
          - Get Current_Stock and Reserved_Qty
          - For "Reservation": available = Current_Stock - Reserved_Qty (unreserved)
          - For "Stock Out" and "Transfer": available = Current_Stock (total stock)
-      d. If requested quantity exceeds available stock: throw insufficient stock error
+      d. If requested quantity exceeds available stock: alert insufficient stock error
    4. If transaction type is not a stock-consuming type (Stock In, Adjustment, Release):
       skip availability check
    ===== END PSEUDOCODE ===== */
@@ -170,30 +172,36 @@ if (qty > 0 && !item_id.isNull() && !wh_id.isNull())
 {
     if (txn_type == "Stock Out" || txn_type == "Transfer" || txn_type == "Reservation")
     {
-        criteria = "Item == " + item_id + " && Warehouse == " + wh_id;
-        stock_records = zoho.creator.getRecords("budget_tracking", "Item_Warehouse_Stock", criteria, 1, 1);
+        item_rec = zoho.creator.getRecordById("budget_tracking", "Inventory_Items", item_id);
+        stock_rows = item_rec.get("Item_Warehouse_Stock");
 
         available = 0;
-        if (!stock_records.isNull() && stock_records.size() > 0)
+        if (!stock_rows.isNull())
         {
-            stock = stock_records.get(0);
-            current = ifnull(stock.get("Current_Stock"), 0);
-            reserved = ifnull(stock.get("Reserved_Qty"), 0);
-            available = current - reserved;
+            for each row in stock_rows
+            {
+                wh = row.get("Warehouse");
+                if (!wh.isNull() && wh.toString() == wh_id.toString())
+                {
+                    current = ifnull(row.get("Current_Stock"), 0);
+                    reserved = ifnull(row.get("Reserved_Qty"), 0);
 
-            if (txn_type == "Reservation")
-            {
-                available = current - reserved;
-            }
-            else
-            {
-                available = current;
+                    if (txn_type == "Reservation")
+                    {
+                        available = current - reserved;
+                    }
+                    else
+                    {
+                        available = current;
+                    }
+                    break;
+                }
             }
         }
 
         if (qty > available)
         {
-            throw "Insufficient stock. Available: " + available.toString() + ", Requested: " + qty.toString();
+            alert "Insufficient stock. Available: " + available.toString() + ", Requested: " + qty.toString();
         }
     }
 }
@@ -201,6 +209,7 @@ if (qty > 0 && !item_id.isNull() && !wh_id.isNull())
 
 #### On Post Submit — Update Item_Warehouse_Stock
 ```deluge
+/* JUSTIFICATION: Real-time stock sync from a standalone audit log form — cannot use embedded subform submission because Inventory_Transactions is standalone */
 /* ===== PSEUDOCODE =====
    Trigger: On Post Submit — after Inventory_Transaction record is saved
    
@@ -244,103 +253,93 @@ to_wh_id = input.To_Warehouse;
 
 if (!item_id.isNull() && qty > 0)
 {
-    if (txn_type == "Stock In" && !wh_id.isNull())
-    {
-        criteria = "Item == " + item_id + " && Warehouse == " + wh_id;
-        stock_records = zoho.creator.getRecords("budget_tracking", "Item_Warehouse_Stock", criteria, 1, 1);
-        if (!stock_records.isNull() && stock_records.size() > 0)
-        {
-            srec = stock_records.get(0);
-            current_qty = ifnull(srec.get("Current_Stock"), 0);
-            data = Map();
-            data.put("Current_Stock", current_qty + qty);
-            zoho.creator.updateRecord("budget_tracking", "Item_Warehouse_Stock", srec.get("ID"), data);
-        }
-    }
-    else if ((txn_type == "Stock Out" || txn_type == "Reservation") && !wh_id.isNull())
-    {
-        criteria = "Item == " + item_id + " && Warehouse == " + wh_id;
-        stock_records = zoho.creator.getRecords("budget_tracking", "Item_Warehouse_Stock", criteria, 1, 1);
-        if (!stock_records.isNull() && stock_records.size() > 0)
-        {
-            srec = stock_records.get(0);
-            current_qty = ifnull(srec.get("Current_Stock"), 0);
-            data = Map();
+    item = zoho.creator.getRecordById("budget_tracking", "Inventory_Items", item_id);
+    stock_rows = item.get("Item_Warehouse_Stock");
+    updated_stock = List();
 
-            if (txn_type == "Stock Out")
+    if (!stock_rows.isNull())
+    {
+        for each row in stock_rows
+        {
+            wh = row.get("Warehouse");
+            wh_str = "";
+            if (!wh.isNull())
             {
-                data.put("Current_Stock", current_qty - qty);
-            }
-            else if (txn_type == "Reservation")
-            {
-                reserved_qty = ifnull(srec.get("Reserved_Qty"), 0);
-                data.put("Reserved_Qty", reserved_qty + qty);
+                wh_str = wh.toString();
             }
 
-            zoho.creator.updateRecord("budget_tracking", "Item_Warehouse_Stock", srec.get("ID"), data);
-        }
-    }
-    else if (txn_type == "Release" && !wh_id.isNull())
-    {
-        criteria = "Item == " + item_id + " && Warehouse == " + wh_id;
-        stock_records = zoho.creator.getRecords("budget_tracking", "Item_Warehouse_Stock", criteria, 1, 1);
-        if (!stock_records.isNull() && stock_records.size() > 0)
-        {
-            srec = stock_records.get(0);
-            reserved_qty = ifnull(srec.get("Reserved_Qty"), 0);
-            new_reserved = reserved_qty - qty;
-            if (new_reserved < 0) { new_reserved = 0; }
-            data = Map();
-            data.put("Reserved_Qty", new_reserved);
-            zoho.creator.updateRecord("budget_tracking", "Item_Warehouse_Stock", srec.get("ID"), data);
-        }
-    }
-    else if (txn_type == "Adjustment" && !wh_id.isNull())
-    {
-        criteria = "Item == " + item_id + " && Warehouse == " + wh_id;
-        stock_records = zoho.creator.getRecords("budget_tracking", "Item_Warehouse_Stock", criteria, 1, 1);
-        if (!stock_records.isNull() && stock_records.size() > 0)
-        {
-            srec = stock_records.get(0);
-            data = Map();
-            data.put("Current_Stock", qty);
-            zoho.creator.updateRecord("budget_tracking", "Item_Warehouse_Stock", srec.get("ID"), data);
+            if ((txn_type == "Stock In" || txn_type == "Stock Out" || txn_type == "Reservation" || txn_type == "Release" || txn_type == "Adjustment") && !wh_id.isNull() && wh_str == wh_id.toString())
+            {
+                if (txn_type == "Stock In")
+                {
+                    current_qty = ifnull(row.get("Current_Stock"), 0);
+                    row.put("Current_Stock", current_qty + qty);
+                }
+                else if (txn_type == "Stock Out")
+                {
+                    current_qty = ifnull(row.get("Current_Stock"), 0);
+                    row.put("Current_Stock", current_qty - qty);
+                }
+                else if (txn_type == "Reservation")
+                {
+                    reserved_qty = ifnull(row.get("Reserved_Qty"), 0);
+                    row.put("Reserved_Qty", reserved_qty + qty);
+                }
+                else if (txn_type == "Release")
+                {
+                    reserved_qty = ifnull(row.get("Reserved_Qty"), 0);
+                    new_reserved = reserved_qty - qty;
+                    if (new_reserved < 0) { new_reserved = 0; }
+                    row.put("Reserved_Qty", new_reserved);
+                }
+                else if (txn_type == "Adjustment")
+                {
+                    row.put("Current_Stock", qty);
+                }
+            }
+            else if (txn_type == "Transfer" && !wh_id.isNull() && !to_wh_id.isNull())
+            {
+                if (wh_str == wh_id.toString())
+                {
+                    current_qty = ifnull(row.get("Current_Stock"), 0);
+                    row.put("Current_Stock", current_qty - qty);
+                }
+                else if (wh_str == to_wh_id.toString())
+                {
+                    current_qty = ifnull(row.get("Current_Stock"), 0);
+                    row.put("Current_Stock", current_qty + qty);
+                }
+            }
+
+            updated_stock.add(row);
         }
     }
 
     if (txn_type == "Transfer" && !wh_id.isNull() && !to_wh_id.isNull())
     {
-        criteria = "Item == " + item_id + " && Warehouse == " + wh_id;
-        src_records = zoho.creator.getRecords("budget_tracking", "Item_Warehouse_Stock", criteria, 1, 1);
-        if (!src_records.isNull() && src_records.size() > 0)
+        dest_exists = false;
+        for each row in stock_rows
         {
-            srec = src_records.get(0);
-            current_qty = ifnull(srec.get("Current_Stock"), 0);
-            data = Map();
-            data.put("Current_Stock", current_qty - qty);
-            zoho.creator.updateRecord("budget_tracking", "Item_Warehouse_Stock", srec.get("ID"), data);
+            wh = row.get("Warehouse");
+            if (!wh.isNull() && wh.toString() == to_wh_id.toString())
+            {
+                dest_exists = true;
+                break;
+            }
         }
-
-        criteria2 = "Item == " + item_id + " && Warehouse == " + to_wh_id;
-        dst_records = zoho.creator.getRecords("budget_tracking", "Item_Warehouse_Stock", criteria2, 1, 1);
-        if (!dst_records.isNull() && dst_records.size() > 0)
+        if (!dest_exists)
         {
-            drec = dst_records.get(0);
-            current_qty = ifnull(drec.get("Current_Stock"), 0);
-            data = Map();
-            data.put("Current_Stock", current_qty + qty);
-            zoho.creator.updateRecord("budget_tracking", "Item_Warehouse_Stock", drec.get("ID"), data);
-        }
-        else
-        {
-            data = Map();
-            data.put("Item", item_id);
-            data.put("Warehouse", to_wh_id);
-            data.put("Current_Stock", qty);
-            data.put("Reserved_Qty", 0);
-            zoho.creator.createRecord("budget_tracking", "Item_Warehouse_Stock", data);
+            new_row = Map();
+            new_row.put("Warehouse", to_wh_id);
+            new_row.put("Current_Stock", qty);
+            new_row.put("Reserved_Qty", 0);
+            updated_stock.add(new_row);
         }
     }
+
+    update_data = Map();
+    update_data.put("Item_Warehouse_Stock", updated_stock);
+    zoho.creator.updateRecord("budget_tracking", "Inventory_Items", item_id, update_data);
 
     if (txn_type == "Stock Out" && !input.Project.isNull() && !wh_id.isNull())
     {

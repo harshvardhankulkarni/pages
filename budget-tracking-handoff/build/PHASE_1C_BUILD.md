@@ -24,7 +24,7 @@ Requires Phase 1B complete (Budget_Plans, Budget_Components, Inventory_Transacti
 | Created By | User Picker | `Created_By` | No | Defaults to current user |
 
 ### Validation Rules
-1. **Positive Amount** — On Submit, if `Amount <= 0` → `throw "Amount must be positive."`
+1. **Positive Amount** — On Submit, if `Amount <= 0` → `alert "Amount must be positive."`
 2. **Budget Component belongs to Project** — On Submit, verify Budget_Component.Budget_Plan.Project matches input.Project.
 3. **Budget Plan must be Active** — On Submit, verify parent Budget_Plan.Status = "Active".
 4. **Duplicate Prevention** — On Submit, check no duplicate expense with same Project + Component + Date + Amount.
@@ -34,11 +34,11 @@ Requires Phase 1B complete (Budget_Plans, Budget_Components, Inventory_Transacti
 ```
 Expense Submitted
     │
-    ├── Budget Component found? ── No ──→ Throw error
+    ├── Budget Component found? ── No ──→ Alert error
     │
-    ├── Belongs to this Project? ── No ──→ Throw error
+    ├── Belongs to this Project? ── No ──→ Alert error
     │
-    ├── Budget Plan is Active? ── No ──→ Throw error
+    ├── Budget Plan is Active? ── No ──→ Alert error
     │
     ├── Amount ≤ Allocated Budget?
     │       ├── Yes → Auto-Approve (Status = "Approved")
@@ -56,20 +56,21 @@ Expense Submitted
 
 #### On Submit — Budget Check & Auto-Approval
 ```deluge
+/* JUSTIFICATION: Budget check and overrun approval creation require cross-form queries to Budget_Components and Budget_Plans — cannot be handled by embedded subform submission alone */
 /* ===== PSEUDOCODE =====
    Trigger: On Submit — when Expense record is created or updated
    
    1. Get the expense amount, budget component ID, and project ID from input
    2. If budget component is set AND amount is positive:
       a. Fetch the Budget_Component record by ID
-      b. If not found: throw error "Budget Component not found"
+      b. If not found: alert error "Budget Component not found"
       c. Get Allocated_Amount and current Spent_Amount from the component
       d. Fetch the parent Budget_Plan record
       e. If plan exists:
          - Verify the component's plan project matches the expense project
-         - If mismatch: throw error "does not belong to this project"
+         - If mismatch: alert error "does not belong to this project"
          - Verify the plan Status is "Active"
-         - If not active: throw error "budget plan is not Active"
+         - If not active: alert error "budget plan is not Active"
       f. Calculate projected new spent amount and utilization percentage
       g. If new spent exceeds allocated:
          - Update expense Status to "Overrun-Pending Approval"
@@ -88,7 +89,7 @@ if (!comp_id.isNull() && expense_amount > 0)
     comp = zoho.creator.getRecordById("budget_tracking", "Budget_Components", comp_id);
     if (comp.isNull())
     {
-        throw "Budget Component not found.";
+        alert "Budget Component not found.";
     }
 
     allocated = ifnull(comp.get("Allocated_Amount"), 0);
@@ -101,13 +102,13 @@ if (!comp_id.isNull() && expense_amount > 0)
         plan_project = plan.get("Project");
         if (!plan_project.isNull() && plan_project.toString() != proj_id.toString())
         {
-            throw "Selected Budget Component does not belong to this project.";
+            alert "Selected Budget Component does not belong to this project.";
         }
 
         plan_status = ifnull(plan.get("Status").toMap().get("display_value"), "");
         if (plan_status != "Active")
         {
-            throw "The budget plan for this component is not Active.";
+            alert "The budget plan for this component is not Active.";
         }
     }
 
@@ -141,6 +142,7 @@ if (!comp_id.isNull() && expense_amount > 0)
 
 #### On Post Submit — Update Budget Component Spent Amount
 ```deluge
+/* JUSTIFICATION: Spent_Amount update on Budget_Component requires cross-form update — cannot be handled by embedded subform submission alone */
 /* ===== PSEUDOCODE =====
    Trigger: On Post Submit — after Expense record is saved
    
@@ -173,6 +175,7 @@ if (!comp_id.isNull() && expense_amount > 0 && expense_status == "Approved")
 
 #### Scheduled Workflow — Daily Budget Alerts
 ```deluge
+/* JUSTIFICATION: Scheduled periodic check across all active budget plans — cannot be handled by any On Submit/embedded subform trigger */
 /* ===== PSEUDOCODE =====
    Trigger: Scheduled (Daily Midnight) — runs once per day
    
@@ -311,6 +314,7 @@ PR Created (Status = Draft)
 
 #### On Submit — Multi-Stage Approval Email
 ```deluge
+/* JUSTIFICATION: Multi-stage approval email notification and stage advancement require standalone form processing — cannot be handled by embedded subform submission alone */
 /* ===== PSEUDOCODE =====
    Trigger: On Submit — when Purchase_Requisition is created/updated
    
@@ -342,6 +346,7 @@ if (status_val == "Open")
 
 #### On Approval Stage Change — Cascade to Next Approver
 ```deluge
+/* JUSTIFICATION: Auto-PO creation with line item copy, stage cascading, and email notifications require cross-form processing — cannot be handled by embedded subform submission */
 /* ===== PSEUDOCODE =====
    Trigger: On Submit — when Approval_Stage field changes on Purchase_Requisition
    
