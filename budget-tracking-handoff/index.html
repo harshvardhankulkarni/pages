@@ -58,6 +58,41 @@
   .kpi-bar .kpi .n { font-family: var(--font-mono); font-weight: 700; font-size: 0.95rem; }
   .kpi-bar .kpi .l { color: var(--muted); }
 
+  .dash { margin-bottom: 32px; }
+  .dash-h { font-size: 1.3rem; font-weight: 800; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+  .dash-h span { color: var(--accent); }
+  .dash-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-bottom: 20px; }
+  .dash-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+  .dash-card .val { font-size: 1.8rem; font-weight: 800; font-family: var(--font-mono); }
+  .dash-card .lbl { font-size: 0.68rem; color: var(--muted); margin-top: 2px; }
+  .dash-card .val.g { color: var(--green); }
+  .dash-card .val.a { color: var(--accent); }
+  .dash-card .val.y { color: var(--yellow); }
+  .dash-card .val.r { color: var(--red); }
+  .dash-card .val.p { color: var(--purple); }
+
+  .ph-bar { margin: 10px 0; }
+  .ph-bar .ph-row { display: flex; align-items: center; gap: 10px; margin: 6px 0; }
+  .ph-bar .ph-row .lbl { min-width: 100px; font-size: 0.78rem; font-weight: 600; }
+  .ph-bar .ph-row .lbl .badge { font-size: 0.55rem; font-family: var(--font-mono); padding: 1px 6px; border-radius: 4px; margin-right: 6px; }
+  .ph-bar .ph-row .trk { flex: 1; height: 18px; background: var(--surface2); border-radius: 10px; overflow: hidden; position: relative; }
+  .ph-bar .ph-row .trk .fill { height: 100%; border-radius: 10px; transition: width 0.6s; min-width: 0; }
+  .ph-bar .ph-row .trk .fill.g { background: var(--green); }
+  .ph-bar .ph-row .trk .fill.a { background: var(--accent); }
+  .ph-bar .ph-row .trk .fill.y { background: var(--yellow); }
+  .ph-bar .ph-row .trk .fill.r { background: var(--red); }
+  .ph-bar .ph-row .trk .fill.p { background: var(--purple); }
+  .ph-bar .ph-row .trk .fill.o { background: var(--orange); }
+  .ph-bar .ph-row .pct { min-width: 50px; text-align: right; font-size: 0.78rem; font-family: var(--font-mono); color: var(--muted); }
+  .ph-bar .lag { font-size: 0.62rem; color: var(--red); margin-left: 4px; }
+  .ph-bar .ph-row .trk .fill.z { width: 0% !important; }
+
+  .dash-donut { display: flex; align-items: center; gap: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+  .dash-donut svg { flex-shrink: 0; }
+  .dash-donut .info { flex: 1; }
+  .dash-donut .info .big { font-size: 2rem; font-weight: 800; font-family: var(--font-mono); }
+  .dash-donut .info .sub { font-size: 0.72rem; color: var(--muted); }
+
   h2 { font-size: 1.25rem; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
   h2 .t { font-size: 0.62rem; font-family: var(--font-mono); background: var(--surface2); color: var(--muted); padding: 2px 10px; border-radius: 12px; font-weight: 500; }
   h3 { font-size: 0.95rem; font-weight: 600; margin: 18px 0 10px; color: var(--accent); }
@@ -176,7 +211,11 @@
     <a href="user-guide.html" target="_blank">User Guide ↗</a>
     <a href="testing-guide.html" target="_blank">Testing Guide ↗</a>
   </nav>
-  <div class="ftr">v1.0 &middot; Phase 1A Ready</div>
+  <div class="ftr">
+    <a href="#" onclick="document.getElementById('dashboard').scrollIntoView({behavior:'smooth'});return false;">📊 Dashboard</a> &bull;
+    <a href="user-guide.html">User Guide &rarr;</a> &bull;
+    <a href="testing-guide.html">Testing Guide &rarr;</a>
+  </div>
 </aside>
 
 <div class="main">
@@ -191,6 +230,33 @@
   </div>
 
   <div class="content">
+
+    <section id="dashboard" class="dash">
+      <div class="dash-h">📊 Progress <span>Dashboard</span></div>
+      
+      <div class="dash-donut" id="dash-donut">
+        <svg width="100" height="100" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="42" fill="none" stroke="var(--surface2)" stroke-width="8"/>
+          <circle id="donut-ring" cx="50" cy="50" r="42" fill="none" stroke="var(--accent)" stroke-width="8" stroke-dasharray="263.9" stroke-dashoffset="263.9" transform="rotate(-90,50,50)" stroke-linecap="round"/>
+        </svg>
+        <div class="info">
+          <div class="big" id="dash-pct">0%</div>
+          <div class="sub">Overall Build Completion</div>
+          <div class="sub" id="dash-count" style="margin-top:4px;">0 / 0 items checked</div>
+        </div>
+      </div>
+
+      <div class="dash-cards" id="dash-kpis"></div>
+
+      <h3 style="margin-top:20px">Phase Progress</h3>
+      <div class="ph-bar" id="dash-phases"></div>
+
+      <h3 style="margin-top:20px">Cross-Phase Progress</h3>
+      <div class="ph-bar" id="dash-cross"></div>
+
+      <h3 style="margin-top:20px">Lagging Areas</h3>
+      <div id="dash-lagging" style="font-size:0.84rem;color:var(--muted);"></div>
+    </section>
 
     <section id="constraints">
       <h2>Design Constraints <span class="t">key factors</span></h2>
@@ -1757,5 +1823,133 @@ document.querySelectorAll('.module-card .arr').forEach(a => { a.textContent = '�
 })();
 </script>
 
+<script>
+function dashCount() {
+  var items = [
+    {key:'tc-1a-01',phase:'1A'},{key:'tc-1a-02',phase:'1A'},{key:'tc-1a-03',phase:'1A'},
+    {key:'tc-1a-04',phase:'1A'},{key:'tc-1a-05',phase:'1A'},{key:'tc-1a-06',phase:'1A'},
+    {key:'tc-1a-07',phase:'1A'},{key:'tc-1a-08',phase:'1A'},{key:'tc-1a-09',phase:'1A'},
+    {key:'tc-1b-01',phase:'1B'},{key:'tc-1b-02',phase:'1B'},{key:'tc-1b-03',phase:'1B'},
+    {key:'tc-1b-04',phase:'1B'},{key:'tc-1b-05',phase:'1B'},{key:'tc-1b-06',phase:'1B'},
+    {key:'tc-1b-07',phase:'1B'},{key:'tc-1b-08',phase:'1B'},{key:'tc-1b-09',phase:'1B'},
+    {key:'tc-1b-10',phase:'1B'},{key:'tc-1b-11',phase:'1B'},
+    {key:'tc-1c-01',phase:'1C'},{key:'tc-1c-02',phase:'1C'},{key:'tc-1c-03',phase:'1C'},
+    {key:'tc-1c-04',phase:'1C'},{key:'tc-1c-05',phase:'1C'},{key:'tc-1c-06',phase:'1C'},
+    {key:'tc-1c-07',phase:'1C'},
+    {key:'tc-1d-01',phase:'1D'},{key:'tc-1d-02',phase:'1D'},{key:'tc-1d-03',phase:'1D'},
+    {key:'tc-1d-04',phase:'1D'},{key:'tc-1d-05',phase:'1D'},{key:'tc-1d-06',phase:'1D'},
+    {key:'tc-1d-07',phase:'1D'},
+    {key:'tc-1e-01',phase:'1E'},{key:'tc-1e-02',phase:'1E'},{key:'tc-1e-03',phase:'1E'},
+    {key:'tc-1e-04',phase:'1E'},{key:'tc-1e-05',phase:'1E'},{key:'tc-1e-06',phase:'1E'},
+    {key:'tc-1e-07',phase:'1E'},{key:'tc-1e-08',phase:'1E'},
+    {key:'tc-1f-01',phase:'1F'},{key:'tc-1f-02',phase:'1F'},{key:'tc-1f-03',phase:'1F'},
+    {key:'tc-1f-04',phase:'1F'},{key:'tc-1f-05',phase:'1F'},{key:'tc-1f-06',phase:'1F'},
+    {key:'int-01',phase:'INT'},{key:'int-02',phase:'INT'},{key:'int-03',phase:'INT'},
+    {key:'int-04',phase:'INT'},{key:'int-05',phase:'INT'},{key:'int-06',phase:'INT'},
+    {key:'int-07',phase:'INT'},{key:'int-08',phase:'INT'},{key:'int-09',phase:'INT'},
+    {key:'int-10',phase:'INT'},{key:'int-11',phase:'INT'},
+    {key:'perm-p01',phase:'PERM'},{key:'perm-p02',phase:'PERM'},{key:'perm-p03',phase:'PERM'},
+    {key:'perm-p04',phase:'PERM'},{key:'perm-p05',phase:'PERM'},{key:'perm-p06',phase:'PERM'},
+    {key:'perm-p07',phase:'PERM'},{key:'perm-p08',phase:'PERM'},{key:'perm-p09',phase:'PERM'},
+    {key:'perm-p10',phase:'PERM'},
+    {key:'di-d01',phase:'DI'},{key:'di-d02',phase:'DI'},{key:'di-d03',phase:'DI'},
+    {key:'di-d04',phase:'DI'},{key:'di-d05',phase:'DI'},{key:'di-d06',phase:'DI'},{key:'di-d07',phase:'DI'},
+    {key:'di-c01',phase:'DI'},{key:'di-c02',phase:'DI'},{key:'di-c03',phase:'DI'},
+    {key:'di-c04',phase:'DI'},{key:'di-c05',phase:'DI'},{key:'di-c06',phase:'DI'},
+    {key:'di-c07',phase:'DI'},{key:'di-c08',phase:'DI'},{key:'di-c09',phase:'DI'},{key:'di-c10',phase:'DI'},
+    {key:'di-cc01',phase:'DI'},{key:'di-cc02',phase:'DI'},{key:'di-cc03',phase:'DI'},
+    {key:'di-cc04',phase:'DI'},{key:'di-cc05',phase:'DI'},
+    {key:'di-f01',phase:'DI'},{key:'di-f02',phase:'DI'},{key:'di-f03',phase:'DI'},
+    {key:'di-f04',phase:'DI'},{key:'di-f05',phase:'DI'},{key:'di-f06',phase:'DI'},
+    {key:'di-f07',phase:'DI'},{key:'di-f08',phase:'DI'},{key:'di-f09',phase:'DI'},
+    {key:'di-f10',phase:'DI'},{key:'di-f11',phase:'DI'},{key:'di-f12',phase:'DI'},
+    {key:'di-a01',phase:'DI'},{key:'di-a02',phase:'DI'},{key:'di-a03',phase:'DI'},
+    {key:'di-a04',phase:'DI'},{key:'di-a05',phase:'DI'},{key:'di-a06',phase:'DI'},
+    {key:'di-a07',phase:'DI'},{key:'di-a08',phase:'DI'},
+  ];
+
+  for (var i = 0; i < localStorage.length; i++) {
+    var k = localStorage.key(i);
+    if (k.indexOf('cb-val-') === 0) {
+      var id = k.replace('cb-val-', '');
+      items.push({key:'val-'+id, phase:'VAL'});
+    }
+  }
+
+  var phasesNames = {'1A':'Phase 1A (Foundation)','1B':'Phase 1B (Budget & Stock)','1C':'Phase 1C (Expenses & PR)','1D':'Phase 1D (Procurement)','1E':'Phase 1E (Revenue & Mfg)','1F':'Phase 1F (Reports)','INT':'Integration Test','VAL':'Critical Validations','PERM':'Permissions Testing','DI':'Data Integrity'};
+  var badges = {'1A':'ph-1a','1B':'ph-1b','1C':'ph-1c','1D':'ph-1d','1E':'ph-1e','1F':'ph-1f','INT':'ph-int','VAL':'ph-int','PERM':'ph-int','DI':'ph-int'};
+  var colors = {'1A':'g','1B':'a','1C':'p','1D':'o','1E':'r','1F':'y','INT':'a','VAL':'g','PERM':'p','DI':'o'};
+  var phaseOrder = ['1A','1B','1C','1D','1E','1F','INT','VAL','PERM','DI'];
+
+  var phaseStats = {};
+  var total = items.length;
+  var checked = 0;
+
+  items.forEach(function(item) {
+    if (!phaseStats[item.phase]) { phaseStats[item.phase] = {total:0,checked:0}; }
+    phaseStats[item.phase].total++;
+    if (localStorage.getItem('cb-' + item.key) === '1') {
+      checked++;
+      phaseStats[item.phase].checked++;
+    }
+  });
+
+  var pct = total > 0 ? Math.round(checked / total * 100) : 0;
+
+  var circ = 2 * Math.PI * 42;
+  var offset = circ - (pct / 100) * circ;
+  var ring = document.getElementById('donut-ring');
+  if (ring) { ring.style.strokeDasharray = circ; ring.style.strokeDashoffset = offset; }
+  var dp = document.getElementById('dash-pct');
+  if (dp) dp.textContent = pct + '%';
+  var dc = document.getElementById('dash-count');
+  if (dc) dc.textContent = checked + ' / ' + total + ' items checked';
+
+  var phasesDone = 0;
+  phaseOrder.forEach(function(ph) { if (phaseStats[ph] && phaseStats[ph].total > 0 && phaseStats[ph].checked >= phaseStats[ph].total) phasesDone++; });
+  
+  var kpisHtml = '';
+  kpisHtml += '<div class="dash-card"><div class="val ' + (pct >= 80 ? 'g' : pct >= 50 ? 'y' : 'a') + '">' + pct + '%</div><div class="lbl">Overall Completion</div></div>';
+  kpisHtml += '<div class="dash-card"><div class="val a">' + checked + '</div><div class="lbl">Passed / ' + total + '</div></div>';
+  kpisHtml += '<div class="dash-card"><div class="val p">' + Object.keys(phaseStats).length + '</div><div class="lbl">Sections Tracked</div></div>';
+  kpisHtml += '<div class="dash-card"><div class="val ' + (phasesDone >= 10 ? 'g' : phasesDone >= 5 ? 'y' : '') + '">' + phasesDone + '/10</div><div class="lbl">Sections Complete</div></div>';
+  document.getElementById('dash-kpis').innerHTML = kpisHtml;
+
+  var bars = '';
+  var lagging = [];
+  phaseOrder.forEach(function(ph) {
+    if (phaseStats[ph]) {
+      var phPct = Math.round(phaseStats[ph].checked / phaseStats[ph].total * 100);
+      var phName = phasesNames[ph] || ph;
+      var flag = '';
+      if (phPct < 50) { flag = '<span class="lag">⚠ Lagging</span>'; lagging.push(phName); }
+      else if (phPct < 100) { flag = '<span class="lag" style="color:var(--yellow)">⋯ In Progress</span>'; }
+      else { flag = '<span class="lag" style="color:var(--green)">✓ Complete</span>'; }
+      bars += '<div class="ph-row"><div class="lbl"><span class="badge ' + (badges[ph]||'ph-1a') + '">' + ph + '</span>' + phName + '</div><div class="trk"><div class="fill ' + (colors[ph]||'g') + '" style="width:' + phPct + '%"></div></div><div class="pct">' + phPct + '%</div>' + flag + '</div>';
+    }
+  });
+  document.getElementById('dash-phases').innerHTML = bars;
+
+  var crossHtml = '';
+  ['INT','VAL','PERM','DI'].forEach(function(ph) {
+    if (phaseStats[ph]) {
+      var phPct = Math.round(phaseStats[ph].checked / phaseStats[ph].total * 100);
+      var phName = phasesNames[ph] || ph;
+      var flag = '';
+      if (phPct < 50) { flag = '<span class="lag">⚠ Lagging</span>'; }
+      else if (phPct < 100) { flag = '<span class="lag" style="color:var(--yellow)">⋯ In Progress</span>'; }
+      else { flag = '<span class="lag" style="color:var(--green)">✓ Complete</span>'; }
+      crossHtml += '<div class="ph-row"><div class="lbl"><span class="badge ' + (badges[ph]||'ph-int') + '">' + ph + '</span>' + phName + '</div><div class="trk"><div class="fill ' + (colors[ph]||'a') + '" style="width:' + phPct + '%"></div></div><div class="pct">' + phPct + '%</div>' + flag + '</div>';
+    }
+  });
+  try { document.getElementById('dash-cross').innerHTML = crossHtml; } catch(e) {}
+
+  var lagHtml = lagging.length === 0 ? '<p style="color:var(--green)">✓ All sections on track!</p>' : '<ul style="padding-left:20px;margin:0">' + lagging.map(function(l) { return '<li style="padding:4px 0;color:var(--red)">' + l + ' &mdash; needs attention</li>'; }).join('') + '</ul>';
+  document.getElementById('dash-lagging').innerHTML = lagHtml;
+}
+
+document.addEventListener('DOMContentLoaded', dashCount);
+setInterval(dashCount, 2000);
+</script>
 </body>
 </html>
