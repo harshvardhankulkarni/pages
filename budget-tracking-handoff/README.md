@@ -43,14 +43,14 @@ Subforms are **embedded** inside the parent form — they are NOT separate forms
 
 | Phase | Modules | Build Order | Est. Effort |
 |-------|---------|-------------|-------------|
-| 1A | Vendor Management → Project Master → Warehouses → Inventory Master | Foundation first | Start here |
+| 1A | Vendors → Accounts → Projects → Warehouses → Inventory_Items | Foundation first | Start here |
 | 1B | Budget Planning → Budget Components → Inventory Transactions | Budget + stock engine | After 1A |
 | 1C | Expense Management → Purchase Requisition | Spend + requests | After 1B |
 | 1D | Budget Approval → Purchase Orders → Goods Receipt → Transfer Orders | Procurement cycle | After 1C |
 | 1E | BOM → Delivery Challan → Invoicing | Revenue & manufacturing | After 1D |
 | 1F | Reports & Dashboards (all modules incl. Project P&L) | Intelligence | After 1E |
 
-## Key Deluge Automations (24 total)
+## Key Deluge Automations (25 total)
 
 Subforms are embedded — Deluge accesses them via `input.<subform_name>` during On Submit workflows. There is no standalone CRUD on subform records.
 
@@ -65,7 +65,7 @@ Subforms are embedded — Deluge accesses them via `input.<subform_name>` during
 | 7 | Stock Out → Auto-create Expense record | Stock Out + Project set | §C.9 (highest value) |
 | 8 | Transfer Complete → paired Stock Out/In | TO Status = Completed | §C.10 |
 | 9 | GRN → Stock In for accepted qty | GRN Status = Open | §C.13 |
-| 10 | (POs manually closed only — no auto-close) | — | §C.13 |
+| 10 | No auto-close based on GRN — must be closed manually by user | — | §C.13 |
 | 11 | PO Open → email vendor | PO Status = Open | §C.12 |
 | 12 | PR Approval Stage → notify next approver | PR stage change | §C.11 |
 | 13 | Daily Cron — alerts, KPI refresh, overdue invoices | Scheduled (midnight) | §C.14 |
@@ -75,11 +75,12 @@ Subforms are embedded — Deluge accesses them via `input.<subform_name>` during
 | 17 | BOM Submit → calculate component + mfg costs | BOM Submit | §C.17 |
 | 18 | PR Approved → auto-create PO (Draft) | PR final approval | §C.11 |
 | 19 | Stock Reservation → increment Reserved_Qty | Reservation transaction | §C.9 |
+| 20 | Invoice → Auto-create Delivery Challan | Custom button on Invoice | §C.15 |
 | 21 | Project Completed → auto-final Invoice | Project status change | §C.1 |
 | 22 | Transaction Validation — prevent negative stock | Inventory Transaction submit | §C.9 |
 | 23 | PO Cancelled — validate no linked GRN | PO Status = Cancelled | §C.12 |
 | 24 | Project Completion — validate no open items | Project Status = Completed | §C.1 |
-| 25 | Auto-close Completed POs — aged >30 days | Scheduled workflow | §C.14 |
+| 25 | Flag POs aged >30 days for manual close review | Scheduled workflow | §C.14 |
 
 ## Team Access
 

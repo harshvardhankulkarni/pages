@@ -199,7 +199,7 @@
           <tr><td>No true foreign keys</td><td>All relationships = <strong>Lookup</strong> fields. Archive, never delete.</td></tr>
           <tr><td>No transactions</td><td>Safety checks before every write. Log failures to Debug Log form.</td></tr>
           <tr><td>Deluge runs per-record</td><td>Scheduled Workflows for mass ops. Keep On Submit lightweight.</td></tr>
-          <tr><td>Subform limits</td><td>~100 rows max per embedded subform. Use Add-as-Subform; Deluge accesses via <code>input.&lt;subform_name&gt;</code> on parent On Submit.</td></tr>
+            <tr><td>Subform limits</td><td>~100 rows max per embedded subform. All subforms are embedded inside the parent form. Deluge accesses subform data via <code>input.&lt;subform_name&gt;</code> during parent On Submit.</td></tr>
           <tr><td>No dynamic SQL</td><td>Prefer Reports over Deluge for aggregation.</td></tr>
           <tr><td>Stale lookups</td><td>Formula Lookup (recalculated on load) for live stock values.</td></tr>
         </table>
@@ -258,6 +258,8 @@
               <tr><td>Tax ID / PAN</td><td>Text</td><td>GSTIN / VAT / PAN</td></tr>
               <tr><td>Billing Address</td><td>Address (Zoho type)</td><td>Multi-field composite</td></tr>
               <tr><td>Shipping Address</td><td>Address (Zoho type)</td><td>Multi-field composite</td></tr>
+              <tr><td>Website (URL)</td><td>URL</td><td></td></tr>
+              <tr><td>Remarks</td><td>Multi Line</td><td></td></tr>
               <tr><td>Status</td><td>Dropdown</td><td><span class="s-ap">Active</span> <span class="s-cl">Inactive</span></td></tr>
             </table>
           </div>
@@ -286,6 +288,8 @@
               <tr><td>Tax ID / PAN</td><td>Text</td><td>GSTIN / VAT / PAN</td></tr>
               <tr><td>Billing Address</td><td>Address (Zoho type)</td><td>Multi-field composite</td></tr>
               <tr><td>Shipping Address</td><td>Address (Zoho type)</td><td>Multi-field composite</td></tr>
+              <tr><td>Website (URL)</td><td>URL</td><td></td></tr>
+              <tr><td>Remarks</td><td>Multi Line</td><td></td></tr>
               <tr><td>Status</td><td>Dropdown</td><td><span class="s-ap">Active</span> <span class="s-cl">Inactive</span></td></tr>
             </table>
           </div>
@@ -337,8 +341,10 @@
               <tr><td>Purchase Price</td><td>Currency</td><td></td></tr>
               <tr><td>Reorder Level</td><td>Decimal</td><td>Min stock before alert</td></tr>
               <tr><td>Preferred Vendor</td><td>Lookup → Vendors <span class="tag tag-lk">Lookup</span></td><td></td></tr>
+              <tr><td>Description</td><td>Multi Line</td><td></td></tr>
               <tr><td>Current Stock</td><td>Decimal</td><td>Maintained by Deluge — aggregated across warehouses</td></tr>
               <tr><td>Stock Value</td><td>Formula</td><td><code>Current Stock × Purchase Price</code></td></tr>
+              <tr><td>Status</td><td>Dropdown</td><td><span class="s-ap">Active</span> <span class="s-cl">Inactive</span></td></tr>
             </table>
           </div>
           <p><strong>Embedded subform fields (Item_Warehouse_Stock):</strong> Item, Warehouse, Current_Stock, Reserved_Qty, Available_Stock (Current − Reserved), Reorder_Level. Source of truth for stock.</p>
@@ -387,7 +393,7 @@
               <tr><td>Allocated Amount</td><td>Currency</td><td></td></tr>
               <tr><td>Total Spent</td><td>Formula</td><td>Aggregated from Expenses</td></tr>
               <tr><td>Remaining / Consumption %</td><td>Formula</td><td></td></tr>
-              <tr><td>Status</td><td>Dropdown</td><td><span class="s-ap">Within Budget</span> <span class="s-pn">80%</span> <span class="s-ex">90%</span> <span class="s-rj">Exceeded</span></td></tr>
+              <tr><td>Status</td><td>Dropdown</td><td><span class="s-ap">Within Budget</span> <span class="s-pn">80% Alert</span> <span class="s-ex">90% Alert</span> <span class="s-rj">Exceeded</span></td></tr>
             </table>
           </div>
           <p><strong>Deluge:</strong> On Expense Submit → update Total_Spent, recalc %, trigger alerts at 80/90/100%.</p>
@@ -485,17 +491,20 @@
             <table class="tbl">
               <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
               <tr><td>Transaction No</td><td>Auto-number</td><td><code>TXN-0001</code></td></tr>
-              <tr><td>Type</td><td>Dropdown</td><td>Stock In/Out/Adjustment/Return/Reservation/Release</td></tr>
+              <tr><td>Type</td><td>Dropdown</td><td>Stock In / Stock Out / Adjustment / Return to Vendor / Return from Customer / Reservation / Release</td></tr>
               <tr><td>Item / Warehouse</td><td>Lookups</td><td></td></tr>
               <tr><td>Quantity / Rate / Total</td><td>Decimal + Currency</td><td></td></tr>
               <tr><td>Project</td><td>Lookup → Projects</td><td>Required for Stock Out + Reservation</td></tr>
             </table>
           </div>
           <p><strong>Deluge (highest-value automation):</strong> On Submit → update Item_Warehouse_Stock. If Stock Out + Project → auto-create Expense record.</p>
-          <pre>Stock In:  Current_Stock += Qty
-Stock Out: Current_Stock -= Qty; Reserved_Qty -= min(Reserved, Qty)
-Reserve:   Reserved_Qty += Qty; validate <= Current_Stock
-Release:   Reserved_Qty -= Qty</pre>
+          <pre>Stock In:              Current_Stock += Qty
+Stock Out:             Current_Stock -= Qty; Reserved_Qty -= min(Reserved, Qty)
+Adjustment:            Current_Stock = Qty (overwrite absolute)
+Return to Vendor:      Current_Stock -= Qty (deduct from warehouse)
+Return from Customer:  Current_Stock += Qty (restock to warehouse)
+Reserve:               Reserved_Qty += Qty; validate <= Current_Stock
+Release:               Reserved_Qty -= Qty</pre>
         </bd>
       </div>
 
@@ -517,6 +526,7 @@ Release:   Reserved_Qty -= Qty</pre>
           </div>
           <div class="wf-s">
             <span class="st s-dr">Draft</span><span class="ar">→</span>
+            <span class="st s-pn">In Transit</span><span class="ar">→</span>
             <span class="st s-op">Completed</span><span class="ar">→ Stock Out + Stock In per line</span>
             <span style="margin:0 6px">|</span>
             <span class="st s-rj">Cancelled</span>
@@ -777,8 +787,9 @@ Release:   Reserved_Qty -= Qty</pre>
           <div class="wf-s">
             <span class="st s-dr">Draft</span><span class="ar">→</span>
             <span class="st s-op">Active</span><span class="ar">→ Auto-calc: Component + Labor + Overhead</span>
-            <span>|</span>
-            <span class="st s-cl">Inactive</span>
+            <span class="ar">→</span>
+            <span class="st s-cl">Inactive</span><span class="ar">→</span>
+            <span class="st s-pn">Revised</span>
           </div>
           <p><strong>Deluge:</strong> On Submit → calculate Total Component Cost + Total Mfg Cost. Prevent duplicate Active BOMs per item.</p>
         </bd>
@@ -832,13 +843,13 @@ Release:   Reserved_Qty -= Qty</pre>
           <tr><td>9</td><td>Transaction Validation</td><td>Validation</td><td>Prevent negative stock</td><td><span class="tag tag-cr">Yes</span></td></tr>
           <tr><td>10</td><td>TO Status = Completed</td><td>On Submit</td><td>Paired Stock Out (From) + Stock In (To)</td><td><span class="tag tag-cr">Yes</span></td></tr>
           <tr><td>11</td><td>GRN Status = Open</td><td>On Submit</td><td>Stock In for accepted qty; update PO line item</td><td><span class="tag tag-cr">Yes</span></td></tr>
-          <tr><td>12</td><td>GRN — all items received</td><td>On Submit</td><td>Auto-set PO Status = Closed</td><td>—</td></tr>
+           <tr><td>12</td><td>GRN — all items received</td><td>On Submit</td><td>PO Status unchanged — POs are closed manually</td><td>—</td></tr>
           <tr><td>13</td><td>PO Status = Open</td><td>On Submit</td><td>Email PO PDF to vendor</td><td><span class="tag tag-nt">Yes</span></td></tr>
           <tr><td>14</td><td>PO Status = Cancelled</td><td>Validation</td><td>Validate no linked GRN</td><td><span class="tag tag-cr">Yes</span></td></tr>
           <tr><td>15</td><td>PR Approval Stage change</td><td>On Submit</td><td>Email next approver in chain</td><td><span class="tag tag-nt">Yes</span></td></tr>
           <tr><td>16</td><td>Scheduled (daily midnight)</td><td>Cron</td><td>Budget alerts, low stock, KPI refresh, mark overdue</td><td><span class="tag tag-nt">Yes</span></td></tr>
           <tr><td>17</td><td>Project Status = Completed</td><td>Validation</td><td>Check no open Expenses or POs</td><td>—</td></tr>
-          <tr><td>18</td><td>Auto-close completed POs</td><td>Scheduled</td><td>Fully received + 30 days old → Closed</td><td>—</td></tr>
+           <tr><td>18</td><td><em>Removed — POs are closed manually</em></td><td>—</td><td>—</td><td>—</td></tr>
           <tr><td>19</td><td>Invoice Sent</td><td>On Submit</td><td>Update project Total Invoiced (P&amp;L)</td><td><span class="tag tag-cr">Yes</span></td></tr>
           <tr><td>20</td><td>Invoice Paid</td><td>On Submit</td><td>Set Amount Paid, Balance Due = 0, Status = Paid</td><td>—</td></tr>
           <tr><td>21</td><td>DC Status = Shipped</td><td>On Submit</td><td>Auto-create Stock Out for dispatched items</td><td><span class="tag tag-cr">Yes</span></td></tr>
@@ -894,8 +905,9 @@ Release:   Reserved_Qty -= Qty</pre>
         <table class="tbl">
           <tr><th>Module</th><th style="color:var(--red)">Admin</th><th style="color:var(--accent)">PM</th><th style="color:var(--green)">Finance</th><th style="color:var(--orange)">Procurement</th><th style="color:var(--purple)">Inventory</th><th style="color:var(--muted)">Employee</th></tr>
           <tr><td>Projects</td><td>CRUD</td><td>CRUD</td><td>R</td><td>R</td><td>R</td><td>R</td></tr>
-          <tr><td>Vendors</td><td>CRUD</td><td>R</td><td>R</td><td>CRUD</td><td>R</td><td>—</td></tr>
-          <tr><td>Warehouses</td><td>CRUD</td><td>—</td><td>—</td><td>R</td><td>CRUD</td><td>—</td></tr>
+           <tr><td>Vendors</td><td>CRUD</td><td>R</td><td>R</td><td>CRUD</td><td>R</td><td>—</td></tr>
+           <tr><td>Accounts</td><td>CRUD</td><td>R</td><td>R</td><td>R</td><td>R</td><td>—</td></tr>
+           <tr><td>Warehouses</td><td>CRUD</td><td>—</td><td>—</td><td>R</td><td>CRUD</td><td>—</td></tr>
           <tr><td>Inventory Items</td><td>CRUD</td><td>R</td><td>R</td><td>R</td><td>CRUD</td><td>—</td></tr>
           <tr><td>Budget Plans</td><td>CRUD</td><td>CRUD</td><td>CRUD</td><td>—</td><td>—</td><td>—</td></tr>
           <tr><td>Budget Components</td><td>CRUD</td><td>CRUD</td><td>CRUD</td><td>—</td><td>—</td><td>—</td></tr>
@@ -1285,7 +1297,8 @@ if (!existing.isNull() && existing.size() > 0)
                 <tr><td>Alert error</td><td><code>alert "message"</code></td></tr>
                 <tr><td>Map</td><td><code>m = Map(); m.put("key", val);</code></td></tr>
                 <tr><td>Dropdown display</td><td><code>input.Field.toMap().get("display_value")</code></td></tr>
-                <tr><td>Try/Catch</td><td><code>try { } catch (e) { info e; }</code></td></tr></table>
+                <tr><td>Try/Catch</td><td><code>try { } catch (e) { info e; }</code></td></tr>
+                <tr><td>Embedded subform access</td><td><code>item = zoho.creator.getRecordById("budget_tracking", "Inventory_Items", item_id); stock_rows = item.get("Item_Warehouse_Stock"); for each row in stock_rows { /* process each row */ }</code></td></tr></table>
                 <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
               </div>
             </div>
@@ -1579,9 +1592,9 @@ if (!existing.isNull() && existing.size() > 0)
               <div class="ts-hd" onclick="igGo(this,1)"><div class="ts-circle"><span class="ts-num">1</span></div><h4>Phase-by-Phase Build Order</h4></div>
               <div class="ts-bd">
                 <table class="tbl"><tr><th>Phase</th><th>Forms</th><th>Key Workflows</th></tr>
-                <tr><td><strong>1A</strong></td><td>Vendors, Projects, Warehouses, Inventory_Items + Stock + Attributes</td><td>Project Code, Ship-to-Billing copy, Init warehouse stock</td></tr>
+                <tr><td><strong>1A</strong></td><td>Vendors, Accounts, Projects, Warehouses, Inventory_Items + Item_Warehouse_Stock</td><td>Project Code, Ship-to-Billing copy, Init warehouse stock</td></tr>
                 <tr><td><strong>1B</strong></td><td>Budget_Plans, Budget_Components, Inventory_Transactions</td><td>Budget validation, Stock update, Stock Out → Expense, Negative stock</td></tr>
-                <tr><td><strong>1C</strong></td><td>Expenses, Purchase_Requisitions + Line Items</td><td>Budget check, Overrun approval, PR stage emails</td></tr>
+                <tr><td><strong>1C</strong></td><td>Expenses, Purchase_Requisitions + Line Items, Budget Alerts</td><td>Budget check, Overrun approval, PR stage emails</td></tr>
                 <tr><td><strong>1D</strong></td><td>Budget_Approvals, Purchase_Orders + Items, GRN + Items, Transfer_Orders + Items</td><td>Approve/Reject, Auto-PO from PR, GRN→Stock In, TO paired txns</td></tr>
                 <tr><td><strong>1E</strong></td><td>BOM + Items, Delivery_Challans + Items, Invoices + Items</td><td>BOM cost calc, DC→Stock Out, Invoice→P&amp;L update, Create DC button</td></tr>
                 <tr><td><strong>1F</strong></td><td>10+ Reports, Dashboard Pages (Executive, Inventory, Procurement, Financial)</td><td>Scheduled daily: KPI refresh, budget alerts, low stock alerts</td></tr></table>

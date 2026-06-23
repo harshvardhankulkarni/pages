@@ -189,8 +189,8 @@
     <p class="subtitle">Comprehensive developer handoff for building a Project Budget Tracking, Inventory Management, and Procurement system in Zoho Creator.</p>
     <div class="meta">
       <span><strong>Platform:</strong> Zoho Creator + Deluge</span>
-      <span><strong>Modules:</strong> 17 primary + embedded subforms</span>
-      <span><strong>Automations:</strong> ~18 Deluge workflows</span>
+      <span><strong>Modules:</strong> 18 Modules (17 primary forms + embedded subforms, Reports &amp; Dashboards)</span>
+      <span><strong>Automations:</strong> ~25 Deluge workflows</span>
       <span><strong>Phase:</strong> 1 of 2</span>
     </div>
   </div>
@@ -344,6 +344,28 @@
   </div>
 </section>
 
+<!-- PROJECTS -->
+<section id="projects">
+  <h2>Project Master <span class="badge">form spec</span></h2>
+
+  <div class="alert alert-info">Central hub. All other modules reference this form. One project maps to one budget plan.</div>
+
+  <h3>Primary Form: Projects</h3>
+  <table class="spec-table">
+    <tr><th>Field</th><th>Type</th><th>Validation / Notes</th></tr>
+    <tr><td>Project Name</td><td>Text</td><td>Required</td></tr>
+    <tr><td>Project Code</td><td>Auto-number</td><td>PROJ-0001</td></tr>
+    <tr><td>Client / Account</td><td>Lookup → Accounts</td><td></td></tr>
+    <tr><td>Project Manager</td><td>User picker</td><td></td></tr>
+    <tr><td>Start Date / End Date</td><td>Date ×2</td><td></td></tr>
+    <tr><td>Budget Amount</td><td>Currency</td><td>Copied to Budget Plan</td></tr>
+    <tr><td>Status</td><td>Dropdown</td><td>Not Started, In Progress, On Hold, Completed, Cancelled</td></tr>
+    <tr><td>Description</td><td>Multi-line</td><td></td></tr>
+  </table>
+
+  <div class="alert alert-warning"><strong>Deluge:</strong> On Status = "Completed" → check no open Expenses or POs. If clear, optionally auto-create final Invoice for unbilled items.</div>
+</section>
+
 <!-- VENDORS -->
 <section id="vendors">
   <h2>Vendor Management <span class="badge">form spec</span></h2>
@@ -466,11 +488,11 @@
   <h3>Embedded Subform: Item_Warehouse_Stock</h3>
   <table class="spec-table">
     <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
-    <tr><td>Item</td><td>Lookup → Items</td><td></td></tr>
     <tr><td>Warehouse</td><td>Lookup → Warehouses</td><td></td></tr>
     <tr><td>Current Stock</td><td>Decimal</td><td>Maintained by Deluge — never manual</td></tr>
     <tr><td>Reorder Level</td><td>Decimal</td><td>Overrides item default if set</td></tr>
   </table>
+  <p style="font-size:0.8rem;color:var(--color-text-muted)"><strong>Note:</strong> Item lookup is implicit — embedded subform is automatically linked to parent Inventory Item.</p>
   <div class="alert alert-warning"><strong>CRITICAL:</strong> <code>Item_Warehouse_Stock.Current_Stock</code> is the source of truth. Every Inventory Transaction updates it via Deluge. The Item-level <code>Inventory_Items.Current_Stock</code> is a Decimal maintained by Deluge (SUM rollup on each transaction). Never aggregate on demand.</div>
 
   <h3>Inventory Transactions</h3>
@@ -516,7 +538,6 @@
   <table class="spec-table">
     <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
     <tr><td>Component Name</td><td>Text</td><td>e.g. Labour, Materials, Travel</td></tr>
-    <tr><td>Budget Plan</td><td>Lookup → Budget_Plans</td><td></td></tr>
     <tr><td>Project</td><td>Lookup → Projects</td><td>Denormalized for reporting</td></tr>
     <tr><td>Allocated Amount</td><td>Currency</td><td></td></tr>
     <tr><td>Total Spent</td><td>Formula / Deluge</td><td>Aggregated from Expenses</td></tr>
@@ -524,6 +545,7 @@
     <tr><td>Consumption %</td><td>Formula</td><td>(Total Spent / Allocated) × 100</td></tr>
     <tr><td>Status</td><td>Dropdown (auto)</td><td>Within Budget, 80% Alert, 90% Alert, Exceeded</td></tr>
   </table>
+  <p style="font-size:0.8rem;color:var(--color-text-muted)"><strong>Note:</strong> Budget Plan lookup is implicit — Budget Components is an embedded subform of Budget Plans.</p>
   <div class="alert alert-warning"><strong>This is the central pivot form.</strong> Expenses reference it. Reports group by it. The 80/90/100% alert logic runs in Deluge each time an expense is submitted.</div>
 </section>
 
@@ -568,7 +590,7 @@
     <tr><td>Subject / Project</td><td>Text / Lookup → Projects</td><td></td></tr>
     <tr><td>Requested By / Date / Delivery Date</td><td>User picker / Date ×2</td><td></td></tr>
     <tr><td>Urgency / Justification</td><td>Dropdown / Multi-line</td><td>Low, Medium, High, Critical</td></tr>
-    <tr><td>Status / Approval Stage</td><td>Dropdown ×2</td><td>Draft→Open→Approved→Rejected→Closed + 4-stage</td></tr>
+    <tr><td>Status / Approval Stage</td><td>Dropdown ×2</td><td>Draft→Open→Approved→Rejected→Closed + 3-stage</td></tr>
     <tr><td>PR Line Items</td><td>Embedded subform</td><td>Item lookup, Unit, Qty, Rate, Total</td></tr>
   </table>
   <p><strong>Approval flow:</strong> Each stage transition sends email to next approver. On final approval → auto-create PO (Draft).</p>
@@ -581,7 +603,7 @@
     <tr><td>Requisition / Project</td><td>Lookup ×2</td><td>PR linked on auto-create</td></tr>
     <tr><td>PO Date / Delivery Date / Due Date</td><td>Date ×3</td><td></td></tr>
     <tr><td>Reference Number</td><td>Text</td><td>Vendor contract ref</td></tr>
-    <tr><td>Status</td><td>Dropdown</td><td>Draft, Open, Part Invoiced, Billed, Closed, Cancelled</td></tr>
+    <tr><td>Status</td><td>Dropdown</td><td>Draft, Open, Partially Invoiced, Invoiced, Closed, Cancelled</td></tr>
     <tr><td>Discount %</td><td>Decimal</td><td>PO-level discount</td></tr>
     <tr><td>Subtotal / Tax Total / Total</td><td>Currency / Formula</td><td>Financial rollup</td></tr>
     <tr><td>Terms / Notes</td><td>Multi-line ×2</td><td></td></tr>
@@ -606,13 +628,13 @@
     <span class="arrow">→</span>
     <span class="step status-pending">Partially Invoiced</span>
     <span class="arrow">→</span>
-    <span class="step status-approved">Billed</span>
+    <span class="step status-approved">Invoiced</span>
     <span class="arrow">→</span>
     <span class="step status-closed">Closed</span>
     <span class="arrow">|</span>
     <span class="step status-rejected">Cancelled</span>
   </div>
-  <p><strong>Deluge:</strong> On Status = "Open" → email PO PDF to vendor. On GRN → update Received_Qty. When all items fully received → Status = "Closed".</p>
+  <p><strong>Deluge:</strong> On Status = "Open" → email PO PDF to vendor. POs are closed manually — GRN does not auto-update PO status.</p>
 
   <h3>Goods Receipt (GRN)</h3>
   <table class="spec-table">
@@ -633,12 +655,97 @@
     <tr><td>Actual Unit Cost</td><td>Currency</td><td>Editable — may differ from PO</td></tr>
     <tr><td>Warehouse</td><td>Lookup → Warehouses</td><td>Where accepted items go</td></tr>
   </table>
-  <div class="alert alert-warning"><strong>Deluge (on Status = "Open"):</strong> For each line with Accepted_Qty &gt; 0 → create Stock In transaction → triggers inventory workflow → updates Item_Warehouse_Stock. Update PO_Line_Item.Received_Qty. If all items fully received → PO.Status = "Closed".</div>
+  <div class="alert alert-warning"><strong>Deluge (on Status = "Open"):</strong> For each line with Accepted_Qty &gt; 0 → create Stock In transaction → triggers inventory workflow → updates Item_Warehouse_Stock. Update PO_Line_Item.Received_Qty. If all items fully received → flag for manual close.</div>
+</section>
+
+<!-- INVOICING -->
+<section id="invoicing">
+  <h2>Invoicing <span class="badge">form spec</span></h2>
+
+  <div class="alert alert-info">Revenue tracking per project with embedded line items, aging, and P&amp;L contribution.</div>
+
+  <h3>Primary Form: Invoices</h3>
+  <table class="spec-table">
+    <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+    <tr><td>Invoice Number</td><td>Auto-number</td><td>INV-0001</td></tr>
+    <tr><td>Project</td><td>Lookup → Projects</td><td>Required</td></tr>
+    <tr><td>Account</td><td>Lookup → Accounts</td><td>Denormalized from Project</td></tr>
+    <tr><td>Invoice Date / Due Date</td><td>Date ×2</td><td></td></tr>
+    <tr><td>Status</td><td>Dropdown</td><td>Draft, Sent, Paid, Overdue, Cancelled</td></tr>
+    <tr><td>Subtotal / Tax Total / Total</td><td>Currency / Formula</td><td></td></tr>
+    <tr><td>Balance Due</td><td>Currency</td><td>Updated on payment</td></tr>
+    <tr><td>Notes / Terms</td><td>Multi-line ×2</td><td></td></tr>
+  </table>
+
+  <h4>Invoice Line Item Spec</h4>
+  <table class="spec-table">
+    <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+    <tr><td>Item / Description</td><td>Lookup → Items / Text</td><td></td></tr>
+    <tr><td>Quantity / Rate / Total</td><td>Decimal / Currency / Formula</td><td></td></tr>
+  </table>
+
+  <div class="alert alert-warning"><strong>Deluge:</strong> On Status = "Sent" → update Project.Total_Invoiced. On Status = "Paid" → update Balance Due. Custom button to create Delivery Challan from Invoice line items.</div>
+</section>
+
+<!-- DELIVERY CHALLAN -->
+<section id="delivery-challan">
+  <h2>Delivery Challan <span class="badge">form spec</span></h2>
+
+  <div class="alert alert-info">Goods dispatch tracking. Shipped status auto-creates Stock Out.</div>
+
+  <h3>Primary Form: Delivery Challans</h3>
+  <table class="spec-table">
+    <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+    <tr><td>DC Number</td><td>Auto-number</td><td>DC-0001</td></tr>
+    <tr><td>Project</td><td>Lookup → Projects</td><td></td></tr>
+    <tr><td>Account</td><td>Lookup → Accounts</td><td>Denormalized</td></tr>
+    <tr><td>Invoice</td><td>Lookup → Invoices</td><td>Optional — link to source invoice</td></tr>
+    <tr><td>DC Date</td><td>Date</td><td></td></tr>
+    <tr><td>Status</td><td>Dropdown</td><td>Draft, Packed, Shipped, Delivered, Cancelled</td></tr>
+  </table>
+
+  <h4>DC Line Item Spec</h4>
+  <table class="spec-table">
+    <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+    <tr><td>Item</td><td>Lookup → Items</td><td></td></tr>
+    <tr><td>Quantity / Rate / Total</td><td>Decimal / Currency / Formula</td><td></td></tr>
+    <tr><td>Warehouse</td><td>Lookup → Warehouses</td><td>Where items are dispatched from</td></tr>
+  </table>
+
+  <div class="alert alert-warning"><strong>Deluge:</strong> On Status = "Shipped" → for each line item, auto-create Stock Out transaction → triggers inventory workflow → updates Item_Warehouse_Stock.</div>
+</section>
+
+<!-- BOM -->
+<section id="bom">
+  <h2>BOM (Bill of Materials) <span class="badge">form spec</span></h2>
+
+  <div class="alert alert-info">Manufacturing recipe with embedded component line items and auto cost calculation.</div>
+
+  <h3>Primary Form: BOM</h3>
+  <table class="spec-table">
+    <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+    <tr><td>BOM Number</td><td>Auto-number</td><td>BOM-0001</td></tr>
+    <tr><td>Product Item</td><td>Lookup → Items</td><td>The manufactured item</td></tr>
+    <tr><td>Project</td><td>Lookup → Projects</td><td>Optional link</td></tr>
+    <tr><td>Total Mfg Cost</td><td>Currency</td><td>Calculated by Deluge on submit</td></tr>
+    <tr><td>Labour Cost / Overhead Cost</td><td>Currency</td><td>Entered manually</td></tr>
+    <tr><td>Status</td><td>Dropdown</td><td>Draft, Active, Revised, Inactive</td></tr>
+  </table>
+
+  <h4>BOM Line Item Spec</h4>
+  <table class="spec-table">
+    <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+    <tr><td>Component Item</td><td>Lookup → Items</td><td>Raw material / sub-component</td></tr>
+    <tr><td>Quantity / Unit Cost</td><td>Decimal / Currency</td><td></td></tr>
+    <tr><td>Line Total</td><td>Formula</td><td>Qty × Unit Cost</td></tr>
+  </table>
+
+  <div class="alert alert-warning"><strong>Deluge (On Submit):</strong> Sum all component line totals + Labour_Cost + Overhead_Cost → Total_Mfg_Cost.</div>
 </section>
 
 <!-- WORKFLOWS -->
 <section id="workflows">
-  <h2>Deluge Workflow Catalog <span class="badge">18 automations</span></h2>
+  <h2>Deluge Workflow Catalog <span class="badge">25 automations</span></h2>
 
   <table class="spec-table">
     <tr><th>#</th><th>Trigger</th><th>Event</th><th>Action</th><th>Critical?</th></tr>
@@ -653,13 +760,20 @@
     <tr><td>9</td><td>Inventory Transaction</td><td>Validation</td><td>Prevent negative stock</td><td><span class="tag tag-critical">Yes</span></td></tr>
     <tr><td>10</td><td>Transfer Order = Completed</td><td>On Submit</td><td>Generate paired Stock Out / Stock In</td><td><span class="tag tag-critical">Yes</span></td></tr>
     <tr><td>11</td><td>GRN Status = "Open"</td><td>On Submit</td><td>Create Stock In for accepted qty; update PO line</td><td><span class="tag tag-critical">Yes</span></td></tr>
-    <tr><td>12</td><td>GRN — all items received</td><td>On Submit</td><td>Auto-set PO.Status = "Closed"</td><td>No</td></tr>
+    <tr><td>12</td><td>GRN — all items received</td><td>On Submit</td><td>PO is closed manually — no auto-close logic</td><td>No</td></tr>
     <tr><td>13</td><td>PO Status = "Open"</td><td>On Submit</td><td>Send PO PDF to vendor email</td><td><span class="tag tag-notify">Yes</span></td></tr>
     <tr><td>14</td><td>PO Status = "Cancelled"</td><td>Validation</td><td>Validate no GRN linked</td><td><span class="tag tag-critical">Yes</span></td></tr>
     <tr><td>15</td><td>PR Approval Stage change</td><td>On Submit</td><td>Email next approver in chain</td><td><span class="tag tag-notify">Yes</span></td></tr>
     <tr><td>16</td><td>Scheduled (daily midnight)</td><td>Cron</td><td>Budget alerts (80/90/100%); low stock alerts; KPI refresh</td><td><span class="tag tag-notify">Yes</span></td></tr>
     <tr><td>17</td><td>Project Status = "Completed"</td><td>Validation</td><td>Check no open Expenses or POs</td><td>No</td></tr>
-    <tr><td>18</td><td>Auto-close completed POs</td><td>Scheduled</td><td>POs fully received + 30 days old → Closed</td><td>No</td></tr>
+    <tr><td>18</td><td>Manual PO close tracking</td><td>Scheduled</td><td>Flag POs fully received + 30 days old for manual close</td><td>No</td></tr>
+    <tr><td>19</td><td>Invoice Status = "Sent"</td><td>On Submit</td><td>Update Project.Total_Invoiced (sum of all sent invoices)</td><td><span class="tag tag-critical">Yes</span></td></tr>
+    <tr><td>20</td><td>Invoice Status = "Paid"</td><td>On Submit</td><td>Update Balance Due = Total - Amount_Paid</td><td><span class="tag tag-critical">Yes</span></td></tr>
+    <tr><td>21</td><td>DC Status = "Shipped"</td><td>On Submit</td><td>Auto-create Stock Out for each line item</td><td><span class="tag tag-critical">Yes</span></td></tr>
+    <tr><td>22</td><td>BOM Submit</td><td>On Submit</td><td>Calculate Total Mfg Cost = sum of line totals + Labour + Overhead</td><td><span class="tag tag-critical">Yes</span></td></tr>
+    <tr><td>23</td><td>PR final approval</td><td>On Submit</td><td>Auto-create Purchase Order (Draft) with PR line items</td><td><span class="tag tag-critical">Yes</span></td></tr>
+    <tr><td>24</td><td>Stock Reservation transaction</td><td>On Submit</td><td>Update Item_Warehouse_Stock.Reserved_Qty; Stock Out checks unreserved stock</td><td><span class="tag tag-critical">Yes</span></td></tr>
+    <tr><td>25</td><td>Project Status = "Completed"</td><td>On Submit</td><td>Auto-create Invoice for any unbilled items</td><td>No</td></tr>
   </table>
 </section>
 

@@ -402,7 +402,7 @@
   <h4 style="font-size:0.82rem;color:var(--accent);margin-top:12px">Stock tracking — how it works</h4>
   <div class="workflow-card">
     <span class="wf-num">Auto</span>
-    <span class="wf-desc">When you create a Goods item, the system auto-creates stock records for all active warehouses with 0 quantity.</span>
+    <span class="wf-desc">Stock quantities are entered manually per warehouse via the embedded Item_Warehouse_Stock subform — no auto-creation.</span>
   </div>
   <div class="workflow-card">
     <span class="wf-num">Auto</span>
@@ -678,7 +678,7 @@
     <dt>From Warehouse / To Warehouse <span class="lkup">Lookup → Warehouses</span></dt>
     <dd>Must be different warehouses.</dd>
     <dt>Status</dt>
-    <dd>Draft → In Transit → Completed (triggers stock movement) → Cancelled.</dd>
+    <dd>Draft → Open → Completed (triggers stock movement) → Cancelled.</dd>
   </dl>
 
   <h4 style="font-size:0.82rem;color:var(--accent);margin-top:12px">TO Line Items (embedded subform)</h4>
@@ -724,8 +724,7 @@
   <h4 style="font-size:0.82rem;color:var(--accent);margin-top:12px">Auto-created expenses (from Stock Out)</h4>
   <div class="workflow-card">
     <span class="wf-num">Auto</span>
-    <span class="wf-desc">Stock Out transaction + Project → system creates Expense:<br>
-    Amount = Qty × Rate, Description = "Auto: Stock consumed — [Item] for [Project]", Status = "Approved"</span>
+    <span class="wf-desc">Auto-expense creation from Stock Out is planned for Phase 2 — currently placeholder in the Deluge script.</span>
   </div>
 </section>
 
@@ -765,7 +764,7 @@
   <div class="purpose">BOM defines what components go into making a finished item. Useful for manufacturing/assembly projects — it automatically calculates the total manufacturing cost.</div>
 
   <dl class="field-list">
-    <dt>Finished Item <span class="lkup">Lookup → Inventory_Items</span></dt>
+    <dt>Product Item <span class="lkup">Lookup → Inventory_Items</span></dt>
     <dd>The item you're manufacturing.</dd>
     <dt>Quantity</dt>
     <dd>How many units this BOM produces (usually 1).</dd>
@@ -800,12 +799,14 @@
   <div class="al al-w"><strong>Stock deduction on dispatch:</strong> When DC Status = "Shipped", the system automatically creates Stock Out transactions for all line items. Validate stock before shipping.</div>
 
   <dl class="field-list">
-    <dt>Project / Customer <span class="lkup">Lookup</span></dt>
+    <dt>Project <span class="lkup">Lookup → Projects</span></dt>
+    <dd>Which project this dispatch relates to.</dd>
+    <dt>Account <span class="lkup">Lookup → Accounts</span></dt>
     <dd>Who is receiving the goods.</dd>
     <dt>Ship Via / Vehicle No / Driver</dt>
     <dd>Logistics details.</dd>
     <dt>Status</dt>
-    <dd>Draft → Shipped (deducts stock) → Delivered → Cancelled.</dd>
+    <dd>Draft → Shipped (deducts stock) → Delivered → Returned.</dd>
   </dl>
 
   <h4 style="font-size:0.82rem;color:var(--accent);margin-top:12px">DC Line Items (embedded subform)</h4>
@@ -847,7 +848,7 @@
   <div class="tw">
     <table class="tbl">
       <tr><th>Field</th><th>Notes</th></tr>
-      <tr><td>Item <span class="lkup">Lookup → Inventory_Items</span></td><td>Optional — can enter free-text description</td></tr>
+      <tr><td>Item <span class="lkup">Lookup → Inventory_Items</span></td><td>Required — select from Inventory Items</td></tr>
       <tr><td>Quantity / Rate</td><td>Billing quantity and unit price</td></tr>
       <tr><td>Tax %</td><td>Line-level</td></tr>
       <tr><td>Total</td><td>Formula: (Qty × Rate) + Tax</td></tr>
@@ -904,7 +905,7 @@
 
   <div class="diagram">
     <span class="b" style="color:var(--accent)">Procurement Flow:</span><br>
-    <span class="c">PR Created</span> <span class="y">→</span> <span class="y">3-Stage Approval</span> <span class="y">→</span> <span class="c">PO Auto-Created</span> <span class="y">→</span> <span class="c">PO Sent to Vendor</span> <span class="y">→</span> <span class="c">Goods Received (GRN)</span> <span class="y">→</span> <span class="c">Stock Updated</span> <span class="y">→</span> <span class="c">PO Auto-Closed</span><br><br>
+    <span class="c">PR Created</span> <span class="y">→</span> <span class="y">3-Stage Approval</span> <span class="y">→</span> <span class="c">PO Auto-Created</span> <span class="y">→</span> <span class="c">PO Sent to Vendor</span> <span class="y">→</span> <span class="c">Goods Received (GRN)</span> <span class="y">→</span> <span class="c">Stock Updated</span> <span class="y">→</span> <span class="c">PO Manually Closed</span><br><br>
 
     <span class="b" style="color:var(--accent)">Project Consumption Flow:</span><br>
     <span class="c">Stock Out Transaction</span> <span class="y">→</span> <span class="c">Expense Auto-Created</span> <span class="y">→</span> <span class="c">Budget Check Runs</span> <span class="y">→</span> <span class="y">(if over)</span> <span class="c">Budget Approval Created</span><br><br>

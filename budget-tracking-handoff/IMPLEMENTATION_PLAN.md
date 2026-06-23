@@ -18,7 +18,7 @@
 | No true foreign keys | All relationships are **Lookup fields** referencing another form's `Form.Name` field. Plan for orphaned records — archive, don't delete. |
 | No transactions | If a multi-step Deluge workflow fails mid-way (e.g., deduct stock + create expense record), partial updates persist. Add **safety checks in Deluge**: verify state before each write, log failures to a Debug Log form. |
 | Deluge runs per-record, not set-based | Avoid looping large datasets in `on form submit`. Use **Scheduled Workflows** (cron) for mass operations: budget alerts, auto-PO closure, monthly rollups. |
-| Subform limitations | Subforms are great for < 100 line items. All line items, contacts, and documents use **embedded subforms** inside the parent form. Budget Components is a separate form (not a subform) for rich reporting. |
+| Subform limitations | Subforms are great for < 100 line items. All line items, contacts, and documents use **embedded subforms** inside the parent form. Budget Components is an embedded subform inside Budget_Plans for inline entry. |
 | No dynamic SQL | All aggregation is `Map` + `List` in Deluge or Zoho Creator Report widgets. Prefer Reports over Deluge for performance. |
 | Role-based access is per-form, not record-level | For department-specific data (e.g., Procurement sees only their POs), use **form filters** on report views or dedicated forms per role. |
 | Formula fields can't look up external data | Complex validation (budget checks) must go in **Deluge workflows on form submit**, not formula fields. |
@@ -95,9 +95,9 @@ Phase 1F:  Reports & Dashboards (all modules incl. Project P&L)
 | Status | Dropdown | `Active`, `Inactive` |
 | Remarks | Multi-line | |
 
-**Embedded subform — Contacts:** Salutation, First Name, Last Name, Email, Phone, Mobile, Designation, Department, Is Primary
+**Embedded subform — Vendor_Contacts:** Salutation, First Name, Last Name, Email, Phone, Mobile, Designation, Department, Is Primary
 
-**Embedded subform — Documents:** Document Name, File, Expiry Date, Notes
+**Embedded subform — Vendor_Documents:** Document Name, File, Expiry Date, Notes
 
 ---
 
@@ -122,9 +122,9 @@ Stores customer/client information separate from Vendors. Used by Projects, Invo
 | Status | Dropdown | `Active`, `Inactive` — default Active |
 | Remarks | Multi-line | |
 
-**Embedded subform — Contacts:** Salutation, First Name, Last Name, Email, Phone, Mobile, Designation, Department, Is Primary
+**Embedded subform — Account_Contacts:** Salutation, First Name, Last Name, Email, Phone, Mobile, Designation, Department, Is Primary
 
-**Embedded subform — Documents:** Document Name, File, Expiry Date, Notes
+**Embedded subform — Account_Documents:** Document Name, File, Expiry Date, Notes
 
 ---
 
@@ -140,7 +140,6 @@ Multi-warehouse support — every inventory transaction references a warehouse (
 | City | Text | |
 | State | Text | |
 | Country | Text | |
-| Contact Person | Text | |
 | Phone | Phone | |
 | Status | Dropdown | `Active`, `Inactive` |
 
@@ -170,7 +169,7 @@ Items are goods or services tracked at the SKU level.
 | Description | Multi-line | Internal notes |
 | Status | Dropdown | `Active`, `Inactive` |
 
-**Embedded subform — Stock by Warehouse:** Item (Lookup → Inventory_Items), Warehouse (Lookup → Warehouses), Current Stock, Reserved Qty, Available Stock (Formula), Reorder Level
+**Embedded subform — Item_Warehouse_Stock:** Item (Lookup → Inventory_Items), Warehouse (Lookup → Warehouses), Current Stock, Reserved Qty, Available Stock (Formula), Reorder Level
 
 **Deluge approach for `Current_Stock` and `Reserved_Qty` :**
 ```
@@ -205,7 +204,7 @@ This gives both warehouse-level visibility and item-level totals without on-dema
 - Ensure project doesn't already have an active budget plan
 - Total of all Budget Components must be ≤ `Total Budget Amount`
 
-**Recommendation for Budget Components:** Use a **separate form** `Budget_Components` with `Add-as-Subform` in Budget_Plans. This gives the user a seamless inline experience while enabling rich reporting.
+**Recommendation for Budget Components:** Use an **embedded subform** `Budget_Components` inside `Budget_Plans`. This gives the user a seamless inline experience while enabling rich reporting.
 
 ---
 
@@ -214,7 +213,6 @@ This gives both warehouse-level visibility and item-level totals without on-dema
 | Field | Type | Notes |
 |---|---|---|
 | Component Name | Text | e.g., "Labor", "Materials" |
-| Budget Plan | Lookup → Budget_Plans | Links to parent |
 | Project | Lookup → Projects | Denormalized for reporting ease |
 | Allocated Amount | Currency | |
 | Total Spent | Currency (Formula) | Aggregated from Expense Management records |
@@ -350,7 +348,7 @@ Moving stock between warehouses.
 | To Warehouse | Lookup → Warehouses | Destination |
 | Status | Dropdown | `Draft`, `In Transit`, `Completed`, `Cancelled` |
 
-**Embedded subform — Line Items:** Item (Lookup → Inventory_Items), Quantity, Rate, Total (Formula)
+**Embedded subform — TO_Line_Items:** Item (Lookup → Inventory_Items), Quantity, Rate, Total (Formula)
 
 **Deluge Workflow (on Status = "Completed"):**
 ```
@@ -381,7 +379,7 @@ Handles internal purchase requests and approval workflow.
 | Approval Stage | Dropdown | `Pending Dept Approval`, `Pending Finance Approval`, `Pending Procurement`, `Approved` |
 | Notes | Multi-line | Internal notes |
 
-**Embedded subform — Line Items:** Item (Lookup → Inventory_Items, optional), Item Description, Quantity, Estimated Unit Rate, Estimated Total (Formula), Item Type, Unit
+**Embedded subform — PR_Line_Items:** Item (Lookup → Inventory_Items, optional), Item Description, Quantity, Estimated Unit Rate, Estimated Total (Formula), Item Type, Unit
 
 **Multi-stage Approval + Auto-PO Workflow:**
 1. User submits (Status = "Open")
@@ -416,7 +414,7 @@ Each step sends email notification. Procurement then reviews the auto-created PO
 | Notes | Multi-line | Internal instructions |
 | Attachment | Upload | PO document file |
 
-**Embedded subform — Line Items:** Item (Lookup → Inventory_Items), Description, Unit, HSN/SAC, Quantity, Unit Rate, Discount (%), Discount Amount (Formula), Tax (%), Tax Amount (Formula), Item Total (Formula)
+**Embedded subform — PO_Line_Items:** Item (Lookup → Inventory_Items), Description, Unit, HSN/SAC, Quantity, Unit Rate, Discount (%), Discount Amount (Formula), Tax (%), Tax Amount (Formula), Item Total (Formula)
 
 
 **PO Lifecycle:**
@@ -446,7 +444,7 @@ Supports accepted vs rejected quantities, and auto-updates inventory + PO.
 | Received By | User picker | Defaults to current user |
 | Status | Dropdown | `Draft`, `Open`, `Closed` |
 
-**Embedded subform — Line Items:** Item (Lookup → Inventory_Items), PO Quantity (Read Only), Accepted Quantity, Rejected Quantity, Reason for Rejection, Actual Unit Cost, Total (Formula), Warehouse (Lookup → Warehouses), Condition Notes
+**Embedded subform — GRN_Line_Items:** Item (Lookup → Inventory_Items), PO Quantity (Read Only), Accepted Quantity, Rejected Quantity, Reason for Rejection, Actual Unit Cost, Total (Formula), Warehouse (Lookup → Warehouses), Condition Notes
 
 **Deluge Workflow (on Submit when Status = "Open"):**
 ```
@@ -461,7 +459,7 @@ Supports accepted vs rejected quantities, and auto-updates inventory + PO.
           Type = "Stock In"
         → Inventory_Transactions workflow fires → updates stock
 
-      (PO Line Items no longer track Received_Quantity — GRN is the receipt record)
+      GRN is the receipt record — PO lines no longer track receipt quantities
       Update PO line item actual costs if row.Actual_Unit_Cost differs from PO rate
 ```
 
@@ -536,7 +534,7 @@ Captures revenue per project.
 | Notes | Multi-line | Internal |
 | Attachment | Upload | Invoice PDF |
 
-**Embedded subform — Line Items:** Item (Lookup → Inventory_Items, optional), Description, Quantity, Rate, Discount (%), Discount Amount (Formula), Tax (%), Tax Amount (Formula), Total (Formula)
+**Embedded subform — Invoice_Line_Items:** Item (Lookup → Inventory_Items, optional), Description, Quantity, Rate, Discount (%), Discount Amount (Formula), Tax (%), Tax Amount (Formula), Total (Formula)
 
 **Deluge / Custom Actions:**
 - On Status = "Sent": update Project Budget Component's Total Invoiced (for P&L reporting)
@@ -557,7 +555,6 @@ Tracks physical dispatch of goods to customers.
 | Customer | Lookup → Accounts | Recipient |
 | Reference | Text | Customer PO / Sales Order ref |
 | Date | Date | Defaults to today |
-| Ship Via | Dropdown | `Courier`, `Freight`, `Own Vehicle`, `Pickup` |
 | Vehicle No | Text | If own transport |
 | Driver Name | Text | |
 | Driver Contact | Phone | |
@@ -565,7 +562,7 @@ Tracks physical dispatch of goods to customers.
 | Remarks | Multi-line | |
 | Attachment | Upload | Signed DC copy |
 
-**Embedded subform — Line Items:** Item (Lookup → Inventory_Items), Description, Quantity, Unit, Condition
+**Embedded subform — DC_Line_Items:** Item (Lookup → Inventory_Items), Description, Quantity, Unit, Condition
 
 **Deluge / Custom Actions:**
 - On Create: validate stock availability for each row in input.DC_Line_Items subform
@@ -593,7 +590,7 @@ Defines component structure for manufactured/assembled items. Useful for manufac
 | Version | Decimal | Track revisions |
 | Notes | Multi-line | |
 
-**Embedded subform — Line Items:** Component Item (Lookup → Inventory_Items), Quantity Required, Unit, Unit Cost, Total Cost (Formula), Scrap %, Notes
+**Embedded subform — BOM_Line_Items:** Component Item (Lookup → Inventory_Items), Quantity Required, Unit, Unit Cost, Total Cost (Formula), Scrap %, Notes
 
 **Deluge:**
 - On Submit: calculate Total Component Cost = SUM of line item Total Costs
@@ -695,13 +692,13 @@ BOM ──── BOM_Line_Items (embedded subform, 1:N)
 | Budget Approval Status Change | On Submit | Update Expense status, notify requester |
 | Inventory Transaction (Stock In/Out/Adj) | On Submit | Update Item_Warehouse_Stock subform row; recompute Item.Current_Stock via Deluge |
 | Inventory Transaction (Stock Out + Project) | On Submit | Also auto-create Expense record |
-| Transfer Order Status = "Completed" | On Submit | Generate paired Stock Out / Stock In transactions (from TO Line Items subform) |
+| Transfer Order Status = "Completed" | On Submit | Generate paired Stock Out / Stock In transactions (from TO_Line_Items subform) |
 | Goods Receipt Status = "Open" | On Submit | Create Stock In for Accepted Qty from GRN_Line_Items subform rows |
-| Goods Receipt (all items received) | On Submit | Auto-set PO.Status = "Closed" |
+| Goods Receipt (all items received) | On Submit | POs are manually closed — no auto-close logic |
 | PO Status = "Open" | On Submit | Send email to vendor with PO details |
 | PR Approval Stage Change | On Submit | Send notification to next approver in chain |
-| PR Fully Approved (Stage = "Approved") | On Submit | Auto-create Purchase Order (Draft); copy line items from PR subform, link PO.Requisition to PR |
-| Invoice — Create DC | Custom Button | Auto-create Delivery Challan with same Project, Customer, and line items from Invoice subform |
+| PR Fully Approved (Stage = "Approved") | On Submit | Auto-create Purchase Order (Draft); copy line items from PR_Line_Items subform, link PO.Requisition to PR |
+| Invoice — Create DC | Custom Button | Auto-create Delivery Challan with same Project, Customer, and line items from Invoice_Line_Items subform |
 | Inventory Reservation | On Submit | Increment Reserved_Qty on Item_Warehouse_Stock subform row; validate ≤ Current_Stock |
 | Inventory Release | On Submit | Decrement Reserved_Qty on Item_Warehouse_Stock subform row |
 | Project Status = "Completed" | On Submit | Validate no pending expenses/POs; auto-create final Invoice for unbilled items |
@@ -747,7 +744,7 @@ Everything above is Phase 1 — one Zoho Creator application with no external in
 
 | Item | Details |
 |------|---------|
-| Forms to create | ~18 primary forms (Projects, Vendors, Accounts, Warehouses, Inventory_Items, Budget_Plans, Budget_Components, Expenses, Budget_Approvals, Inventory_Transactions, Transfer_Orders, Purchase_Requisitions, Purchase_Orders, Goods_Receipts, Invoices, Delivery_Challans, BOM) — each with embedded subforms for line items, contacts, documents |
+| Forms to create | ~17 primary forms (Projects, Vendors, Accounts, Warehouses, Inventory_Items, Budget_Plans, Budget_Components, Expenses, Budget_Approvals, Inventory_Transactions, Transfer_Orders, Purchase_Requisitions, Purchase_Orders, Goods_Receipts, Invoices, Delivery_Challans, BOM) — each with embedded subforms for line items, contacts, documents |
 | Deluge workflows | ~23 (22 On Submit + 1 Scheduled Cron) |
 | User roles | 6 (Admin, PM, Finance, Procurement, Inventory, Employee) |
 | Lookup forms (most referenced) | Projects, Vendors, Accounts, Inventory_Items, Warehouses |
