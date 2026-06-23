@@ -110,6 +110,7 @@ Subforms are embedded — Deluge accesses them via `input.<subform_name>` during
 | `build/PHASE_1A_BUILD.md` – `1F_BUILD.md` | Phase-wise console build guides with Deluge scripts, field configs, validation rules, and verification checklists (2,101 lines total) |
 | `user-guide.html` | End-user guide — 17 modules in data entry order, relationship diagrams, flow charts, report descriptions |
 | `handoff-spec.html` | Developer handoff spec for engineering team — component specs, design tokens, interaction states |
+| `TESTING_GUIDE.md` | Phase-by-phase testing scenarios with sample data, expected results, edge cases, and full end-to-end integration test |
 
 ---
 
