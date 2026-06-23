@@ -132,16 +132,19 @@
       '1C': { file: 'build/PHASE_1C_BUILD.md', title: 'Phase 1C — Expenses', name: 'Expenses → Purchase Requisitions' },
       '1D': { file: 'build/PHASE_1D_BUILD.md', title: 'Phase 1D — Procurement', name: 'Budget Approvals → PO → GRN → Transfer Orders' },
       '1E': { file: 'build/PHASE_1E_BUILD.md', title: 'Phase 1E — Revenue &amp; Mfg', name: 'BOM → Delivery Challans → Invoicing' },
-      '1F': { file: 'build/PHASE_1F_BUILD.md', title: 'Phase 1F — Reports', name: 'Reports &amp; Dashboards' }
+      '1F': { file: 'build/PHASE_1F_BUILD.md', title: 'Phase 1F — Reports', name: 'Reports &amp; Dashboards' },
+      'test' : { file: 'TESTING_GUIDE.md', title: 'Testing Guide', name: 'Phase-by-Phase Testing Scenarios & Sample Data' }
     };
 
     const params = new URLSearchParams(window.location.search);
     const phase = params.get('phase') || '1A';
-    const info = phases[phase] || phases['1A'];
+    const guide = params.get('guide');
+    const info = guide ? phases['test'] : (phases[phase] || phases['1A']);
+    const label = guide ? 'Test Guide' : ('Phase ' + phase);
 
-    document.getElementById('phaseBadge').textContent = 'Phase ' + phase;
+    document.getElementById('phaseBadge').textContent = label;
     document.getElementById('phaseTitle').textContent = info.name;
-    document.title = 'Build Guide — Phase ' + phase + ' — Project Budget Tracking';
+    document.title = (guide ? 'Testing Guide' : 'Build Guide — Phase ' + phase) + ' — Project Budget Tracking';
 
     fetch(info.file)
       .then(r => {
