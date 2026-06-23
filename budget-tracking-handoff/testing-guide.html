@@ -97,6 +97,25 @@
   .al-i { background: #1e3a5f; border-color: var(--accent); color: #bae6fd; }
   .al-o { background: #1a3b2a; border-color: var(--green); color: #bbf7d0; }
 
+  .pg-head { font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); font-weight: 600; margin: 14px 0 4px 0; padding: 0 10px; }
+
+  .vm { width: 100%; border-collapse: collapse; font-size: 0.74rem; min-width: 600px; margin: 8px 0; }
+  .vm th { text-align: left; padding: 5px 8px; background: var(--surface2); color: var(--muted); font-weight: 600; font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  .vm td { padding: 5px 8px; border-bottom: 1px solid var(--surface2); vertical-align: top; color: var(--text); }
+  .vm td.alert { color: var(--yellow); font-family: var(--font-mono); font-size: 0.68rem; }
+  .vm td.block { color: var(--red); font-family: var(--font-mono); font-size: 0.68rem; }
+  .vm td.pass { color: var(--green); font-family: var(--font-mono); font-size: 0.68rem; }
+  .vm td.auto { color: var(--accent); font-family: var(--font-mono); font-size: 0.68rem; }
+  .vm tr:hover td { background: rgba(34,211,238,0.03); }
+
+  .pf { display: inline-block; font-size: 0.58rem; font-family: var(--font-mono); padding: 2px 6px; border-radius: 3px; margin: 1px; }
+  .pf-admin { background: #4a1c1c; color: #fca5a5; }
+  .pf-pm { background: #1e3a5f; color: #93c5fd; }
+  .pf-fin { background: #1a3b2a; color: #86efac; }
+  .pf-proc { background: #3b2f1e; color: #fbbf24; }
+  .pf-inv { background: #2e1f3b; color: #d8b4fe; }
+  .pf-emp { background: #3b1f2e; color: #f472b6; }
+
   .ph-badge { font-size: 0.58rem; font-family: var(--font-mono); padding: 2px 8px; border-radius: 4px; font-weight: 600; }
   .ph-1a { background: #1a3b2a; color: var(--green); }
   .ph-1b { background: #1e3a5f; color: var(--accent); }
@@ -136,6 +155,10 @@
     <a onclick="showPage('1d')" data-page="1d"><span class="ph-badge ph-1d">1D</span> Procurement</a>
     <a onclick="showPage('1e')" data-page="1e"><span class="ph-badge ph-1e">1E</span> Revenue &amp; Mfg</a>
     <a onclick="showPage('1f')" data-page="1f"><span class="ph-badge ph-1f">1F</span> Reports</a>
+    <div class="pg-head">Cross-Phase</div>
+    <a onclick="showPage('critical')" data-page="critical">Critical Validations</a>
+    <a onclick="showPage('permissions')" data-page="permissions">Permissions Testing</a>
+    <a onclick="showPage('integrity')" data-page="integrity">Data Integrity</a>
     <a onclick="showPage('integration')" data-page="integration">Integration Test</a>
     <a onclick="showPage('template')" data-page="template">Test Recording</a>
     <a onclick="showPage('issues')" data-page="issues">Common Issues</a>
@@ -1001,9 +1024,492 @@ Issues Found:
   </div>
 </div>
 
+<!-- ====== CRITICAL VALIDATIONS ====== -->
+<div class="page" id="page-critical">
+  <h2>Critical Validations <span style="font-size:0.7rem;color:var(--muted);font-weight:400">Comprehensive validation matrix for every module</span></h2>
+  <div class="al-w">Test each validation rule below. Every rule must produce an <code>alert</code> popup (not a silent failure or system error). Record Pass/Fail for each row.</div>
+
+  <h3 style="color:var(--green)">Phase 1A — Foundation</h3>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Vendors — Critical Validations</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw"><table class="vm">
+        <tr><th>#</th><th>Field</th><th>Rule</th><th>Test Input</th><th>Expected</th><th>Message / Behavior</th></tr>
+        <tr><td>V1</td><td>Vendor Name</td><td>Required</td><td>Leave blank, submit</td><td class="alert">Alert</td><td>"Vendor Name is required"</td></tr>
+        <tr><td>V2</td><td>Vendor Name</td><td>Max length</td><td>Enter 256+ characters</td><td class="block">Block</td><td>Field truncation or system warning</td></tr>
+        <tr><td>V3</td><td>Email</td><td>Format validation</td><td>Enter "not-an-email"</td><td class="alert">Alert</td><td>"Invalid email format"</td></tr>
+        <tr><td>V4</td><td>Email</td><td>Valid format</td><td>Enter "test@company.com"</td><td class="pass">Pass</td><td>Should save without error</td></tr>
+        <tr><td>V5</td><td>Phone</td><td>Format / length</td><td>Enter 30+ digits</td><td class="alert">Alert</td><td>Field validation blocks</td></tr>
+        <tr><td>V6</td><td>Vendor Name</td><td>Duplicate check</td><td>Create 2 vendors with same name</td><td class="auto">Auto</td><td>Should allow (Zoho allows duplicates unless Deluge blocks)</td></tr>
+        <tr><td>V7</td><td>Vendor_Contacts</td><td>Zero contacts</td><td>Submit without adding any subform row</td><td class="pass">Pass</td><td>Should save (contacts are optional)</td></tr>
+        <tr><td>V8</td><td>Vendor_Contacts</td><td>Duplicate Primary</td><td>Set 2 contacts as Is Primary = Yes</td><td class="alert">Alert</td><td>"Only one contact can be marked as Primary"</td></tr>
+        <tr><td>V9</td><td>Vendor_Documents</td><td>File type</td><td>Upload .exe or .zip</td><td class="block">Block</td><td>Zoho Creator file type restrictions apply</td></tr>
+        <tr><td>V10</td><td>Vendor_Documents</td><td>File size</td><td>Upload 20MB+ file</td><td class="block">Block</td><td>Zoho file size limit (usually 20MB)</td></tr>
+        <tr><td>V11</td><td>Vendor_Contacts</td><td>Max rows</td><td>Add 20+ contact rows</td><td class="pass">Pass</td><td>All should save (stress test subform capacity)</td></tr>
+      </table></div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Accounts — Critical Validations</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw"><table class="vm">
+        <tr><th>#</th><th>Field</th><th>Rule</th><th>Test Input</th><th>Expected</th><th>Message / Behavior</th></tr>
+        <tr><td>A1</td><td>Account Name</td><td>Required</td><td>Leave blank</td><td class="alert">Alert</td><td>"Account Name is required"</td></tr>
+        <tr><td>A2</td><td>Account Name</td><td>Special characters</td><td>Enter "ABC@#$% Corp"</td><td class="pass">Pass</td><td>Should allow special chars</td></tr>
+        <tr><td>A3</td><td>Email</td><td>Format</td><td>Enter "invalid"</td><td class="alert">Alert</td><td>"Invalid email format"</td></tr>
+        <tr><td>A4</td><td>Account_Contacts</td><td>Duplicate Primary</td><td>Same as V8</td><td class="alert">Alert</td><td>"Only one contact can be Primary"</td></tr>
+        <tr><td>A5</td><td>Account_Documents</td><td>Expiry past date</td><td>Set Expiry Date in the past</td><td class="pass">Pass</td><td>Should be allowed (informational only)</td></tr>
+      </table></div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Warehouses — Critical Validations</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw"><table class="vm">
+        <tr><th>#</th><th>Field</th><th>Rule</th><th>Test Input</th><th>Expected</th><th>Message / Behavior</th></tr>
+        <tr><td>W1</td><td>Warehouse Name</td><td>Required</td><td>Leave blank</td><td class="alert">Alert</td><td>"Warehouse Name is required"</td></tr>
+        <tr><td>W2</td><td>Warehouse Name</td><td>Duplicate</td><td>Create 2 WH with same name</td><td class="auto">Auto</td><td>Allow (or block if Deluge enforces uniqueness)</td></tr>
+        <tr><td>W3</td><td>Status</td><td>Inactive usage</td><td>Set WH to Inactive, try Stock In</td><td class="alert">Alert</td><td>"Cannot transact in Inactive warehouse"</td></tr>
+        <tr><td>W4</td><td>Code</td><td>Auto-number sequence</td><td>Create 3 warehouses</td><td class="pass">Pass</td><td>Codes: WH-0001, WH-0002, WH-0003</td></tr>
+      </table></div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Inventory Items — Critical Validations</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw"><table class="vm">
+        <tr><th>#</th><th>Field</th><th>Rule</th><th>Test Input</th><th>Expected</th><th>Message / Behavior</th></tr>
+        <tr><td>I1</td><td>Item Name</td><td>Required</td><td>Leave blank</td><td class="alert">Alert</td><td>"Item Name is required"</td></tr>
+        <tr><td>I2</td><td>Purchase Price</td><td>Negative</td><td>Enter -5.00</td><td class="alert">Alert</td><td>"Purchase Price cannot be negative"</td></tr>
+        <tr><td>I3</td><td>Purchase Price</td><td>Zero allowed?</td><td>Enter 0.00</td><td class="pass">Pass</td><td>Should allow (free items or placeholder)</td></tr>
+        <tr><td>I4</td><td>Unit</td><td>Required for Goods</td><td>Type=Goods, Unit=blank</td><td class="alert">Alert</td><td>"Unit is required for Goods items"</td></tr>
+        <tr><td>I5</td><td>Unit</td><td>Not required for Services</td><td>Type=Services, Unit=blank</td><td class="pass">Pass</td><td>Should save</td></tr>
+        <tr><td>I6</td><td>Item Type</td><td>Change Goods &rarr; Service</td><td>Create Goods (with stock), then edit &rarr; Service</td><td class="block">Block</td><td>"Cannot change type when stock exists"</td></tr>
+        <tr><td>I7</td><td>SKU</td><td>Auto-sequence</td><td>Create 3 items</td><td class="pass">Pass</td><td>SKU-0001, SKU-0002, SKU-0003</td></tr>
+        <tr><td>I8</td><td>Preferred Vendor</td><td>Deleted vendor</td><td>Delete vendor, check item</td><td class="auto">Auto</td><td>Lookup becomes blank or shows deleted</td></tr>
+        <tr><td>I9</td><td>Item_Warehouse_Stock</td><td>Negative Current Stock</td><td>Enter -100</td><td class="alert">Alert</td><td>"Current Stock cannot be negative"</td></tr>
+        <tr><td>I10</td><td>Item_Warehouse_Stock</td><td>Same WH twice</td><td>Add same warehouse in 2 rows</td><td class="alert">Alert</td><td>"Duplicate warehouse entry not allowed"</td></tr>
+        <tr><td>I11</td><td>Item_Warehouse_Stock</td><td>Decimal stock</td><td>Enter 100.5</td><td class="pass">Pass</td><td>Decimals allowed for fractional units (Kg, L)</td></tr>
+        <tr><td>I12</td><td>Item_Warehouse_Stock</td><td>Reorder &gt; Current</td><td>Reorder=500, Current=100</td><td class="pass">Pass</td><td>Warning not required, but report will flag</td></tr>
+      </table></div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Projects — Critical Validations</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw"><table class="vm">
+        <tr><th>#</th><th>Field</th><th>Rule</th><th>Test Input</th><th>Expected</th><th>Message / Behavior</th></tr>
+        <tr><td>P1</td><td>Project Name</td><td>Required</td><td>Leave blank</td><td class="alert">Alert</td><td>"Project Name is required"</td></tr>
+        <tr><td>P2</td><td>End Date</td><td>Must be after Start</td><td>Start=01-Jun, End=01-May</td><td class="alert">Alert</td><td>"End Date must be after Start Date"</td></tr>
+        <tr><td>P3</td><td>End Date</td><td>Same as Start</td><td>Start=01-Jun, End=01-Jun</td><td class="pass">Pass</td><td>Same-day project allowed (single day)</td></tr>
+        <tr><td>P4</td><td>Total Approved Budget</td><td>Negative</td><td>Enter -1000</td><td class="alert">Alert</td><td>"Budget cannot be negative"</td></tr>
+        <tr><td>P5</td><td>Total Approved Budget</td><td>Zero</td><td>Enter 0</td><td class="pass">Pass</td><td>Zero-budget project allowed (tracking-only)</td></tr>
+        <tr><td>P6</td><td>Status &rarr; Completed</td><td>Open expenses check</td><td>Set Completed while EXP-0002 is Overrun-Pending</td><td class="alert">Alert</td><td>"Cannot close project with open expenses"</td></tr>
+        <tr><td>P7</td><td>Status &rarr; Completed</td><td>Open POs check</td><td>Set Completed while PO-0001 is Open</td><td class="alert">Alert</td><td>"Cannot close project with open POs"</td></tr>
+        <tr><td>P8</td><td>PM field</td><td>Blank PM</td><td>Leave Project Manager unassigned</td><td class="pass">Pass</td><td>Should allow (optional field)</td></tr>
+        <tr><td>P9</td><td>Account lookup</td><td>Deleted Account</td><td>Delete Account, check project</td><td class="auto">Auto</td><td>Lookup shows blank or deleted reference</td></tr>
+        <tr><td>P10</td><td>Code</td><td>Sequence</td><td>Create projects in parallel</td><td class="pass">Pass</td><td>PROJ-0001, PROJ-0002 unique</td></tr>
+      </table></div>
+    </bd>
+  </div>
+
+  <h3 style="color:var(--accent);margin-top:20px">Phase 1B — Budget &amp; Stock</h3>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Budget Plans — Critical Validations</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw"><table class="vm">
+        <tr><th>#</th><th>Field</th><th>Rule</th><th>Test Input</th><th>Expected</th><th>Message / Behavior</th></tr>
+        <tr><td>B1</td><td>Budget_Components sum</td><td>Must not exceed Total Budget</td><td>Total=50000, Components sum=55000</td><td class="alert">Alert</td><td>"Component totals exceed Total Budget"</td></tr>
+        <tr><td>B2</td><td>Budget_Components sum</td><td>Exactly equal</td><td>Total=50000, Components sum=50000</td><td class="pass">Pass</td><td>Equal is allowed</td></tr>
+        <tr><td>B3</td><td>Component Allocated Amount</td><td>Zero</td><td>Enter 0 for a component</td><td class="alert">Alert</td><td>"Component amount must be greater than zero"</td></tr>
+        <tr><td>B4</td><td>Component Allocated Amount</td><td>Negative</td><td>Enter -1000</td><td class="alert">Alert</td><td>"Component amount cannot be negative"</td></tr>
+        <tr><td>B5</td><td>Duplicate active plan</td><td>One active per project</td><td>Activate BUD-0001, create another for same project as Active</td><td class="alert">Alert</td><td>"An active Budget Plan already exists for this project"</td></tr>
+        <tr><td>B6</td><td>Duplicate active plan</td><td>Draft allowed</td><td>Same project, Status = Draft</td><td class="pass">Pass</td><td>Draft plans allowed alongside Active</td></tr>
+        <tr><td>B7</td><td>Component names</td><td>Duplicate names</td><td>Add 2 components both named "Materials"</td><td class="alert">Alert</td><td>"Duplicate component names not allowed"</td></tr>
+        <tr><td>B8</td><td>Activate with no components</td><td>At least one required</td><td>Plan with 0 components, Status = Active</td><td class="alert">Alert</td><td>"At least one budget component required"</td></tr>
+        <tr><td>B9</td><td>Plan deletion with expenses</td><td>Referential integrity</td><td>Delete BUD-0001 (has expenses against it)</td><td class="block">Block</td><td>"Cannot delete plan with linked expenses"</td></tr>
+        <tr><td>B10</td><td>Status Draft &rarr; Closed</td><td>Skip Active</td><td>Change from Draft to Closed directly</td><td class="pass">Pass</td><td>Allow (no validation prevents this)</td></tr>
+      </table></div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Inventory Transactions — Critical Validations</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw"><table class="vm">
+        <tr><th>#</th><th>Field</th><th>Rule</th><th>Test Input</th><th>Expected</th><th>Message / Behavior</th></tr>
+        <tr><td>T1</td><td>Quantity</td><td>Zero</td><td>Enter 0 for any type</td><td class="alert">Alert</td><td>"Quantity must be greater than zero"</td></tr>
+        <tr><td>T2</td><td>Quantity</td><td>Negative</td><td>Enter -10</td><td class="alert">Alert</td><td>"Quantity cannot be negative"</td></tr>
+        <tr><td>T3</td><td>Quantity</td><td>Decimal precision</td><td>Enter 0.001 (very small)</td><td class="pass">Pass</td><td>Micro-quantities for expensive items</td></tr>
+        <tr><td>T4</td><td>Warehouse</td><td>Required</td><td>Leave blank</td><td class="alert">Alert</td><td>"Warehouse is required"</td></tr>
+        <tr><td>T5</td><td>Stock Out &gt; Available</td><td>Insufficient stock</td><td>Stock Out 99999 units</td><td class="alert">Alert</td><td>"Insufficient stock. Available: N, Requested: 99999"</td></tr>
+        <tr><td>T6</td><td>Stock Out &gt; Available</td><td>Edge: exactly at limit</td><td>Stock Out = Current_Stock - Reserved_Qty</td><td class="pass">Pass</td><td>Should allow (available is >= requested)</td></tr>
+        <tr><td>T7</td><td>Stock Out &gt; Available</td><td>Edge: one over</td><td>Stock Out = (Current - Reserved) + 1</td><td class="alert">Alert</td><td>Blocked</td></tr>
+        <tr><td>T8</td><td>Transfer</td><td>From = To</td><td>Same WH for both</td><td class="alert">Alert</td><td>"From and To warehouse must be different"</td></tr>
+        <tr><td>T9</td><td>Transfer</td><td>To WH required</td><td>Type=Transfer, To WH blank</td><td class="alert">Alert</td><td>"To Warehouse is required for Transfer"</td></tr>
+        <tr><td>T10</td><td>Transfer</td><td>Insufficient at From</td><td>Transfer qty exceeds From WH stock</td><td class="alert">Alert</td><td>Same as T5</td></tr>
+        <tr><td>T11</td><td>Reservation</td><td>Reserve more than stock</td><td>Reserve 99999 units</td><td class="alert">Alert</td><td>"Reservation exceeds available stock"</td></tr>
+        <tr><td>T12</td><td>Release</td><td>Release more than reserved</td><td>Release 99999 (Reserved=20)</td><td class="alert">Alert</td><td>"Release exceeds reserved quantity"</td></tr>
+        <tr><td>T13</td><td>Release</td><td>Release exactly reserved</td><td>Release = Reserved</td><td class="pass">Pass</td><td>Reserved goes to 0</td></tr>
+        <tr><td>T14</td><td>Adjustment</td><td>Zero adjustment</td><td>Set Qty = 0</td><td class="pass">Pass</td><td>Clears stock (valid for write-off)</td></tr>
+        <tr><td>T15</td><td>All types</td><td>Item not found</td><td>Delete item, try transaction</td><td class="block">Block</td><td>Lookup validation prevents orphaned items</td></tr>
+        <tr><td>T16</td><td>Sequence</td><td>TXN numbers</td><td>Across all 6 types</td><td class="pass">Pass</td><td>Sequential: TXN-0001, TXN-0002...</td></tr>
+      </table></div>
+    </bd>
+  </div>
+
+  <h3 style="color:var(--purple);margin-top:20px">Phase 1C — Expenses &amp; PR</h3>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Expenses — Critical Validations</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw"><table class="vm">
+        <tr><th>#</th><th>Field</th><th>Rule</th><th>Test Input</th><th>Expected</th><th>Message / Behavior</th></tr>
+        <tr><td>E1</td><td>Amount</td><td>Zero</td><td>Enter 0</td><td class="alert">Alert</td><td>"Amount must be greater than zero"</td></tr>
+        <tr><td>E2</td><td>Amount</td><td>Negative</td><td>Enter -100</td><td class="alert">Alert</td><td>"Amount cannot be negative"</td></tr>
+        <tr><td>E3</td><td>Amount</td><td>Large value</td><td>Enter 999999999.99</td><td class="pass">Pass</td><td>Large amounts should be accepted</td></tr>
+        <tr><td>E4</td><td>Amount</td><td>High precision</td><td>Enter 1234.56789</td><td class="auto">Auto</td><td>Zoho may round to 2 decimals</td></tr>
+        <tr><td>E5</td><td>Budget Component</td><td>Wrong project</td><td>Select component from Project A, but Expense.Project = Project B</td><td class="alert">Alert</td><td>"Component does not belong to selected project"</td></tr>
+        <tr><td>E6</td><td>Budget Component</td><td>Deleted component</td><td>Delete the component, try editing expense</td><td class="auto">Auto</td><td>Lookup shows blank or broken reference</td></tr>
+        <tr><td>E7</td><td>Duplicate</td><td>Same Project+Component+Date+Amount</td><td>Submit exact same expense twice</td><td class="alert">Alert</td><td>"Duplicate expense detected"</td></tr>
+        <tr><td>E8</td><td>Duplicate</td><td>Different date</td><td>Same everything, different date</td><td class="pass">Pass</td><td>Should save (not a duplicate)</td></tr>
+        <tr><td>E9</td><td>Auto-approve threshold</td><td>79% of budget</td><td>Amount = 79% of component allocated</td><td class="pass">Pass</td><td>Status = Approved</td></tr>
+        <tr><td>E10</td><td>Auto-approve threshold</td><td>Exactly 80%</td><td>Amount = 80% of allocated</td><td class="pass">Pass</td><td>Status = Approved (alert triggered?)</td></tr>
+        <tr><td>E11</td><td>Auto-approve threshold</td><td>Exactly 90%</td><td>Amount = 90% of allocated</td><td class="pass">Pass</td><td>Status = Approved (alert triggered?)</td></tr>
+        <tr><td>E12</td><td>Overrun threshold</td><td>Exactly 100%</td><td>Expense takes total to exactly 100%</td><td class="pass">Pass</td><td>Depends on rule: exactly at or over?</td></tr>
+        <tr><td>E13</td><td>Overrun threshold</td><td>100.01% (over)</td><td>Expense takes total over 100%</td><td class="alert">Alert</td><td>Status = Overrun-Pending Approval</td></tr>
+        <tr><td>E14</td><td>Project</td><td>Required</td><td>Leave Project blank</td><td class="alert">Alert</td><td>"Project is required"</td></tr>
+        <tr><td>E15</td><td>Vendor</td><td>Deleted vendor</td><td>Delete vendor linked to expense</td><td class="auto">Auto</td><td>Lookup shows deleted</td></tr>
+      </table></div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Purchase Requisitions — Critical Validations</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw"><table class="vm">
+        <tr><th>#</th><th>Field</th><th>Rule</th><th>Test Input</th><th>Expected</th><th>Message / Behavior</th></tr>
+        <tr><td>PR1</td><td>Status = Open</td><td>Zero line items</td><td>Set Open, add no PR_Line_Items</td><td class="alert">Alert</td><td>"At least one line item is required"</td></tr>
+        <tr><td>PR2</td><td>Status = Draft</td><td>Zero line items allowed?</td><td>Save as Draft without line items</td><td class="pass">Pass</td><td>Draft allows incomplete PR</td></tr>
+        <tr><td>PR3</td><td>Urgency = Critical</td><td>Justification required</td><td>Set Critical, leave Justification blank</td><td class="alert">Alert</td><td>"Justification is required for Critical urgency"</td></tr>
+        <tr><td>PR4</td><td>Urgency = Normal</td><td>Justification not required</td><td>Set Normal, blank Justification</td><td class="pass">Pass</td><td>Should save</td></tr>
+        <tr><td>PR5</td><td>Project</td><td>Required for Open</td><td>Status = Open, Project blank</td><td class="alert">Alert</td><td>"Project is required"</td></tr>
+        <tr><td>PR6</td><td>PR_Line_Items</td><td>Item auto-fill</td><td>Select Cement Bag &rarr; check Unit, Item Type</td><td class="auto">Auto</td><td>Unit = Kg, Item Type = Goods auto-filled</td></tr>
+        <tr><td>PR7</td><td>PR_Line_Items</td><td>Manual item (no lookup)</td><td>Item blank, type description manually</td><td class="pass">Pass</td><td>Non-catalog items allowed</td></tr>
+        <tr><td>PR8</td><td>PR_Line_Items</td><td>Quantity = 0</td><td>Set Qty = 0 for a line</td><td class="alert">Alert</td><td>"Quantity must be greater than zero"</td></tr>
+        <tr><td>PR9</td><td>Blueprint stage</td><td>Skip stage</td><td>Try to advance 2 stages at once</td><td class="block">Block</td><td>Blueprint enforces sequential approval</td></tr>
+        <tr><td>PR10</td><td>Blueprint stage</td><td>Own approval</td><td>User tries to approve their own PR</td><td class="block">Block</td><td>Should prevent self-approval</td></tr>
+        <tr><td>PR11</td><td>Approval &rarr; Auto-PO</td><td>PO field mapping</td><td>After final approve, inspect auto-created PO</td><td class="auto">Auto</td><td>PO has same line items, project, vendor?</td></tr>
+        <tr><td>PR12</td><td>Approval &rarr; Auto-PO</td><td>Rejected PR</td><td>Reject at any stage, check PO not created</td><td class="auto">Auto</td><td>No PO created for rejected PR</td></tr>
+      </table></div>
+    </bd>
+  </div>
+
+  <h3 style="color:var(--orange);margin-top:20px">Phase 1D — Procurement</h3>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Budget Approvals — Critical Validations</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw"><table class="vm">
+        <tr><th>#</th><th>Field</th><th>Rule</th><th>Test Input</th><th>Expected</th><th>Message / Behavior</th></tr>
+        <tr><td>BA1</td><td>Approval without Modified Amount</td><td>Budget increase required</td><td>Approve, leave Modified Budget Amount = 0</td><td class="alert">Alert</td><td>"Modified Budget Amount is required for approval"</td></tr>
+        <tr><td>BA2</td><td>Modified Amount &lt; Original</td><td>Cannot decrease</td><td>Set Modified Budget less than Original</td><td class="alert">Alert</td><td>"Modified amount must be at least the original budget"</td></tr>
+        <tr><td>BA3</td><td>Rejected</td><td>Effect on expense</td><td>Reject &rarr; check Expense status</td><td class="auto">Auto</td><td>Expense status = Rejected</td></tr>
+        <tr><td>BA4</td><td>Approved</td><td>Effect on expense + budget</td><td>Approve &rarr; check Expense + Spent_Amount</td><td class="auto">Auto</td><td>Expense = Approved, Spent updated</td></tr>
+        <tr><td>BA5</td><td>Double approval</td><td>Already approved</td><td>Try to approve an already-approved record</td><td class="block">Block</td><td>"This approval has already been processed"</td></tr>
+      </table></div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Purchase Orders — Critical Validations</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw"><table class="vm">
+        <tr><th>#</th><th>Field</th><th>Rule</th><th>Test Input</th><th>Expected</th><th>Message / Behavior</th></tr>
+        <tr><td>PO1</td><td>Status = Open</td><td>Vendor required</td><td>Set Open with no Vendor</td><td class="alert">Alert</td><td>"Vendor is required before opening PO"</td></tr>
+        <tr><td>PO2</td><td>Status = Open</td><td>Zero line items</td><td>Open PO with 0 line items</td><td class="alert">Alert</td><td>"At least one line item is required"</td></tr>
+        <tr><td>PO3</td><td>Cancel</td><td>No linked GRN</td><td>Cancel PO with no GRN</td><td class="pass">Pass</td><td>Cancelled successfully</td></tr>
+        <tr><td>PO4</td><td>Cancel</td><td>GRN exists</td><td>Cancel PO with linked GRN</td><td class="alert">Alert</td><td>"Cannot cancel PO with linked GRN records"</td></tr>
+        <tr><td>PO5</td><td>PO_Line_Items</td><td>Quantity = 0</td><td>Add line with Qty 0</td><td class="alert">Alert</td><td>"Quantity must be greater than zero"</td></tr>
+        <tr><td>PO6</td><td>PO_Line_Items</td><td>Unit Price = 0</td><td>Set Unit Rate = 0</td><td class="pass">Pass</td><td>Zero-rate items allowed? Typically yes for samples</td></tr>
+        <tr><td>PO7</td><td>PO_Line_Items</td><td>Negative discount</td><td>Set Discount % = -10</td><td class="pass">Pass</td><td>Should be blocked or accepted?</td></tr>
+        <tr><td>PO8</td><td>PO_Line_Items</td><td>Discount &gt; 100%</td><td>Set Discount % = 110</td><td class="pass">Pass</td><td>Results in negative Item Total (edge case)</td></tr>
+        <tr><td>PO9</td><td>PO_Line_Items</td><td>Tax &gt; 100%</td><td>Set Tax % = 200</td><td class="pass">Pass</td><td>Allowed (some jurisdictions have high tax)</td></tr>
+        <tr><td>PO10</td><td>Item Total formula</td><td>Accuracy check</td><td>Qty=10, Rate=100, Disc%=5, Tax%=18</td><td class="auto">Auto</td><td>Line Total = (1000-50)*1.18 = 1121?</td></tr>
+        <tr><td>PO11</td><td>PO from PR</td><td>Field copy accuracy</td><td>Compare PO and PR line items</td><td class="auto">Auto</td><td>All fields match exactly</td></tr>
+        <tr><td>PO12</td><td>Status change</td><td>Draft &rarr; Closed (skip Open)</td><td>Try to close an unopened PO</td><td class="block">Block</td><td>"Cannot close a PO that was never opened"</td></tr>
+      </table></div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Goods Receipts — Critical Validations</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw"><table class="vm">
+        <tr><th>#</th><th>Field</th><th>Rule</th><th>Test Input</th><th>Expected</th><th>Message / Behavior</th></tr>
+        <tr><td>GR1</td><td>Accepted + Rejected</td><td>Exceed PO Qty</td><td>PO Qty=200, Acc=195, Rej=10 (205 total)</td><td class="alert">Alert</td><td>"Accepted + Rejected cannot exceed PO quantity"</td></tr>
+        <tr><td>GR2</td><td>Accepted + Rejected</td><td>Exactly PO Qty</td><td>Acc=195, Rej=5 (200 total)</td><td class="pass">Pass</td><td>Equal is fine</td></tr>
+        <tr><td>GR3</td><td>Rejected Qty &gt; 0</td><td>Reason required</td><td>Rej=5, Reason blank</td><td class="alert">Alert</td><td>"Reason for Rejection is required when rejecting items"</td></tr>
+        <tr><td>GR4</td><td>Accepted Qty &gt; 0</td><td>Warehouse required</td><td>Acc=195, Warehouse blank</td><td class="alert">Alert</td><td>"Warehouse is required for accepted items"</td></tr>
+        <tr><td>GR5</td><td>Accepted Qty = 0</td><td>All rejected</td><td>Acc=0, Rej=200, Reason provided</td><td class="pass">Pass</td><td>Full rejection allowed</td></tr>
+        <tr><td>GR6</td><td>Actual Unit Cost</td><td>Negative</td><td>Enter -5.00</td><td class="alert">Alert</td><td>"Unit cost cannot be negative"</td></tr>
+        <tr><td>GR7</td><td>PO Status</td><td>Non-Open PO</td><td>GRN against Draft or Cancelled PO</td><td class="alert">Alert</td><td>"Cannot receive goods against a non-Open PO"</td></tr>
+        <tr><td>GR8</td><td>PO Status</td><td>Already closed PO</td><td>GRN against Closed PO</td><td class="alert">Alert</td><td>"PO is already closed"</td></tr>
+        <tr><td>GR9</td><td>Stock update</td><td>Auto Stock In</td><td>After GRN Open, check stock</td><td class="auto">Auto</td><td>Stock In created, stock increased</td></tr>
+        <tr><td>GR10</td><td>Multiple GRNs</td><td>Partial receipt</td><td>GRN1: Acc=100. GRN2: Acc=95, Rej=5</td><td class="pass">Pass</td><td>Multiple GRNs against same PO allowed</td></tr>
+      </table></div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Transfer Orders — Critical Validations</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw"><table class="vm">
+        <tr><th>#</th><th>Field</th><th>Rule</th><th>Test Input</th><th>Expected</th><th>Message / Behavior</th></tr>
+        <tr><td>TO1</td><td>From = To</td><td>Different WH required</td><td>Same WH for both</td><td class="alert">Alert</td><td>"From and To warehouse must be different"</td></tr>
+        <tr><td>TO2</td><td>Stock check</td><td>Insufficient at From</td><td>Transfer qty &gt; available at From WH</td><td class="alert">Alert</td><td>"Insufficient stock at source warehouse"</td></tr>
+        <tr><td>TO3</td><td>TO_Line_Items</td><td>Zero quantity</td><td>Line with Qty = 0</td><td class="alert">Alert</td><td>"Quantity must be greater than zero"</td></tr>
+        <tr><td>TO4</td><td>TO_Line_Items</td><td>No lines</td><td>Status = Completed, 0 lines</td><td class="alert">Alert</td><td>"At least one line item is required"</td></tr>
+        <tr><td>TO5</td><td>Status = Completed</td><td>Auto stock movement</td><td>Complete TO with valid items</td><td class="auto">Auto</td><td>Stock Out + Stock In created</td></tr>
+        <tr><td>TO6</td><td>Reverse transfer</td><td>Send back same items</td><td>TO From=A To=B, then reverse</td><td class="pass">Pass</td><td>Should create independent records</td></tr>
+      </table></div>
+    </bd>
+  </div>
+
+  <h3 style="color:var(--pink);margin-top:20px">Phase 1E — Revenue &amp; Manufacturing</h3>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>BOM — Critical Validations</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw"><table class="vm">
+        <tr><th>#</th><th>Field</th><th>Rule</th><th>Test Input</th><th>Expected</th><th>Message / Behavior</th></tr>
+        <tr><td>BM1</td><td>BOM_Line_Items</td><td>Duplicate component</td><td>Add Cement twice</td><td class="alert">Alert</td><td>"Duplicate component items not allowed"</td></tr>
+        <tr><td>BM2</td><td>BOM_Line_Items</td><td>Zero quantity</td><td>Qty = 0</td><td class="alert">Alert</td><td>"Quantity must be greater than zero"</td></tr>
+        <tr><td>BM3</td><td>BOM_Line_Items</td><td>No lines</td><td>Submit BOM with 0 components</td><td class="alert">Alert</td><td>"At least one component is required"</td></tr>
+        <tr><td>BM4</td><td>BOM_Line_Items</td><td>Unit Cost negative</td><td>Enter -10.00</td><td class="alert">Alert</td><td>"Unit cost cannot be negative"</td></tr>
+        <tr><td>BM5</td><td>Total Mfg Cost</td><td>Formula accuracy</td><td>Component=100, Labor=50, Overhead=25</td><td class="auto">Auto</td><td>Total = 175</td></tr>
+        <tr><td>BM6</td><td>Status Active &rarr; Draft</td><td>Rollback allowed?</td><td>Change Active to Draft</td><td class="pass">Pass</td><td>Should allow (no validation prevents)</td></tr>
+        <tr><td>BM7</td><td>Product Item</td><td>Same as component</td><td>Product Item = Cement, Component also has Cement</td><td class="pass">Pass</td><td>Self-referencing BOM (edge case)</td></tr>
+        <tr><td>BM8</td><td>Scrap %</td><td>Negative</td><td>Scrap = -5%</td><td class="alert">Alert</td><td>"Scrap percentage cannot be negative"</td></tr>
+        <tr><td>BM9</td><td>Scrap %</td><td>Greater than 100</td><td>Scrap = 200%</td><td class="pass">Pass</td><td>Allowed? Validates range?</td></tr>
+      </table></div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Delivery Challans — Critical Validations</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw"><table class="vm">
+        <tr><th>#</th><th>Field</th><th>Rule</th><th>Test Input</th><th>Expected</th><th>Message / Behavior</th></tr>
+        <tr><td>DC1</td><td>Status = Shipped</td><td>Insufficient stock</td><td>Ship qty &gt; available</td><td class="alert">Alert</td><td>"Insufficient stock to dispatch"</td></tr>
+        <tr><td>DC2</td><td>Status = Shipped</td><td>No line items</td><td>Ship with 0 line items</td><td class="alert">Alert</td><td>"At least one line item is required"</td></tr>
+        <tr><td>DC3</td><td>Status = Shipped</td><td>No Warehouse</td><td>Ship with Warehouse blank</td><td class="alert">Alert</td><td>"Warehouse is required for dispatch"</td></tr>
+        <tr><td>DC4</td><td>Status = Shipped</td><td>Auto Stock Out</td><td>After Ship, check Inventory_Transactions</td><td class="auto">Auto</td><td>Stock Out created per line item</td></tr>
+        <tr><td>DC5</td><td>DC_Line_Items</td><td>Quantity = 0</td><td>Line with Qty 0</td><td class="alert">Alert</td><td>"Quantity must be greater than zero"</td></tr>
+        <tr><td>DC6</td><td>Condition</td><td>Required field</td><td>Leave blank</td><td class="pass">Pass</td><td>Condition might be optional</td></tr>
+        <tr><td>DC7</td><td>Re-shipment</td><td>Already shipped stock</td><td>Ship same items again without restocking</td><td class="alert">Alert</td><td>Stock already deducted (block if insufficient)</td></tr>
+      </table></div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Invoices — Critical Validations</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw"><table class="vm">
+        <tr><th>#</th><th>Field</th><th>Rule</th><th>Test Input</th><th>Expected</th><th>Message / Behavior</th></tr>
+        <tr><td>IN1</td><td>Status = Sent</td><td>No line items</td><td>Send invoice with 0 lines</td><td class="alert">Alert</td><td>"At least one line item is required"</td></tr>
+        <tr><td>IN2</td><td>Due Date</td><td>Before Invoice Date</td><td>Inv=15-Jun, Due=10-Jun</td><td class="alert">Alert</td><td>"Due Date must be on or after Invoice Date"</td></tr>
+        <tr><td>IN3</td><td>Due Date</td><td>Same as Invoice Date</td><td>Inv=15-Jun, Due=15-Jun</td><td class="pass">Pass</td><td>Due on same day allowed</td></tr>
+        <tr><td>IN4</td><td>Invoice_Line_Items</td><td>Quantity = 0</td><td>Line with Qty 0</td><td class="alert">Alert</td><td>"Quantity must be greater than zero"</td></tr>
+        <tr><td>IN5</td><td>Invoice_Line_Items</td><td>Rate = 0</td><td>Line with Rate 0</td><td class="pass">Pass</td><td>Zero-rate line items (complimentary)</td></tr>
+        <tr><td>IN6</td><td>Invoice_Line_Items</td><td>Negative quantity</td><td>Qty = -5</td><td class="alert">Alert</td><td>"Quantity cannot be negative"</td></tr>
+        <tr><td>IN7</td><td>Tax %</td><td>Excessive</td><td>Tax = 500%</td><td class="pass">Pass</td><td>Allowed (unusual but possible)</td></tr>
+        <tr><td>IN8</td><td>Status = Sent</td><td>Updates Project Total Invoiced</td><td>Send invoice, check project</td><td class="auto">Auto</td><td>Project.Total_Invoiced increased</td></tr>
+        <tr><td>IN9</td><td>Status = Paid</td><td>Balance Due = 0</td><td>Mark as Paid</td><td class="auto">Auto</td><td>Balance_Due = 0, Amount_Paid set</td></tr>
+        <tr><td>IN10</td><td>Payment &gt; Total</td><td>Overpayment</td><td>Set Amount_Paid &gt; Total</td><td class="alert">Alert</td><td>"Payment cannot exceed invoice total"</td></tr>
+        <tr><td>IN11</td><td>Create DC button</td><td>Linked correctly</td><td>Click from Invoice, check DC</td><td class="auto">Auto</td><td>DC created with same Project/Account</td></tr>
+      </table></div>
+    </bd>
+  </div>
+
+  <h3 style="color:var(--yellow);margin-top:20px">Phase 1F — Reports</h3>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Reports &amp; Dashboards — Critical Validations</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw"><table class="vm">
+        <tr><th>#</th><th>Report</th><th>Rule</th><th>Test Input</th><th>Expected</th><th>Message / Behavior</th></tr>
+        <tr><td>R1</td><td>Project P&amp;L</td><td>Zero-expense project</td><td>Project with no expenses, no invoices</td><td class="pass">Pass</td><td>Shows 0 or blank (not NaN)</td></tr>
+        <tr><td>R2</td><td>Project P&amp;L</td><td>Negative profit (loss)</td><td>Expenses &gt; Invoiced</td><td class="pass">Pass</td><td>Shows negative value (red)</td></tr>
+        <tr><td>R3</td><td>Budget vs Actual</td><td>Unspent component</td><td>Component with 0 expenses</td><td class="pass">Pass</td><td>Shows 0 spent, 100% remaining</td></tr>
+        <tr><td>R4</td><td>Budget Utilization %</td><td>Exactly 100%</td><td>Expenses exactly match budget</td><td class="pass">Pass</td><td>Shows 100% (not 99.99%)</td></tr>
+        <tr><td>R5</td><td>Budget Utilization %</td><td>Over 100% (overrun)</td><td>Expenses exceed budget</td><td class="pass">Pass</td><td>Shows &gt;100% with warning styling</td></tr>
+        <tr><td>R6</td><td>Stock Availability</td><td>Empty warehouse</td><td>Item with 0 stock across all WH</td><td class="pass">Pass</td><td>Shows empty rows or no data</td></tr>
+        <tr><td>R7</td><td>Low Stock Alert</td><td>No low stock items</td><td>All items well-stocked</td><td class="pass">Pass</td><td>Shows empty report (no false positives)</td></tr>
+        <tr><td>R8</td><td>Invoice Aging</td><td>Correct bucket</td><td>Invoice due 45 days ago</td><td class="auto">Auto</td><td>In 31-60 day bucket</td></tr>
+        <tr><td>R9</td><td>Invoice Aging</td><td>Zero overdue</td><td>No overdue invoices</td><td class="pass">Pass</td><td>Shows 0 in all buckets</td></tr>
+        <tr><td>R10</td><td>Dashboard KPIs</td><td>After data change</td><td>Add expense, refresh dashboard</td><td class="auto">Auto</td><td>Total Spent updates within 1 refresh cycle</td></tr>
+        <tr><td>R11</td><td>Dashboard KPIs</td><td>All zero state</td><td>Empty system (no data)</td><td class="pass">Pass</td><td>Shows 0 or "No data" gracefully</td></tr>
+        <tr><td>R12</td><td>Scheduled refresh</td><td>Midnight cron</td><td>Check workflow execution log</td><td class="auto">Auto</td><td>Runs at 00:00 daily without error</td></tr>
+      </table></div>
+    </bd>
+  </div>
 </div>
 
-<footer>
+<!-- ====== PERMISSIONS TESTING ====== -->
+<div class="page" id="page-permissions">
+  <h2>Role-Based Permissions Testing</h2>
+  <div class="al-w">Test each role's access. A user should only see and do what their role permits. Any deviation is a security bug.</div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Role Access Matrix</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw"><table class="vm">
+        <tr><th>#</th><th>Test</th><th><span class="pf pf-admin">Admin</span></th><th><span class="pf pf-pm">PM</span></th><th><span class="pf pf-fin">Finance</span></th><th><span class="pf pf-proc">Procure</span></th><th><span class="pf pf-inv">Inventory</span></th><th><span class="pf pf-emp">Employee</span></th></tr>
+        <tr><td>P1</td><td>Create Vendor</td><td class="pass">Y</td><td class="pass">Y</td><td class="alert">N</td><td class="alert">N</td><td class="alert">N</td><td class="alert">N</td></tr>
+        <tr><td>P2</td><td>Create Account</td><td class="pass">Y</td><td class="pass">Y</td><td class="alert">N</td><td class="alert">N</td><td class="alert">N</td><td class="alert">N</td></tr>
+        <tr><td>P3</td><td>Create Warehouse</td><td class="pass">Y</td><td class="alert">N</td><td class="alert">N</td><td class="alert">N</td><td class="pass">Y</td><td class="alert">N</td></tr>
+        <tr><td>P4</td><td>Create Item</td><td class="pass">Y</td><td class="pass">Y</td><td class="alert">N</td><td class="pass">Y</td><td class="pass">Y</td><td class="alert">N</td></tr>
+        <tr><td>P5</td><td>Create Project</td><td class="pass">Y</td><td class="pass">Y</td><td class="alert">N</td><td class="alert">N</td><td class="alert">N</td><td class="alert">N</td></tr>
+        <tr><td>P6</td><td>Create Budget Plan</td><td class="pass">Y</td><td class="pass">Y</td><td class="pass">Y</td><td class="alert">N</td><td class="alert">N</td><td class="alert">N</td></tr>
+        <tr><td>P7</td><td>Create Inventory Transaction</td><td class="pass">Y</td><td class="pass">Y</td><td class="alert">N</td><td class="alert">N</td><td class="pass">Y</td><td class="alert">N</td></tr>
+        <tr><td>P8</td><td>Create Expense</td><td class="pass">Y</td><td class="pass">Y</td><td class="pass">Y</td><td class="alert">N</td><td class="alert">N</td><td class="pass">Y</td></tr>
+        <tr><td>P9</td><td>Create PR</td><td class="pass">Y</td><td class="pass">Y</td><td class="pass">Y</td><td class="pass">Y</td><td class="pass">Y</td><td class="pass">Y</td></tr>
+        <tr><td>P10</td><td>Approve PR Stage 1 (Dept Mgr)</td><td class="pass">Y</td><td class="pass">Y</td><td class="alert">N</td><td class="alert">N</td><td class="alert">N</td><td class="alert">N</td></tr>
+        <tr><td>P11</td><td>Approve PR Stage 2 (Finance)</td><td class="pass">Y</td><td class="alert">N</td><td class="pass">Y</td><td class="alert">N</td><td class="alert">N</td><td class="alert">N</td></tr>
+        <tr><td>P12</td><td>Approve PR Stage 3 (Procurement)</td><td class="pass">Y</td><td class="alert">N</td><td class="alert">N</td><td class="pass">Y</td><td class="alert">N</td><td class="alert">N</td></tr>
+        <tr><td>P13</td><td>Create PO</td><td class="pass">Y</td><td class="alert">N</td><td class="alert">N</td><td class="pass">Y</td><td class="alert">N</td><td class="alert">N</td></tr>
+        <tr><td>P14</td><td>Create GRN</td><td class="pass">Y</td><td class="past">N</td><td class="alert">N</td><td class="pass">Y</td><td class="pass">Y</td><td class="alert">N</td></tr>
+        <tr><td>P15</td><td>Create Transfer Order</td><td class="pass">Y</td><td class="past">N</td><td class="alert">N</td><td class="pass">Y</td><td class="pass">Y</td><td class="alert">N</td></tr>
+        <tr><td>P16</td><td>Create BOM</td><td class="pass">Y</td><td class="pass">Y</td><td class="alert">N</td><td class="alert">N</td><td class="pass">Y</td><td class="alert">N</td></tr>
+        <tr><td>P17</td><td>Create DC</td><td class="pass">Y</td><td class="pass">Y</td><td class="alert">N</td><td class="alert">N</td><td class="pass">Y</td><td class="alert">N</td></tr>
+        <tr><td>P18</td><td>Create Invoice</td><td class="pass">Y</td><td class="pass">Y</td><td class="pass">Y</td><td class="alert">N</td><td class="alert">N</td><td class="alert">N</td></tr>
+        <tr><td>P19</td><td>Approve Budget Overrun</td><td class="pass">Y</td><td class="pass">Y</td><td class="pass">Y</td><td class="alert">N</td><td class="alert">N</td><td class="alert">N</td></tr>
+        <tr><td>P20</td><td>View Executive Dashboard</td><td class="pass">Y</td><td class="pass">Y</td><td class="pass">Y</td><td class="pass">Y</td><td class="pass">Y</td><td class="alert">N</td></tr>
+        <tr><td>P21</td><td>View Project P&amp;L Report</td><td class="pass">Y</td><td class="pass">Y</td><td class="pass">Y</td><td class="alert">N</td><td class="alert">N</td><td class="alert">N</td></tr>
+        <tr><td>P22</td><td>Delete any record</td><td class="pass">Y</td><td class="alert">N</td><td class="alert">N</td><td class="alert">N</td><td class="alert">N</td><td class="alert">N</td></tr>
+      </table></div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Critical Permission Tests</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw"><table class="vm">
+        <tr><th>#</th><th>Test Scenario</th><th>Expected Behavior</th></tr>
+        <tr><td>CP1</td><td>Employee creates PR, then tries to approve it</td><td>Blocked — cannot self-approve; only PM/Finance/Procurement can approve</td></tr>
+        <tr><td>CP2</td><td>Inventory Manager tries to create PO</td><td>Blocked — only Admin and Procurement can create PO</td></tr>
+        <tr><td>CP3</td><td>Finance Manager tries to ship a DC</td><td>Blocked — only Admin, PM, or Inventory can ship</td></tr>
+        <tr><td>CP4</td><td>PM tries to delete a Vendor</td><td>Blocked — only Admin can delete records</td></tr>
+        <tr><td>CP5</td><td>Employee views Executive Dashboard</td><td>Blocked — reports restricted to PM, Finance, Admin</td></tr>
+        <tr><td>CP6</td><td>Procurement tries to approve Budget Overrun</td><td>Blocked — only PM, Finance, Admin can approve budget changes</td></tr>
+        <tr><td>CP7</td><td>Inventory tries to view Project P&amp;L</td><td>Blocked — financial report restricted</td></tr>
+        <tr><td>CP8</td><td>User from Department A approves PR from Department B</td><td>Allowed (unless department-level filtering is configured)</td></tr>
+        <tr><td>CP9</td><td>Employee edits an expense they didn't create</td><td>Blocked — users can only edit their own records (or Admin)</td></tr>
+        <tr><td>CP10</td><td>PM views Low Stock Alert report</td><td>Allowed — reports are read-only, no role restriction typically</td></tr>
+      </table></div>
+    </bd>
+  </div>
+</div>
+
+<!-- ====== DATA INTEGRITY ====== -->
+<div class="page" id="page-integrity">
+  <h2>Data Integrity &amp; Cross-Module Testing</h2>
+  <div class="al-w">These tests verify that the system maintains referential integrity when related records are deleted, updated, or changed. Run after all phase tests pass.</div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Delete Cascade Tests</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw"><table class="vm">
+        <tr><th>#</th><th>Action</th><th>Child Records</th><th>Expected Behavior</th></tr>
+        <tr><td>DC1</td><td>Delete Vendor used in PO</td><td>Purchase_Orders, Inventory_Items (Preferred Vendor)</td><td>Block deletion OR set lookup to null. PO must remain intact.</td></tr>
+        <tr><td>DC2</td><td>Delete Account used in Project</td><td>Projects, Invoices, DCs</td><td>Block deletion. Projects require valid account references.</td></tr>
+        <tr><td>DC3</td><td>Delete Project with expenses</td><td>Expenses, POs, PRs, Budget_Plans, Invoices, DCs</td><td>Block deletion. Tag project as Inactive instead.</td></tr>
+        <tr><td>DC4</td><td>Delete Item with stock transactions</td><td>Inventory_Transactions, PO/PR/GRN/DC/Invoice line items</td><td>Block deletion or mark Item as Inactive.</td></tr>
+        <tr><td>DC5</td><td>Delete Warehouse with stock</td><td>Item_Warehouse_Stock, Transactions</td><td>Block deletion. Transfer stock out first or mark Inactive.</td></tr>
+        <tr><td>DC6</td><td>Delete Budget Plan with expenses</td><td>Expenses, Budget_Approvals</td><td>Block deletion. Close the plan instead.</td></tr>
+        <tr><td>DC7</td><td>Delete PO with GRN</td><td>GRN, Inventory_Transactions</td><td>Block deletion. PO must be closed, not deleted.</td></tr>
+      </table></div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Data Consistency Tests</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw"><table class="vm">
+        <tr><th>#</th><th>Test</th><th>Setup</th><th>Expected Result</th></tr>
+        <tr><td>DS1</td><td>Stock accuracy across modules</td><td>Create SO + SI + Transfer. Sum all transactions for an item.</td><td>Item_Warehouse_Stock.Current_Stock = SUM(all Stock In) - SUM(all Stock Out) per warehouse</td></tr>
+        <tr><td>DS2</td><td>Budget spent accuracy</td><td>Create expenses against a component. Sum expenses.</td><td>Budget_Component.Spent_Amount = SUM(linked approved expenses)</td></tr>
+        <tr><td>DS3</td><td>Project budget ceiling</td><td>Activate Budget Plan. Check Project.</td><td>Project.Total_Approved_Budget = Budget_Plan.Total_Budget_Amount</td></tr>
+        <tr><td>DS4</td><td>PO auto-creation from PR</td><td>Approve PR fully. Inspect PO.</td><td>PO.Total = PR.Estimated_Total (approximately). Line items match 1:1.</td></tr>
+        <tr><td>DS5</td><td>GRN &rarr; Stock In linkage</td><td>Create GRN with status=Open. Check stock and transaction.</td><td>Inventory_Transaction exists with Reference_Type=GRN, Reference_No=GRN-XXXX</td></tr>
+        <tr><td>DS6</td><td>DC &rarr; Stock Out linkage</td><td>Ship DC. Check stock.</td><td>Inventory_Transaction exists with Reference_Type=DC, Reference_No=DC-XXXX</td></tr>
+        <tr><td>DS7</td><td>TO &rarr; paired transactions</td><td>Complete TO. Check 2 transactions.</td><td>Stock Out (From WH) + Stock In (To WH) for same qty and item</td></tr>
+        <tr><td>DS8</td><td>Invoice &rarr; Project revenue</td><td>Send invoice. Check Project.</td><td>Project.Total_Invoiced increased by Invoice.Total</td></tr>
+        <tr><td>DS9</td><td>Budget Approval &rarr; Budget update</td><td>Approve overrun. Check Budget_Component.</td><td>Component.Allocated_Amount increased. Spent_Amount updated.</td></tr>
+        <tr><td>DS10</td><td>Reserved stock not available for SO</td><td>Reserve 30 units. Try Stock Out those 30 units.</td><td>Blocked: "Insufficient stock" alert (available = Current - Reserved)</td></tr>
+      </table></div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Concurrency &amp; Race Condition Tests</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw"><table class="vm">
+        <tr><th>#</th><th>Test</th><th>Action</th><th>Expected</th></tr>
+        <tr><td>CC1</td><td>Simultaneous Stock Out</td><td>2 users each try to stock out 300 units of Cement (available 550)</td><td>First succeeds (550-300=250). Second blocked (250 < 300).</td></tr>
+        <tr><td>CC2</td><td>Simultaneous PR approval</td><td>2 approvers try to approve same PR at same time</td><td>Only one succeeds. Second gets "Already approved" error.</td></tr>
+        <tr><td>CC3</td><td>Edit while GRN in progress</td><td>User opens PO. Another user creates GRN. First user saves PO.</td><td>PO should reflect GRN status or warn about pending GRN.</td></tr>
+        <tr><td>CC4</td><td>Delete item with pending transactions</td><td>Mark Item Inactive while Stock Out is being entered</td><td>Stock Out should reject: "Item is inactive"</td></tr>
+        <tr><td>CC5</td><td>Budget plan activation race</td><td>2 users try to activate budget plans for same project</td><td>First succeeds. Second gets duplicate alert.</td></tr>
+      </table></div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Formula Accuracy Tests</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw"><table class="vm">
+        <tr><th>#</th><th>Form</th><th>Formula</th><th>Input</th><th>Expected Output</th></tr>
+        <tr><td>F1</td><td>PO_Line_Items</td><td>Item_Total = (Qty x Rate) - Discount_Amount + Tax_Amount</td><td>Qty=10, Rate=100, Disc%:5, Tax%:18</td><td>Disc=50, Sub=950, Tax=171, Total=1121</td></tr>
+        <tr><td>F2</td><td>PO_Line_Items</td><td>Zero discount</td><td>Qty=5, Rate=200, Disc=0, Tax=18</td><td>Total = 1000 + 180 = 1180</td></tr>
+        <tr><td>F3</td><td>PO_Line_Items</td><td>Zero tax</td><td>Qty=5, Rate=200, Disc=10%, Tax=0</td><td>Disc=100, Total=900</td></tr>
+        <tr><td>F4</td><td>Invoice_Line_Items</td><td>Total = (Qty x Rate) x (1 + Tax%/100)</td><td>Qty=40, Rate=150, Tax=18</td><td>Total = 6000 + 1080 = 7080</td></tr>
+        <tr><td>F5</td><td>BOM</td><td>Total_Mfg_Cost = Component_Cost + Labor + Overhead</td><td>Component=145, Labor=50, Overhead=25</td><td>Total = 220</td></tr>
+        <tr><td>F6</td><td>Inventory Items</td><td>Stock_Value = Current_Stock x Purchase_Price</td><td>Stock=500, Price=8.50</td><td>Value = 4250</td></tr>
+        <tr><td>F7</td><td>Inventory Items</td><td>Available_Stock = Current_Stock - Reserved_Qty</td><td>Current=550, Reserved=20</td><td>Available = 530</td></tr>
+        <tr><td>F8</td><td>Budget_Components</td><td>Utilization_% = (Spent_Amount / Allocated_Amount) x 100</td><td>Spent=5000, Allocated=25000</td><td>Utilization = 20%</td></tr>
+        <tr><td>F9</td><td>Budget_Components</td><td>Remaining_Amount = Allocated_Amount - Spent_Amount</td><td>Allocated=25000, Spent=5000</td><td>Remaining = 20000</td></tr>
+        <tr><td>F10</td><td>Invoice</td><td>Balance_Due = Total - Amount_Paid</td><td>Total=7080, Paid=3000</td><td>Balance = 4080</td></tr>
+        <tr><td>F11</td><td>PO</td><td>PO_Total = SUM of all PO_Line_Items.Item_Total</td><td>2 lines: 1121 + 1180</td><td>Total = 2301</td></tr>
+        <tr><td>F12</td><td>Invoice</td><td>Invoice_Total = SUM of line Totals</td><td>1 line: 7080</td><td>Total = 7080</td></tr>
+      </table></div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Auto-Number Sequence Tests</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw"><table class="vm">
+        <tr><th>#</th><th>Form</th><th>Prefix</th><th>Test</th><th>Expected</th></tr>
+        <tr><td>AN1</td><td>Projects</td><td>PROJ-</td><td>Create 3 projects</td><td>PROJ-0001, PROJ-0002, PROJ-0003</td></tr>
+        <tr><td>AN2</td><td>Vendors / Accounts / Warehouses</td><td>VEND- / ACCT- / WH-</td><td>Create after deletion</td><td>Sequence does not reuse deleted numbers</td></tr>
+        <tr><td>AN3</td><td>Inventory Items</td><td>SKU-</td><td>Create Goods + Service</td><td>SKU-0001, SKU-0002 (same sequence regardless of type)</td></tr>
+        <tr><td>AN4</td><td>Budget Plans</td><td>BUD-</td><td>Create across projects</td><td>Global sequence: BUD-0001, BUD-0002</td></tr>
+        <tr><td>AN5</td><td>Inventory Transactions</td><td>TXN-</td><td>Create all 6 types</td><td>Single global TXN sequence</td></tr>
+        <tr><td>AN6</td><td>Expenses / PR / PO / GRN / TO</td><td>EXP- / REQ- / PO- / GRN- / TO-</td><td>Create one of each</td><td>Each form has independent sequence</td></tr>
+        <tr><td>AN7</td><td>BOM / DC / Invoice</td><td>BOM- / DC- / INV-</td><td>Create one each</td><td>Independent sequences</td></tr>
+        <tr><td>AN8</td><td>Budget Approvals</td><td>APPR-</td><td>Trigger overrun</td><td>APPR-0001 created automatically</td></tr>
+      </table></div>
+    </bd>
+  </div>
+</div>
   <p>Project Budget Tracking &amp; Inventory Management — Testing Guide</p>
   <p style="font-size:0.7rem;margin-top:4px;color:var(--muted)">ITOTCloud Systems Pvt. Ltd.</p>
   <p style="font-size:0.62rem;margin-top:2px"><a href="index.html">&larr; Back to Blueprint</a> &bull; <a href="user-guide.html">User Guide &rarr;</a></p>
