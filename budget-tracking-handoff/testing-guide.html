@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Testing Guide — Project Budget Tracking</title>
+<style>
+  :root {
+    --bg: #0b1120; --surface: #1a2435; --surface2: #253040;
+    --border: #2d3a4d; --text: #e8edf5; --muted: #8a9bb5;
+    --accent: #22d3ee; --green: #4ade80; --yellow: #fbbf24;
+    --red: #f87171; --purple: #a78bfa; --orange: #fb923c;
+    --pink: #f472b6; --sidebar-w: 220px;
+    --font-mono: 'JetBrains Mono','Fira Code',Consolas,monospace;
+    --font-sans: system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: var(--font-sans); line-height: 1.6;
+    display: flex; min-height: 100vh;
+  }
+
+  .sidebar {
+    width: var(--sidebar-w); min-width: var(--sidebar-w);
+    background: var(--surface); border-right: 1px solid var(--border);
+    padding: 24px 16px; position: fixed; top: 0; left: 0;
+    height: 100vh; overflow-y: auto; z-index: 100;
+    display: flex; flex-direction: column;
+  }
+  .sidebar h1 { font-size: 1rem; font-weight: 700; color: var(--accent); margin-bottom: 4px; letter-spacing: -0.01em; }
+  .sidebar .sub { font-size: 0.62rem; color: var(--muted); margin-bottom: 24px; }
+  .sidebar nav { flex: 1; }
+  .sidebar a {
+    display: block; color: var(--muted); text-decoration: none;
+    font-size: 0.78rem; padding: 5px 10px; border-radius: 6px;
+    margin-bottom: 1px; transition: 0.12s; cursor: pointer;
+  }
+  .sidebar a:hover { color: var(--accent); background: var(--surface2); }
+  .sidebar a.active { color: var(--accent); background: var(--surface2); font-weight: 600; }
+  .sidebar .ftr { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--border); font-size: 0.6rem; color: var(--muted); }
+  .sidebar .ftr a { display: inline; padding: 0; font-size: 0.6rem; color: var(--accent); }
+
+  .main { margin-left: var(--sidebar-w); flex: 1; min-width: 0; }
+  .content { max-width: 1100px; padding: 32px 32px 60px; }
+
+  .hero { margin-bottom: 28px; }
+  .hero h1 { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.02em; }
+  .hero h1 span { color: var(--accent); }
+  .hero .sub { color: var(--muted); margin-top: 8px; font-size: 0.88rem; max-width: 600px; }
+
+  .page { display: none; }
+  .page.o { display: block; }
+
+  h2 { font-size: 1.15rem; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+  h2 .fm { font-size: 0.62rem; font-family: var(--font-mono); background: var(--surface2); color: var(--muted); padding: 2px 10px; border-radius: 12px; font-weight: 500; }
+  h3 { font-size: 0.9rem; font-weight: 600; margin: 14px 0 8px; color: var(--accent); }
+  p { color: var(--muted); font-size: 0.84rem; margin-bottom: 8px; }
+
+  .module-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; margin-bottom: 6px; overflow: hidden;
+  }
+  .module-card hd {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; cursor: pointer; user-select: none;
+    transition: background 0.12s;
+  }
+  .module-card hd:hover { background: var(--surface2); }
+  .module-card hd .num { font-family: var(--font-mono); font-size: 0.68rem; color: var(--muted); min-width: 26px; }
+  .module-card hd h4 { font-size: 0.86rem; font-weight: 600; flex: 1; color: var(--text); }
+  .module-card hd .arr { font-size: 0.68rem; color: var(--muted); transition: transform 0.2s; }
+  .module-card hd .arr.o { transform: rotate(90deg); }
+  .module-card hd .tags { display: flex; gap: 4px; }
+  .module-card hd .tags s { font-size: 0.58rem; font-family: var(--font-mono); padding: 1px 6px; border-radius: 3px; background: var(--surface2); color: var(--muted); }
+  .module-card bd { display: none; padding: 0 14px 14px; border-top: 1px solid var(--border); padding-top: 10px; }
+  .module-card bd.o { display: block; }
+
+  .tw { overflow-x: auto; margin: 6px 0 12px; }
+  .tbl { width: 100%; border-collapse: collapse; font-size: 0.76rem; min-width: 400px; }
+  .tbl th { text-align: left; padding: 5px 8px; background: var(--surface2); color: var(--muted); font-weight: 600; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  .tbl td { padding: 5px 8px; border-bottom: 1px solid var(--surface2); vertical-align: top; color: var(--text); }
+  .tbl tr:hover td { background: rgba(34,211,238,0.03); }
+
+  .tag { display: inline-block; font-size: 0.58rem; font-family: var(--font-mono); padding: 1px 6px; border-radius: 3px; margin: 1px; }
+  .tag-cr { background: #4a1c1c; color: #fca5a5; }
+  .tag-lk { background: #1e3a5f; color: #93c5fd; }
+
+  .s-dr { background: #475569; color: #fff; font-size: 0.6rem; padding: 1px 5px; border-radius: 3px; }
+  .s-op { background: #2563eb; color: #fff; font-size: 0.6rem; padding: 1px 5px; border-radius: 3px; }
+  .s-ap { background: #16a34a; color: #fff; font-size: 0.6rem; padding: 1px 5px; border-radius: 3px; }
+  .s-rj { background: #dc2626; color: #fff; font-size: 0.6rem; padding: 1px 5px; border-radius: 3px; }
+
+  .al { padding: 10px 14px; border-radius: 6px; font-size: 0.78rem; margin: 10px 0; border-left: 3px solid; }
+  .al-w { background: #3b2f1e; border-color: var(--yellow); color: #fef3c7; }
+  .al-i { background: #1e3a5f; border-color: var(--accent); color: #bae6fd; }
+  .al-o { background: #1a3b2a; border-color: var(--green); color: #bbf7d0; }
+
+  .ph-badge { font-size: 0.58rem; font-family: var(--font-mono); padding: 2px 8px; border-radius: 4px; font-weight: 600; }
+  .ph-1a { background: #1a3b2a; color: var(--green); }
+  .ph-1b { background: #1e3a5f; color: var(--accent); }
+  .ph-1c { background: #2e1f3b; color: var(--purple); }
+  .ph-1d { background: #3b2f1e; color: var(--orange); }
+  .ph-1e { background: #3b1f2e; color: var(--pink); }
+  .ph-1f { background: #2e3b1f; color: var(--yellow); }
+
+  .ol-steps { margin: 8px 0; padding: 0 0 0 20px; }
+  .ol-steps li { padding: 3px 0; font-size: 0.8rem; color: var(--muted); }
+
+  footer { text-align: center; padding: 24px 0; color: var(--muted); font-size: 0.72rem; border-top: 1px solid var(--border); margin-top: 32px; }
+  footer a { color: var(--accent); text-decoration: none; }
+
+  @media (max-width: 768px) {
+    .sidebar { width: 200px; min-width: 200px; }
+    .main { margin-left: 200px; }
+    .content { padding: 20px 16px 40px; }
+  }
+  @media (max-width: 540px) {
+    .sidebar { width: 180px; min-width: 180px; }
+    .main { margin-left: 180px; }
+    .content { padding: 14px 12px 40px; }
+  }
+</style>
+</head>
+<body>
+
+<aside class="sidebar" id="sb">
+  <h1>Testing Guide</h1>
+  <div class="sub">Project Budget Tracking</div>
+  <nav>
+    <a onclick="showPage('intro')" data-page="intro" class="active">How to Use</a>
+    <a onclick="showPage('1a')" data-page="1a"><span class="ph-badge ph-1a">1A</span> Foundation</a>
+    <a onclick="showPage('1b')" data-page="1b"><span class="ph-badge ph-1b">1B</span> Budget &amp; Stock</a>
+    <a onclick="showPage('1c')" data-page="1c"><span class="ph-badge ph-1c">1C</span> Expenses &amp; PR</a>
+    <a onclick="showPage('1d')" data-page="1d"><span class="ph-badge ph-1d">1D</span> Procurement</a>
+    <a onclick="showPage('1e')" data-page="1e"><span class="ph-badge ph-1e">1E</span> Revenue &amp; Mfg</a>
+    <a onclick="showPage('1f')" data-page="1f"><span class="ph-badge ph-1f">1F</span> Reports</a>
+    <a onclick="showPage('integration')" data-page="integration">Integration Test</a>
+    <a onclick="showPage('template')" data-page="template">Test Recording</a>
+    <a onclick="showPage('issues')" data-page="issues">Common Issues</a>
+  </nav>
+  <div class="ftr">
+    <a href="index.html">&larr; Blueprint</a> &bull;
+    <a href="user-guide.html">User Guide &rarr;</a>
+  </div>
+</aside>
+
+<div class="main">
+<div class="content">
+
+<!-- ====== INTRO ====== -->
+<div class="page o" id="page-intro">
+  <div class="hero">
+    <h1>Testing Guide <span>Project Budget Tracking</span></h1>
+    <p class="sub">Phase-by-phase test scenarios with sample data and expected results. Build, then test, then move to the next phase.</p>
+  </div>
+
+  <div class="al-o"><strong>Workflow:</strong> Build Phase 1A &rarr; Run Phase 1A tests &rarr; Fix failures &rarr; Build Phase 1B &rarr; Run Phase 1B tests &rarr; Continue through Phase 1F &rarr; Run Integration Test.</div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>How to Use This Guide</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Build the phase in Zoho Creator console</li>
+        <li>Click the phase name in the sidebar</li>
+        <li>Run each test scenario in order</li>
+        <li>Record Pass/Fail using the Test Recording template</li>
+        <li>Fix any failures before building the next phase</li>
+        <li>After Phase 1F, run the Integration Test</li>
+      </ol>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Structure of Each Test</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <p>Each test scenario includes:</p>
+      <div class="rel-grid">
+        <div class="rel-card"><div class="dir">Steps</div><div class="target">Numbered actions to perform</div></div>
+        <div class="rel-card"><div class="dir">Sample Data</div><div class="target">Values to enter in each field</div></div>
+        <div class="rel-card"><div class="dir">Expected Results</div><div class="target">What should happen after each step</div></div>
+        <div class="rel-card"><div class="dir">Edge Cases</div><div class="target">Failure conditions to verify</div></div>
+      </div>
+    </bd>
+  </div>
+</div>
+
+<!-- ====== PHASE 1A ====== -->
+<div class="page" id="page-1a">
+  <h2><span class="ph-badge ph-1a">Phase 1A</span> Foundation: Vendors, Accounts, Projects, Warehouses, Items</h2>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Modules to Test</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw">
+        <table class="tbl">
+          <tr><th>Module</th><th>API Name</th><th>Subforms</th></tr>
+          <tr><td>Vendors</td><td>Vendors</td><td>Vendor_Contacts, Vendor_Documents</td></tr>
+          <tr><td>Accounts</td><td>Accounts</td><td>Account_Contacts, Account_Documents</td></tr>
+          <tr><td>Projects</td><td>Projects</td><td>&mdash;</td></tr>
+          <tr><td>Warehouses</td><td>Warehouses</td><td>&mdash;</td></tr>
+          <tr><td>Inventory Items</td><td>Inventory_Items</td><td>Item_Warehouse_Stock</td></tr>
+        </table>
+      </div>
+      <div class="al-i">Prerequisites: None &mdash; these are the foundation forms.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Test Data Preparation</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw">
+        <table class="tbl">
+          <tr><th>Record</th><th>Data</th></tr>
+          <tr><td>Warehouse 1</td><td>Name: Main Warehouse, Status: Active</td></tr>
+          <tr><td>Warehouse 2</td><td>Name: Secondary Store, Status: Active</td></tr>
+          <tr><td>Warehouse 3</td><td>Name: Returns Bay, Status: Active</td></tr>
+        </table>
+      </div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">1</span><h4>TC-1A-01: Create Vendor with Contacts and Documents</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Open Vendors form. Enter: Vendor Name = TechSupply Co., Email = orders@techsupply.com, Phone = +1-555-0100</li>
+        <li>Payment Terms = Net 30, Currency = USD, Tax ID = GST12345, Status = Active</li>
+        <li>In Vendor_Contacts subform: Mr / Raj / Patel / raj@techsupply.com / Is Primary = Yes</li>
+        <li>Second contact: Ms / Priya / Sharma / priya@techsupply.com</li>
+        <li>In Vendor_Documents: upload a PDF, Document Name = GST Certificate</li>
+        <li>Submit</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> Auto-generated Vendor ID. Both contacts saved. Document accessible.</div>
+      <div class="al-w"><strong>Edge:</strong> Blank Vendor Name &rarr; alert. Add 5+ contacts &rarr; all save. File upload &gt;5MB works.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">2</span><h4>TC-1A-02: Create Second Vendor</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Vendor Name = Logistics Pro, Email = info@logisticspro.com</li>
+        <li>Contact: Amit / Verma / Is Primary = Yes</li>
+        <li>Submit</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> Both vendors visible in reports.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">3</span><h4>TC-1A-03: Create Account with Contacts and Documents</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Accounts form: Account Name = ABC Manufacturing, Email = billing@abcmfg.com</li>
+        <li>Payment Terms = Net 45, Currency = USD, Status = Active</li>
+        <li>Account_Contacts: Mr / Vikram / Singh / vikram@abcmfg.com / Is Primary</li>
+        <li>Account_Documents: upload file, Document Name = Signed MSA</li>
+        <li>Submit</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> Record saved with contacts and document.</div>
+      <div class="al-w"><strong>Edge:</strong> Blank Account Name &rarr; alert.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">4</span><h4>TC-1A-04: Create Second Account</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Account Name = XYZ Constructions, Email = info@xyzconstruct.com</li>
+        <li>Contact: Neha / Gupta / Is Primary</li>
+        <li>Submit</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> Both accounts visible in lookup lists.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">5</span><h4>TC-1A-05: Create Project</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Project Name = Office Renovation 2026, Account = ABC Manufacturing</li>
+        <li>Start = 01-Jun-2026, End = 31-Dec-2026, Budget = 50000</li>
+        <li>PM = yourself, Status = Active, Submit</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> PROJ-0001 generated. Account lookup shows ABC Manufacturing.</div>
+      <div class="al-w"><strong>Edge:</strong> End before Start &rarr; alert. Blank Name &rarr; alert.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">6</span><h4>TC-1A-06: Create Second Project</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Project Name = Warehouse Automation, Account = XYZ Constructions</li>
+        <li>Start = 01-Jul-2026, End = 30-Jun-2027, Budget = 75000, Status = Active</li>
+        <li>Submit</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> PROJ-0002 generated.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">7</span><h4>TC-1A-07: Inventory Item — Goods Type</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Item Name = Cement Bag (50kg), Item Type = Goods, Category = Raw Material</li>
+        <li>Unit = Kg, Purchase Price = 8.50, Preferred Vendor = TechSupply Co.</li>
+        <li>Reorder Level = 100, Status = Active</li>
+        <li>Item_Warehouse_Stock: Main Warehouse, Current Stock = 500, Reorder Level = 100</li>
+        <li>Second row: Secondary Store, Current Stock = 200, Reorder Level = 50</li>
+        <li>Submit</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> SKU-0001. Main stock = 500. Stock Value = 4250.</div>
+      <div class="al-w"><strong>Edge:</strong> Negative Price &rarr; alert. Goods without Unit &rarr; alert.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">8</span><h4>TC-1A-08: Service Type Item</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Item Name = Consulting Fee, Item Type = Services, Category = Service</li>
+        <li>Unit = Hour, Purchase Price = 150.00, Status = Active</li>
+        <li>Submit (no stock entry needed)</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> SKU-0002. No warehouse stock rows.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">9</span><h4>TC-1A-09: Item with Preferred Vendor</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Item Name = Steel Rods (12mm), Type = Goods, Unit = Kg, Purchase Price = 12.00</li>
+        <li>Preferred Vendor = Logistics Pro, Reorder Level = 200</li>
+        <li>Stock: Main Warehouse, Current Stock = 1000, Reorder Level = 200</li>
+        <li>Submit</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> SKU-0003. Linked to Logistics Pro.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Build Verification Checklist</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw">
+        <table class="tbl">
+          <tr><th>Check</th><th>Status</th></tr>
+          <tr><td>Vendors form creates records with all fields</td><td>&#x2610;</td></tr>
+          <tr><td>Vendor_Contacts saves multiple contacts</td><td>&#x2610;</td></tr>
+          <tr><td>Vendor_Documents uploads files</td><td>&#x2610;</td></tr>
+          <tr><td>Accounts form creates records</td><td>&#x2610;</td></tr>
+          <tr><td>Projects generates PROJ-0001/0002 correctly</td><td>&#x2610;</td></tr>
+          <tr><td>Warehouses generate WH-0001 etc.</td><td>&#x2610;</td></tr>
+          <tr><td>Items generate SKU-0001/0002/0003</td><td>&#x2610;</td></tr>
+          <tr><td>Item_Warehouse_Stock saves multiple warehouse rows</td><td>&#x2610;</td></tr>
+          <tr><td>All validation rules fire on bad data</td><td>&#x2610;</td></tr>
+        </table>
+      </div>
+    </bd>
+  </div>
+</div>
+
+<!-- ====== PHASE 1B ====== -->
+<div class="page" id="page-1b">
+  <h2><span class="ph-badge ph-1b">Phase 1B</span> Budget Plans &amp; Inventory Transactions</h2>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Modules to Test</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw">
+        <table class="tbl">
+          <tr><th>Module</th><th>API Name</th><th>Subforms</th></tr>
+          <tr><td>Budget Plans</td><td>Budget_Plans</td><td>Budget_Components</td></tr>
+          <tr><td>Inventory Transactions</td><td>Inventory_Transactions</td><td>&mdash;</td></tr>
+        </table>
+      </div>
+      <div class="al-i"><strong>Prerequisites:</strong> Phase 1A data: Projects PROJ-0001/0002, Warehouses, Items, Stock records.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">1</span><h4>TC-1B-01: Create Budget Plan with Components</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Project = Office Renovation 2026, Total Budget = 50000, Status = Draft</li>
+        <li>Budget_Components: Construction Material = 25000, Labor Cost = 15000, Equipment Rental = 5000</li>
+        <li>Submit</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> BUD-0001. Remaining = Allocated. Utilization = 0%.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">2</span><h4>TC-1B-02: Component Sum Exceeds Budget</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>New Budget Plan, Project = Warehouse Automation, Total = 75000</li>
+        <li>Components: Racking = 50000, Installation = 20000, Software = 10000 (total 80000)</li>
+        <li>Try to submit</li>
+      </ol>
+      <div class="al-w"><strong>Expected alert:</strong> "Component totals exceed Total Budget"</div>
+      <div class="al-o">Delete Software (10000) &rarr; sum = 70000 &le; 75000 &rarr; should pass.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">3</span><h4>TC-1B-03: Activate Budget Plan</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Open BUD-0001, change Status to Active, Submit</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> Project Total_Approved_Budget = 50000. Duplicate check works.</div>
+      <div class="al-w"><strong>Edge:</strong> Create another Active plan for same project &rarr; alert.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">4</span><h4>TC-1B-04: Stock In</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Type = Stock In, Item = Cement Bag, Warehouse = Main Warehouse, Qty = 100</li>
+        <li>Submit</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> TXN-0001. Main Cement: Current Stock = 600 (was 500+100).</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">5</span><h4>TC-1B-05: Stock In (Second WH)</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Type = Stock In, Item = Steel Rods, Warehouse = Secondary Store, Qty = 300</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> Steel at Secondary = 300.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">6</span><h4>TC-1B-06: Stock Out</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Type = Stock Out, Item = Cement Bag, WH = Main, Qty = 50</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> Main Cement = 550 (600-50).</div>
+      <div class="al-w"><strong>Edge:</strong> Qty = 10000 &rarr; alert "Insufficient stock. Available: 550, Requested: 10000"</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">7</span><h4>TC-1B-07: Reservation</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Type = Reservation, Item = Cement Bag, WH = Main, Qty = 30</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> Reserved = 30. Available = 550-30 = 520.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">8</span><h4>TC-1B-08: Release</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Type = Release, Item = Cement Bag, WH = Main, Qty = 10</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> Reserved = 20 (30-10).</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">9</span><h4>TC-1B-09: Transfer</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Type = Transfer, Item = Cement Bag, From = Main, To = Secondary Store, Qty = 40</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> Main = 510 (550-40). Secondary = 40 (new/incremented).</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">10</span><h4>TC-1B-10: Adjustment</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Type = Adjustment, Item = Steel Rods, WH = Main, Qty = 950</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> Main Steel = 950 (absolute value, not delta).</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">11</span><h4>TC-1B-11: Validation Edge Cases</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="al-w">Stock Out without Warehouse &rarr; alert. Transfer without To_Warehouse &rarr; alert. Qty = 0 or negative &rarr; alert.</div>
+    </bd>
+  </div>
+</div>
+
+<!-- ====== PHASE 1C ====== -->
+<div class="page" id="page-1c">
+  <h2><span class="ph-badge ph-1c">Phase 1C</span> Expenses &amp; Purchase Requisitions</h2>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Modules to Test</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw">
+        <table class="tbl">
+          <tr><th>Module</th><th>API Name</th><th>Subforms</th></tr>
+          <tr><td>Expenses</td><td>Expenses</td><td>&mdash;</td></tr>
+          <tr><td>Purchase Requisitions</td><td>Purchase_Requisitions</td><td>PR_Line_Items</td></tr>
+        </table>
+      </div>
+      <div class="al-i"><strong>Prerequisites:</strong> BUD-0001 Active with components (Construction Material=25000, Labor=15000, Equipment=5000).</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">1</span><h4>TC-1C-01: Expense Within Budget</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Project = Office Renovation, Component = Construction Material (25000)</li>
+        <li>Amount = 5000, Date = 15-Jun-2026, Vendor = TechSupply Co.</li>
+        <li>Submit</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> EXP-0001, Status = Approved. Material Spent = 5000.</div>
+      <div class="al-w"><strong>Edge:</strong> No Project &rarr; alert. Amount = 0 or negative &rarr; alert.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">2</span><h4>TC-1C-02: Overrun Expense</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Project = Office Renovation, Component = Construction Material (spent 5000, allocated 25000)</li>
+        <li>Amount = 22000 (total would be 27000 &gt; 25000)</li>
+        <li>Submit</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> EXP-0002, Status = Overrun-Pending Approval. Budget_Approval auto-created.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">3</span><h4>TC-1C-03: Labor Expense</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Component = Labor Cost (15000), Amount = 8000</li>
+        <li>Submit</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> Approved (8000 &le; 15000). Labor Spent = 8000.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">4</span><h4>TC-1C-04: Purchase Requisition with Line Items</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Subject = Cement and Steel, Project = Office Renovation, Type = Standard</li>
+        <li>PR_Line_Items: Cement &times; 100 @ 8.50, Steel &times; 50 @ 12.00</li>
+        <li>Status = Open, Submit</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> REQ-0001. Status = Open. Stage 0 (pending Dept Manager).</div>
+      <div class="al-w"><strong>Edge:</strong> Open without line items &rarr; alert. No Project &rarr; alert.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">5</span><h4>TC-1C-05: Approve PR Stage 1</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Login as Project Manager, open REQ-0001</li>
+        <li>Advance Blueprint from "Pending Dept Manager"</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> Stage = 1 (Finance pending). Email triggered.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">6</span><h4>TC-1C-06: Reject at Stage 2</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Create PR: Subject = Emergency Server Parts, Type = Emergency, Critical urgency</li>
+        <li>Item = Consulting Fee &times; 5 @ 150, Submit</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> REQ-0002.</div>
+      <div class="al-w"><strong>Edge:</strong> Critical urgency without Justification &rarr; alert.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">7</span><h4>TC-1C-07: Final Approval Auto-Creates PO</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Advance REQ-0001 through all 3 stages: Dept &rarr; Finance &rarr; Procurement</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> REQ-0001 = Approved. PO auto-created (Draft) with matching line items.</div>
+    </bd>
+  </div>
+</div>
+
+<!-- ====== PHASE 1D ====== -->
+<div class="page" id="page-1d">
+  <h2><span class="ph-badge ph-1d">Phase 1D</span> Budget Approvals, PO, GRN, Transfer Orders</h2>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Modules to Test</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw">
+        <table class="tbl">
+          <tr><th>Module</th><th>API Name</th><th>Subforms</th></tr>
+          <tr><td>Budget Approvals</td><td>Budget_Approvals</td><td>&mdash;</td></tr>
+          <tr><td>Purchase Orders</td><td>Purchase_Orders</td><td>PO_Line_Items</td></tr>
+          <tr><td>Goods Receipts</td><td>Goods_Receipts</td><td>GRN_Line_Items</td></tr>
+          <tr><td>Transfer Orders</td><td>Transfer_Orders</td><td>TO_Line_Items</td></tr>
+        </table>
+      </div>
+      <div class="al-i"><strong>Prerequisites:</strong> EXP-0002 (Overrun-Pending). PO auto-created from REQ-0001. BUD-0001 Active.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">1</span><h4>TC-1D-01: Approve Budget Overrun</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Find auto-created Budget_Approval for EXP-0002</li>
+        <li>Status = Approved, Notes = "Approved for Phase 1"</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> APPR-0001. EXP-0002 &rarr; Approved. Material Spent = 27000.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">2</span><h4>TC-1D-02: Edit and Open PO</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Open auto-created PO (Draft), verify line items match PR</li>
+        <li>Set Vendor = TechSupply Co., Status = Open</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> PO-0001. On Open &rarr; vendor email.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">3</span><h4>TC-1D-03: Manual PO Creation</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>New PO: Vendor = Logistics Pro, Project = Warehouse Automation</li>
+        <li>Item = Steel Rods &times; 200 @ 12.00, Disc = 5%, Tax = 18%</li>
+        <li>Status = Open</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> PO-0002. Item Total = 2400. Disc = 120. Tax = 410.40. Total = 2690.40.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">4</span><h4>TC-1D-04: Cancel PO</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Cancel PO-0001 (no GRN yet)</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> PO-0001 = Cancelled.</div>
+      <div class="al-w"><strong>Edge:</strong> Create GRN against PO, then try cancel &rarr; alert.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">5</span><h4>TC-1D-05: Goods Receipt</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>PO = PO-0002 (Steel Rods &times; 200)</li>
+        <li>GRN_Line_Items: Accepted = 195, Rejected = 5 (surface rust), Cost = 12.00, WH = Main</li>
+        <li>Status = Open</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> GRN-0001. Stock In for 195 units. Main Steel = 950+195 = 1145.</div>
+      <div class="al-w"><strong>Edge:</strong> Accepted + Rejected &gt; PO Qty &rarr; alert. Rejected without reason &rarr; alert.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">6</span><h4>TC-1D-06: Transfer Order</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>From = Main, To = Returns Bay</li>
+        <li>TO_Line_Items: Cement &times; 20 @ 8.50</li>
+        <li>Status = Completed</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> TO-0001. Stock Out (Main -20) + Stock In (Returns +20). Main Cement = 490.</div>
+      <div class="al-w"><strong>Edge:</strong> Same From/To &rarr; alert. Insufficient stock &rarr; alert.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">7</span><h4>TC-1D-07: Reject Budget Overrun</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Create Expense: Equipment Rental (5000), Amount = 6000 &rarr; Overrun-Pending</li>
+        <li>Open Budget_Approval: Status = Rejected</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> Expense &rarr; Rejected. Spent Amount unchanged.</div>
+    </bd>
+  </div>
+</div>
+
+<!-- ====== PHASE 1E ====== -->
+<div class="page" id="page-1e">
+  <h2><span class="ph-badge ph-1e">Phase 1E</span> BOM, Delivery Challans, Invoicing</h2>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Modules to Test</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw">
+        <table class="tbl">
+          <tr><th>Module</th><th>API Name</th><th>Subforms</th></tr>
+          <tr><td>Bill of Materials</td><td>BOM</td><td>BOM_Line_Items</td></tr>
+          <tr><td>Delivery Challans</td><td>Delivery_Challans</td><td>DC_Line_Items</td></tr>
+          <tr><td>Invoices</td><td>Invoices</td><td>Invoice_Line_Items</td></tr>
+        </table>
+      </div>
+      <div class="al-i"><strong>Prerequisites:</strong> All Phase 1A-1D data. Stock: Cement=490 Main, 20 Returns; Steel=1145 Main. Account=ABC Mfg.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">1</span><h4>TC-1E-01: Create BOM</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Product = Consulting Fee, BOM Name = Foundation Work Kit</li>
+        <li>BOM_Line_Items: Cement &times; 10 @ 8.50, Steel &times; 5 @ 12.00</li>
+        <li>Status = Active</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> BOM-0001. Total Mfg Cost = 85+60 = 145.</div>
+      <div class="al-w"><strong>Edge:</strong> Duplicate components &rarr; alert. Zero qty &rarr; alert. No lines &rarr; alert.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">2</span><h4>TC-1E-02: Delivery Challan — Create and Ship</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Project = Office Renovation, Account = ABC Mfg, WH = Main</li>
+        <li>DC_Line_Items: Cement &times; 30</li>
+        <li>Status = Shipped</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> DC-0001. Stock Out: Cement -30. Main Cement = 460.</div>
+      <div class="al-w"><strong>Edge:</strong> Insufficient stock &rarr; alert. No lines &rarr; alert.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">3</span><h4>TC-1E-03: Multi-Item DC</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>DC: Cement &times; 20, Steel &times; 100, Status = Shipped</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> DC-0002. Two Stock Out records. Steel Main = 1045.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">4</span><h4>TC-1E-04: Invoice — Create and Send</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Project = Office Renovation, Account = ABC Mfg</li>
+        <li>Invoice_Line_Items: Consulting Fee &times; 40 @ 150, Tax 18%</li>
+        <li>Status = Sent</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> INV-0001. Total = 7080. Project Total Invoiced = 7080.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">5</span><h4>TC-1E-05: Create DC from Invoice</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Open INV-0001, click "Create DC" custom button</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> New DC created with matching line items.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">6</span><h4>TC-1E-06: Mark Invoice Paid</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Change INV-0001 Status to Paid</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> Balance Due = 0. Total Paid updated.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">7</span><h4>TC-1E-07: Project Completed Auto-Invoice</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Open Warehouse Automation, set Status = Completed</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> If deliveries exist &rarr; auto-create Invoice for uninvoiced items.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">8</span><h4>TC-1E-08: Overdue Detection</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Create Invoice: Status = Sent, Due Date = 7 days ago</li>
+        <li>Trigger scheduled workflow</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> Invoice auto-updates to Overdue.</div>
+    </bd>
+  </div>
+</div>
+
+<!-- ====== PHASE 1F ====== -->
+<div class="page" id="page-1f">
+  <h2><span class="ph-badge ph-1f">Phase 1F</span> Reports &amp; Dashboards</h2>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Reports to Verify</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw">
+        <table class="tbl">
+          <tr><th>Report</th><th>Verification</th></tr>
+          <tr><td>Project P&amp;L</td><td>Office Renovation: Budget=50000, Invoiced=7080, Expenses=40000</td></tr>
+          <tr><td>Stock Availability</td><td>Cement: Main=460, Secondary=40, Returns=20</td></tr>
+          <tr><td>Low Stock Alert</td><td>Items where Current &le; Reorder Level</td></tr>
+          <tr><td>Invoice Aging</td><td>Overdue invoices in correct buckets</td></tr>
+          <tr><td>Executive Dashboard</td><td>7 KPIs: Total Budget, Total Spent, Utilization %, Open PO Value, Inventory Value, Cost Overruns</td></tr>
+          <tr><td>Budget vs Actual</td><td>Component-level comparison</td></tr>
+          <tr><td>DC Register</td><td>All deliveries by project</td></tr>
+          <tr><td>BOM Cost Summary</td><td>BOM-0001 cost = 145</td></tr>
+        </table>
+      </div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">1</span><h4>TC-1F-01: Verify Report Data Accuracy</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Open Project P&amp;L report</li>
+        <li>Verify: Office Renovation &mdash; Budget 50000, Invoiced 7080, Expenses 40000, P&amp;L = -32920</li>
+        <li>Warehouse Automation &mdash; Budget 75000, Invoiced 0, Expenses 0</li>
+      </ol>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">2</span><h4>TC-1F-02: Stock Availability</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Open Stock Availability report, expand Cement Bag</li>
+      </ol>
+      <div class="al-o"><strong>Expected:</strong> Main=460/20/440, Secondary=40/0/40, Returns=20/0/20 (Current/Reserved/Available).</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">3</span><h4>TC-1F-03: Low Stock Alert</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Open Low Stock Alert report</li>
+        <li>Verify items with Current Stock &le; Reorder Level appear</li>
+      </ol>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">4</span><h4>TC-1F-05: Executive Dashboard</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Open Executive Dashboard</li>
+        <li>Verify KPI cards: Total Active Projects = 1, Total Budget = 50000, Total Spent ~40000, Utilization ~80%</li>
+      </ol>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">5</span><h4>TC-1F-06: Scheduled KPI Refresh</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Add a new expense or change project data</li>
+        <li>Trigger scheduled workflow (or wait for midnight)</li>
+        <li>Verify KPI values update</li>
+      </ol>
+    </bd>
+  </div>
+</div>
+
+<!-- ====== INTEGRATION TEST ====== -->
+<div class="page" id="page-integration">
+  <h2>Integration Test &mdash; End-to-End Flow</h2>
+  <p>Run after ALL phases are built and all phase-level tests pass. Full business flow: Procure &rarr; Receive &rarr; Use &rarr; Bill.</p>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">1</span><h4>INT-01: Create Project and Budget</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Project = Factory Expansion, Budget = 200000, Active</li>
+        <li>Budget Plan total = 200000, Components: Material=100000, Equipment=60000, Labor=40000</li>
+      </ol>
+      <div class="al-o">Budget synced to Project.Total_Approved_Budget = 200000</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">2</span><h4>INT-02 to INT-04: PR &rarr; PO &rarr; Open</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>PR: Steel Rods &times; 500 @ 12.00, Status = Open</li>
+        <li>Approve 3 stages &rarr; PO auto-created</li>
+        <li>Set Vendor = TechSupply Co., Status = Open</li>
+      </ol>
+      <div class="al-o">PO created with correct line items and totals.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">3</span><h4>INT-05: GRN &rarr; Stock In</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>GRN: Accept 490, Reject 10 (damaged)</li>
+      </ol>
+      <div class="al-o">Stock In for 490 units. Stock updated.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">4</span><h4>INT-06 to INT-07: Expense + Transfer</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Expense: Material component, Amount = 50000 &rarr; auto-approved</li>
+        <li>Transfer: Steel 100 units, Main &rarr; Secondary</li>
+      </ol>
+      <div class="al-o">Paired Stock Out/In created.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">5</span><h4>INT-08 to INT-10: BOM &rarr; DC &rarr; Invoice</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>BOM: Steel &times; 10 @ 12 + Labor &times; 5 @ 150 = 870</li>
+        <li>DC: Steel 50 to site, Shipped &rarr; Stock Out</li>
+        <li>Invoice: Service &times; 10 @ 1000, Tax 18%, Sent</li>
+      </ol>
+      <div class="al-o">BOM cost correct. DC Stock Out created. Invoice Total = 11800.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">6</span><h4>INT-11: Verify Dashboard</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <ol class="ol-steps">
+        <li>Open Executive Dashboard</li>
+        <li>Verify Factory Expansion appears in KPIs, Budget vs Actual, P&amp;L</li>
+      </ol>
+      <div class="al-o">All project data reflected in real-time reports.</div>
+    </bd>
+  </div>
+</div>
+
+<!-- ====== TEST RECORDING TEMPLATE ====== -->
+<div class="page" id="page-template">
+  <h2>Test Recording Template</h2>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Record Sheet</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <pre>Phase: _______ | Tester: _______ | Date: _______
+
+| TC ID | Status (Pass/Fail) | Actual Result | Notes |
+|-------|-------------------|---------------|-------|
+|       |                   |               |       |
+
+Issues Found:
+1. ...</pre>
+    </bd>
+  </div>
+</div>
+
+<!-- ====== COMMON ISSUES ====== -->
+<div class="page" id="page-issues">
+  <h2>Common Issues and Resolutions</h2>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Issues Table</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw">
+        <table class="tbl">
+          <tr><th>Issue</th><th>Likely Cause</th><th>Fix</th></tr>
+          <tr><td>Subform data not saving</td><td>Subform not embedded correctly</td><td>Check form builder — must be embedded, not linked</td></tr>
+          <tr><td>Deluge script not firing</td><td>Workflow not active or wrong trigger</td><td>Check workflow status = Active, trigger matches On Submit / On Post Submit</td></tr>
+          <tr><td>Formula not calculating</td><td>Field type or syntax error</td><td>Verify field type is Formula, check API names</td></tr>
+          <tr><td>Lookup shows no records</td><td>Lookup config wrong</td><td>Verify target form and display field</td></tr>
+          <tr><td>alert not showing</td><td>Using throw instead of alert</td><td>Change throw to alert in Deluge</td></tr>
+          <tr><td>Stock not updating</td><td>getRecordById not finding record</td><td>Verify item_id field exists and is populated</td></tr>
+          <tr><td>PR not creating PO</td><td>Approval stage not triggering</td><td>Check Blueprint stage config and final stage Deluge script</td></tr>
+        </table>
+      </div>
+    </bd>
+  </div>
+</div>
+
+</div>
+
+<footer>
+  <p>Project Budget Tracking &amp; Inventory Management — Testing Guide</p>
+  <p style="font-size:0.7rem;margin-top:4px;color:var(--muted)">ITOTCloud Systems Pvt. Ltd.</p>
+  <p style="font-size:0.62rem;margin-top:2px"><a href="index.html">&larr; Back to Blueprint</a> &bull; <a href="user-guide.html">User Guide &rarr;</a></p>
+</footer>
+
+</div>
+
+<script>
+function t(h) {
+  const bd = h.nextElementSibling;
+  bd.classList.toggle('o');
+  h.querySelector('.arr').classList.toggle('o');
+  h.querySelector('.arr').textContent = bd.classList.contains('o') ? '\u25BE' : '\u25B6';
+}
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('o'));
+  const el = document.getElementById('page-' + id);
+  if (el) el.classList.add('o');
+  document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
+  document.querySelectorAll('.sidebar a[data-page="' + id + '"]').forEach(a => a.classList.add('active'));
+}
+
+document.querySelectorAll('.module-card .arr').forEach(a => { a.textContent = '\u25B6'; });
+</script>
+
+</body>
+</html>

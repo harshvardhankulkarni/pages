@@ -10,7 +10,7 @@
     --border: #2d3a4d; --text: #e8edf5; --muted: #8a9bb5;
     --accent: #22d3ee; --green: #4ade80; --yellow: #fbbf24;
     --red: #f87171; --purple: #a78bfa; --orange: #fb923c;
-    --pink: #f472b6; --blue: #60a5fa;
+    --pink: #f472b6; --sidebar-w: 220px;
     --font-mono: 'JetBrains Mono','Fira Code',Consolas,monospace;
     --font-sans: system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
   }
@@ -19,911 +19,1071 @@
   body {
     background: var(--bg); color: var(--text);
     font-family: var(--font-sans); line-height: 1.6;
+    display: flex; min-height: 100vh;
   }
-  .container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
 
-  .hero {
-    padding: 60px 0 40px; border-bottom: 1px solid var(--border);
-    background: linear-gradient(135deg, #0b1120 0%, #1a2435 100%);
+  .sidebar {
+    width: var(--sidebar-w); min-width: var(--sidebar-w);
+    background: var(--surface); border-right: 1px solid var(--border);
+    padding: 24px 16px; position: fixed; top: 0; left: 0;
+    height: 100vh; overflow-y: auto; z-index: 100;
+    display: flex; flex-direction: column;
   }
-  .hero h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: -0.02em; }
+  .sidebar h1 { font-size: 1rem; font-weight: 700; color: var(--accent); margin-bottom: 4px; letter-spacing: -0.01em; }
+  .sidebar .sub { font-size: 0.62rem; color: var(--muted); margin-bottom: 24px; }
+  .sidebar nav { flex: 1; }
+  .sidebar .pg-head {
+    font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.05em;
+    color: var(--muted); font-weight: 600; margin: 14px 0 4px 0; padding: 0 10px;
+  }
+  .sidebar a {
+    display: block; color: var(--muted); text-decoration: none;
+    font-size: 0.78rem; padding: 5px 10px; border-radius: 6px;
+    margin-bottom: 1px; transition: 0.12s; cursor: pointer;
+  }
+  .sidebar a:hover { color: var(--accent); background: var(--surface2); }
+  .sidebar a.active { color: var(--accent); background: var(--surface2); font-weight: 600; }
+  .sidebar .ftr { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--border); font-size: 0.6rem; color: var(--muted); }
+  .sidebar .ftr a { display: inline; padding: 0; font-size: 0.6rem; color: var(--accent); }
+
+  .main { margin-left: var(--sidebar-w); flex: 1; min-width: 0; }
+  .content { max-width: 1100px; padding: 32px 32px 60px; }
+
+  .hero { margin-bottom: 28px; }
+  .hero h1 { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.02em; }
   .hero h1 span { color: var(--accent); }
-  .hero .sub { color: var(--muted); margin-top: 8px; font-size: 1rem; max-width: 600px; }
-  .hero .quick-links { margin-top: 20px; display: flex; gap: 8px; flex-wrap: wrap; }
-  .hero .quick-links a {
-    color: var(--muted); text-decoration: none; font-size: 0.78rem;
-    padding: 4px 12px; border-radius: 6px; border: 1px solid var(--border);
-    transition: 0.12s;
-  }
-  .hero .quick-links a:hover { color: var(--accent); border-color: var(--accent); }
+  .hero .sub { color: var(--muted); margin-top: 8px; font-size: 0.88rem; max-width: 600px; }
 
-  .flow-bar {
-    position: sticky; top: 0; z-index: 50;
-    background: rgba(11,17,32,0.93); backdrop-filter: blur(8px);
-    border-bottom: 1px solid var(--border); padding: 8px 0; overflow-x: auto;
-  }
-  .flow-bar .container { display: flex; gap: 0; align-items: center; white-space: nowrap; }
-  .flow-bar .step {
-    font-size: 0.62rem; font-family: var(--font-mono); padding: 3px 8px;
-    border-radius: 4px; color: var(--muted); cursor: pointer; text-decoration: none;
-    transition: 0.1s;
-  }
-  .flow-bar .step:hover { color: var(--accent); background: var(--surface2); }
-  .flow-bar .step.active { color: var(--accent); background: var(--surface2); font-weight: 600; }
-  .flow-bar .arr { color: var(--border); font-size: 0.6rem; margin: 0 2px; }
+  .page { display: none; }
+  .page.o { display: block; }
 
-  section { padding: 36px 0; border-bottom: 1px solid var(--surface2); scroll-margin-top: 52px; }
-  section:last-of-type { border-bottom: none; }
+  h2 { font-size: 1.15rem; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+  h2 .fm { font-size: 0.62rem; font-family: var(--font-mono); background: var(--surface2); color: var(--muted); padding: 2px 10px; border-radius: 12px; font-weight: 500; }
+  h3 { font-size: 0.9rem; font-weight: 600; margin: 14px 0 8px; color: var(--accent); }
+  p { color: var(--muted); font-size: 0.84rem; margin-bottom: 8px; }
 
-  .module-header {
-    display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
-  }
-  .module-header .phase-badge {
-    font-size: 0.58rem; font-family: var(--font-mono); padding: 2px 8px;
-    border-radius: 4px; font-weight: 600;
-  }
-  .module-header h2 { font-size: 1.3rem; font-weight: 700; flex: 1; }
-  .module-header .form-name {
-    font-family: var(--font-mono); font-size: 0.72rem; color: var(--muted);
-    background: var(--surface2); padding: 2px 8px; border-radius: 4px;
-  }
-
-  .purpose { color: var(--muted); font-size: 0.88rem; margin-bottom: 14px; }
-
-  .flow-row {
-    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-    padding: 10px 14px; background: var(--surface); border-radius: 8px;
-    margin: 10px 0; font-size: 0.78rem;
-  }
-  .flow-row .box {
-    padding: 4px 10px; border-radius: 5px; font-family: var(--font-mono);
-    font-size: 0.72rem; border: 1px solid var(--border);
-  }
-  .flow-row .arr { color: var(--muted); font-size: 0.65rem; }
-
-  .rel-grid {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 8px; margin: 12px 0;
-  }
-  .rel-card {
+  .module-card {
     background: var(--surface); border: 1px solid var(--border);
-    border-radius: 6px; padding: 10px; font-size: 0.76rem;
+    border-radius: 8px; margin-bottom: 6px; overflow: hidden;
   }
-  .rel-card .dir { color: var(--muted); font-size: 0.65rem; font-family: var(--font-mono); }
-  .rel-card .target { color: var(--accent); font-weight: 600; }
+  .module-card hd {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; cursor: pointer; user-select: none;
+    transition: background 0.12s;
+  }
+  .module-card hd:hover { background: var(--surface2); }
+  .module-card hd .num { font-family: var(--font-mono); font-size: 0.68rem; color: var(--muted); min-width: 26px; }
+  .module-card hd h4 { font-size: 0.86rem; font-weight: 600; flex: 1; color: var(--text); }
+  .module-card hd .arr { font-size: 0.68rem; color: var(--muted); transition: transform 0.2s; }
+  .module-card hd .arr.o { transform: rotate(90deg); }
+  .module-card hd .tags { display: flex; gap: 4px; }
+  .module-card hd .tags s { font-size: 0.58rem; font-family: var(--font-mono); padding: 1px 6px; border-radius: 3px; background: var(--surface2); color: var(--muted); }
+  .module-card bd { display: none; padding: 0 14px 14px; border-top: 1px solid var(--border); padding-top: 10px; }
+  .module-card bd.o { display: block; }
 
-  .field-list { margin: 10px 0; }
-
-  .field-list dt {
-    font-size: 0.78rem; font-weight: 600; margin-top: 10px;
-    padding: 6px 10px; background: var(--surface); border-radius: 4px;
-    border-left: 3px solid var(--accent);
-  }
-  .field-list dd {
-    font-size: 0.76rem; color: var(--muted); padding: 3px 10px 3px 16px;
-  }
-  .field-list dd .type { font-family: var(--font-mono); color: var(--yellow); font-size: 0.68rem; }
-  .field-list dd .lkup { color: var(--blue); font-family: var(--font-mono); font-size: 0.68rem; }
-  .field-list dd .req { color: var(--red); font-size: 0.62rem; }
-
-  .steps { margin: 12px 0; padding: 0; list-style: none; }
-  .steps li {
-    padding: 6px 0 6px 24px; position: relative; font-size: 0.82rem; color: var(--muted);
-  }
-  .steps li::before {
-    content: ""; position: absolute; left: 0; top: 12px;
-    width: 10px; height: 10px; border-radius: 50%; background: var(--surface2);
-    border: 2px solid var(--accent);
-  }
-  .steps li:not(:last-child)::after {
-    content: ""; position: absolute; left: 5px; top: 22px;
-    width: 2px; height: calc(100% - 10px); background: var(--surface2);
-  }
-
-  .diagram {
-    background: #080e18; border: 1px solid var(--border);
-    border-radius: 8px; padding: 16px 20px; margin: 12px 0;
-    font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.8;
-    overflow-x: auto; color: #c8d0e0;
-  }
-  .diagram .f { color: var(--accent); font-weight: 600; }
-  .diagram .c { color: var(--green); }
-  .diagram .lk { color: var(--blue); }
-  .diagram .r { color: var(--red); }
-  .diagram .y { color: var(--yellow); }
-  .diagram .p { color: var(--purple); }
-  .diagram .o { color: var(--orange); }
-  .diagram .in { padding-left: 20px; }
-  .diagram .b { font-weight: 700; }
-
-  .al { padding: 10px 14px; border-radius: 6px; font-size: 0.8rem; margin: 10px 0; border-left: 3px solid; }
-  .al-i { background: #1e3a5f; border-color: var(--accent); color: #bae6fd; }
-  .al-w { background: #3b2f1e; border-color: var(--yellow); color: #fef3c7; stroke-width: ; }
-  .al-o { background: #1a3b2a; border-color: var(--green); color: #bbf7d0; }
-
-  .tw { overflow-x: auto; margin: 8px 0; }
-  .tbl { width: 100%; border-collapse: collapse; font-size: 0.78rem; min-width: 350px; }
-  .tbl th { text-align: left; padding: 5px 8px; background: var(--surface2); color: var(--muted); font-weight: 600; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 1px solid var(--border); }
+  .tw { overflow-x: auto; margin: 6px 0 12px; }
+  .tbl { width: 100%; border-collapse: collapse; font-size: 0.76rem; min-width: 400px; }
+  .tbl th { text-align: left; padding: 5px 8px; background: var(--surface2); color: var(--muted); font-weight: 600; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 1px solid var(--border); white-space: nowrap; }
   .tbl td { padding: 5px 8px; border-bottom: 1px solid var(--surface2); vertical-align: top; color: var(--text); }
+  .tbl tr:hover td { background: rgba(34,211,238,0.03); }
 
   .tag { display: inline-block; font-size: 0.58rem; font-family: var(--font-mono); padding: 1px 6px; border-radius: 3px; margin: 1px; }
   .tag-lk { background: #1e3a5f; color: #93c5fd; }
   .tag-cr { background: #4a1c1c; color: #fca5a5; }
   .tag-nt { background: #2e1f3b; color: #d8b4fe; }
-  .tag-fm { background: #1f3b2a; color: #86efac; }
 
-  .workflow-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 6px; padding: 10px 14px; margin: 8px 0; font-size: 0.78rem;
-    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-  }
+  .wf-s { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; padding: 8px 12px; background: var(--bg); border-radius: 6px; margin: 8px 0; font-size: 0.7rem; }
+  .wf-s .st { font-family: var(--font-mono); padding: 2px 8px; border-radius: 4px; background: var(--surface2); white-space: nowrap; }
+  .wf-s .ar { color: var(--muted); font-family: var(--font-mono); font-size: 0.65rem; }
+
+  .al { padding: 10px 14px; border-radius: 6px; font-size: 0.78rem; margin: 10px 0; border-left: 3px solid; }
+  .al-w { background: #3b2f1e; border-color: var(--yellow); color: #fef3c7; }
+  .al-i { background: #1e3a5f; border-color: var(--accent); color: #bae6fd; }
+  .al-o { background: #1a3b2a; border-color: var(--green); color: #bbf7d0; }
+
+  .rel-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; margin: 10px 0; }
+  .rel-card { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 10px; font-size: 0.74rem; }
+  .rel-card .dir { color: var(--muted); font-size: 0.62rem; font-family: var(--font-mono); }
+  .rel-card .target { color: var(--accent); font-weight: 600; }
+
+  .diagram { background: #080e18; border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; margin: 10px 0; font-family: var(--font-mono); font-size: 0.73rem; line-height: 1.8; overflow-x: auto; color: #c8d0e0; }
+  .diagram .f { color: var(--accent); font-weight: 600; }
+  .diagram .c { color: var(--green); }
+  .diagram .y { color: var(--yellow); }
+  .diagram .r { color: var(--red); }
+  .diagram .in { padding-left: 20px; }
+  .diagram .b { font-weight: 700; }
+
+  .field-list { margin: 8px 0; }
+  .field-list dt { font-size: 0.76rem; font-weight: 600; margin-top: 8px; padding: 5px 10px; background: var(--surface2); border-radius: 4px; border-left: 3px solid var(--accent); }
+  .field-list dd { font-size: 0.74rem; color: var(--muted); padding: 2px 10px 2px 14px; }
+  .field-list dd .type { font-family: var(--font-mono); color: var(--yellow); font-size: 0.65rem; }
+  .field-list dd .lkup { color: var(--blue); font-family: var(--font-mono); font-size: 0.65rem; }
+
+  .workflow-card { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; margin: 6px 0; font-size: 0.76rem; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .workflow-card .wf-num { font-family: var(--font-mono); color: var(--purple); font-weight: 700; }
   .workflow-card .wf-desc { color: var(--muted); flex: 1; }
 
-  footer { text-align: center; padding: 24px 0; color: var(--muted); font-size: 0.72rem; border-top: 1px solid var(--border); }
+  .flow-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 8px 12px; background: var(--surface); border-radius: 6px; margin: 6px 0; font-size: 0.76rem; }
+  .flow-row .box { padding: 3px 8px; border-radius: 4px; font-family: var(--font-mono); font-size: 0.7rem; border: 1px solid var(--border); }
+  .flow-row .arr { color: var(--muted); font-size: 0.62rem; }
 
-  @media (max-width: 640px) {
-    .hero h1 { font-size: 1.5rem; }
+  .steps { margin: 8px 0; padding: 0; list-style: none; }
+  .steps li { padding: 4px 0 4px 20px; position: relative; font-size: 0.78rem; color: var(--muted); }
+  .steps li::before { content: ""; position: absolute; left: 0; top: 10px; width: 8px; height: 8px; border-radius: 50%; background: var(--surface2); border: 2px solid var(--accent); }
+
+  .ph-badge { font-size: 0.58rem; font-family: var(--font-mono); padding: 2px 8px; border-radius: 4px; font-weight: 600; }
+  .ph-1a { background: #1a3b2a; color: var(--green); }
+  .ph-1b { background: #1e3a5f; color: var(--accent); }
+  .ph-1c { background: #2e1f3b; color: var(--purple); }
+  .ph-1d { background: #3b2f1e; color: var(--orange); }
+  .ph-1e { background: #3b1f2e; color: var(--pink); }
+  .ph-1f { background: #2e3b1f; color: var(--yellow); }
+
+  footer { text-align: center; padding: 24px 0; color: var(--muted); font-size: 0.72rem; border-top: 1px solid var(--border); margin-top: 32px; }
+  footer a { color: var(--accent); text-decoration: none; }
+
+  @media (max-width: 768px) {
+    .sidebar { width: 200px; min-width: 200px; }
+    .main { margin-left: 200px; }
+    .content { padding: 20px 16px 40px; }
+    .rel-grid { grid-template-columns: 1fr 1fr; }
+    .hero h1 { font-size: 1.2rem; }
+  }
+  @media (max-width: 540px) {
+    .sidebar { width: 180px; min-width: 180px; }
+    .main { margin-left: 180px; }
+    .content { padding: 14px 12px 40px; }
     .rel-grid { grid-template-columns: 1fr; }
-    .module-header { flex-wrap: wrap; }
   }
 </style>
 </head>
 <body>
 
-<div class="hero">
-  <div class="container">
+<aside class="sidebar" id="sb">
+  <h1>User Guide</h1>
+  <div class="sub">Project Budget Tracking</div>
+  <nav>
+    <div class="pg-head">Phase 1A — Foundation</div>
+    <a onclick="showPage('vendors')" data-page="vendors">1. Vendors</a>
+    <a onclick="showPage('accounts')" data-page="accounts">2. Accounts</a>
+    <a onclick="showPage('warehouses')" data-page="warehouses">3. Warehouses</a>
+    <a onclick="showPage('items')" data-page="items">4. Inventory Items</a>
+    <a onclick="showPage('projects')" data-page="projects">5. Projects</a>
+
+    <div class="pg-head">Phase 1B — Budget &amp; Stock</div>
+    <a onclick="showPage('budget')" data-page="budget">6. Budget Plans</a>
+    <a onclick="showPage('inv-trans')" data-page="inv-trans">7. Inventory Transactions</a>
+
+    <div class="pg-head">Phase 1C — Expenses &amp; PR</div>
+    <a onclick="showPage('expenses')" data-page="expenses">8. Expenses</a>
+    <a onclick="showPage('pr')" data-page="pr">9. Purchase Requisitions</a>
+
+    <div class="pg-head">Phase 1D — Procurement</div>
+    <a onclick="showPage('approvals')" data-page="approvals">10. Budget Approvals</a>
+    <a onclick="showPage('po')" data-page="po">11. Purchase Orders</a>
+    <a onclick="showPage('grn')" data-page="grn">12. Goods Receipt</a>
+    <a onclick="showPage('transfer')" data-page="transfer">13. Transfer Orders</a>
+
+    <div class="pg-head">Phase 1E — Revenue &amp; Mfg</div>
+    <a onclick="showPage('bom')" data-page="bom">14. BOM</a>
+    <a onclick="showPage('dc')" data-page="dc">15. Delivery Challans</a>
+    <a onclick="showPage('invoices')" data-page="invoices">16. Invoices</a>
+
+    <div class="pg-head">Phase 1F — Reports</div>
+    <a onclick="showPage('reports')" data-page="reports">17. Reports &amp; Dashboards</a>
+  </nav>
+  <div class="ftr">
+    <a href="index.html">&larr; Blueprint</a> &bull;
+    <a href="build-viewer.html?guide=test">Testing &rarr;</a>
+  </div>
+</aside>
+
+<div class="main">
+<div class="content">
+
+<div class="page o" id="page-intro">
+  <div class="hero">
     <h1>User Guide <span>Project Budget Tracking</span></h1>
     <p class="sub">Module-by-module instructions for using the Zoho Creator application — what to enter, when, and how records connect.</p>
-    <div class="quick-links">
-      <a href="#vendors">1. Vendors</a>
-      <a href="#accounts">2. Accounts</a>
-      <a href="#warehouses">3. Warehouses</a>
-      <a href="#items">4. Inventory Items</a>
-      <a href="#projects">5. Projects</a>
-      <a href="#budget">6. Budget Plans</a>
-      <a href="#inv-trans">7. Inventory Transactions</a>
-      <a href="#pr">8. Purchase Requisitions</a>
-      <a href="#po">9. Purchase Orders</a>
-      <a href="#grn">10. Goods Receipt</a>
-      <a href="#transfer">11. Transfer Orders</a>
-      <a href="#expenses">12. Expenses</a>
-      <a href="#approvals">13. Budget Approvals</a>
-      <a href="#bom">14. BOM</a>
-      <a href="#dc">15. Delivery Challans</a>
-      <a href="#invoices">16. Invoices</a>
-      <a href="#reports">17. Reports</a>
-    </div>
   </div>
+
+  <div class="al al-i">This guide follows <strong>natural data entry order</strong>, not build order. Start at Vendors and work down.</div>
+
+  <div class="flow-row">
+    <span class="box" style="border-color:var(--accent);color:var(--accent)">Vendors</span><span class="arr">&rarr;</span>
+    <span class="box" style="border-color:var(--accent);color:var(--accent)">Accounts</span><span class="arr">&rarr;</span>
+    <span class="box" style="border-color:var(--accent);color:var(--accent)">Warehouses</span><span class="arr">&rarr;</span>
+    <span class="box" style="border-color:var(--accent);color:var(--accent)">Items</span><span class="arr">&rarr;</span>
+    <span class="box" style="border-color:var(--accent);color:var(--accent)">Projects</span><span class="arr">&rarr;</span>
+    <span class="box" style="border-color:var(--accent);color:var(--accent)">Budget</span><span class="arr">&rarr;</span>
+    <span class="box" style="border-color:var(--accent);color:var(--accent)">Stock</span><span class="arr">&rarr;</span>
+    <span class="box" style="border-color:var(--accent);color:var(--accent)">PR</span><span class="arr">&rarr;</span>
+    <span class="box" style="border-color:var(--accent);color:var(--accent)">PO</span><span class="arr">&rarr;</span>
+    <span class="box" style="border-color:var(--accent);color:var(--accent)">GRN</span><span class="arr">&rarr;</span>
+    <span class="box" style="border-color:var(--accent);color:var(--accent)">Exp</span><span class="arr">&rarr;</span>
+    <span class="box" style="border-color:var(--accent);color:var(--accent)">BOM</span><span class="arr">&rarr;</span>
+    <span class="box" style="border-color:var(--accent);color:var(--accent)">DC</span><span class="arr">&rarr;</span>
+    <span class="box" style="border-color:var(--accent);color:var(--accent)">Inv</span><span class="arr">&rarr;</span>
+    <span class="box" style="border-color:var(--accent);color:var(--accent)">Reports</span>
+  </div>
+
+  <div class="al-o">Select a module from the sidebar to get started.</div>
 </div>
-
-<div class="flow-bar">
-  <div class="container">
-    <a href="#vendors" class="step">Vendors</a><span class="arr">→</span>
-    <a href="#accounts" class="step">Accts</a><span class="arr">→</span>
-    <a href="#warehouses" class="step">WH</a><span class="arr">→</span>
-    <a href="#items" class="step">Items</a><span class="arr">→</span>
-    <a href="#projects" class="step">Projects</a><span class="arr">→</span>
-    <a href="#budget" class="step">Budget</a><span class="arr">→</span>
-    <a href="#inv-trans" class="step">Stock</a><span class="arr">→</span>
-    <a href="#pr" class="step">PR</a><span class="arr">→</span>
-    <a href="#po" class="step">PO</a><span class="arr">→</span>
-    <a href="#grn" class="step">GRN</a><span class="arr">→</span>
-    <a href="#transfer" class="step">TO</a><span class="arr">→</span>
-    <a href="#expenses" class="step">Exp</a><span class="arr">→</span>
-    <a href="#bom" class="step">BOM</a><span class="arr">→</span>
-    <a href="#dc" class="step">DC</a><span class="arr">→</span>
-    <a href="#invoices" class="step">Inv</a><span class="arr">→</span>
-    <a href="#reports" class="step">Reports</a>
-  </div>
-</div>
-
-<div class="container">
-
-<section id="introduction">
-  <h2 style="font-size:1.1rem;font-weight:600;margin-bottom:10px">How to Use This Guide</h2>
-  <p style="color:var(--muted);font-size:0.88rem">This guide follows the <strong>natural data entry order</strong>. Start at the top and work down. Each module section shows:</p>
-  <div class="flow-row" style="background:none;padding:6px 0">
-    <span class="box" style="border-color:var(--accent);color:var(--accent)">When to create</span>
-    <span class="arr">→</span>
-    <span class="box" style="border-color:var(--green);color:var(--green)">Key fields</span>
-    <span class="arr">→</span>
-    <span class="box" style="border-color:var(--purple);color:var(--purple)">How it connects</span>
-    <span class="arr">→</span>
-    <span class="box" style="border-color:var(--orange);color:var(--orange)">What happens automatically</span>
-  </div>
-  <div class="al al-i">Building order (Phase 1A → 1F) is different from data entry order. You build modules top-down, but enter data in this sequence.</div>
-</section>
 
 <!-- ====== 1. VENDORS ====== -->
-<section id="vendors">
-  <div class="module-header">
-    <span class="phase-badge" style="background:#1a3b2a;color:var(--green)">STEP 1</span>
-    <h2>Vendors</h2>
-    <span class="form-name">Vendors</span>
-  </div>
-  <div class="purpose">Vendors stores your suppliers — companies that sell you materials, equipment, and services. Create vendors first before creating POs or recording expenses.</div>
+<div class="page" id="page-vendors">
+  <h2><span class="ph-badge ph-1a">STEP 1</span> Vendors <span class="fm">Vendors</span></h2>
 
-  <div class="al al-o"><strong>Data entry rule:</strong> Create each vendor here before creating a PO or recording an expense against them.</div>
-
-  <div class="diagram">
-    <span class="f">Vendors</span> ──┬── <span class="c">Vendor_Contacts</span> (embedded subform: add multiple contact persons)<br>
-    <span class="in">├── <span class="c">Vendor_Documents</span> (embedded subform: upload contracts, tax docs)</div>
-
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0">
-    <div style="background:var(--surface);border-radius:6px;padding:12px">
-      <h4 style="font-size:0.82rem;color:var(--accent);margin-bottom:6px">Required fields</h4>
-      <ul style="font-size:0.76rem;color:var(--muted);list-style:none">
-        <li><span class="tag tag-cr">Required</span> Vendor Name</li>
-      </ul>
-    </div>
-    <div style="background:var(--surface);border-radius:6px;padding:12px">
-      <h4 style="font-size:0.82rem;color:var(--accent);margin-bottom:6px">Key fields to fill</h4>
-      <ul style="font-size:0.76rem;color:var(--muted);list-style:none">
-        <li>Billing Address, Shipping Address</li>
-        <li>Tax ID / PAN (for GST invoices)</li>
-        <li>Payment Terms (affects PO due dates)</li>
-        <li>Currency (affects PO/invoice totals)</li>
-      </ul>
-    </div>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Overview</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <p>Stores your suppliers — companies that sell you materials, equipment, and services. Create vendors before creating POs or recording expenses.</p>
+      <div class="al-o">Create each vendor here before creating a PO or recording an expense against them.</div>
+      <div class="diagram"><span class="f">Vendors</span> &#x2500;&#x2500;&#x252C;&#x2500;&#x2500; <span class="c">Vendor_Contacts</span> (embedded subform)<br><span class="in">&#x2514;&#x2500;&#x2500; <span class="c">Vendor_Documents</span> (embedded subform)</div>
+    </bd>
   </div>
 
-    <div class="rel-grid">
-      <div class="rel-card"><div class="dir">Referenced by →</div><div class="target">Purchase Orders</div><div style="font-size:0.68rem;color:var(--muted)">PO.Vendor lookup</div></div>
-      <div class="rel-card"><div class="dir">Referenced by →</div><div class="target">Inventory Items</div><div style="font-size:0.68rem;color:var(--muted)">Item.Preferred_Vendor lookup</div></div>
-      <div class="rel-card"><div class="dir">Referenced by →</div><div class="target">Expenses</div><div style="font-size:0.68rem;color:var(--muted)">Expense.Vendor lookup</div></div>
-    </div>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Key Fields</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw">
+        <table class="tbl">
+          <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+          <tr><td>Vendor Name</td><td><span class="tag tag-cr">Required</span></td><td>Company legal name</td></tr>
+          <tr><td>Email / Phone</td><td>Text</td><td>Primary contact info</td></tr>
+          <tr><td>Billing / Shipping Address</td><td>Text</td><td>Multiline address fields</td></tr>
+          <tr><td>Tax ID / PAN</td><td>Text</td><td>For GST invoices</td></tr>
+          <tr><td>Payment Terms</td><td>Dropdown</td><td>Net 30 / Net 45 / Net 60 — affects PO due dates</td></tr>
+          <tr><td>Currency</td><td>Dropdown</td><td>USD / INR / Others</td></tr>
+          <tr><td>Status</td><td>Dropdown</td><td>Active / Inactive</td></tr>
+        </table>
+      </div>
+    </bd>
+  </div>
 
-  <h4 style="font-size:0.82rem;color:var(--accent);margin-top:12px">Subforms (inside the same form)</h4>
-  <div class="flow-row">
-    <span class="box" style="border-color:var(--blue);color:var(--blue)">Vendor_Contacts</span>
-    <span class="arr">→</span>
-    <span style="color:var(--muted);font-size:0.74rem">Add contact persons: Salutation, Name, Email, Phone, Designation, Is Primary</span>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Relationships</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="rel-grid">
+        <div class="rel-card"><div class="dir">Referenced by &rarr;</div><div class="target">Purchase Orders</div><div>PO.Vendor lookup</div></div>
+        <div class="rel-card"><div class="dir">Referenced by &rarr;</div><div class="target">Inventory Items</div><div>Item.Preferred_Vendor</div></div>
+        <div class="rel-card"><div class="dir">Referenced by &rarr;</div><div class="target">Expenses</div><div>Expense.Vendor lookup</div></div>
+      </div>
+    </bd>
   </div>
-  <div class="flow-row">
-    <span class="box" style="border-color:var(--blue);color:var(--blue)">Vendor_Documents</span>
-    <span class="arr">→</span>
-    <span style="color:var(--muted);font-size:0.74rem">Upload contracts: Document Name, File, Expiry Date</span>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Embedded Subforms</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="flow-row"><span class="box" style="border-color:var(--blue);color:var(--blue)">Vendor_Contacts</span><span class="arr">&rarr;</span><span>Salutation, First Name, Last Name, Email, Phone, Designation, Is Primary</span></div>
+      <div class="flow-row"><span class="box" style="border-color:var(--blue);color:var(--blue)">Vendor_Documents</span><span class="arr">&rarr;</span><span>Document Name, File (upload), Expiry Date</span></div>
+    </bd>
   </div>
-</section>
+</div>
 
 <!-- ====== 2. ACCOUNTS ====== -->
-<section id="accounts">
-  <div class="module-header">
-    <span class="phase-badge" style="background:#1a3b2a;color:var(--green)">STEP 2</span>
-    <h2>Accounts (Customers/Clients)</h2>
-    <span class="form-name">Accounts</span>
-  </div>
-  <div class="purpose">Accounts stores your customers and clients — the companies you bill for projects, send invoices to, and dispatch goods to. Create accounts before setting up projects.</div>
+<div class="page" id="page-accounts">
+  <h2><span class="ph-badge ph-1a">STEP 2</span> Accounts <span class="fm">Accounts</span></h2>
 
-  <div class="al al-o"><strong>Data entry rule:</strong> Create an account for each client before starting a project or creating an invoice.</div>
-
-  <div class="diagram">
-    <span class="f">Accounts</span> ──┬── <span class="c">Account_Contacts</span> (embedded subform: add multiple contact persons)<br>
-    <span class="in">├── <span class="c">Account_Documents</span> (embedded subform: upload contracts, agreements)</div>
-
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0">
-    <div style="background:var(--surface);border-radius:6px;padding:12px">
-      <h4 style="font-size:0.82rem;color:var(--accent);margin-bottom:6px">Required fields</h4>
-      <ul style="font-size:0.76rem;color:var(--muted);list-style:none">
-        <li><span class="tag tag-cr">Required</span> Account Name</li>
-      </ul>
-    </div>
-    <div style="background:var(--surface);border-radius:6px;padding:12px">
-      <h4 style="font-size:0.82rem;color:var(--accent);margin-bottom:6px">Key fields to fill</h4>
-      <ul style="font-size:0.76rem;color:var(--muted);list-style:none">
-        <li>Billing Address, Shipping Address</li>
-        <li>Tax ID / PAN (for GST invoices)</li>
-        <li>Payment Terms (affects invoice due dates)</li>
-        <li>Currency (affects invoice totals)</li>
-      </ul>
-    </div>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Overview</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <p>Stores your customers and clients — the companies you bill for projects and send invoices to. Create accounts before setting up projects.</p>
+      <div class="al-o">Create an account for each client before starting a project or creating an invoice.</div>
+      <div class="diagram"><span class="f">Accounts</span> &#x2500;&#x2500;&#x252C;&#x2500;&#x2500; <span class="c">Account_Contacts</span> (embedded subform)<br><span class="in">&#x2514;&#x2500;&#x2500; <span class="c">Account_Documents</span> (embedded subform)</div>
+    </bd>
   </div>
 
-  <div class="rel-grid">
-    <div class="rel-card"><div class="dir">Referenced by →</div><div class="target">Projects</div><div style="font-size:0.68rem;color:var(--muted)">Projects.Account lookup</div></div>
-    <div class="rel-card"><div class="dir">Referenced by →</div><div class="target">Invoices</div><div style="font-size:0.68rem;color:var(--muted)">Invoice.Account lookup</div></div>
-    <div class="rel-card"><div class="dir">Referenced by →</div><div class="target">Delivery Challans</div><div style="font-size:0.68rem;color:var(--muted)">DC.Account lookup</div></div>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Key Fields</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw">
+        <table class="tbl">
+          <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+          <tr><td>Account Name</td><td><span class="tag tag-cr">Required</span></td><td>Company legal name</td></tr>
+          <tr><td>Billing / Shipping Address</td><td>Text</td><td>Multiline address</td></tr>
+          <tr><td>Tax ID / PAN</td><td>Text</td><td>For GST invoices</td></tr>
+          <tr><td>Payment Terms</td><td>Dropdown</td><td>Net 30 / Net 45 / Net 60</td></tr>
+          <tr><td>Currency</td><td>Dropdown</td><td>USD / INR / Others</td></tr>
+        </table>
+      </div>
+    </bd>
   </div>
 
-  <h4 style="font-size:0.82rem;color:var(--accent);margin-top:12px">Subforms (inside the same form)</h4>
-  <div class="flow-row">
-    <span class="box" style="border-color:var(--blue);color:var(--blue)">Account_Contacts</span>
-    <span class="arr">→</span>
-    <span style="color:var(--muted);font-size:0.74rem">Add contact persons: Salutation, Name, Email, Phone, Designation, Is Primary</span>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Relationships</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="rel-grid">
+        <div class="rel-card"><div class="dir">Referenced by &rarr;</div><div class="target">Projects</div><div>Projects.Account lookup</div></div>
+        <div class="rel-card"><div class="dir">Referenced by &rarr;</div><div class="target">Invoices</div><div>Invoice.Account lookup</div></div>
+        <div class="rel-card"><div class="dir">Referenced by &rarr;</div><div class="target">Delivery Challans</div><div>DC.Account lookup</div></div>
+      </div>
+    </bd>
   </div>
-  <div class="flow-row">
-    <span class="box" style="border-color:var(--blue);color:var(--blue)">Account_Documents</span>
-    <span class="arr">→</span>
-    <span style="color:var(--muted);font-size:0.74rem">Upload documents: Document Name, File, Expiry Date</span>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Embedded Subforms</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="flow-row"><span class="box" style="border-color:var(--blue);color:var(--blue)">Account_Contacts</span><span class="arr">&rarr;</span><span>Salutation, Name, Email, Phone, Designation, Is Primary</span></div>
+      <div class="flow-row"><span class="box" style="border-color:var(--blue);color:var(--blue)">Account_Documents</span><span class="arr">&rarr;</span><span>Document Name, File, Expiry Date</span></div>
+    </bd>
   </div>
-</section>
+</div>
 
 <!-- ====== 3. WAREHOUSES ====== -->
-<section id="warehouses">
-  <div class="module-header">
-    <span class="phase-badge" style="background:#1a3b2a;color:var(--green)">STEP 3</span>
-    <h2>Warehouses</h2>
-    <span class="form-name">Warehouses</span>
-  </div>
-  <div class="purpose">Warehouses are physical storage locations. Every inventory item's stock is tracked per warehouse. Create at least one before adding items.</div>
+<div class="page" id="page-warehouses">
+  <h2><span class="ph-badge ph-1a">STEP 3</span> Warehouses <span class="fm">Warehouses</span></h2>
 
-  <div class="al al-o">A "Main Warehouse" record should already exist (seeded during setup). Add more warehouses as your business grows — e.g., "Delhi Warehouse", "Mumbai Warehouse".</div>
-
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0">
-    <div style="background:var(--surface);border-radius:6px;padding:12px">
-      <h4 style="font-size:0.82rem;color:var(--accent);margin-bottom:6px">Required</h4>
-      <ul style="font-size:0.76rem;color:var(--muted);list-style:none"><li>Warehouse Name</li></ul>
-    </div>
-    <div style="background:var(--surface);border-radius:6px;padding:12px">
-      <h4 style="font-size:0.82rem;color:var(--accent);margin-bottom:6px">Auto-generated</h4>
-      <ul style="font-size:0.76rem;color:var(--muted);list-style:none"><li>Warehouse Code (WH-0001)</li></ul>
-    </div>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Overview</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <p>Physical storage locations. Every inventory item's stock is tracked per warehouse. Create at least one before adding items.</p>
+      <div class="al-o">A "Main Warehouse" record should already exist (seeded during setup). Add more as your business grows.</div>
+    </bd>
   </div>
 
-  <div class="rel-grid">
-    <div class="rel-card"><div class="dir">Referenced by →</div><div class="target">Item_Warehouse_Stock</div><div style="font-size:0.68rem;color:var(--muted)">Stock levels per warehouse</div></div>
-    <div class="rel-card"><div class="dir">Referenced by →</div><div class="target">Inventory Transactions</div><div style="font-size:0.68rem;color:var(--muted)">Which warehouse stock moves</div></div>
-    <div class="rel-card"><div class="dir">Referenced by →</div><div class="target">Transfer Orders</div><div style="font-size:0.68rem;color:var(--muted)">From / To warehouse</div></div>
-    <div class="rel-card"><div class="dir">Referenced by →</div><div class="target">GRN, PO, DC</div><div style="font-size:0.68rem;color:var(--muted)">Default receipt/dispatch location</div></div>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Key Fields</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw">
+        <table class="tbl">
+          <tr><th>Field</th><th>Notes</th></tr>
+          <tr><td>Warehouse Name</td><td><span class="tag tag-cr">Required</span></td></tr>
+          <tr><td>Warehouse Code</td><td>Auto-generated: WH-0001</td></tr>
+          <tr><td>Status</td><td>Active / Inactive</td></tr>
+          <tr><td>Address</td><td>Location details</td></tr>
+        </table>
+      </div>
+    </bd>
   </div>
-</section>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Relationships</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="rel-grid">
+        <div class="rel-card"><div class="dir">Referenced by &rarr;</div><div class="target">Item_Warehouse_Stock</div><div>Stock levels per warehouse</div></div>
+        <div class="rel-card"><div class="dir">Referenced by &rarr;</div><div class="target">Inventory Transactions</div><div>Which warehouse stock moves</div></div>
+        <div class="rel-card"><div class="dir">Referenced by &rarr;</div><div class="target">Transfer Orders</div><div>From / To warehouse</div></div>
+        <div class="rel-card"><div class="dir">Referenced by &rarr;</div><div class="target">GRN / PO / DC</div><div>Default receipt/dispatch location</div></div>
+      </div>
+    </bd>
+  </div>
+</div>
 
 <!-- ====== 4. INVENTORY ITEMS ====== -->
-<section id="items">
-  <div class="module-header">
-    <span class="phase-badge" style="background:#1a3b2a;color:var(--green)">STEP 4</span>
-    <h2>Inventory Items</h2>
-    <span class="form-name">Inventory_Items</span>
-  </div>
-  <div class="purpose">Items are everything you buy, sell, stock, or consume — raw materials, components, finished goods, and services. Every item gets a unique SKU. Stock is tracked automatically across warehouses.</div>
+<div class="page" id="page-items">
+  <h2><span class="ph-badge ph-1a">STEP 4</span> Inventory Items <span class="fm">Inventory_Items</span></h2>
 
-  <div class="al al-w"><strong>Goods vs Services:</strong> Set Item Type = "Goods" for physical items that need stock tracking. Set "Services" for non-stock items (labour, consulting). Only Goods get warehouse stock records.</div>
-
-  <div class="diagram">
-    <span class="f">Inventory_Items</span> ──┬── <span class="c">Item_Warehouse_Stock</span> (embedded subform: stock per warehouse)</div>
-
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0">
-    <div style="background:var(--surface);border-radius:6px;padding:12px">
-      <h4 style="font-size:0.82rem;color:var(--accent);margin-bottom:6px">Required</h4>
-      <ul style="font-size:0.76rem;color:var(--muted);list-style:none"><li>Item Name</li></ul>
-    </div>
-    <div style="background:var(--surface);border-radius:6px;padding:12px">
-      <h4 style="font-size:0.82rem;color:var(--accent);margin-bottom:6px">Important for POs</h4>
-      <ul style="font-size:0.76rem;color:var(--muted);list-style:none">
-        <li>Purchase Price (default unit cost)</li>
-        <li>Tax Rate (default for PO lines)</li>
-        <li>Preferred Vendor (auto-fills on POs)</li>
-        <li>HSN/SAC Code (tax classification)</li>
-      </ul>
-    </div>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Overview</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <p>Everything you buy, sell, stock, or consume — raw materials, components, finished goods, services. Each item gets a unique SKU. Stock tracked automatically.</p>
+      <div class="al-w"><strong>Goods vs Services:</strong> Set Item Type = "Goods" for physical items needing stock tracking, "Services" for non-stock (labour, consulting).</div>
+      <div class="diagram"><span class="f">Inventory_Items</span> &#x2500;&#x2500;&#x252C;&#x2500;&#x2500; <span class="c">Item_Warehouse_Stock</span> (embedded subform: stock per warehouse)</div>
+    </bd>
   </div>
 
-  <h4 style="font-size:0.82rem;color:var(--accent);margin-top:12px">Stock tracking — how it works</h4>
-  <div class="workflow-card">
-    <span class="wf-num">Auto</span>
-    <span class="wf-desc">Stock quantities are entered manually per warehouse via the embedded Item_Warehouse_Stock subform — no auto-creation.</span>
-  </div>
-  <div class="workflow-card">
-    <span class="wf-num">Auto</span>
-    <span class="wf-desc">Every Inventory Transaction (Stock In/Out) updates <strong>Item_Warehouse_Stock.Current_Stock</strong> and rolls up to the Item's Current_Stock total.</span>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Key Fields</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw">
+        <table class="tbl">
+          <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+          <tr><td>Item Name</td><td><span class="tag tag-cr">Required</span></td><td>Display name</td></tr>
+          <tr><td>SKU</td><td>Auto</td><td>SKU-0001, SKU-0002...</td></tr>
+          <tr><td>Item Type</td><td>Dropdown</td><td>Goods / Services / Finished Good</td></tr>
+          <tr><td>Unit</td><td>Dropdown</td><td>Kg, Pcs, Hours, etc. Required for Goods.</td></tr>
+          <tr><td>Purchase Price</td><td>Currency</td><td>Default unit cost</td></tr>
+          <tr><td>Tax Rate</td><td>Decimal</td><td>Default for PO lines</td></tr>
+          <tr><td>Preferred Vendor</td><td>Lookup</td><td>Auto-fills on POs</td></tr>
+          <tr><td>HSN/SAC Code</td><td>Text</td><td>Tax classification</td></tr>
+        </table>
+      </div>
+    </bd>
   </div>
 
-  <div class="rel-grid">
-    <div class="rel-card"><div class="dir">Referenced by →</div><div class="target">PO Line Items, PR Line Items, GRN Line Items</div></div>
-    <div class="rel-card"><div class="dir">Referenced by →</div><div class="target">Invoice Line Items, DC Line Items</div></div>
-    <div class="rel-card"><div class="dir">Referenced by →</div><div class="target">Inventory Transactions, BOM, BOM Line Items</div></div>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Stock Tracking</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Stock quantities entered manually via Item_Warehouse_Stock subform</span></div>
+      <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Every Inventory Transaction updates Current_Stock on Item_Warehouse_Stock</span></div>
+    </bd>
   </div>
-</section>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Relationships</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="rel-grid">
+        <div class="rel-card"><div class="dir">Referenced by &rarr;</div><div class="target">PO / PR / GRN Line Items</div><div>Item lookup</div></div>
+        <div class="rel-card"><div class="dir">Referenced by &rarr;</div><div class="target">Invoice / DC Line Items</div><div>Item lookup</div></div>
+        <div class="rel-card"><div class="dir">Referenced by &rarr;</div><div class="target">Inventory Transactions / BOM</div><div>Source data</div></div>
+      </div>
+    </bd>
+  </div>
+</div>
 
 <!-- ====== 5. PROJECTS ====== -->
-<section id="projects">
-  <div class="module-header">
-    <span class="phase-badge" style="background:#3b2f1e;color:var(--yellow)">STEP 5</span>
-    <h2>Projects <span style="color:var(--muted);font-weight:400;font-size:0.9rem">— the central hub</span></h2>
-    <span class="form-name">Projects</span>
-  </div>
-  <div class="purpose">Projects are the core of the system. Everything — budgets, expenses, inventory consumption, POs, invoices — ties back to a project. Create a project for each client engagement, internal initiative, or manufacturing job.</div>
+<div class="page" id="page-projects">
+  <h2><span class="ph-badge ph-1a">STEP 5</span> Projects <span class="fm">Projects</span></h2>
 
-  <div class="al al-i">Almost every other module has a "Project" lookup field. Always select the right project so P&amp;L reports are accurate.</div>
-
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0">
-    <div style="background:var(--surface);border-radius:6px;padding:12px">
-      <h4 style="font-size:0.82rem;color:var(--accent);margin-bottom:6px">Required</h4>
-      <ul style="font-size:0.76rem;color:var(--muted);list-style:none"><li>Project Name</li></ul>
-    </div>
-    <div style="background:var(--surface);border-radius:6px;padding:12px">
-      <h4 style="font-size:0.82rem;color:var(--accent);margin-bottom:6px">Auto-generated</h4>
-      <ul style="font-size:0.76rem;color:var(--muted);list-style:none"><li>Project Code (PROJ-0001)</li></ul>
-    </div>
-  </div>
-
-  <dl class="field-list">
-    <dt>Account <span class="lkup">Lookup → Accounts</span></dt>
-    <dd>Select the client/company for this project.</dd>
-    <dt>Project Manager <span class="type">User Picker</span></dt>
-    <dd>The person responsible for this project.</dd>
-    <dt>Total Approved Budget <span class="type">Currency</span></dt>
-    <dd>Set the top-line budget. Later, Budget Plans use this as the ceiling.</dd>
-    <dt>Status <span class="type">Dropdown</span></dt>
-    <dd>Planning → Active → On Hold → Completed → Closed. When set to Completed, system checks for open expenses/POs.</dd>
-  </dl>
-
-  <h4 style="font-size:0.82rem;color:var(--accent);margin-top:12px">Custom Buttons on the Project form</h4>
-  <div class="flow-row">
-    <span class="box" style="border-color:var(--green);color:var(--green)">Create Invoice</span>
-    <span class="arr">→</span>
-    <span style="color:var(--muted);font-size:0.74rem">Opens Invoice form with Project + Account pre-filled</span>
-  </div>
-  <div class="flow-row">
-    <span class="box" style="border-color:var(--orange);color:var(--orange)">Request Part Repair</span>
-    <span class="arr">→</span>
-    <span style="color:var(--muted);font-size:0.74rem">Opens Purchase Requisition with Project pre-filled, Request Type = "Part Repair"</span>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Overview</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <p>The central hub. Everything — budgets, expenses, inventory, POs, invoices — ties back to a project. Create for each client engagement or internal initiative.</p>
+      <div class="al-i">Almost every other module has a "Project" lookup field. Always select the right project for accurate P&amp;L reports.</div>
+      <div class="diagram">
+        <span class="b" style="color:var(--yellow)">Projects connects to everything:</span><br>
+        <span class="f">Projects</span> &#x2500;&#x2500;&#x252C;&#x2500;&#x2500; <span class="c">Budget_Plans</span><br>
+        <div class="in">&#x251C;&#x2500;&#x2500; <span class="c">Expenses</span></div>
+        <div class="in">&#x251C;&#x2500;&#x2500; <span class="c">Purchase_Requisitions</span></div>
+        <div class="in">&#x251C;&#x2500;&#x2500; <span class="c">Purchase_Orders</span></div>
+        <div class="in">&#x251C;&#x2500;&#x2500; <span class="c">Invoices</span></div>
+        <div class="in">&#x251C;&#x2500;&#x2500; <span class="c">Inventory_Transactions</span></div>
+        <div class="in">&#x251C;&#x2500;&#x2500; <span class="c">Delivery_Challans / BOM</span></div>
+      </div>
+    </bd>
   </div>
 
-  <div class="diagram" style="margin-top:14px">
-    <span class="b" style="color:var(--yellow)">Projects connects to everything:</span><br>
-    <span class="f">Projects</span> ──┬── <span class="c">Budget_Plans</span> (1 budget per project)<br>
-    <div class="in">├── <span class="c">Expenses</span> (all spending on this project)</div>
-    <div class="in">├── <span class="c">Purchase_Requisitions</span> (item requests)</div>
-    <div class="in">├── <span class="c">Purchase_Orders</span> (orders placed)</div>
-    <div class="in">├── <span class="c">Invoices</span> (revenue from client)</div>
-    <div class="in">├── <span class="c">Inventory_Transactions</span> (stock consumption)</div>
-    <div class="in">├── <span class="c">Delivery_Challans</span> (goods dispatched)</div>
-    <div class="in">└── <span class="c">BOM</span> (manufacturing BOMs)</div>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Key Fields</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <dl class="field-list">
+        <dt>Account <span class="lkup">Lookup &rarr; Accounts</span></dt>
+        <dd>Select the client for this project.</dd>
+        <dt>Project Manager <span class="type">User Picker</span></dt>
+        <dd>Person responsible.</dd>
+        <dt>Total Approved Budget <span class="type">Currency</span></dt>
+        <dd>Top-line budget ceiling.</dd>
+        <dt>Status <span class="type">Dropdown</span></dt>
+        <dd>Planning &rarr; Active &rarr; On Hold &rarr; Completed &rarr; Closed</dd>
+      </dl>
+    </bd>
   </div>
-</section>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Custom Buttons</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="flow-row"><span class="box" style="border-color:var(--green);color:var(--green)">Create Invoice</span><span class="arr">&rarr;</span><span>Opens Invoice form with Project + Account pre-filled</span></div>
+      <div class="flow-row"><span class="box" style="border-color:var(--orange);color:var(--orange)">Request Part Repair</span><span class="arr">&rarr;</span><span>Opens PR with Project pre-filled, Request Type = "Part Repair"</span></div>
+    </bd>
+  </div>
+</div>
 
 <!-- ====== 6. BUDGET PLANS ====== -->
-<section id="budget">
-  <div class="module-header">
-    <span class="phase-badge" style="background:#3b2f1e;color:var(--yellow)">STEP 6</span>
-    <h2>Budget Plans &amp; Components</h2>
-    <span class="form-name">Budget_Plans + Budget_Components</span>
-  </div>
-  <div class="purpose">Budget Plans define how much money is allocated to a project. Budget Components break that into categories (Labour, Materials, Travel, etc.). Expenses check against these budgets automatically.</div>
+<div class="page" id="page-budget">
+  <h2><span class="ph-badge ph-1b">STEP 6</span> Budget Plans <span class="fm">Budget_Plans + Budget_Components</span></h2>
 
-  <div class="al al-w"><strong>One active plan per project:</strong> The system prevents creating a second active budget plan for the same project. Close or revise the existing plan first.</div>
-
-  <div class="diagram">
-    <span class="f">Budget_Plans</span> ── <span class="c">Budget_Components</span> (embedded subform)<br>
-    <span class="in">│   Component Name: "Materials" — Allocated: 5,00,000</span><br>
-    <span class="in">│   Component Name: "Labour"   — Allocated: 3,00,000</span><br>
-    <span class="in">│   Component Name: "Travel"   — Allocated: 50,000</span><br>
-    <span class="in">│   <span class="y">Sum of all components ≤ Plan's Total Budget Amount</span></div>
-
-  <dl class="field-list">
-    <dt>Budget Plan — Project <span class="lkup">Lookup → Projects</span></dt>
-    <dd>Select the project. One active plan per project enforced by Deluge.</dd>
-    <dt>Budget Components — Allocated Amount <span class="type">Currency</span></dt>
-    <dd>Set how much for each category. The sum must not exceed the plan's Total Budget Amount.</dd>
-    <dt>Status <span class="type">Dropdown</span></dt>
-    <dd>Budget Component status auto-updates as expenses hit it: Within Budget → 80% Alert → 90% Alert → Exceeded.</dd>
-  </dl>
-
-  <div class="rel-grid">
-    <div class="rel-card"><div class="dir">Referenced by →</div><div class="target">Expenses</div><div style="font-size:0.68rem;color:var(--muted)">Expense.Budget_Component lookup</div></div>
-    <div class="rel-card"><div class="dir">Referenced by →</div><div class="target">Budget_Approvals</div><div style="font-size:0.68rem;color:var(--muted)">Created on overrun</div></div>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Overview</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <p>Budget Plans allocate money to a project. Budget Components break that into categories (Labour, Materials, Travel, etc.). Expenses check against these budgets automatically.</p>
+      <div class="al-w"><strong>One active plan per project:</strong> System prevents creating a second active budget for the same project.</div>
+      <div class="diagram">
+        <span class="f">Budget_Plans</span> &#x2500;&#x2500; <span class="c">Budget_Components</span> (embedded subform)<br>
+        <div class="in">Component Name: "Materials" &mdash; Allocated: 5,00,000</div>
+        <div class="in">Component Name: "Labour" &mdash; Allocated: 3,00,000</div>
+        <div class="in"><span class="y">Sum of all components &le; Plan's Total Budget Amount</span></div>
+      </div>
+    </bd>
   </div>
 
-  <h4 style="font-size:0.82rem;color:var(--accent);margin-top:12px">How budget alerts work</h4>
-  <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Expense submitted → system checks if new total exceeds 80%/90%/100% of Allocated Amount → auto-updates status + sends alert</span></div>
-</section>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Key Fields</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <dl class="field-list">
+        <dt>Project <span class="lkup">Lookup &rarr; Projects</span></dt>
+        <dd>One active plan per project enforced.</dd>
+        <dt>Total Budget Amount <span class="type">Currency</span></dt>
+        <dd>Top-line allocation.</dd>
+        <dt>Budget Components &mdash; Allocated Amount <span class="type">Currency</span></dt>
+        <dd>Per-category allocation. Sum must not exceed Total Budget.</dd>
+        <dt>Status</dt>
+        <dd>Draft &rarr; Active &rarr; Closed</dd>
+      </dl>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Budget Alerts</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Expense submitted &rarr; system checks 80%/90%/100% thresholds &rarr; updates component status</span></div>
+      <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Overrun triggers Budget_Approval record creation</span></div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Relationships</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="rel-grid">
+        <div class="rel-card"><div class="dir">Referenced by &rarr;</div><div class="target">Expenses</div><div>Expense.Budget_Component lookup</div></div>
+        <div class="rel-card"><div class="dir">Referenced by &rarr;</div><div class="target">Budget_Approvals</div><div>Created on overrun</div></div>
+      </div>
+    </bd>
+  </div>
+</div>
 
 <!-- ====== 7. INVENTORY TRANSACTIONS ====== -->
-<section id="inv-trans">
-  <div class="module-header">
-    <span class="phase-badge" style="background:#2e1f3b;color:var(--purple)">STEP 7</span>
-    <h2>Inventory Transactions</h2>
-    <span class="form-name">Inventory_Transactions</span>
-  </div>
-  <div class="purpose">Every stock movement — receiving goods, consuming materials, adjusting counts, reserving for projects — is recorded as an Inventory Transaction. This is the most automated module: one entry triggers stock updates, expense creation, and budget tracking.</div>
+<div class="page" id="page-inv-trans">
+  <h2><span class="ph-badge ph-1b">STEP 7</span> Inventory Transactions <span class="fm">Inventory_Transactions</span></h2>
 
-  <div class="al al-i"><strong>Highest-value automation:</strong> When you do a "Stock Out" and select a Project, the system auto-creates an Expense record. This closes the loop between inventory consumption and budget tracking.</div>
-
-  <h4 style="font-size:0.82rem;color:var(--accent);margin-bottom:8px">Transaction types you can create</h4>
-  <div class="tw">
-    <table class="tbl">
-      <tr><th>Type</th><th>When to use</th><th>Stock effect</th></tr>
-      <tr><td><span style="color:var(--green)">Stock In</span></td><td>Receiving goods from supplier (or use GRN for auto-creation)</td><td>Item_Warehouse_Stock += Qty</td></tr>
-      <tr><td><span style="color:var(--red)">Stock Out</span></td><td>Consuming materials for a project</td><td>Item_Warehouse_Stock −= Qty; <span style="color:var(--yellow)">auto-creates Expense</span></td></tr>
-      <tr><td>Stock Adjustment</td><td>Correcting physical count vs system count</td><td>Current_Stock = Adjusted_Qty</td></tr>
-      <tr><td>Return to Vendor</td><td>Sending defective goods back</td><td>Item_Warehouse_Stock −= Qty</td></tr>
-      <tr><td><span style="color:var(--blue)">Reservation</span></td><td>Reserving stock for a specific project</td><td>Reserved_Qty += Qty</td></tr>
-      <tr><td><span style="color:var(--orange)">Release</span></td><td>Releasing reserved stock back to pool</td><td>Reserved_Qty −= Qty</td></tr>
-    </table>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Overview</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <p>Every stock movement — receiving, consuming, adjusting, reserving — is an Inventory Transaction. One entry triggers stock updates and budget tracking.</p>
+      <div class="al-i"><strong>Highest-value automation:</strong> Stock Out + Project selection auto-creates an Expense record.</div>
+    </bd>
   </div>
 
-  <dl class="field-list">
-    <dt>Item <span class="lkup">Lookup → Inventory_Items</span></dt>
-    <dd>Select the item being moved.</dd>
-    <dt>Warehouse <span class="lkup">Lookup → Warehouses</span></dt>
-    <dd>Which warehouse's stock changes.</dd>
-    <dt>Quantity <span class="type">Decimal</span></dt>
-    <dd>Always enter as a positive number. The Transaction Type determines direction.</dd>
-    <dt>Project <span class="lkup">Lookup → Projects</span></dt>
-    <dd>Required for Stock Out (consumption) and Reservation. Select the project this stock is used for.</dd>
-    <dt>Rate / Unit Cost <span class="type">Currency</span></dt>
-    <dd>Cost per unit at time of transaction. Used for auto-expense calculation.</dd>
-  </dl>
-
-  <div class="al al-w"><strong>Validation:</strong> System prevents Stock Out if quantity exceeds available stock (Current_Stock − Reserved_Qty). If you see an error, check stock or release reservations first.</div>
-</section>
-
-<!-- ====== 8. PURCHASE REQUISITIONS ====== -->
-<section id="pr">
-  <div class="module-header">
-    <span class="phase-badge" style="background:#2e1f3b;color:var(--purple)">STEP 8</span>
-    <h2>Purchase Requisitions</h2>
-    <span class="form-name">Purchase_Requisitions</span>
-  </div>
-  <div class="purpose">PRs are internal requests to buy something. They go through a 3-stage approval (Department Manager → Finance → Procurement). Once fully approved, the system auto-creates a Purchase Order.</div>
-
-  <div class="diagram">
-    <span class="b">PR Approval Flow:</span><br>
-    <span class="c">Draft</span> <span class="y">→</span> <span class="y">Dept Manager</span> <span class="y">→</span> <span class="y">Finance</span> <span class="y">→</span> <span class="y">Procurement</span> <span class="y">→</span> <span class="c">Approved</span><br>
-    <span class="in">└── On final approval: <span class="c">PO auto-created (Draft)</span></div>
-
-  <dl class="field-list">
-    <dt>Request Type <span class="type">Dropdown</span></dt>
-    <dd>General (most items), Part Repair (triggered from Project button), Service</dd>
-    <dt>Project <span class="lkup">Lookup → Projects</span></dt>
-    <dd>Which project needs this purchase.</dd>
-    <dt>Urgency <span class="type">Dropdown</span></dt>
-    <dd>Low/Medium/High/Critical — helps approvers prioritize.</dd>
-  </dl>
-
-  <h4 style="font-size:0.82rem;color:var(--accent);margin-top:12px">PR Line Items (embedded subform)</h4>
-  <div class="tw">
-    <table class="tbl">
-      <tr><th>Field</th><th>Notes</th></tr>
-      <tr><td>Item <span class="lkup">Lookup → Inventory_Items</span></td><td>Select from existing items or leave blank and type description manually</td></tr>
-      <tr><td>Item Description</td><td>Free-text if Item not selected</td></tr>
-      <tr><td>Quantity / Est. Unit Rate / Est. Total</td><td>Estimated costs for approval</td></tr>
-      <tr><td>Unit</td><td>e.g., Pcs, Kg, Hours</td></tr>
-    </table>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Transaction Types</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw">
+        <table class="tbl">
+          <tr><th>Type</th><th>When to use</th><th>Stock effect</th></tr>
+          <tr><td><span style="color:var(--green)">Stock In</span></td><td>Receiving goods from supplier</td><td>Current_Stock += Qty</td></tr>
+          <tr><td><span style="color:var(--red)">Stock Out</span></td><td>Consuming materials for a project</td><td>Current_Stock &minus;= Qty; auto-creates Expense</td></tr>
+          <tr><td>Stock Adjustment</td><td>Correcting physical count</td><td>Current_Stock = Adjusted_Qty</td></tr>
+          <tr><td>Return to Vendor</td><td>Sending defective goods back</td><td>Current_Stock &minus;= Qty</td></tr>
+          <tr><td><span style="color:var(--blue)">Reservation</span></td><td>Reserving stock for a project</td><td>Reserved_Qty += Qty</td></tr>
+          <tr><td><span style="color:var(--orange)">Release</span></td><td>Releasing reserved stock</td><td>Reserved_Qty &minus;= Qty</td></tr>
+        </table>
+      </div>
+    </bd>
   </div>
 
-  <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">On final approval → system creates a Purchase_Order in Draft status, copies all PR line items to PO line items</span></div>
-</section>
-
-<!-- ====== 9. PURCHASE ORDERS ====== -->
-<section id="po">
-  <div class="module-header">
-    <span class="phase-badge" style="background:var(--surface2);color:var(--text)">STEP 9</span>
-    <h2>Purchase Orders</h2>
-    <span class="form-name">Purchase_Orders</span>
-  </div>
-  <div class="purpose">POs are sent to vendors to order items. They can be created manually or auto-generated from an approved PR. POs track the full lifecycle from draft → open → received → closed.</div>
-
-  <div class="diagram">
-    <span class="b">PO Lifecycle:</span><br>
-    <span class="c">Draft</span> <span class="y">→</span> <span class="c">Open</span> <span class="y">→</span> <span class="y">Partially Invoiced</span> <span class="y">→</span> <span class="c">Billed</span> <span class="y">→</span> <span class="c">Closed</span><br>
-    <span class="in">└── <span class="r">Cancelled</span> (can only cancel if no GRN linked)</div>
-
-  <dl class="field-list">
-    <dt>Vendor <span class="lkup">Lookup → Vendors</span></dt>
-    <dd>Select supplier.</dd>
-    <dt>Requisition <span class="lkup">Lookup → PR</span></dt>
-    <dd>Auto-linked when PO is created from PR. Shows the originating request.</dd>
-    <dt>Project <span class="lkup">Lookup → Projects</span></dt>
-    <dd>Allocate PO costs to a project.</dd>
-    <dt>PO Date / Delivery Date / Due Date</dt>
-    <dd>Track expected delivery and payment schedule.</dd>
-    <dt>Discount (%)</dt>
-    <dd>Overall PO-level discount (not per-line).</dd>
-  </dl>
-
-  <h4 style="font-size:0.82rem;color:var(--accent);margin-top:12px">PO Line Items (embedded subform)</h4>
-  <div class="tw">
-    <table class="tbl">
-      <tr><th>Field</th><th>Auto-fill from Item</th><th>Notes</th></tr>
-      <tr><td>Item</td><td>SKU, Name, Unit, HSN/SAC</td><td>Select item → most fields pre-fill</td></tr>
-      <tr><td>Quantity / Unit Rate</td><td>Purchase Price</td><td>Adjust PO-specific rate if needed</td></tr>
-      <tr><td>Discount % / Discount Amount</td><td>—</td><td>Line-level discount</td></tr>
-      <tr><td>Tax %</td><td>Tax Rate from Item</td><td>Defaults from item master</td></tr>
-      <tr><td>Item Total</td><td>Formula</td><td><span style="color:var(--yellow)">(Qty × Rate) + Tax Amount − Discount Amount</span></td></tr>
-    </table>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Key Fields</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <dl class="field-list">
+        <dt>Item <span class="lkup">Lookup &rarr; Inventory_Items</span></dt>
+        <dd>Select the item being moved.</dd>
+        <dt>Warehouse <span class="lkup">Lookup &rarr; Warehouses</span></dt>
+        <dd>Which warehouse's stock changes.</dd>
+        <dt>Quantity <span class="type">Decimal</span></dt>
+        <dd>Always positive. Direction determined by Transaction Type.</dd>
+        <dt>Project <span class="lkup">Lookup &rarr; Projects</span></dt>
+        <dd>Required for Stock Out and Reservation.</dd>
+        <dt>Rate / Unit Cost <span class="type">Currency</span></dt>
+        <dd>Cost per unit at transaction time.</dd>
+      </dl>
+    </bd>
   </div>
 
-  <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Status = "Open" → system sends PO PDF to vendor email</span></div>
-  <div class="workflow-card"><span class="wf-num">Manual</span><span class="wf-desc">PO is closed manually — no auto-close based on GRN</span></div>
-</section>
-
-<!-- ====== 10. GOODS RECEIPT ====== -->
-<section id="grn">
-  <div class="module-header">
-    <span class="phase-badge" style="background:var(--surface2);color:var(--text)">STEP 10</span>
-    <h2>Goods Receipt (GRN)</h2>
-    <span class="form-name">Goods_Receipts</span>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Validation</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="al-w">Stock Out blocked if quantity exceeds (Current_Stock &minus; Reserved_Qty). Check stock or release reservations first.</div>
+      <div class="al-w">Warehouse required for all types. To_Warehouse required for Transfer.</div>
+    </bd>
   </div>
-  <div class="purpose">GRN records what actually arrives when a vendor delivers against a PO. It splits received items into accepted (goes into stock) and rejected (logged for return).</div>
+</div>
 
-  <div class="al al-o"><strong>Only create GRN against an existing PO.</strong> Select the PO → vendor, items, and quantities auto-fill from the PO line items.</div>
+<!-- ====== 8. EXPENSES ====== -->
+<div class="page" id="page-expenses">
+  <h2><span class="ph-badge ph-1c">STEP 8</span> Expenses <span class="fm">Expenses</span></h2>
 
-  <dl class="field-list">
-    <dt>PO <span class="lkup">Lookup → Purchase_Orders</span></dt>
-    <dd>Select the PO to receive goods against.</dd>
-    <dt>Status</dt>
-    <dd>Draft → Open (triggers stock updates) → Closed.</dd>
-  </dl>
-
-  <h4 style="font-size:0.82rem;color:var(--accent);margin-top:12px">GRN Line Items (embedded subform)</h4>
-  <div class="tw">
-    <table class="tbl">
-      <tr><th>Field</th><th>Notes</th></tr>
-      <tr><td>Item <span class="lkup">Lookup → Inventory_Items</span></td><td>Auto-filled from PO</td></tr>
-      <tr><td>PO Quantity</td><td>Read-only — shows what was ordered</td></tr>
-      <tr><td>Accepted Quantity</td><td>Enter what arrived in good condition</td></tr>
-      <tr><td>Rejected Quantity</td><td>Enter damaged/incorrect items</td></tr>
-      <tr><td>Actual Unit Cost</td><td>Editable if cost differs from PO rate</td></tr>
-      <tr><td>Warehouse <span class="lkup">Lookup → Warehouses</span></td><td>Where accepted items go into stock</td></tr>
-    </table>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Overview</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <p>Every rupee spent on a project — vendor bills, reimbursements, material costs. Can be manual or auto-created from Stock Out transactions.</p>
+      <div class="al-w"><strong>Budget check on submit:</strong> If expense exceeds component budget, status = "Overrun-Pending Approval" and Budget_Approval auto-created.</div>
+    </bd>
   </div>
 
-  <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Status = "Open" → Accepted Qty creates Stock In transaction → updates Item_Warehouse_Stock</span></div>
-  <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Accepted Qty creates Stock In transaction. PO is closed manually.</span></div>
-</section>
-
-<!-- ====== 11. TRANSFER ORDERS ====== -->
-<section id="transfer">
-  <div class="module-header">
-    <span class="phase-badge" style="background:var(--surface2);color:var(--text)">STEP 11</span>
-    <h2>Transfer Orders</h2>
-    <span class="form-name">Transfer_Orders</span>
-  </div>
-  <div class="purpose">Move stock between warehouses. Completing a transfer auto-generates the paired Stock Out (from) + Stock In (to) transactions.</div>
-
-  <dl class="field-list">
-    <dt>From Warehouse / To Warehouse <span class="lkup">Lookup → Warehouses</span></dt>
-    <dd>Must be different warehouses.</dd>
-    <dt>Status</dt>
-    <dd>Draft → Open → Completed (triggers stock movement) → Cancelled.</dd>
-  </dl>
-
-  <h4 style="font-size:0.82rem;color:var(--accent);margin-top:12px">TO Line Items (embedded subform)</h4>
-  <div class="flow-row">
-    <span class="box" style="border-color:var(--blue);color:var(--blue)">Item</span>
-    <span class="arr">+</span>
-    <span class="box" style="border-color:var(--blue);color:var(--blue)">Quantity</span>
-    <span class="arr">+</span>
-    <span class="box" style="border-color:var(--blue);color:var(--blue)">Rate</span>
-    <span class="arr">=</span>
-    <span class="box" style="border-color:var(--green);color:var(--green)">Total (formula)</span>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Key Fields</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <dl class="field-list">
+        <dt>Project <span class="lkup">Lookup &rarr; Projects</span></dt>
+        <dd>Which project this expense belongs to.</dd>
+        <dt>Budget Component <span class="lkup">Lookup &rarr; Budget_Components</span></dt>
+        <dd>Filtered by selected Project.</dd>
+        <dt>Amount <span class="type">Currency</span></dt>
+        <dd>Must be > 0.</dd>
+        <dt>Vendor <span class="lkup">Lookup &rarr; Vendors</span></dt>
+        <dd>Optional — who was paid.</dd>
+        <dt>Status</dt>
+        <dd>Draft &rarr; Submitted &rarr; Approved / Overrun-Pending Approval / Rejected</dd>
+      </dl>
+    </bd>
   </div>
 
-  <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Status = "Completed" → creates Stock Out (From WH) + Stock In (To WH) for each line item</span></div>
-</section>
-
-<!-- ====== 12. EXPENSES ====== -->
-<section id="expenses">
-  <div class="module-header">
-    <span class="phase-badge" style="background:#4a1c1c;color:var(--red)">STEP 12</span>
-    <h2>Expenses</h2>
-    <span class="form-name">Expenses</span>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Workflow</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="wf-s">
+        <span class="st s-dr">Draft</span><span class="ar">&rarr;</span>
+        <span class="st s-op">Submitted</span><span class="ar">&rarr;</span>
+        <span class="st s-ap">Approved</span><span class="ar">|</span>
+        <span class="st s-pn">Overrun-Pending</span><span class="ar">&rarr;</span>
+        <span class="st s-ap">Approved</span><span class="ar">/</span>
+        <span class="st s-rj">Rejected</span>
+      </div>
+    </bd>
   </div>
-  <div class="purpose">Expenses track every rupee spent on a project — vendor bills, employee reimbursements, material costs. Expenses can be entered manually OR created automatically when you do a Stock Out transaction.</div>
+</div>
 
-  <div class="al al-w"><strong>Budget check happens on submit:</strong> If the expense + existing spending exceeds the Budget Component's Allocated Amount, status goes to "Overrun-Pending Approval" and a Budget_Approval record is created.</div>
+<!-- ====== 9. PURCHASE REQUISITIONS ====== -->
+<div class="page" id="page-pr">
+  <h2><span class="ph-badge ph-1c">STEP 9</span> Purchase Requisitions <span class="fm">Purchase_Requisitions</span></h2>
 
-  <dl class="field-list">
-    <dt>Project <span class="lkup">Lookup → Projects</span></dt>
-    <dd>Select the project this expense belongs to.</dd>
-    <dt>Budget Component <span class="lkup">Lookup → Budget_Components</span></dt>
-    <dd>Filtered by selected Project. Choose "Materials", "Labour", etc.</dd>
-    <dt>Amount <span class="type">Currency</span></dt>
-    <dd>The expense value.</dd>
-    <dt>Vendor <span class="lkup">Lookup → Vendors</span></dt>
-    <dd>Optional — who was paid.</dd>
-    <dt>Supporting Document</dt>
-    <dd>Upload invoice or receipt.</dd>
-    <dt>Status</dt>
-    <dd>Draft → Submitted → Approved / Overrun-Pending Approval / Rejected.</dd>
-  </dl>
-
-  <h4 style="font-size:0.82rem;color:var(--accent);margin-top:12px">Auto-created expenses (from Stock Out)</h4>
-  <div class="workflow-card">
-    <span class="wf-num">Auto</span>
-    <span class="wf-desc">Auto-expense creation from Stock Out is planned for Phase 2 — currently placeholder in the Deluge script.</span>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Overview</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <p>Internal requests to buy something. Goes through 3-stage approval (Dept Manager &rarr; Finance &rarr; Procurement). Fully approved &rarr; auto-creates PO.</p>
+      <div class="diagram">
+        <span class="c">Draft</span> <span class="y">&rarr;</span> <span class="y">Dept Manager</span> <span class="y">&rarr;</span> <span class="y">Finance</span> <span class="y">&rarr;</span> <span class="y">Procurement</span> <span class="y">&rarr;</span> <span class="c">Approved</span><br>
+        <div class="in">&#x2514;&#x2500;&#x2500; On final approval: <span class="c">PO auto-created (Draft)</span></div>
+      </div>
+    </bd>
   </div>
-</section>
 
-<!-- ====== 13. BUDGET APPROVALS ====== -->
-<section id="approvals">
-  <div class="module-header">
-    <span class="phase-badge" style="background:#4a1c1c;color:var(--red)">STEP 13</span>
-    <h2>Budget Approvals</h2>
-    <span class="form-name">Budget_Approvals</span>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Key Fields</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <dl class="field-list">
+        <dt>Request Type <span class="type">Dropdown</span></dt>
+        <dd>General / Part Repair / Service</dd>
+        <dt>Project <span class="lkup">Lookup &rarr; Projects</span></dt>
+        <dd>Which project needs this purchase.</dd>
+        <dt>Urgency</dt>
+        <dd>Low / Medium / High / Critical. Critical requires Justification.</dd>
+      </dl>
+    </bd>
   </div>
-  <div class="purpose">Created automatically when an expense exceeds the budget. PM and Finance Manager review, approve (which adjusts the budget), or reject.</div>
 
-  <div class="al al-i">You don't create this manually. It's auto-generated when an Expense goes over budget.</div>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>PR Line Items (embedded subform)</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw">
+        <table class="tbl">
+          <tr><th>Field</th><th>Notes</th></tr>
+          <tr><td>Item <span class="lkup">Lookup &rarr; Inventory_Items</span></td><td>Select or leave blank and type description</td></tr>
+          <tr><td>Item Description</td><td>Free-text if Item not selected</td></tr>
+          <tr><td>Quantity / Est. Unit Rate / Est. Total</td><td>Estimated costs for approval</td></tr>
+          <tr><td>Unit</td><td>Auto-fills from Item</td></tr>
+        </table>
+      </div>
+    </bd>
+  </div>
 
-  <dl class="field-list">
-    <dt>Expense / Project / Budget Component <span class="lkup">Lookup</span></dt>
-    <dd>Auto-filled from the overrunning expense.</dd>
-    <dt>Original Budget / Expense Amount / Exceeded Amount</dt>
-    <dd>Shows the gap: how much over budget.</dd>
-    <dt>Approval Status</dt>
-    <dd>Pending → Approved / Rejected / Request Modification.</dd>
-    <dt>Modified Budget Amount</dt>
-    <dd>Approver can increase the component budget here.</dd>
-  </dl>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Automation</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Final approval &rarr; creates Purchase_Order (Draft) with line items from PR</span></div>
+    </bd>
+  </div>
+</div>
 
-  <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Approved → updates Budget Component allocated amount → approves the Expense</span></div>
-  <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Rejected → Expense status = "Rejected", notifies requester</span></div>
-</section>
+<!-- ====== 10. BUDGET APPROVALS ====== -->
+<div class="page" id="page-approvals">
+  <h2><span class="ph-badge ph-1d">STEP 10</span> Budget Approvals <span class="fm">Budget_Approvals</span></h2>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Overview</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <p>Created automatically when an expense exceeds its budget component. PM and Finance Manager approve (adjusts budget), reject, or request modification.</p>
+      <div class="al-i">You don't create this manually. It's auto-generated on expense overrun.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Key Fields</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <dl class="field-list">
+        <dt>Expense / Project / Budget Component <span class="lkup">Lookup</span></dt>
+        <dd>Auto-filled from overrunning expense.</dd>
+        <dt>Original Budget / Expense Amount / Exceeded Amount</dt>
+        <dd>Shows the gap.</dd>
+        <dt>Approval Status</dt>
+        <dd>Pending &rarr; Approved / Rejected / Request Modification</dd>
+        <dt>Modified Budget Amount</dt>
+        <dd>Approver can increase component budget here.</dd>
+      </dl>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Automation</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Approved &rarr; updates Budget Component allocated amount &rarr; approves the Expense</span></div>
+      <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Rejected &rarr; Expense status = "Rejected", notifies requester</span></div>
+    </bd>
+  </div>
+</div>
+
+<!-- ====== 11. PURCHASE ORDERS ====== -->
+<div class="page" id="page-po">
+  <h2><span class="ph-badge ph-1d">STEP 11</span> Purchase Orders <span class="fm">Purchase_Orders</span></h2>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Overview</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <p>Sent to vendors to order items. Can be manual or auto-generated from an approved PR. PO lifecycle is manual close only.</p>
+      <div class="diagram">
+        <span class="c">Draft</span> <span class="y">&rarr;</span> <span class="c">Open</span> <span class="y">&rarr;</span> <span class="y">Partially Invoiced</span> <span class="y">&rarr;</span> <span class="c">Billed</span> <span class="y">&rarr;</span> <span class="c">Closed</span><br>
+        <div class="in">&#x2514;&#x2500;&#x2500; <span class="r">Cancelled</span> (only if no GRN linked)</div>
+      </div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Key Fields</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <dl class="field-list">
+        <dt>Vendor <span class="lkup">Lookup &rarr; Vendors</span></dt>
+        <dd>Required before opening PO.</dd>
+        <dt>Requisition <span class="lkup">Lookup &rarr; PR</span></dt>
+        <dd>Auto-linked when PO created from PR.</dd>
+        <dt>Project <span class="lkup">Lookup &rarr; Projects</span></dt>
+        <dd>Allocate PO costs.</dd>
+        <dt>Discount (%)</dt>
+        <dd>PO-level discount.</dd>
+      </dl>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>PO Line Items (embedded subform)</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw">
+        <table class="tbl">
+          <tr><th>Field</th><th>Auto-fill</th><th>Notes</th></tr>
+          <tr><td>Item</td><td>SKU, Name, Unit, HSN</td><td>Select &rarr; most fields pre-fill</td></tr>
+          <tr><td>Quantity / Unit Rate</td><td>Purchase Price</td><td>Adjust if needed</td></tr>
+          <tr><td>Discount % / Amount</td><td>&mdash;</td><td>Line-level discount</td></tr>
+          <tr><td>Tax %</td><td>Tax Rate from Item</td><td>Defaults from item master</td></tr>
+          <tr><td>Item Total</td><td>Formula</td><td><span style="color:var(--yellow)">(Qty &times; Rate) + Tax &minus; Discount</span></td></tr>
+        </table>
+      </div>
+      <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Status = "Open" &rarr; system sends PO PDF to vendor email</span></div>
+      <div class="workflow-card"><span class="wf-num">Manual</span><span class="wf-desc">PO is closed manually &mdash; no auto-close based on GRN</span></div>
+    </bd>
+  </div>
+</div>
+
+<!-- ====== 12. GOODS RECEIPT ====== -->
+<div class="page" id="page-grn">
+  <h2><span class="ph-badge ph-1d">STEP 12</span> Goods Receipt (GRN) <span class="fm">Goods_Receipts</span></h2>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Overview</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <p>Records what actually arrives against a PO. Splits received items into accepted (goes into stock) and rejected (logged for return).</p>
+      <div class="al-o">Only create GRN against an existing PO. Items auto-fill from PO line items.</div>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Key Fields</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <dl class="field-list">
+        <dt>PO <span class="lkup">Lookup &rarr; Purchase_Orders</span></dt>
+        <dd>Select the PO to receive against.</dd>
+        <dt>Status</dt>
+        <dd>Draft &rarr; Open (triggers stock updates) &rarr; Closed</dd>
+      </dl>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>GRN Line Items (embedded subform)</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw">
+        <table class="tbl">
+          <tr><th>Field</th><th>Notes</th></tr>
+          <tr><td>Item <span class="lkup">Lookup &rarr; Inventory_Items</span></td><td>Auto-filled from PO</td></tr>
+          <tr><td>Accepted Qty / Rejected Qty</td><td>Good condition vs damaged/incorrect</td></tr>
+          <tr><td>Reason for Rejection</td><td>Required if rejected > 0</td></tr>
+          <tr><td>Actual Unit Cost</td><td>Editable if cost differs from PO</td></tr>
+          <tr><td>Warehouse <span class="lkup">Lookup &rarr; Warehouses</span></td><td>Where accepted items go</td></tr>
+        </table>
+      </div>
+      <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Status = Open &rarr; Accepted Qty creates Stock In &rarr; updates Item_Warehouse_Stock</span></div>
+      <div class="workflow-card"><span class="wf-num">Manual</span><span class="wf-desc">PO closed manually after GRN</span></div>
+    </bd>
+  </div>
+</div>
+
+<!-- ====== 13. TRANSFER ORDERS ====== -->
+<div class="page" id="page-transfer">
+  <h2><span class="ph-badge ph-1d">STEP 13</span> Transfer Orders <span class="fm">Transfer_Orders</span></h2>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Overview</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <p>Move stock between warehouses. Completing a transfer auto-generates paired Stock Out (from) + Stock In (to) transactions.</p>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Key Fields</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <dl class="field-list">
+        <dt>From Warehouse / To Warehouse <span class="lkup">Lookup &rarr; Warehouses</span></dt>
+        <dd>Must be different warehouses.</dd>
+        <dt>Status</dt>
+        <dd>Draft &rarr; Open &rarr; Completed &rarr; Cancelled</dd>
+      </dl>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>TO Line Items (embedded subform)</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="flow-row"><span class="box" style="border-color:var(--blue);color:var(--blue)">Item</span><span class="arr">+</span><span class="box" style="border-color:var(--blue);color:var(--blue)">Qty</span><span class="arr">+</span><span class="box" style="border-color:var(--blue);color:var(--blue)">Rate</span><span class="arr">=</span><span class="box" style="border-color:var(--green);color:var(--green)">Total (formula)</span></div>
+      <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Status = "Completed" &rarr; Stock Out (From WH) + Stock In (To WH) for each line</span></div>
+    </bd>
+  </div>
+</div>
 
 <!-- ====== 14. BOM ====== -->
-<section id="bom">
-  <div class="module-header">
-    <span class="phase-badge" style="background:#1a3b2a;color:var(--green)">STEP 14</span>
-    <h2>Bill of Materials (BOM)</h2>
-    <span class="form-name">BOM</span>
-  </div>
-  <div class="purpose">BOM defines what components go into making a finished item. Useful for manufacturing/assembly projects — it automatically calculates the total manufacturing cost.</div>
+<div class="page" id="page-bom">
+  <h2><span class="ph-badge ph-1e">STEP 14</span> Bill of Materials <span class="fm">BOM</span></h2>
 
-  <dl class="field-list">
-    <dt>Product Item <span class="lkup">Lookup → Inventory_Items</span></dt>
-    <dd>The item you're manufacturing.</dd>
-    <dt>Quantity</dt>
-    <dd>How many units this BOM produces (usually 1).</dd>
-    <dt>Labor Cost / Overhead Cost</dt>
-    <dd>Additional costs beyond raw materials.</dd>
-    <dt>Total Manufacturing Cost</dt>
-    <dd>Formula: Component Cost + Labor + Overhead.</dd>
-  </dl>
-
-  <h4 style="font-size:0.82rem;color:var(--accent);margin-top:12px">BOM Line Items (embedded subform)</h4>
-  <div class="tw">
-    <table class="tbl">
-      <tr><th>Field</th><th>Notes</th></tr>
-      <tr><td>Component Item <span class="lkup">Lookup → Inventory_Items</span></td><td>Raw material / sub-component</td></tr>
-      <tr><td>Quantity Required</td><td>How many units of this component per BOM</td></tr>
-      <tr><td>Unit Cost</td><td>Current purchase price</td></tr>
-      <tr><td>Total Cost</td><td>Formula: Qty Required × Unit Cost</td></tr>
-      <tr><td>Scrap %</td><td>Allowance for waste</td></tr>
-    </table>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Overview</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <p>Defines components that go into making a finished item. Automatically calculates total manufacturing cost.</p>
+    </bd>
   </div>
-</section>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Key Fields</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <dl class="field-list">
+        <dt>Product Item <span class="lkup">Lookup &rarr; Inventory_Items</span></dt>
+        <dd>The item being manufactured.</dd>
+        <dt>Quantity</dt>
+        <dd>How many units this BOM produces (usually 1).</dd>
+        <dt>Labor Cost / Overhead Cost</dt>
+        <dd>Additional costs beyond raw materials.</dd>
+        <dt>Total Manufacturing Cost</dt>
+        <dd>Formula: Component Cost + Labor + Overhead</dd>
+      </dl>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>BOM Line Items (embedded subform)</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw">
+        <table class="tbl">
+          <tr><th>Field</th><th>Notes</th></tr>
+          <tr><td>Component Item <span class="lkup">Lookup &rarr; Inventory_Items</span></td><td>Raw material / sub-component</td></tr>
+          <tr><td>Qty Required / Unit Cost / Total Cost</td><td>Qty &times; Unit Cost = Total Cost (formula)</td></tr>
+          <tr><td>Scrap %</td><td>Allowance for waste</td></tr>
+        </table>
+      </div>
+    </bd>
+  </div>
+</div>
 
 <!-- ====== 15. DELIVERY CHALLANS ====== -->
-<section id="dc">
-  <div class="module-header">
-    <span class="phase-badge" style="background:#1a3b2a;color:var(--green)">STEP 15</span>
-    <h2>Delivery Challans</h2>
-    <span class="form-name">Delivery_Challans</span>
-  </div>
-  <div class="purpose">DC tracks physical dispatch of goods to a customer.</div>
+<div class="page" id="page-dc">
+  <h2><span class="ph-badge ph-1e">STEP 15</span> Delivery Challans <span class="fm">Delivery_Challans</span></h2>
 
-  <div class="al al-w"><strong>Stock deduction on dispatch:</strong> When DC Status = "Shipped", the system automatically creates Stock Out transactions for all line items. Validate stock before shipping.</div>
-
-  <dl class="field-list">
-    <dt>Project <span class="lkup">Lookup → Projects</span></dt>
-    <dd>Which project this dispatch relates to.</dd>
-    <dt>Account <span class="lkup">Lookup → Accounts</span></dt>
-    <dd>Who is receiving the goods.</dd>
-    <dt>Ship Via / Vehicle No / Driver</dt>
-    <dd>Logistics details.</dd>
-    <dt>Status</dt>
-    <dd>Draft → Shipped (deducts stock) → Delivered → Returned.</dd>
-  </dl>
-
-  <h4 style="font-size:0.82rem;color:var(--accent);margin-top:12px">DC Line Items (embedded subform)</h4>
-  <div class="tw">
-    <table class="tbl">
-      <tr><th>Field</th><th>Notes</th></tr>
-      <tr><td>Item <span class="lkup">Lookup → Inventory_Items</span></td><td>What is being dispatched</td></tr>
-      <tr><td>Quantity</td><td>Number of units</td></tr>
-      <tr><td>Condition</td><td>Good / Damaged / Partial</td></tr>
-    </table>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Overview</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <p>Tracks physical dispatch of goods to a customer. When Status = "Shipped", system auto-creates Stock Out transactions for all line items.</p>
+      <div class="al-w">Validate stock before shipping. Insufficient stock blocks submission.</div>
+    </bd>
   </div>
 
-  <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Status = "Shipped" → Stock Out for each line item → updates Item_Warehouse_Stock</span></div>
-</section>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Key Fields</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <dl class="field-list">
+        <dt>Project <span class="lkup">Lookup &rarr; Projects</span></dt>
+        <dd>Which project this dispatch relates to.</dd>
+        <dt>Account <span class="lkup">Lookup &rarr; Accounts</span></dt>
+        <dd>Who receives the goods.</dd>
+        <dt>Status</dt>
+        <dd>Draft &rarr; Shipped &rarr; Delivered &rarr; Returned</dd>
+      </dl>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>DC Line Items (embedded subform)</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw">
+        <table class="tbl">
+          <tr><th>Field</th><th>Notes</th></tr>
+          <tr><td>Item <span class="lkup">Lookup &rarr; Inventory_Items</span></td><td>What is being dispatched</td></tr>
+          <tr><td>Qty / Unit</td><td>Number of units. Unit auto-fills from Item.</td></tr>
+          <tr><td>Condition</td><td>Good / Damaged / Partial</td></tr>
+        </table>
+      </div>
+      <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Status = "Shipped" &rarr; Stock Out for each line &rarr; updates Item_Warehouse_Stock</span></div>
+    </bd>
+  </div>
+</div>
 
 <!-- ====== 16. INVOICES ====== -->
-<section id="invoices">
-  <div class="module-header">
-    <span class="phase-badge" style="background:#1a3b2a;color:var(--green)">STEP 16</span>
-    <h2>Invoices</h2>
-    <span class="form-name">Invoices</span>
-  </div>
-  <div class="purpose">Invoices are what you send to clients to get paid. They track revenue per project, feeding into the Project P&amp;L report. Every invoice ties to a project so you can see profitability.</div>
+<div class="page" id="page-invoices">
+  <h2><span class="ph-badge ph-1e">STEP 16</span> Invoices <span class="fm">Invoices</span></h2>
 
-  <div class="al al-i">Also accessible from the Project form via the "Create Invoice" custom button — opens with Project + Account pre-filled.</div>
-
-  <dl class="field-list">
-    <dt>Project <span class="lkup">Lookup → Projects</span></dt>
-    <dd>Required — ties revenue to a project for P&L.</dd>
-    <dt>Customer / Account <span class="lkup">Lookup → Accounts</span></dt>
-    <dd>Who is being billed.</dd>
-    <dt>Status</dt>
-    <dd>Draft → Sent (updates project Total Invoiced) → Partially Paid → Paid (Balance Due = 0) → Overdue → Cancelled.</dd>
-    <dt>Balance Due</dt>
-    <dd>Formula: Total − Amount Paid. Auto-updates on payment.</dd>
-  </dl>
-
-  <h4 style="font-size:0.82rem;color:var(--accent);margin-top:12px">Invoice Line Items (embedded subform)</h4>
-  <div class="tw">
-    <table class="tbl">
-      <tr><th>Field</th><th>Notes</th></tr>
-      <tr><td>Item <span class="lkup">Lookup → Inventory_Items</span></td><td>Required — select from Inventory Items</td></tr>
-      <tr><td>Quantity / Rate</td><td>Billing quantity and unit price</td></tr>
-      <tr><td>Tax %</td><td>Line-level</td></tr>
-      <tr><td>Total</td><td>Formula: (Qty × Rate) + Tax</td></tr>
-    </table>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Overview</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <p>Sent to clients to get paid. Tracks revenue per project for P&amp;L. Accessible from Project form via "Create Invoice" custom button.</p>
+    </bd>
   </div>
 
-  <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Status = "Sent" → updates project's Total Invoiced for P&L</span></div>
-  <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Status = "Paid" → sets Amount Paid, Balance Due = 0</span></div>
-</section>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Key Fields</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <dl class="field-list">
+        <dt>Project <span class="lkup">Lookup &rarr; Projects</span></dt>
+        <dd>Ties revenue for P&amp;L.</dd>
+        <dt>Customer / Account <span class="lkup">Lookup &rarr; Accounts</span></dt>
+        <dd>Who is being billed.</dd>
+        <dt>Status</dt>
+        <dd>Draft &rarr; Sent (updates Project Total Invoiced) &rarr; Partially Paid &rarr; Paid &rarr; Overdue &rarr; Cancelled</dd>
+        <dt>Balance Due</dt>
+        <dd>Formula: Total &minus; Amount Paid</dd>
+      </dl>
+    </bd>
+  </div>
+
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Invoice Line Items (embedded subform)</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw">
+        <table class="tbl">
+          <tr><th>Field</th><th>Notes</th></tr>
+          <tr><td>Item <span class="lkup">Lookup &rarr; Inventory_Items</span></td><td>Billing item</td></tr>
+          <tr><td>Qty / Rate</td><td>Billing quantity and unit price</td></tr>
+          <tr><td>Tax %</td><td>Line-level</td></tr>
+          <tr><td>Total</td><td>Formula: (Qty &times; Rate) + Tax</td></tr>
+        </table>
+      </div>
+      <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Status = "Sent" &rarr; updates Project Total Invoiced for P&amp;L</span></div>
+      <div class="workflow-card"><span class="wf-num">Auto</span><span class="wf-desc">Status = "Paid" &rarr; sets Amount Paid, Balance Due = 0</span></div>
+    </bd>
+  </div>
+</div>
 
 <!-- ====== 17. REPORTS ====== -->
-<section id="reports">
-  <div class="module-header">
-    <span class="phase-badge" style="background:var(--surface2);color:var(--text)">STEP 17</span>
-    <h2>Reports &amp; Dashboards</h2>
-    <span class="form-name">Executive Dashboard</span>
-  </div>
-  <div class="purpose">Reports give you visibility into project profitability, budget health, stock status, and procurement. Data flows automatically from the modules above.</div>
+<div class="page" id="page-reports">
+  <h2><span class="ph-badge ph-1f">STEP 17</span> Reports &amp; Dashboards <span class="fm">Executive Dashboard</span></h2>
 
-  <h4 style="font-size:0.82rem;color:var(--accent);margin-bottom:8px">Key reports and what they show</h4>
-  <div class="tw">
-    <table class="tbl">
-      <tr><th>Report</th><th>What it tells you</th><th>Who uses it</th></tr>
-      <tr><td>Project P&amp;L</td><td>Revenue (Invoices) − Expenses = Profit/Loss per project. The most important report.</td><td>PM, Finance</td></tr>
-      <tr><td>Budget vs Actual</td><td>How much was budgeted vs spent per project/component</td><td>PM, Finance</td></tr>
-      <tr><td>Budget Utilization %</td><td>What % of budget has been consumed — catch overruns early</td><td>PM</td></tr>
-      <tr><td>Open POs</td><td>All pending purchase orders with expected delivery dates</td><td>Procurement</td></tr>
-      <tr><td>Stock Availability</td><td>Current stock levels per item per warehouse</td><td>Inventory Manager</td></tr>
-      <tr><td>Low Stock Alert</td><td>Items where stock ≤ reorder level — reorder now</td><td>Inventory Manager</td></tr>
-      <tr><td>Invoice Aging</td><td>Overdue and pending invoices — who hasn't paid</td><td>Finance</td></tr>
-      <tr><td>DC Register</td><td>Log of all deliveries with status</td><td>Inventory, Logistics</td></tr>
-      <tr><td>BOM Cost Summary</td><td>Manufacturing cost per finished item</td><td>Production</td></tr>
-      <tr><td>Vendor Spend</td><td>Total spend per vendor for negotiations</td><td>Procurement, Finance</td></tr>
-    </table>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Overview</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <p>Visibility into project profitability, budget health, stock status, and procurement. Data flows automatically from the modules above.</p>
+    </bd>
   </div>
 
-  <h4 style="font-size:0.82rem;color:var(--accent);margin-top:16px;margin-bottom:8px">Executive Dashboard KPIs</h4>
-  <div class="rel-grid">
-    <div class="rel-card"><div class="target">Total Project Budget</div><div style="font-size:0.68rem;color:var(--muted)">Sum of all active budget plans</div></div>
-    <div class="rel-card"><div class="target">Total Spent</div><div style="font-size:0.68rem;color:var(--muted)">Sum of approved expenses</div></div>
-    <div class="rel-card"><div class="target">Budget Utilization %</div><div style="font-size:0.68rem;color:var(--muted)">Spent ÷ Budget × 100</div></div>
-    <div class="rel-card"><div class="target">Open PO Value</div><div style="font-size:0.68rem;color:var(--muted)">Value of all open purchase orders</div></div>
-    <div class="rel-card"><div class="target">Inventory Value</div><div style="font-size:0.68rem;color:var(--muted)">Stock × Purchase Price across all items</div></div>
-    <div class="rel-card"><div class="target">Cost Overruns</div><div style="font-size:0.68rem;color:var(--muted)">Count of budget components exceeding 100%</div></div>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Key Reports</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="tw">
+        <table class="tbl">
+          <tr><th>Report</th><th>What it tells you</th><th>User</th></tr>
+          <tr><td>Project P&amp;L</td><td>Revenue &minus; Expenses = Profit/Loss per project</td><td>PM, Finance</td></tr>
+          <tr><td>Budget vs Actual</td><td>Budgeted vs spent per component</td><td>PM, Finance</td></tr>
+          <tr><td>Budget Utilization %</td><td>% of budget consumed</td><td>PM</td></tr>
+          <tr><td>Open POs</td><td>Pending purchase orders</td><td>Procurement</td></tr>
+          <tr><td>Stock Availability</td><td>Current stock per item per warehouse</td><td>Inventory</td></tr>
+          <tr><td>Low Stock Alert</td><td>Items below reorder level</td><td>Inventory</td></tr>
+          <tr><td>Invoice Aging</td><td>Overdue invoices</td><td>Finance</td></tr>
+          <tr><td>DC Register</td><td>All deliveries with status</td><td>Inventory, Logistics</td></tr>
+          <tr><td>BOM Cost Summary</td><td>Manufacturing cost per item</td><td>Production</td></tr>
+          <tr><td>Vendor Spend</td><td>Total spend per vendor</td><td>Procurement</td></tr>
+        </table>
+      </div>
+    </bd>
   </div>
 
-  <div class="al al-o"><strong>Scheduled daily (midnight):</strong> KPI refresh, budget alerts at 80/90/100%, low stock alerts, mark overdue invoices — runs automatically.</div>
-</section>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Dashboard KPIs</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="rel-grid">
+        <div class="rel-card"><div class="target">Total Project Budget</div><div>Sum of active budget plans</div></div>
+        <div class="rel-card"><div class="target">Total Spent</div><div>Sum of approved expenses</div></div>
+        <div class="rel-card"><div class="target">Budget Utilization %</div><div>Spent &divide; Budget &times; 100</div></div>
+        <div class="rel-card"><div class="target">Open PO Value</div><div>Value of open purchase orders</div></div>
+        <div class="rel-card"><div class="target">Inventory Value</div><div>Stock &times; Purchase Price</div></div>
+        <div class="rel-card"><div class="target">Cost Overruns</div><div>Components exceeding 100% budget</div></div>
+      </div>
+      <div class="al-o">Scheduled daily (midnight): KPI refresh, budget alerts, low stock alerts, overdue detection.</div>
+    </bd>
+  </div>
+</div>
 
-<!-- ====== DATA FLOW SUMMARY ====== -->
-<section>
-  <h2 style="font-size:1.1rem;font-weight:700;margin-bottom:16px">End-to-End Data Flow</h2>
-  <p style="color:var(--muted);font-size:0.88rem;margin-bottom:12px">How a typical procurement-to-payment journey flows through the system:</p>
+<!-- End-to-End Data Flow -->
+<div class="page" id="page-flow">
+  <h2>End-to-End Data Flow</h2>
 
-  <div class="diagram">
-    <span class="b" style="color:var(--accent)">Procurement Flow:</span><br>
-    <span class="c">PR Created</span> <span class="y">→</span> <span class="y">3-Stage Approval</span> <span class="y">→</span> <span class="c">PO Auto-Created</span> <span class="y">→</span> <span class="c">PO Sent to Vendor</span> <span class="y">→</span> <span class="c">Goods Received (GRN)</span> <span class="y">→</span> <span class="c">Stock Updated</span> <span class="y">→</span> <span class="c">PO Manually Closed</span><br><br>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Procurement Flow</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="diagram">
+        <span class="c">PR Created</span> <span class="y">&rarr;</span> <span class="y">3-Stage Approval</span> <span class="y">&rarr;</span> <span class="c">PO Auto-Created</span> <span class="y">&rarr;</span> <span class="c">PO Sent</span> <span class="y">&rarr;</span> <span class="c">GRN Created</span> <span class="y">&rarr;</span> <span class="c">Stock Updated</span> <span class="y">&rarr;</span> <span class="c">PO Closed</span>
+      </div>
+    </bd>
+  </div>
 
-    <span class="b" style="color:var(--accent)">Project Consumption Flow:</span><br>
-    <span class="c">Stock Out Transaction</span> <span class="y">→</span> <span class="c">Expense Auto-Created</span> <span class="y">→</span> <span class="c">Budget Check Runs</span> <span class="y">→</span> <span class="y">(if over)</span> <span class="c">Budget Approval Created</span><br><br>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Project Consumption Flow</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="diagram">
+        <span class="c">Stock Out</span> <span class="y">&rarr;</span> <span class="c">Expense Auto-Created</span> <span class="y">&rarr;</span> <span class="c">Budget Check</span> <span class="y">&rarr;</span> <span class="y">(if over)</span> <span class="c">Budget Approval</span>
+      </div>
+    </bd>
+  </div>
 
-    <span class="b" style="color:var(--accent)">Revenue Flow:</span><br>
-    <span class="c">Invoice Created</span> <span class="y">→</span> <span class="c">Invoice Sent</span> <span class="y">→</span> <span class="c">Payment Received</span> <span class="y">→</span> <span class="c">Project P&amp;L Updated</span><br><br>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>Revenue Flow</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="diagram">
+        <span class="c">Invoice Created</span> <span class="y">&rarr;</span> <span class="c">Invoice Sent</span> <span class="y">&rarr;</span> <span class="c">Payment Received</span> <span class="y">&rarr;</span> <span class="c">Project P&amp;L Updated</span>
+      </div>
+    </bd>
+  </div>
 
-    <span class="b" style="color:var(--accent)">P&amp;L Calculation (per project):</span><br>
-    <span class="c">Profit/Loss</span> = <span class="c">Total Invoiced</span> − <span class="r">Total Expenses</span> − <span class="r">Stock Consumed (auto-expenses)</span></div>
-</section>
+  <div class="module-card">
+    <hd onclick="t(this)"><span class="num">&#9655;</span><h4>P&amp;L Calculation</h4><span class="arr">&#9656;</span></hd>
+    <bd>
+      <div class="diagram">
+        <span class="c">Profit/Loss</span> = <span class="c">Total Invoiced</span> &minus; <span class="r">Total Expenses</span>
+      </div>
+    </bd>
+  </div>
+</div>
 
 </div>
 
 <footer>
   <p>Project Budget Tracking &amp; Inventory Management — User Guide</p>
-  <p style="font-size:0.7rem;margin-top:4px;color:var(--muted)">ITOTCloud Systems Pvt. Ltd. — End-User Documentation</p>
-  <p style="font-size:0.62rem;margin-top:2px;color:var(--surface2)"><a href="index.html" style="color:var(--accent);text-decoration:none">← Back to Blueprint</a></p>
+  <p style="font-size:0.7rem;margin-top:4px;color:var(--muted)">ITOTCloud Systems Pvt. Ltd. &mdash; End-User Documentation</p>
+  <p style="font-size:0.62rem;margin-top:2px;color:var(--surface2)"><a href="index.html">&larr; Back to Blueprint</a> &bull; <a href="build-viewer.html?guide=test">Testing Guide &rarr;</a></p>
 </footer>
+
+</div>
+
+<script>
+function t(h) {
+  const bd = h.nextElementSibling;
+  bd.classList.toggle('o');
+  h.querySelector('.arr').classList.toggle('o');
+  h.querySelector('.arr').textContent = bd.classList.contains('o') ? '\u25BE' : '\u25B6';
+}
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('o'));
+  const el = document.getElementById('page-' + id);
+  if (el) el.classList.add('o');
+  document.querySelectorAll('.sidebar a').forEach(a => a.classList.remove('active'));
+  document.querySelectorAll('.sidebar a[data-page="' + id + '"]').forEach(a => a.classList.add('active'));
+}
+
+document.querySelectorAll('.module-card .arr').forEach(a => { a.textContent = '\u25B6'; });
+</script>
 
 </body>
 </html>
