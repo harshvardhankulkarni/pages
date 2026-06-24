@@ -85,12 +85,8 @@ bom_data = Map();
 bom_data.put("Total_Material_Cost", total_material);
 zoho.creator.updateRecord("budget_tracking", "BOM", bom_id, bom_data);
 ```
-```
 
-#### ~~REMOVED~~ BOM_Line_Items On Submit
-> **REMOVED in Phase 1E:** Embedded subforms cannot have standalone On Submit scripts.
-> Unit_Cost auto-fill from Item.Purchase_Price should be handled in the parent BOM's
-> On Submit script or configured as a lookup mapping from the Component_Item field.
+> **Note:** Embedded subforms cannot have standalone On Submit scripts. Unit_Cost auto-fill from Item.Purchase_Price is handled in the parent BOM's On Submit script (above).
 
 ---
 
@@ -140,10 +136,7 @@ DC Created (Status = Draft)
 
 ### Deluge Scripts
 
-#### ~~REMOVED~~ DC_Line_Items On Submit
-> **REMOVED in Phase 1E:** Embedded subforms cannot have standalone On Submit scripts.
-> The Warehouse default-fill should be handled by setting a default value on the subform's
-> Warehouse field (use formula: `DC.Warehouse` or configure as lookup default).
+> **Note:** Embedded subforms cannot have standalone On Submit scripts. The Warehouse default-fill should be configured as a default value on the subform's Warehouse field (formula: `DC.Warehouse` or lookup default).
 
 #### On Submit — Process Stock Deduction on Ship
 ```deluge
@@ -209,7 +202,6 @@ if (status_val == "Shipped")
         }
     }
 }
-```
 ```
 
 ---
@@ -393,7 +385,6 @@ if (!inv_lines.isNull())
 
 created_dc = zoho.creator.createRecord("budget_tracking", "Delivery_Challans", dc_data);
 ```
-```
 
 #### Scheduled Workflow — Mark Overdue Invoices
 ```deluge
@@ -493,7 +484,6 @@ if (status_val == "Completed")
         }
     }
 }
-```
 ```
 
 ---
