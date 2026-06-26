@@ -114,7 +114,7 @@ Set in Form > Permissions tab. For each profile below, set the checkboxes:
 | Purchase Manager | — | — | — | — |
 | Purchase Executive | — | — | — | — |
 | Store Manager | ✓ | ✓ | ✓ | ✓ |
-| Store Keeper | — | — | — | — |
+| Store Keeper | ✓ | ✓ | ✓ | ✓ |
 | Production Manager | — | ✓ | — | — |
 | Production Executive | — | — | — | — |
 | QC Inspector | — | — | — | — |
@@ -792,7 +792,7 @@ if(store_id != null)
 |---|-------------|-----------|----------|------------|
 | 1 | User Code | Auto Number | Yes (auto) | Format: `USR-{000}`. Read-only. Starts at 1. |
 | 2 | User Name | User | Yes | Creator "User" field type. Dropdown of all org users. |
-| 3 | Department | Dropdown | Yes | Options: **Purchase**, **Sales**, **Store & Logistics**, **Account & Finance**, **Admin**, **Project Coordinator**, **Project Manager 1**, **Project Manager 2** |
+| 3 | Department | Dropdown | Yes | Options: **Admin**, **Purchase**, **Store & Logistics**, **Production**, **QC**, **Sales**, **Project Management**, **Account & Finance** |
 | 4 | Role | Dropdown | Yes | Options: **Admin**, **Purchase Manager**, **Purchase Executive**, **Store Manager**, **Store Keeper**, **Production Manager**, **Production Executive**, **QC Inspector**, **Sales Executive**, **Project Manager**, **Project Coordinator**, **Finance Executive**, **Viewer** |
 | 5 | PR Approval Limit | Currency | No | INR. 2 decimal places. Default: 0 (user cannot approve PR). |
 | 6 | PO Approval Limit | Currency | No | INR. 2 decimal places. Default: 0 (user cannot approve PO). |
