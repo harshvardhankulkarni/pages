@@ -37,8 +37,7 @@
 | Customer Master | CRUD | — | — | — | — | CRUD | CRUD | R | V |
 | Store Master | CRUD | — | CRUD | R | — | — | — | — | V |
 | Bin Location Master | CRUD | — | CRUD | — | — | — | — | — | V |
-| User Access | CRUD | — | — | — | — | — | — | — | — |
-| Approval Matrix | CRUD | — | — | — | — | — | — | — | — |
+| User Access & Approval Matrix | CRUD | — | — | — | — | — | — | — | — |
 
 ### 2.2 Sales
 

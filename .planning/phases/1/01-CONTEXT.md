@@ -59,7 +59,7 @@ These forms have no upstream dependencies and are prerequisites for all subseque
 - **D-15:** Every form gets a standard list report with filters (Zoho Creator's default report builder). Item Master gets a full listing report as specified.
 
 ### Form Behavior Patterns
-- **D-16:** All auto-generated codes use Zoho Creator's auto-number field type with custom format strings.
+- **D-16:** Auto-numbering uses native Zoho Creator auto-number fields (format strings like `ST-{000}`, `SUP-{000}`, `CUS-{000}`) for simple sequential-only codes. For prefix-based codes depending on a category/type selection (Item Master `{Category}-{seq}`, System Master `{Type}-{seq}`), use Deluge On Submit (Before) workflow to query max existing number and construct the next code — native auto-number cannot dynamically change prefix based on another field.
 - **D-17:** All auto-fetch fields (Item Name from Item Code, UOM from Item Code, System Name from System Code) use Zoho Creator's "Lookup" field behavior with cascading select / on-load fetch.
 - **D-18:** Today's Date fields use Zoho Creator's "Default Value = Current Date/Time" setting.
 
