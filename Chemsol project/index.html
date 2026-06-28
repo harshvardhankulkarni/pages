@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chemsol — Zoho Creator ERP Implementation Plan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ch-primary: #0d9488;
+      --ch-primary-dark: #0f766e;
+      --ch-primary-light: #ccfbf1;
+      --ch-secondary: #1e3a5f;
+      --ch-accent: #f59e0b;
+      --ch-accent-light: #fef3c7;
+      --ch-green: #059669;
+      --ch-green-light: #d1fae5;
+      --ch-red: #dc2626;
+      --ch-red-light: #fee2e2;
+      --ch-blue: #2563eb;
+      --ch-blue-light: #dbeafe;
+      --ch-purple: #7c3aed;
+      --ch-purple-light: #ede9fe;
+      --ch-orange: #ea580c;
+      --ch-orange-light: #ffedd5;
+      --ch-gray-50: #f9fafb;
+      --ch-gray-100: #f3f4f6;
+      --ch-gray-200: #e5e7eb;
+      --ch-gray-300: #d1d5db;
+      --ch-gray-400: #9ca3af;
+      --ch-gray-500: #6b7280;
+      --ch-gray-600: #4b5563;
+      --ch-gray-700: #374151;
+      --ch-gray-800: #1f2937;
+      --ch-gray-900: #111827;
+      --sidebar-width: 280px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--ch-gray-800); background: var(--ch-gray-50);
+      line-height: 1.6; display: flex;
+    }
+    ::selection { background: var(--ch-primary); color: #fff; }
+
+    /* ---- Sidebar ---- */
+    .sidebar {
+      position: fixed; top: 0; left: 0;
+      width: var(--sidebar-width); height: 100vh;
+      background: var(--ch-gray-900); color: #fff;
+      overflow-y: auto; z-index: 100;
+    }
+    .sidebar-header {
+      padding: 24px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      background: linear-gradient(135deg, var(--ch-secondary), var(--ch-gray-900));
+    }
+    .sidebar-header h1 {
+      font-size: 18px; font-weight: 700;
+      letter-spacing: -0.3px; line-height: 1.3;
+    }
+    .sidebar-header .client-badge {
+      display: inline-block; margin-top: 6px;
+      font-size: 11px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 1px;
+      color: var(--ch-primary);
+    }
+    .sidebar-nav { padding: 12px 0; }
+    .sidebar-nav a {
+      display: block; padding: 8px 20px;
+      color: var(--ch-gray-400); text-decoration: none;
+      font-size: 13px; font-weight: 400;
+      transition: all 0.15s;
+      border-left: 3px solid transparent;
+    }
+    .sidebar-nav a:hover, .sidebar-nav a.active {
+      color: #fff; background: rgba(255,255,255,0.05);
+      border-left-color: var(--ch-primary);
+    }
+    .sidebar-nav .section-label {
+      padding: 16px 20px 4px;
+      font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 1.2px;
+      color: var(--ch-gray-500);
+    }
+
+    /* ---- Main ---- */
+    .main { margin-left: var(--sidebar-width); flex: 1; min-height: 100vh; }
+
+    /* ---- Hero ---- */
+    .hero {
+      background: linear-gradient(135deg, var(--ch-secondary) 0%, var(--ch-gray-900) 100%);
+      color: #fff; padding: 64px 48px 56px;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: ''; position: absolute;
+      top: -50%; right: -20%;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(13,148,136,0.15) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .hero-eyebrow {
+      font-size: 12px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 1.5px;
+      color: var(--ch-primary); margin-bottom: 12px;
+    }
+    .hero h1 {
+      font-size: 42px; font-weight: 800;
+      letter-spacing: -1px; line-height: 1.15;
+      margin-bottom: 12px;
+    }
+    .hero p {
+      font-size: 18px; font-weight: 300;
+      color: rgba(255,255,255,0.75);
+      max-width: 720px; line-height: 1.6;
+    }
+    .hero-meta {
+      display: flex; gap: 32px; margin-top: 28px; flex-wrap: wrap;
+    }
+    .hero-meta-item { display: flex; flex-direction: column; gap: 2px; }
+    .hero-meta-item .label {
+      font-size: 11px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 1px;
+      color: rgba(255,255,255,0.4);
+    }
+    .hero-meta-item .value {
+      font-size: 15px; font-weight: 500; color: #fff;
+    }
+
+    /* ---- Content ---- */
+    .content { padding: 40px 48px 80px; max-width: 1200px; }
+    h2 {
+      font-size: 28px; font-weight: 700; letter-spacing: -0.5px;
+      color: var(--ch-gray-900);
+      margin-top: 56px; margin-bottom: 16px;
+      padding-bottom: 8px; border-bottom: 3px solid var(--ch-primary-light);
+    }
+    h2:first-of-type { margin-top: 0; }
+    h3 {
+      font-size: 20px; font-weight: 600;
+      color: var(--ch-gray-800); margin-top: 32px; margin-bottom: 12px;
+    }
+    h4 {
+      font-size: 16px; font-weight: 600;
+      color: var(--ch-gray-700); margin-top: 24px; margin-bottom: 8px;
+    }
+    p { margin-bottom: 16px; color: var(--ch-gray-600); }
+
+    .badge {
+      display: inline-block; padding: 3px 10px;
+      font-size: 11px; font-weight: 600; border-radius: 999px;
+    }
+    .badge-teal { background: var(--ch-primary-light); color: var(--ch-primary-dark); }
+    .badge-green { background: var(--ch-green-light); color: var(--ch-green); }
+    .badge-yellow { background: var(--ch-accent-light); color: #92400e; }
+    .badge-red { background: var(--ch-red-light); color: var(--ch-red); }
+    .badge-blue { background: var(--ch-blue-light); color: var(--ch-blue); }
+    .badge-purple { background: var(--ch-purple-light); color: var(--ch-purple); }
+    .badge-orange { background: var(--ch-orange-light); color: var(--ch-orange); }
+
+    /* ---- Cards ---- */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px; margin: 20px 0;
+    }
+    .card {
+      background: #fff; border: 1px solid var(--ch-gray-200);
+      border-radius: 12px; padding: 20px;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.08); transform: translateY(-2px); }
+    .card h4 { margin-top: 0; font-size: 15px; }
+    .card p { font-size: 13px; color: var(--ch-gray-500); margin-bottom: 0; }
+
+    /* ---- Tables ---- */
+    .table-wrap {
+      overflow-x: auto; margin: 16px 0;
+      border: 1px solid var(--ch-gray-200);
+      border-radius: 10px; background: #fff;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead { background: var(--ch-secondary); color: #fff; }
+    th {
+      text-align: left; padding: 10px 14px;
+      font-weight: 600; font-size: 12px;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    td {
+      padding: 10px 14px; border-bottom: 1px solid var(--ch-gray-100);
+      vertical-align: top;
+    }
+    tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: var(--ch-gray-50); }
+    td code {
+      font-family: 'JetBrains Mono', monospace; font-size: 12px;
+      background: var(--ch-gray-100);
+      padding: 1px 6px; border-radius: 4px;
+    }
+
+    /* ---- Phase Blocks ---- */
+    .phase {
+      background: #fff; border: 1px solid var(--ch-gray-200);
+      border-radius: 12px; padding: 24px; margin: 20px 0;
+    }
+    .phase-header {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+    }
+    .phase-number {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 32px; height: 32px;
+      background: var(--ch-primary); color: #fff;
+      font-weight: 700; font-size: 14px; border-radius: 8px;
+    }
+    .phase-title { font-size: 18px; font-weight: 700; color: var(--ch-gray-900); }
+    .phase-effort {
+      margin-left: auto; font-size: 12px; color: var(--ch-gray-500);
+      background: var(--ch-gray-100); padding: 4px 10px; border-radius: 999px;
+    }
+
+    /* ---- Callout ---- */
+    .callout {
+      padding: 16px 20px; border-radius: 10px; margin: 16px 0;
+      font-size: 14px; line-height: 1.5;
+    }
+    .callout-info { background: var(--ch-blue-light); border-left: 4px solid var(--ch-blue); }
+    .callout-warning { background: var(--ch-accent-light); border-left: 4px solid var(--ch-accent); }
+    .callout-success { background: var(--ch-green-light); border-left: 4px solid var(--ch-green); }
+
+    /* ---- Code Block ---- */
+    .code-block {
+      background: #1e293b; color: #e2e8f0;
+      border-radius: 8px; padding: 16px; margin: 12px 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px; line-height: 1.8; overflow-x: auto;
+    }
+    .code-block pre { margin: 0; white-space: pre-wrap; }
+
+    /* ---- Status Indicators ---- */
+    .status {
+      display: inline-block; padding: 2px 10px;
+      font-size: 11px; font-weight: 600; border-radius: 999px;
+    }
+    .status-executed { background: var(--ch-blue-light); color: var(--ch-blue); }
+    .status-complete { background: var(--ch-green-light); color: var(--ch-green); }
+    .status-waiting { background: var(--ch-accent-light); color: #92400e; }
+    .status-testing { background: var(--ch-purple-light); color: var(--ch-purple); }
+
+    /* ---- Architecture SVG ---- */
+    .arch-diagram {
+      margin: 24px 0; padding: 24px;
+      background: #fff; border: 1px solid var(--ch-gray-200);
+      border-radius: 12px; overflow-x: auto;
+    }
+    .arch-diagram svg { display: block; width: 100%; height: auto; min-width: 700px; }
+
+    /* ---- Timeline ---- */
+    .timeline-bar {
+      display: flex; margin: 24px 0;
+      border-radius: 10px; overflow: hidden; height: 36px;
+      font-size: 11px; font-weight: 600;
+    }
+    .timeline-bar .seg {
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; text-align: center; padding: 0 8px;
+    }
+    .seg-master { background: var(--ch-primary); flex: 3; }
+    .seg-sales { background: var(--ch-blue); flex: 2; }
+    .seg-procure { background: var(--ch-purple); flex: 4; }
+    .seg-store { background: var(--ch-accent); flex: 3; }
+    .seg-prod { background: var(--ch-orange); flex: 4; }
+    .seg-project { background: var(--ch-red); flex: 3; }
+    .seg-reports { background: var(--ch-green); flex: 2; }
+
+    /* ---- Checklist ---- */
+    .checklist { list-style: none; margin: 12px 0; }
+    .checklist li {
+      padding: 4px 0 4px 24px; position: relative;
+      font-size: 14px; color: var(--ch-gray-700);
+    }
+    .checklist li::before {
+      content: ""; position: absolute; left: 0; top: 9px;
+      width: 14px; height: 14px;
+      border: 2px solid var(--ch-gray-300); border-radius: 3px;
+    }
+    .checklist li.done::before {
+      content: "✓"; background: var(--ch-green); border-color: var(--ch-green);
+      color: #fff; font-size: 10px; line-height: 14px; text-align: center;
+    }
+
+    /* ---- Footer ---- */
+    .footer {
+      margin-top: 48px; padding-top: 24px;
+      border-top: 1px solid var(--ch-gray-200);
+      font-size: 13px; color: var(--ch-gray-400); text-align: center;
+    }
+
+    /* ---- Flow Chart ---- */
+    .flow-diagram {
+      display: flex; align-items: center; justify-content: center;
+      flex-wrap: wrap; gap: 8px; margin: 20px 0; font-size: 13px;
+    }
+    .flow-node {
+      background: var(--ch-primary); color: #fff;
+      padding: 10px 16px; border-radius: 8px; font-weight: 600;
+      font-size: 12px; white-space: nowrap;
+    }
+    .flow-node.purple { background: var(--ch-purple); }
+    .flow-node.blue { background: var(--ch-blue); }
+    .flow-node.orange { background: var(--ch-orange); }
+    .flow-node.accent { background: var(--ch-accent); color: #1e293b; }
+    .flow-node.green { background: var(--ch-green); }
+    .flow-node.red { background: var(--ch-red); }
+    .flow-node.outline {
+      background: #fff; color: var(--ch-primary); border: 2px solid var(--ch-primary);
+    }
+    .flow-arrow {
+      font-size: 20px; color: var(--ch-gray-400); font-weight: 300;
+    }
+
+    /* ---- Responsive ---- */
+    @media (max-width: 768px) {
+      .sidebar { position: relative; width: 100%; height: auto; }
+      .sidebar-nav { display: none; }
+      .main { margin-left: 0; }
+      .hero { padding: 32px 20px; }
+      .hero h1 { font-size: 28px; }
+      .content { padding: 24px 16px 60px; }
+      .card-grid { grid-template-columns: 1fr; }
+    }
+    @media print { .sidebar { display: none; } .main { margin-left: 0; } }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <h1>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--ch-primary)" style="vertical-align: -4px; margin-right: 6px;">
+          <path d="M4,4H20V20H4V4M6,8V12H10V8H6M12,8V12H16V8H12M6,16V18H18V16H6Z"/>
+        </svg>
+        Chemsol
+      </h1>
+      <span class="client-badge">Zoho Creator ERP Implementation</span>
+    </div>
+    <div class="sidebar-nav">
+      <div class="section-label">Overview</div>
+      <a href="#overview">Project Overview</a>
+      <a href="#architecture">System Architecture</a>
+      <a href="#tech-stack">Technology Stack</a>
+
+      <div class="section-label">Implementation</div>
+      <a href="#phase-1a">Phase 1A — Master Data</a>
+      <a href="#phase-1b">Phase 1B — Sales/Work Order</a>
+      <a href="#phase-1c">Phase 1C/1D — Procurement</a>
+      <a href="#phase-1e">Phase 1E — Quality Control</a>
+      <a href="#phase-2b">Phase 2B/2C — Store Operations</a>
+      <a href="#phase-3b">Phase 3B — Production</a>
+      <a href="#phase-4a">Phase 4A/4C — Project Management</a>
+      <a href="#phase-8">Phase 8 — Reports & Security</a>
+
+      <div class="section-label">Reference</div>
+      <a href="#forms">Form Inventory</a>
+      <a href="#automation">Deluge Automations</a>
+      <a href="#reports">Reports & Dashboards</a>
+      <a href="#testing">Testing Strategy</a>
+      <a href="#data-model">Data Model</a>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <div class="main">
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-eyebrow">Implementation Plan v2.0 — All 8 Phases Executed</div>
+      <h1>Chemsol<br>Zoho Creator ERP for Industrial Flooring</h1>
+      <p>Complete ERP system covering procurement, production, project management, store operations, quality control, and sales — purpose-built for epoxy, PU, anti-static, ESD, and demarcation flooring solutions. Built on Zoho Creator India datacenter (.in) with Deluge scripting for all automation.</p>
+      <div class="hero-meta">
+        <div class="hero-meta-item"><span class="label">Implementation Phases</span><span class="value">8 Phases</span></div>
+        <div class="hero-meta-item"><span class="label">Total Forms</span><span class="value">28 Forms</span></div>
+        <div class="hero-meta-item"><span class="label">Reports</span><span class="value">35 Reports</span></div>
+        <div class="hero-meta-item"><span class="label">User Roles</span><span class="value">13 Roles</span></div>
+        <div class="hero-meta-item"><span class="label">Deluge Workflows</span><span class="value">24 Automations</span></div>
+        <div class="hero-meta-item"><span class="label">Platform</span><span class="value">Zoho Creator India (.in)</span></div>
+      </div>
+    </section>
+
+    <div class="content">
+
+      <!-- Overview -->
+      <section id="overview">
+        <h2>Project Overview</h2>
+        <p><strong>Chemsol</strong> is a comprehensive Zoho Creator enterprise application purpose-built for industrial flooring solutions — epoxy, polyurethane, anti-static, ESD, demarcation, and coving systems. The application manages the complete product lifecycle: procurement of raw materials, quality control, production batch manufacturing, store/inventory management, project execution, and sales order processing.</p>
+
+        <h3>Business Context</h3>
+        <div class="card-grid">
+          <div class="card"><h4>🎯 Product Range</h4><p>EP (Epoxy), PU (Polyurethane), DEM (Demarcation), NUM (Numbering), ARR (Arrow Marking), ANTI (Anti-static), ESD (Electrostatic Discharge), FIL (Filling), COV (Coving) — each with unique system codes.</p></div>
+          <div class="card"><h4>⚡ Execution Modes</h4><p>Projects operate on <strong>Area-basis</strong> (sq. ft. of flooring installed) or <strong>Day-basis</strong> (manpower days). Sales/Work Orders support <strong>Supply+Apply</strong> and <strong>Supply-only</strong> models.</p></div>
+          <div class="card"><h4>🏢 Department Coverage</h4><p>Admin, Purchase, Store, Production, QC, Sales, Project Management, and Finance — each with dedicated forms, reports, and role-based permissions.</p></div>
+          <div class="card"><h4>🔒 Security Model</h4><p>13 user roles with form-level C/R/U/D, field-level visibility restrictions, record-level sharing rules, and approval limit thresholds (₹50K PR, ₹2L PO).</p></div>
+        </div>
+
+        <h3>Implementation Summary</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Phase</th><th>Requirements</th><th>Status</th><th>Forms</th><th>Artifacts</th></tr></thead>
+            <tbody>
+              <tr><td><span class="badge badge-teal">1A — Master Data</span></td><td>ADM-01 to ADM-08</td><td><span class="status status-executed">✅ Executed</span> Awaiting UAT</td><td>8 forms</td><td>Item, System, BOM, Supplier, Customer, Store, Bin, User Access</td></tr>
+              <tr><td><span class="badge badge-blue">1B — Sales Order</span></td><td>SAL-01 to SAL-09</td><td><span class="status status-executed">✅ Executed</span> Awaiting UAT</td><td>1 dual-mode form</td><td>Sales/Work Order (Supply+Apply / Supply-only)</td></tr>
+              <tr><td><span class="badge badge-purple">1C/1D — Procurement</span></td><td>PUR-01 to PUR-18</td><td><span class="status status-executed">✅ Executed</span> Awaiting UAT</td><td>5 forms</td><td>PR, Rate Comparison, PO, PO Amendment, GRN</td></tr>
+              <tr><td><span class="badge badge-orange">1E — Quality Control</span></td><td>QC-01 to QC-06</td><td><span class="status status-executed">✅ Executed</span> Awaiting UAT</td><td>1 form</td><td>QC/QA Master (Viscosity, Density, Color, Moisture)</td></tr>
+              <tr><td><span class="badge badge-yellow">2B/2C — Store</span></td><td>STO-01 to STO-09</td><td><span class="status status-complete">✅ Complete</span> Impl. ready</td><td>6 forms</td><td>MR, MIS, Return, Handover, FG Receiving, Vehicle Transport</td></tr>
+              <tr><td><span class="badge badge-red">3B — Production</span></td><td>PROD-01 to PROD-05</td><td><span class="status status-complete">✅ Complete</span> Impl. ready</td><td>5 forms</td><td>Planning, Order, BMR, RM Consumption, Packing</td></tr>
+              <tr><td><span class="badge badge-blue">4A/4C — Project</span></td><td>PRJ-01 to PRJ-07</td><td><span class="status status-complete">✅ Complete</span> Impl. ready</td><td>2 forms + 7 task subforms</td><td>Project Master, Dashboard, 5 task buckets</td></tr>
+              <tr><td><span class="badge badge-green">8 — Reports & Security</span></td><td>RPT-01 to RPT-04, SEC-01 to SEC-04</td><td><span class="status status-complete">✅ Complete</span> Impl. ready</td><td>35 reports + security config</td><td>Role permissions, approval limits, field restrictions</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Build Sequence</h3>
+        <div class="timeline-bar">
+          <div class="seg seg-master">Master Data</div>
+          <div class="seg seg-sales">Sales</div>
+          <div class="seg seg-procure">Procurement</div>
+          <div class="seg seg-store">Store</div>
+          <div class="seg seg-prod">Production</div>
+          <div class="seg seg-project">Project</div>
+          <div class="seg seg-reports">Reports</div>
+        </div>
+      </section>
+
+      <!-- Architecture -->
+      <section id="architecture">
+        <h2>System Architecture</h2>
+        <p>The Chemsol application is organised into 8 module groups with clear data flow boundaries between master data, transactions, production, and reporting layers.</p>
+
+        <div class="arch-diagram">
+          <svg viewBox="0 0 800 380" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#0d9488"/><stop offset="100%" stop-color="#0f766e"/></linearGradient>
+              <linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1e3a5f"/><stop offset="100%" stop-color="#111827"/></linearGradient>
+              <linearGradient id="g3" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#2563eb"/><stop offset="100%" stop-color="#1d4ed8"/></linearGradient>
+              <linearGradient id="g4" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#7c3aed"/><stop offset="100%" stop-color="#6d28d9"/></linearGradient>
+            </defs>
+            <!-- Master Data Layer -->
+            <rect x="40" y="20" width="720" height="50" rx="8" fill="url(#g1)" opacity="0.9"/>
+            <text x="400" y="50" text-anchor="middle" fill="#fff" font-size="14" font-weight="600">Master Data Layer — Item · System · BOM · Supplier · Customer · Store · Bin Location · User Access</text>
+            <!-- Sales & Procurement Layer -->
+            <rect x="40" y="90" width="350" height="50" rx="8" fill="url(#g3)" opacity="0.9"/>
+            <text x="215" y="120" text-anchor="middle" fill="#fff" font-size="13" font-weight="500">Sales · SO/WO · Customer</text>
+            <rect x="410" y="90" width="350" height="50" rx="8" fill="url(#g4)" opacity="0.9"/>
+            <text x="585" y="120" text-anchor="middle" fill="#fff" font-size="13" font-weight="500">Procurement · PR → RC → PO → GRN</text>
+            <!-- Arrows down -->
+            <text x="395" y="130" text-anchor="middle" fill="#9ca3af" font-size="24">↓</text>
+            <!-- Quality & Store Layer -->
+            <rect x="40" y="160" width="350" height="50" rx="8" fill="url(#g2)" opacity="0.8"/>
+            <text x="215" y="190" text-anchor="middle" fill="#fff" font-size="13" font-weight="500">Quality · QC/QA Master (Viscosity/Density/Color/Moisture)</text>
+            <rect x="410" y="160" width="350" height="50" rx="8" fill="url(#g2)" opacity="0.8"/>
+            <text x="585" y="190" text-anchor="middle" fill="#fff" font-size="13" font-weight="500">Store · MR → MIS → Return → Handover → FG Recv → Vehicle</text>
+            <!-- Arrows down -->
+            <text x="395" y="200" text-anchor="middle" fill="#9ca3af" font-size="24">↓</text>
+            <!-- Production Layer -->
+            <rect x="40" y="230" width="350" height="50" rx="8" fill="url(#g1)" opacity="0.85"/>
+            <text x="215" y="260" text-anchor="middle" fill="#fff" font-size="13" font-weight="500">Production · Planning → Order → BMR → RM Consump → Packing</text>
+            <rect x="410" y="230" width="350" height="50" rx="8" fill="url(#g2)" opacity="0.8"/>
+            <text x="585" y="260" text-anchor="middle" fill="#fff" font-size="13" font-weight="500">Project Management · Project → Tasks (5 buckets) → Dashboard</text>
+            <!-- Reports Layer -->
+            <rect x="40" y="310" width="720" height="45" rx="8" fill="url(#g3)" opacity="0.85"/>
+            <text x="400" y="338" text-anchor="middle" fill="#fff" font-size="14" font-weight="600">Reports Layer — 35 Department-Specific Reports + Dashboards</text>
+          </svg>
+        </div>
+
+        <h3>Data Flow</h3>
+        <div class="flow-diagram">
+          <span class="flow-node">PR</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node purple">Rate Comparison</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node blue">PO</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node orange">GRN</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node">QC</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node green">Stock (+)</span>
+        </div>
+        <div class="flow-diagram">
+          <span class="flow-node">SO/WO</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node purple">Project</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node blue">MR</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node">MIS</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node green">Stock (−)</span>
+        </div>
+        <div class="flow-diagram">
+          <span class="flow-node">BOM</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node blue">Production Order</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node purple">BMR</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node orange">RM Consumption</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node green">Packing → FG (+)</span>
+        </div>
+      </section>
+
+      <!-- Tech Stack -->
+      <section id="tech-stack">
+        <h2>Technology Stack</h2>
+        <div class="card-grid">
+          <div class="card"><h4>📱 Platform</h4><p>Zoho Creator (Low-code / No-code) — India datacenter (creator.zoho.in). All API calls use .in domain.</p></div>
+          <div class="card"><h4>⚙ Language</h4><p>Deluge (Zoho proprietary scripting) for all automation: auto-numbering, auto-fetch lookups, calculations, stock updates, validations, approvals.</p></div>
+          <div class="card"><h4>🗄 Database</h4><p>Zoho Creator's built-in PostgreSQL-based database with native CRUD, pagination (200 records/page), file storage (20MB/file), and audit logging.</p></div>
+          <div class="card"><h4>🔐 Security</h4><p>Zoho Creator native OAuth authentication + role-based form/field/record-level permissions + approval workflows with escalation.</p></div>
+          <div class="card"><h4>📊 Reporting</h4><p>Summary Reports, Detailed Reports, Grouped Summaries, Pivot Tables, Printable Pages (via Page Builder + Deluge). 35 reports across 6 departments.</p></div>
+          <div class="card"><h4>📱 Mobile</h4><p>Zoho Creator mobile app (iOS/Android) — all forms and reports accessible with responsive layouts and offline capability.</p></div>
+        </div>
+      </section>
+
+      <!-- === PHASE 1A === -->
+      <section id="phase-1a">
+        <h2>Phase 1A — Master Data & Admin <span class="status status-executed">✅ Executed</span></h2>
+        <p><strong>Requirements:</strong> ADM-01 to ADM-08 · <strong>Forms:</strong> 8 · <strong>Status:</strong> Awaiting UAT Verification</p>
+
+        <p>Build foundational master data forms that all downstream transactional modules depend on. These forms establish the core data entities — items, systems, BOMs, suppliers, customers, stores, bin locations, and user access controls.</p>
+
+        <div class="phase" id="item-master">
+          <div class="phase-header"><span class="phase-number">1</span><span class="phase-title">Item Master</span><span class="phase-effort"><code>Item_Master</code></span></div>
+          <p>11 fields — the central product/raw material catalog. Categories: RM, PM, FG, CON, SVC. Auto-numbering generates category-prefixed codes (RM-001, FG-001, etc.).</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Properties</th></tr></thead>
+              <tbody>
+                <tr><td>Category of Purchase Item</td><td>Dropdown</td><td>Yes</td><td>RM, PM, FG, CON, SVC</td></tr>
+                <tr><td>Purchase Item Code</td><td>Text</td><td>Yes</td><td>Unique, Read-only, Auto-generated (RM-001, FG-001)</td></tr>
+                <tr><td>Purchase Item Name</td><td>Text</td><td>Yes</td><td>Max 200 chars</td></tr>
+                <tr><td>UOM</td><td>Dropdown</td><td>Yes</td><td>Sq.Ft, Sq.Mtr, Kg, Litre, Nos, Meter, Roll, Packet, Bag, Drum, Set, Hour, Day</td></tr>
+                <tr><td>HSN Code</td><td>Text</td><td>Yes</td><td>Regex: ^\d{4,8}$</td></tr>
+                <tr><td>GST %</td><td>Decimal</td><td>No</td><td>2 decimals, range 0-100</td></tr>
+                <tr><td>Min Stock</td><td>Number</td><td>Yes</td><td>Min value: 0</td></tr>
+                <tr><td>Max Stock</td><td>Number</td><td>No</td><td>Min value: 0</td></tr>
+                <tr><td>Standard Rate</td><td>Currency</td><td>No</td><td>INR — hidden from non-Admin/Purchase/Store</td></tr>
+                <tr><td>Preferred Supplier</td><td>Lookup</td><td>No</td><td>From Supplier Master</td></tr>
+                <tr><td>Lead Time (Days)</td><td>Number</td><td>No</td><td>Integer</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Deluge Workflows</h4>
+          <div class="code-block"><pre>// Auto-number generation (On Create)
+category = input.Category_of_Purchase_Item;
+lastRecord = zoho.creator.getRecords("chemsol", "Item_Master",
+    "Category_of_Purchase_Item == '" + category + "'", 1, 0);
+if(lastRecord.size() > 0) {
+    lastCode = lastRecord.get(0).get("Purchase_Item_Code");
+    lastNum = lastCode.split("-").get(1).toLong();
+    newNum = lastNum + 1;
+} else {
+    newNum = 1;
+}
+input.Purchase_Item_Code = category + "-" + newNum.toString().padLeft(3, "0");
+
+// Validation: Min Stock ≤ Max Stock
+if(input.Min_Stock > input.Max_Stock) {
+    throw "Min Stock must be less than or equal to Max Stock";
+}
+
+// Duplicate check
+existing = zoho.creator.getRecords("chemsol", "Item_Master",
+    "Purchase_Item_Name == '" + input.Purchase_Item_Name + "'");
+if(existing.size() > 0) {
+    throw "Item Name already exists";
+}</pre></div>
+        </div>
+
+        <div class="phase" id="system-master">
+          <div class="phase-header"><span class="phase-number">2</span><span class="phase-title">System Master</span><span class="phase-effort"><code>System_Master</code></span></div>
+          <p>6 fields — defines flooring system types with auto-generated codes. Each system type (EP, PU, DEM, etc.) has its own numbering sequence (EP-001, PU-001).</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>System Type</td><td>Dropdown</td><td>EP, PU, DEM, NUM, ARR, ANTI, ESD, FIL, COV</td></tr>
+                <tr><td>System Code</td><td>Text</td><td>Auto-generated: {TYPE}-001</td></tr>
+                <tr><td>System Name</td><td>Text</td><td>Max 200 chars</td></tr>
+                <tr><td>Thickness</td><td>Text</td><td>Max 50 chars (e.g., "3mm", "4mm")</td></tr>
+                <tr><td>Description</td><td>Multi-line</td><td>4 rows</td></tr>
+                <tr><td>UOM</td><td>Dropdown</td><td>Sq.Ft, Sq.Mtr</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="phase" id="bom-master">
+          <div class="phase-header"><span class="phase-number">3</span><span class="phase-title">BOM Master</span><span class="phase-effort"><code>BOM_Master</code> (Header + Subform)</span></div>
+          <p>Defines material consumption per system. Header links to System Master; subform contains Item Code, Quantity, and UOM with auto-fetch from Item Master.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Header Field</th><th>Type</th><th>Properties</th></tr></thead>
+              <tbody>
+                <tr><td>BOM Code</td><td>Auto Number</td><td>BOM-{000}</td></tr>
+                <tr><td>System Code</td><td>Lookup</td><td>From System Master</td></tr>
+                <tr><td>System Name</td><td>Text</td><td>Auto-fetched, Read-only</td></tr>
+                <tr><td>Description</td><td>Multi-line</td><td>3 rows</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Subform Field</th><th>Type</th><th>Properties</th></tr></thead>
+              <tbody>
+                <tr><td>Item Code</td><td>Lookup</td><td>From Item Master</td></tr>
+                <tr><td>Item Name</td><td>Text</td><td>Auto-fetched, Read-only</td></tr>
+                <tr><td>Quantity</td><td>Decimal</td><td>Min: 0.001, 3 decimals</td></tr>
+                <tr><td>UOM</td><td>Text</td><td>Auto-fetched, Read-only</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>Validations:</strong> Minimum 1 BOM item, Quantity > 0, No duplicate Item Codes.</p>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header"><span class="phase-number">4</span><span class="phase-title">Supplier Master</span><span class="phase-effort"><code>Supplier_Master</code></span></div>
+          <p>16 fields across 4 sections: Basic Info (auto-numbered SUP-001), Primary Contact, Address (Registered, City, State, Pin, Country), Bank Details (GSTIN, PAN, Bank Name, Account No, IFSC).</p>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header"><span class="phase-number">5</span><span class="phase-title">Customer Master</span><span class="phase-effort"><code>Customer_Master</code></span></div>
+          <p>11 fields + 3 addresses: Customer Code (auto), Customer Name, Contact Person, Contact No, Email, GST No, PAN, Billing Address, Shipping Address, Registered Address.</p>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header"><span class="phase-number">6</span><span class="phase-title">Store Master</span><span class="phase-effort"><code>Store_Master</code></span></div>
+          <p>4 fields: Store Code (auto), Store Name, Store Location, Store Type (RM/FG/QC/Site).</p>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header"><span class="phase-number">7</span><span class="phase-title">Bin Location Master</span><span class="phase-effort"><code>Bin_Location_Master</code></span></div>
+          <p>5 fields: Bin ID (auto), Store (Lookup from Store Master), Rack, Shelf, Bin.</p>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header"><span class="phase-number">8</span><span class="phase-title">User Access & Approval Matrix</span><span class="phase-effort"><code>User_Access</code></span></div>
+          <p>132-line configuration artifact defining 13 user roles with form-level C/R/U/D permissions, field-level visibility restrictions, and approval limits (PR: ₹50K, PO: ₹2L).</p>
+        </div>
+      </section>
+
+      <!-- === PHASE 1B === -->
+      <section id="phase-1b">
+        <h2>Phase 1B — Sales Order / Work Order <span class="status status-executed">✅ Executed</span></h2>
+        <p><strong>Requirements:</strong> SAL-01 to SAL-09 · <strong>Forms:</strong> 1 dual-mode · <strong>Status:</strong> Awaiting UAT Verification</p>
+
+        <div class="phase">
+          <div class="phase-header"><span class="phase-number">●</span><span class="phase-title">Sales/Work Order Master</span><span class="phase-effort"><code>Sales_Work_Order</code></span></div>
+          <p>Dual-mode transaction form with conditional sections based on Mode selection:</p>
+
+          <h4>Supply+Apply Mode (Work Order)</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Field / Section</th><th>Details</th></tr></thead>
+              <tbody>
+                <tr><td>Work Order No</td><td>Auto-generated: WO-001</td></tr>
+                <tr><td>Site Name / Address</td><td>Project execution location</td></tr>
+                <tr><td>Site Manager / Contact</td><td>Optional</td></tr>
+                <tr><td>Project Type</td><td>Industrial, Commercial</td></tr>
+                <tr><td>WO_LineItems (subform)</td><td>System Code, System Name, Thickness, Area, UOM (Sq.Ft/Sq.Mtr/Kg/Litre), Rate, Amount (formula)</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Supply-Only Mode (Sales Order)</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Field / Section</th><th>Details</th></tr></thead>
+              <tbody>
+                <tr><td>Sales Order No</td><td>Auto-generated: SO-001</td></tr>
+                <tr><td>Billing / Shipping Address</td><td>From Customer Master or manual</td></tr>
+                <tr><td>SO_LineItems (subform)</td><td>FG Code (FG filter), FG Name, Quantity, UOM, Rate, Amount (formula)</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Shared Header & Calculations</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Field</th><th>Properties</th></tr></thead>
+              <tbody>
+                <tr><td>Customer Code</td><td>Lookup → auto-fetches all customer details (Name, Contact, GST, PAN, Addresses)</td></tr>
+                <tr><td>Subtotal</td><td>Formula: Sum of line Amounts</td></tr>
+                <tr><td>Transportation Scope</td><td>Supplier, Own</td></tr>
+                <tr><td>Transportation Amount</td><td>Decimal (optional)</td></tr>
+                <tr><td>Commission Type</td><td>Percentage, Fixed Amount</td></tr>
+                <tr><td>Commission Value</td><td>Conditional</td></tr>
+                <tr><td>Total</td><td>Formula: Subtotal + Transport + Commission</td></tr>
+                <tr><td>Payment Terms</td><td>Advance, 7/15/30/45/60 Days, On Delivery</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="code-block"><pre>// Auto-fetch Customer Details (On User Input — Customer Code)
+supplier_id = input.Customer_Code;
+customer_data = zoho.creator.getRecordById("chemsol", "Customer_Master", supplier_id);
+input.Client_Org_Name = customer_data.get("Customer_Name");
+input.Contact_Person = customer_data.get("Contact_Person");
+input.Contact_No = customer_data.get("Contact_No");
+input.Email = customer_data.get("Email");
+input.GST_No = customer_data.get("GST_No");
+input.PAN = customer_data.get("PAN");
+input.Regd_Address = customer_data.get("Registered_Address");
+
+// Commission Calculation (On Change)
+if(input.Commission_Type == "Percentage") {
+    commission = input.Subtotal * input.Commission_Value / 100;
+} else {
+    commission = input.Commission_Value;
+}
+input.Total = input.Subtotal + commission + input.Transportation_Amount;</pre></div>
+        </div>
+      </section>
+
+      <!-- === PHASE 1C/1D === -->
+      <section id="phase-1c">
+        <h2>Phase 1C/1D — Procurement <span class="status status-executed">✅ Executed</span></h2>
+        <p><strong>Requirements:</strong> PUR-01 to PUR-18 · <strong>Forms:</strong> 5 · <strong>Status:</strong> Awaiting UAT Verification</p>
+
+        <div class="flow-diagram" style="margin-bottom: 20px;">
+          <span class="flow-node">PR</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node purple">Rate Comparison</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node blue">PO</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node accent">PO Amendment</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node orange">GRN</span>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header"><span class="phase-number">1</span><span class="phase-title">Purchase Requisition</span><span class="phase-effort"><code>PR_Master</code></span></div>
+          <p>Header + subform. PR Number auto-generated (PR-{000}). Subform items with Item Code lookup that auto-fetches Name/UOM/Lead Time. 2-level approval: Purchase Manager (≤₹50K) → Director (&gt;₹50K).</p>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header"><span class="phase-number">2</span><span class="phase-title">Rate Comparison</span><span class="phase-effort"><code>Rate_Comparison</code></span></div>
+          <p>RC-{000} auto-number. Links to PR Reference. Up to 5 suppliers with price, credit terms, and delivery quotes. Finalised Supplier + Final Rate selection drives PO creation.</p>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header"><span class="phase-number">3</span><span class="phase-title">Purchase Order</span><span class="phase-effort"><code>PO_Master</code></span></div>
+          <p>Dual-series auto-numbering based on RM Type: Coding → RMWAD-{000}, Non Coding → RM-{000}. Full GST calculation per line (CGST+SGST or IGST). 6 warehouse options, 7 payment terms.</p>
+          <div class="code-block"><pre>// Dual auto-number (On Create — based on RM Type)
+if(input.RM_Type == "Coding") { prefix = "RMWAD"; }
+else { prefix = "RM"; }
+lastRecord = zoho.creator.getRecords("chemsol", "PO_Master",
+    "PO_Number.startsWith('" + prefix + "')", 1, 0);
+if(lastRecord.size() > 0) {
+    lastNum = lastRecord.get(0).get("PO_Number").split("-").get(1).toLong();
+    newNum = lastNum + 1;
+} else { newNum = 1; }
+input.PO_Number = prefix + "-" + newNum.toString().padLeft(3, "0");
+
+// GST Calculation per line item (On Qty/Rate/GST% change)
+basicAmount = input.Qty * input.Rate;
+gstAmount = basicAmount * input.GST_Percentage / 100;
+if(input.GST_Type == "Intra-State") {
+    input.CGST_Amount = gstAmount / 2;
+    input.SGST_Amount = gstAmount / 2;
+} else {
+    input.IGST_Amount = gstAmount;
+}
+input.Total_Amount = basicAmount + gstAmount;</pre></div>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header"><span class="phase-number">4</span><span class="phase-title">PO Amendment</span><span class="phase-effort"><code>PO_Amendment</code></span></div>
+          <p>POA-{000} auto-number. Rate change blocked if GRN exists. Approval escalation at ₹2L threshold difference.</p>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header"><span class="phase-number">5</span><span class="phase-title">Goods Receipt Note</span><span class="phase-effort"><code>GRN_Master</code></span></div>
+          <p>Full GRN with PO reference auto-fetch, partial receipt (checkbox per line), QC Status tracking, Vehicle/Transport details. Post-GRN button generates GRN number, updates stock (Item_Master.Current_Stock += Received_Qty), updates PO status.</p>
+          <div class="code-block"><pre>// Post GRN Logic
+if(input.Status == "Draft") {
+    // Validate
+    selectedItems = input.GRN_Items.where(Select == true);
+    if(selectedItems.size() == 0) { throw "Select at least one item"; }
+    for each item in selectedItems {
+        if(item.Received_Qty <= 0 || item.Received_Qty > item.Balance_Qty) {
+            throw "Invalid quantity for " + item.Item_Name;
+        }
+    }
+    // Generate GRN Number
+    input.GRN_Number = "GRN-" + getNextSequence("GRN_Series");
+    // Update Stock
+    for each item in selectedItems {
+        itemRecord = zoho.creator.getRecordById("chemsol", "Item_Master", item.Item_Code);
+        currentStock = itemRecord.get("Current_Stock");
+        zoho.creator.updateRecord("chemsol", "Item_Master",
+            item.Item_Code, {"Current_Stock": currentStock + item.Received_Qty});
+    }
+    // Update PO Received Qty
+    // Set Status = "Posted", Posted_Timestamp = now
+    input.Status = "Posted";
+    input.Posted_Timestamp = zoho.currenttime;
+}</pre></div>
+        </div>
+      </section>
+
+      <!-- === PHASE 1E === -->
+      <section id="phase-1e">
+        <h2>Phase 1E — Quality Control <span class="status status-executed">✅ Executed</span></h2>
+        <p><strong>Requirements:</strong> QC-01 to QC-06 · <strong>Form:</strong> QC/QA Master · <strong>Status:</strong> Awaiting UAT Verification</p>
+
+        <div class="phase">
+          <div class="phase-header"><span class="phase-number">●</span><span class="phase-title">QC/QA Master</span><span class="phase-effort"><code>QC_Master</code></span></div>
+          <p>Post-GRN quality inspection. GRN Number lookup auto-fetches supplier details and line items. Each item tested for Viscosity, Density, Color, and Moisture with Pass/Fail per-item status. Stock disposition: Pass → available inventory, Fail → quarantine.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Header Field</th><th>Type</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>QC No</td><td>Auto Number</td><td>Q-{000}</td></tr>
+                <tr><td>GRN Number</td><td>Lookup</td><td>From GRN Master — auto-fetches supplier + items</td></tr>
+                <tr><td>QC Status</td><td>Dropdown</td><td>Pass / Fail / Pending (overall)</td></tr>
+                <tr><td>Total Received/Accepted/Rejected Qty</td><td>Decimal</td><td>Auto-calculated</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Subform Field</th><th>Type</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>Item Code / Name</td><td>Auto</td><td>From GRN</td></tr>
+                <tr><td>Received / Accepted / Rejected Qty</td><td>Decimal</td><td>Accepted ≤ Received</td></tr>
+                <tr><td>Viscosity / Density / Color / Moisture</td><td>Text</td><td>Test results</td></tr>
+                <tr><td>QC Status (Per Item)</td><td>Dropdown</td><td>Pass / Fail</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- === PHASE 2B/2C === -->
+      <section id="phase-2b">
+        <h2>Phase 2B/2C — Store & Inventory <span class="status status-complete">✅ Complete</span></h2>
+        <p><strong>Requirements:</strong> STO-01 to STO-09 · <strong>Forms:</strong> 6 · <strong>Status:</strong> Implementation Ready</p>
+
+        <div class="card-grid">
+          <div class="card">
+            <h4>📋 Material Requisition (<code>MR_Master</code>)</h4>
+            <p>MR-{000}. Types: Production, R&D, Maintenance, Other. Subform with Item Code lookup → auto-fetches Name, Category, UOM, Available Stock. Shortage flag when Required Qty > Available Stock.</p>
+          </div>
+          <div class="card">
+            <h4>📦 Material Issue Slip (<code>MIS_Master</code>)</h4>
+            <p>MIS-{000}. Links to MR reference. Auto-fetches all MR items. On Post: Deducts Issued Qty from Item_Master.Current_Stock. Stock Out transaction.</p>
+          </div>
+          <div class="card">
+            <h4>↩ Material Return (<code>Material_Return</code>)</h4>
+            <p>RET-{000}. MR/MIS Reference lookup. Returned Items subform. On Post: Stock add-back (reverse of MIS).</p>
+          </div>
+          <div class="card">
+            <h4>🔄 Material Handover (<code>Material_Handover</code>)</h4>
+            <p>MH-{000}. From/To Store lookup. Handover Items subform. Stock movement tracking (deduct from source, add to destination).</p>
+          </div>
+          <div class="card">
+            <h4>🏭 FG Receiving (<code>FG_Receiving</code>)</h4>
+            <p>FGR-{000}. Reference to Production Order/BMR. FG Received subform. Stock addition to FG items on Post.</p>
+          </div>
+          <div class="card">
+            <h4>🚚 Vehicle & Transport (<code>Vehicle_Transport</code>)</h4>
+            <p>Vehicle No (manual/unique), Gate Pass No (GP-{000}), Transport charges. Links to PO or Project reference.</p>
+          </div>
+        </div>
+
+        <h4>Stock Update Logic</h4>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Transaction</th><th>Stock Effect</th><th>Direction</th></tr></thead>
+            <tbody>
+              <tr><td>GRN Posted</td><td>Add Received Qty to Warehouse stock</td><td>Stock In (+)</td></tr>
+              <tr><td>MIS Posted</td><td>Deduct Issued Qty from RM store</td><td>Stock Out (−)</td></tr>
+              <tr><td>FG Receiving Posted</td><td>Add FG Qty to FG store</td><td>Stock In (+)</td></tr>
+              <tr><td>Material Return Posted</td><td>Add returned Qty back to RM store</td><td>Stock In (+)</td></tr>
+              <tr><td>Material Handover Posted</td><td>Deduct from source, Add to destination</td><td>Transfer</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- === PHASE 3B === -->
+      <section id="phase-3b">
+        <h2>Phase 3B — Production <span class="status status-complete">✅ Complete</span></h2>
+        <p><strong>Requirements:</strong> PROD-01 to PROD-05 · <strong>Forms:</strong> 5 · <strong>Status:</strong> Implementation Ready</p>
+
+        <div class="flow-diagram" style="margin-bottom: 20px;">
+          <span class="flow-node">Production Planning</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node blue">Production Order</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node purple">BMR</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node orange">RM Consumption</span>
+          <span class="flow-arrow">→</span>
+          <span class="flow-node green">Packing Entry</span>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header"><span class="phase-number">1</span><span class="phase-title">Production Planning</span><span class="phase-effort"><code>Production_Planning</code></span></div>
+          <p>PLAN-{000}. Planning Period (Week/Month), Plant (Wadki/Main/Neelo). Auto-fetches FG stock availability, calculates Net Production Required = Planned Qty − Available FG Stock.</p>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header"><span class="phase-number">2</span><span class="phase-title">Production Order</span><span class="phase-effort"><code>Production_Order</code></span></div>
+          <p>PROD-{000}. Links to WO Reference. System Code lookup auto-fetches BOM items. Status lifecycle: Planned → In Progress → Completed → Cancelled.</p>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header"><span class="phase-number">3</span><span class="phase-title">Batch Manufacturing Record</span><span class="phase-effort"><code>BMR_Master</code></span></div>
+          <p>BMR-{000}. Links Production Order with actual RM/PM consumption. Auto-fetches BOM items based on System Code. Tracks Planned Qty vs Produced Qty vs Consumed Qty per item.</p>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header"><span class="phase-number">4</span><span class="phase-title">RM Consumption Entry</span><span class="phase-effort"><code>RM_Consumption</code></span></div>
+          <p>RMCON-{000}. Real-time material consumption tracking. Auto-calculates Total Consumed = Previous Consumed + Current Consumption. Stock deduction on submit.</p>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header"><span class="phase-number">5</span><span class="phase-title">Packing Entry</span><span class="phase-effort"><code>Packing_Entry</code></span></div>
+          <p>PACK-{000}. FG Code lookup (FG filter). Quantity Packed + QC Status tracking. FG stock addition on submit — completes the production cycle.</p>
+        </div>
+      </section>
+
+      <!-- === PHASE 4A/4C === -->
+      <section id="phase-4a">
+        <h2>Phase 4A/4C — Project Management <span class="status status-complete">✅ Complete</span></h2>
+        <p><strong>Requirements:</strong> PRJ-01 to PRJ-07 · <strong>Forms:</strong> 2 (Project Master + Dashboard) · <strong>Status:</strong> Implementation Ready</p>
+
+        <div class="phase">
+          <div class="phase-header"><span class="phase-number">●</span><span class="phase-title">Project Master</span><span class="phase-effort"><code>Project_Master</code></span></div>
+          <p>10 header fields + 7 subforms covering the complete project lifecycle. Execution modes: Area-basis or Day-basis.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Header Field</th><th>Type</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>Project ID</td><td>Auto Number</td><td>PROJ-{000}</td></tr>
+                <tr><td>Project Name</td><td>Text</td><td>Required</td></tr>
+                <tr><td>Customer</td><td>Lookup</td><td>From Customer_Master</td></tr>
+                <tr><td>Execution Base</td><td>Dropdown</td><td>AreaBasis, DayBasis</td></tr>
+                <tr><td>Project Cost</td><td>Currency</td><td>Budget</td></tr>
+                <tr><td>Project Manager</td><td>User</td><td>Required</td></tr>
+                <tr><td>Status</td><td>Dropdown</td><td>Planning, Active, On Hold, Completed, Cancelled</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>5 Task Buckets</h4>
+          <div class="card-grid">
+            <div class="card"><h4>🚛 Transportation</h4><p>Always visible. Budget, Intracity, Intercity, Local, Loading/Unloading costs.</p></div>
+            <div class="card"><h4>🔧 Application/Execution</h4><p>Visible in AreaBasis mode. Task Type, Area, Cost, Machine Power.</p></div>
+            <div class="card"><h4>👷 Manpower</h4><p>Visible in DayBasis mode. Manpower Budget, Manpower Count, daily tracking.</p></div>
+            <div class="card"><h4>🛠 Tools</h4><p>Tools Budget with itemized costing.</p></div>
+            <div class="card"><h4>📋 Additional Expenses</h4><p>Overhead budget for miscellaneous project costs.</p></div>
+          </div>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header"><span class="phase-number">●</span><span class="phase-title">Project Dashboard</span><span class="phase-effort">8 Widgets</span></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Widget</th><th>Data Source</th><th>Purpose</th></tr></thead>
+              <tbody>
+                <tr><td>Open Projects</td><td>Project_Master</td><td>Active project count</td></tr>
+                <tr><td>Active POs</td><td>PO_Master (Project filter)</td><td>Procurement tracking</td></tr>
+                <tr><td>Project Margins</td><td>Project Cost − Actuals</td><td>Profitability</td></tr>
+                <tr><td>Running Status</td><td>Task completion %</td><td>Progress tracking</td></tr>
+                <tr><td>Manpower Cost Monthly</td><td>Manpower subform</td><td>Labour cost tracking</td></tr>
+                <tr><td>Transportation Monthly</td><td>Transport subform</td><td>Logistics costs</td></tr>
+                <tr><td>Tools Report</td><td>Tools subform</td><td>Equipment tracking</td></tr>
+                <tr><td>Issues / Margin Report</td><td>Project_Master</td><td>Executive summary</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- === PHASE 8 === -->
+      <section id="phase-8">
+        <h2>Phase 8 — Reports & Security <span class="status status-complete">✅ Complete</span></h2>
+        <p><strong>Requirements:</strong> RPT-01 to RPT-04, SEC-01 to SEC-04 · <strong>Reports:</strong> 35 · <strong>Status:</strong> Implementation Ready</p>
+
+        <h3>Reports by Department</h3>
+        <div class="card-grid">
+          <div class="card"><h4>📊 Purchase (9 reports)</h4><p>Total Purchase This Month, Open PO Register, Pending PR Approvals, Overdue Deliveries, PO vs GRN Pending, Vendor Performance, Purchase by Item Group, Price Comparison, Transportation Reports</p></div>
+          <div class="card"><h4>📦 Store (6 reports)</h4><p>Inventory Dashboard, Dispatch Planning, Pending MR, Pending FG Receiving, Material Issue Report, Material Return Report</p></div>
+          <div class="card"><h4>🏭 Production (9 reports)</h4><p>Daily Production, BMR Report, Material Consumption, Production Order Status, BOM vs Actual Consumption, Production Loss, FG Handover, Packing Report, Machine Utilization</p></div>
+          <div class="card"><h4>📋 Project (12 reports)</h4><p>Manpower Cost/Count, Tools, Issues, Margin, Execution vs Achievement, Monthly/Annual/Sitewise Costing, Material vs Work Completion, Transport, Task Reports</p></div>
+        </div>
+
+        <h3>Security Model</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Role</th><th>Department</th><th>Key Permissions</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Admin</strong></td><td>IT</td><td>Full access — all forms C/R/U/D, user management</td></tr>
+              <tr><td><strong>Purchase Manager</strong></td><td>Purchase</td><td>PR, RC, PO, GRN, Supplier — CRUD + approvals</td></tr>
+              <tr><td><strong>Purchase Executive</strong></td><td>Purchase</td><td>PR, RC, PO — Create/Edit, limited approvals</td></tr>
+              <tr><td><strong>Store Manager</strong></td><td>Store</td><td>MR, MIS, Returns, Handover, FG, Vehicle — CRUD</td></tr>
+              <tr><td><strong>Store Keeper</strong></td><td>Store</td><td>MR, MIS — Create/Edit, limited</td></tr>
+              <tr><td><strong>Production Manager</strong></td><td>Production</td><td>All production forms — CRUD</td></tr>
+              <tr><td><strong>Production Executive</strong></td><td>Production</td><td>Production forms — Create/Edit</td></tr>
+              <tr><td><strong>QC Inspector</strong></td><td>QC</td><td>QC_Master — CRUD</td></tr>
+              <tr><td><strong>Sales Executive</strong></td><td>Sales</td><td>SO/WO, Customer — CRUD, Item/Sys — Read</td></tr>
+              <tr><td><strong>Finance Executive</strong></td><td>Finance</td><td>Read-only on financial forms</td></tr>
+              <tr><td><strong>Project Manager</strong></td><td>Project</td><td>Project_Master — CRUD</td></tr>
+              <tr><td><strong>Project Coordinator</strong></td><td>Project</td><td>Project — Create/Edit</td></tr>
+              <tr><td><strong>Viewer</strong></td><td>All</td><td>Read-only on permitted forms</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h4>Field-Level Restrictions</h4>
+        <ul>
+          <li>Supplier_Master: Account_No, IFSC_Code hidden from non-Purchase roles</li>
+          <li>Item_Master: Standard_Rate hidden from non-Admin/Purchase/Store</li>
+          <li>User_Access: Approval limits visible only to Admin</li>
+          <li>QC_Master: Test results (Viscosity, Density, Color, Moisture) — QC Inspector only</li>
+        </ul>
+
+        <h4>Approval Limits</h4>
+        <ul>
+          <li>PR: ₹50K threshold (Purchase Manager), &gt;₹50K Director escalation</li>
+          <li>PO: ₹2L threshold difference (PO Amendment — Director escalation)</li>
+          <li>MR: Department-specific limits by Production/Project role</li>
+        </ul>
+      </section>
+
+      <!-- === FORMS INVENTORY === -->
+      <section id="forms">
+        <h2>Form Inventory — 28 Forms</h2>
+        <p>Complete inventory of all implemented forms with Zoho Creator internal names, phase mapping, and key features.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Form Name</th><th>Internal Name</th><th>Phase</th><th>Type</th><th>Key Feature</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td><strong>Item Master</strong></td><td><code>Item_Master</code></td><td>1A</td><td>Master</td><td>Auto-number by category (RM-001, FG-001), GST validation</td></tr>
+              <tr><td>2</td><td><strong>System Master</strong></td><td><code>System_Master</code></td><td>1A</td><td>Master</td><td>9 system types, auto-code by type (EP-001, PU-001)</td></tr>
+              <tr><td>3</td><td><strong>BOM Master</strong></td><td><code>BOM_Master</code></td><td>1A</td><td>Master</td><td>Header+subform, auto-fetch from Item/System</td></tr>
+              <tr><td>4</td><td><strong>Supplier Master</strong></td><td><code>Supplier_Master</code></td><td>1A</td><td>Master</td><td>16 fields, bank details, GSTIN/PAN validation</td></tr>
+              <tr><td>5</td><td><strong>Customer Master</strong></td><td><code>Customer_Master</code></td><td>1A</td><td>Master</td><td>3 addresses, GST/PAN, auto-number</td></tr>
+              <tr><td>6</td><td><strong>Store Master</strong></td><td><code>Store_Master</code></td><td>1A</td><td>Master</td><td>Store types: RM/FG/QC/Site</td></tr>
+              <tr><td>7</td><td><strong>Bin Location Master</strong></td><td><code>Bin_Location_Master</code></td><td>1A</td><td>Master</td><td>Rack/Shelf/Bin with Store lookup</td></tr>
+              <tr><td>8</td><td><strong>User Access</strong></td><td><code>User_Access</code></td><td>1A</td><td>Master</td><td>13 roles, approval limits matrix</td></tr>
+              <tr><td>9</td><td><strong>Sales/Work Order</strong></td><td><code>Sales_Work_Order</code></td><td>1B</td><td>Transaction</td><td>Dual-mode (Supply+Apply / Supply-only)</td></tr>
+              <tr><td>10</td><td><strong>Purchase Requisition</strong></td><td><code>PR_Master</code></td><td>1C</td><td>Transaction</td><td>2-level approval (₹50K threshold)</td></tr>
+              <tr><td>11</td><td><strong>Rate Comparison</strong></td><td><code>Rate_Comparison</code></td><td>1C</td><td>Transaction</td><td>5 suppliers, auto-fetch PR items</td></tr>
+              <tr><td>12</td><td><strong>Purchase Order</strong></td><td><code>PO_Master</code></td><td>1D</td><td>Transaction</td><td>Dual series (RM/RMWAD), GST calc</td></tr>
+              <tr><td>13</td><td><strong>PO Amendment</strong></td><td><code>PO_Amendment</code></td><td>1D</td><td>Transaction</td><td>₹2L escalation, blocks if GRN exists</td></tr>
+              <tr><td>14</td><td><strong>Goods Receipt Note</strong></td><td><code>GRN_Master</code></td><td>1D</td><td>Transaction</td><td>Partial receipt, Post=stock update</td></tr>
+              <tr><td>15</td><td><strong>QC/QA Master</strong></td><td><code>QC_Master</code></td><td>1E</td><td>Transaction</td><td>Viscosity/Density/Color/Moisture tests</td></tr>
+              <tr><td>16</td><td><strong>Material Requisition</strong></td><td><code>MR_Master</code></td><td>2B</td><td>Transaction</td><td>Stock check, shortage flag</td></tr>
+              <tr><td>17</td><td><strong>Material Issue Slip</strong></td><td><code>MIS_Master</code></td><td>2B</td><td>Transaction</td><td>Stock deduction on post</td></tr>
+              <tr><td>18</td><td><strong>Material Return</strong></td><td><code>Material_Return</code></td><td>2C</td><td>Transaction</td><td>Stock add-back on post</td></tr>
+              <tr><td>19</td><td><strong>Material Handover</strong></td><td><code>Material_Handover</code></td><td>2C</td><td>Transaction</td><td>From/To store transfer</td></tr>
+              <tr><td>20</td><td><strong>FG Receiving</strong></td><td><code>FG_Receiving</code></td><td>2C</td><td>Transaction</td><td>FG stock addition on post</td></tr>
+              <tr><td>21</td><td><strong>Vehicle & Transport</strong></td><td><code>Vehicle_Transport</code></td><td>2C</td><td>Transaction</td><td>Gate pass, transport charges</td></tr>
+              <tr><td>22</td><td><strong>Production Planning</strong></td><td><code>Production_Planning</code></td><td>3B</td><td>Transaction</td><td>SO/WO qty reference, FG stock check</td></tr>
+              <tr><td>23</td><td><strong>Production Order</strong></td><td><code>Production_Order</code></td><td>3B</td><td>Transaction</td><td>WO reference, BOM auto-fetch</td></tr>
+              <tr><td>24</td><td><strong>BMR Master</strong></td><td><code>BMR_Master</code></td><td>3B</td><td>Transaction</td><td>Actual vs planned consumption</td></tr>
+              <tr><td>25</td><td><strong>RM Consumption</strong></td><td><code>RM_Consumption</code></td><td>3B</td><td>Transaction</td><td>Real-time stock deduction</td></tr>
+              <tr><td>26</td><td><strong>Packing Entry</strong></td><td><code>Packing_Entry</code></td><td>3B</td><td>Transaction</td><td>FG stock addition, QC status</td></tr>
+              <tr><td>27</td><td><strong>Project Master</strong></td><td><code>Project_Master</code></td><td>4A</td><td>Transaction</td><td>5 task buckets, Area/Day modes</td></tr>
+              <tr><td>28</td><td><strong>Project Dashboard</strong></td><td>Page</td><td>4C</td><td>Dashboard</td><td>8 widgets, project analytics</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- === AUTOMATION === -->
+      <section id="automation">
+        <h2>Deluge Automations — 24 Workflows</h2>
+        <p>All automation is implemented using Zoho Deluge scripting across 6 categories:</p>
+
+        <div class="card-grid">
+          <div class="card"><h4>🔢 Auto-Numbering (7)</h4><p>PR-{000}, RM-{000}/RMWAD-{000}, GRN-{000}, MR-{000}, MIS-{000}, QC-{000}, SO-{000}/WO-{000}, PROJ-{000}, BOM-{000}</p></div>
+          <div class="card"><h4>🔍 Auto-Fetch Lookups (10)</h4><p>Item→Name/UOM/LeadTime, Supplier→GST/Bank, Customer→Contact/Address, System→Name/Thickness, GRN→PO items, QC→GRN items, MR→Available Stock</p></div>
+          <div class="card"><h4>🧮 Calculations (4)</h4><p>PO line: Amount=Qty×Rate, GST calc (CGST/SGST/IGST). SO/WO line: Amount=Area×Rate. Commission: % or Fixed. Totals rollup.</p></div>
+          <div class="card"><h4>📦 Stock Updates (5)</h4><p>GRN (+), MIS (−), Material Return (+), FG Receiving (+), Material Handover (transfer) — all trigger on Post.</p></div>
+          <div class="card"><h4>✅ Approvals (4)</h4><p>PR (2-level), Rate Comparison, PO (2-level), MR (2-level) — with ₹50K/₹2L thresholds and Director escalation.</p></div>
+          <div class="card"><h4>📋 Validations (6+)</h4><p>Duplicate Item Name, GST range (0-100%), Min≤Max Stock, HSN format (^\d{4,8}$), Insufficient stock on MIS, PO amendment after GRN.</p></div>
+        </div>
+      </section>
+
+      <!-- === REPORTS === -->
+      <section id="reports">
+        <h2>Reports & Dashboards — 35 Reports</h2>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Department</th><th>Reports</th><th>Source Forms</th></tr></thead>
+            <tbody>
+              <tr><td><span class="badge badge-purple">Purchase (9)</span></td><td>Total Purchase This Month, Open PO Register, Pending PR Approvals, Overdue Deliveries, PO vs GRN Pending, Vendor Performance, Purchase by Item Group, Price Comparison, Transportation Reports</td><td>PO_Master, PR_Master, Rate_Comparison, Vehicle_Transport</td></tr>
+              <tr><td><span class="badge badge-yellow">Store (6)</span></td><td>Inventory Dashboard, Dispatch Planning, Pending MR, Pending FG Receiving, Material Issue Report, Material Return Report</td><td>MR_Master, MIS_Master, Material_Return, FG_Receiving</td></tr>
+              <tr><td><span class="badge badge-orange">Production (9)</span></td><td>Daily Production, BMR Report, Material Consumption, Production Order Status, BOM vs Actual, Production Loss, FG Handover, Packing, Machine Utilization</td><td>Production_Planning, BMR_Master, RM_Consumption, Packing_Entry</td></tr>
+              <tr><td><span class="badge badge-teal">Project (12)</span></td><td>Manpower Cost, Manpower Count, Tools, Issues, Margin, Execution vs Achievement, Monthly, Annual, Sitewise Costing, Material vs Work, Transport, Task</td><td>Project_Master (all task subforms)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- === TESTING === -->
+      <section id="testing">
+        <h2>Testing Strategy</h2>
+
+        <div class="callout callout-info"><strong>Test Approach:</strong> Each phase has a dedicated testing plan covering field validation, workflow execution, data integrity, and cross-form integration. UAT scenarios are documented per department.</div>
+
+        <div class="card-grid">
+          <div class="card"><h4>🧪 Unit Testing</h4><p>Per-form field validation: required fields, data types, regex patterns (HSN, GST), unique constraints, auto-numbering sequences.</p></div>
+          <div class="card"><h4>🔗 Integration Testing</h4><p>Cross-form data flow: PR→RC→PO→GRN→QC, MR→MIS→Stock, BOM→Production→Packing. Verify auto-fetch lookups and stock updates.</p></div>
+          <div class="card"><h4>🔐 Security Testing</h4><p>Role-based access: verify form-level C/R/U/D per matrix, field-level restrictions (Standard Rate, Bank Details), approval limit enforcement.</p></div>
+          <div class="card"><h4>📊 Report Testing</h4><p>Data accuracy: verify summary groups, date range filters, calculated fields, rollup totals. Print format validation for PO, GRN, QC reports.</p></div>
+          <div class="card"><h4>⚡ Performance Testing</h4><p>Form load times, lookup response, report generation with 200+ records. Deluge function timeout (5-min limit) for batch operations.</p></div>
+          <div class="card"><h4>📱 Mobile Testing</h4><p>Form rendering on Zoho Creator mobile app, responsive layouts, offline data entry sync for field workers (Project tasks, MR/MIS).</p></div>
+        </div>
+
+        <h3>UAT Scenarios (Key Flows)</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Flow</th><th>Steps</th><th>Expected Result</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Item Creation</strong></td><td>Create Item → Category RM → verify Code RM-001 → add GST 18% → verify HSN validation</td><td>Item created, auto-number works, validation passes</td></tr>
+              <tr><td><strong>Sales Order Flow</strong></td><td>Create SO (Supply-only) → select Customer → auto-fetch details → add FG items → verify Amount → submit</td><td>SO-001 generated, customer details populated, totals correct</td></tr>
+              <tr><td><strong>Procurement Flow</strong></td><td>Create PR → approve → Rate Comp → select supplier → create PO → issue → receive via GRN → verify stock update</td><td>Full procurement cycle works, stock reflects GRN qty</td></tr>
+              <tr><td><strong>QC Flow</strong></td><td>From GRN → create QC → fill test results → Pass → verify stock available / Fail → verify quarantine</td><td>QC status drives correct stock disposition</td></tr>
+              <tr><td><strong>Production Flow</strong></td><td>Create Production Order → BMR → RM Consumption → verify stock deduction → Packing → verify FG addition</td><td>Production cycle complete, stock accurately tracked</td></tr>
+              <tr><td><strong>Project Execution</strong></td><td>Create Project (AreaBasis) → add Systems → add Transport/Manpower → track costs → verify Dashboard</td><td>Project created, costs trackable, dashboard reflects data</td></tr>
+              <tr><td><strong>Security Check</strong></td><td>Login as Viewer → verify Edit/Delete disabled on all forms → login as Admin → verify full access</td><td>Role permissions enforced correctly</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- === DATA MODEL === -->
+      <section id="data-model">
+        <h2>Data Model Relationships</h2>
+
+        <h3>Master Data Dependencies</h3>
+        <div class="code-block"><pre>Item Master ◄───── BOM Master ────► System Master
+     │                                      │
+     ├── Supplier Master                     │
+     ├── Customer Master                     │
+     └── Store Master ──► Bin Location       │
+                                              │
+Supplier Master ◄────────────────────────────┘
+Customer Master</pre></div>
+
+        <h3>Transactional Data Flows</h3>
+        <div class="code-block"><pre>PR ──► Rate Comparison ──► PO ──► GRN ──► QC
+                                         │
+                                         └──► Stock Ledger
+                                                    │
+System Master ──► SO/WO ──► Project ──► Tasks
+                                         │
+                                         └──► MR ──► MIS ──► Stock Ledger
+                                                   │
+BOM Master ──► Production Order ──► BMR ──► RM Consumption
+                                                   │
+                                                   ├── Packing Entry ──► FG Receiving
+                                                   └── Stock Ledger</pre></div>
+
+        <h3>Key Design Decisions</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Decision</th><th>Choice</th><th>Rationale</th></tr></thead>
+            <tbody>
+              <tr><td>Platform</td><td>Zoho Creator</td><td>Faster delivery, built-in mobile, lower TCO vs custom dev</td></tr>
+              <tr><td>Language</td><td>Deluge</td><td>Native Creator integration, no external infrastructure</td></tr>
+              <tr><td>Datacenter</td><td>India (.in)</td><td>Client is India-based, regulatory compliance</td></tr>
+              <tr><td>PO Series</td><td>Separate RM / RMWAD</td><td>Coding materials require stricter control</td></tr>
+              <tr><td>GRN Posting</td><td>Post = stock update</td><td>Prevents accidental stock updates on save</td></tr>
+              <tr><td>Partial GRN</td><td>Checkbox per line</td><td>Supports real-world partial deliveries</td></tr>
+              <tr><td>Execution Mode</td><td>Area / Day basis</td><td>Matches Chemsol's variable project types</td></tr>
+              <tr><td>SO/WO Mode</td><td>Supply+Apply / Supply-only</td><td>Different business models, different field sets</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <div class="footer">
+        <p>Chemsol — Zoho Creator ERP Implementation &middot; ITOTCloud Systems Pvt. Ltd.</p>
+        <p style="margin-top: 4px;">28 Forms · 35 Reports · 8 Phases · 13 Roles · Built on Zoho Creator India (.in)</p>
+        <p style="margin-top: 8px; font-size: 12px;">Documentation generated from <code>PHASES-IMPLEMENTATION-DOC.md</code>, <code>ARCHITECTURE.md</code>, and phase implementation artifacts.</p>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+
+  <script>
+    // Active nav highlighting based on scroll
+    document.addEventListener("DOMContentLoaded", function() {
+      const sections = document.querySelectorAll("section[id]");
+      const navLinks = document.querySelectorAll(".sidebar-nav a");
+      window.addEventListener("scroll", function() {
+        let current = "";
+        sections.forEach(section => {
+          const top = section.offsetTop - 120;
+          if (window.scrollY >= top) { current = section.getAttribute("id"); }
+        });
+        navLinks.forEach(link => {
+          link.classList.remove("active");
+          if (link.getAttribute("href") === "#" + current) { link.classList.add("active"); }
+        });
+      });
+    });
+  </script>
+
+</body>
+</html>
