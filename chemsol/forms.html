@@ -68,6 +68,18 @@
             <span class="phase-tag">Product Catalog</span>
           </div>
           <p>Flooring system definitions (EP01=1mm Epoxy, PU02=2mm PU). Code auto-format from prefix + number.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>System Code</td><td>Text (autogen)</td><td>*</td><td>e.g., EP01, PU02</td></tr>
+                <tr><td>2</td><td>System Name</td><td>Text</td><td>*</td><td>e.g., "1mm Epoxy Flooring"</td></tr>
+                <tr><td>3</td><td>Description</td><td>Multi-line</td><td></td><td>—</td></tr>
+                <tr><td>4</td><td>Status</td><td>Dropdown</td><td>*</td><td>Active / Inactive</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>AutoFetch target:</strong> BOM Master, Sales/Work Order (system code lookup)</p>
         </div>
 
         <div class="phase">
@@ -77,6 +89,34 @@
             <span class="phase-tag">Like Zoho Books BOM</span>
           </div>
           <p>Header + N line items: System Code → Item Code, UOM, Qty, Waste %. Auto Quantity Calculation formula.</p>
+          <h4>Header</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>BOM No</td><td>Autogen</td><td>*</td><td>—</td></tr>
+                <tr><td>2</td><td>System Code</td><td>Lookup</td><td>*</td><td>From System Master</td></tr>
+                <tr><td>3</td><td>System Name</td><td>AutoFetch</td><td>*</td><td>Autofill from System Code</td></tr>
+                <tr><td>4</td><td>Revision No</td><td>Text</td><td></td><td>—</td></tr>
+                <tr><td>5</td><td>Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
+                <tr><td>6</td><td>Status</td><td>Dropdown</td><td>*</td><td>Draft / Approved / Released</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h4>Line Items (N items)</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Item Code</td><td>Lookup</td><td>*</td><td>From Purchase Item Muster</td></tr>
+                <tr><td>2</td><td>Item Name</td><td>AutoFetch</td><td>*</td><td>Autofill from Item Code</td></tr>
+                <tr><td>3</td><td>UOM</td><td>AutoFetch</td><td>*</td><td>From Item Muster</td></tr>
+                <tr><td>4</td><td>Qty per Unit</td><td>Number</td><td>*</td><td>Consumption qty</td></tr>
+                <tr><td>5</td><td>Waste %</td><td>Number</td><td></td><td>—</td></tr>
+                <tr><td>6</td><td>Total Qty</td><td>Formula</td><td>*</td><td>Qty + Waste%</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <div class="phase">
@@ -85,7 +125,30 @@
             <span class="phase-title">Supplier Master</span>
             <span class="phase-tag">Like Zoho Books Vendor</span>
           </div>
-          <p>16 fields: Code, Name, Type, GSTIN, PAN, Contact, Bank, Payment Terms, Credit Days.</p>
+          <p>Vendor management — 16 fields. AutoFetch target: PO, Rate Comparison, GRN.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Supplier Code</td><td>Autogen</td><td>*</td><td>Auto-generate on new registration</td></tr>
+                <tr><td>2</td><td>Supplier Name</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>3</td><td>Supplier Type</td><td>Dropdown</td><td></td><td>—</td></tr>
+                <tr><td>4</td><td>GSTIN</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>5</td><td>PAN No</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>6</td><td>Contact Person</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>7</td><td>Mobile No</td><td>Phone</td><td>*</td><td>Alternate number</td></tr>
+                <tr><td>8</td><td>Email ID</td><td>Email</td><td>*</td><td>—</td></tr>
+                <tr><td>9</td><td>Address</td><td>Multi-line</td><td>*</td><td>—</td></tr>
+                <tr><td>10</td><td>Pincode</td><td>Text</td><td></td><td>—</td></tr>
+                <tr><td>11</td><td>Bank Name</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>12</td><td>Account No</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>13</td><td>IFSC Code</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>14</td><td>Payment Terms</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>15</td><td>Credit Days</td><td>Number</td><td>*</td><td>—</td></tr>
+                <tr><td>16</td><td>Status</td><td>Dropdown</td><td>*</td><td>Active / Inactive</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <div class="phase">
@@ -94,25 +157,116 @@
             <span class="phase-title">Customer/Site Master</span>
             <span class="phase-tag">Like Zoho CRM Accounts</span>
           </div>
-          <p>16 fields: Org, Contact, GST, PAN, Billing/Shipping, Site details.</p>
+          <p>Client organization and site details — 16 fields. AutoFetch target: Sales Order, FGHM, Project.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Customer Code</td><td>Autogen</td><td>*</td><td>—</td></tr>
+                <tr><td>2</td><td>Client Org Name</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>3</td><td>Contact Person</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>4</td><td>Contact No</td><td>Phone</td><td>*</td><td>—</td></tr>
+                <tr><td>5</td><td>Alt Contact No</td><td>Phone</td><td></td><td>—</td></tr>
+                <tr><td>6</td><td>Email</td><td>Email</td><td>*</td><td>—</td></tr>
+                <tr><td>7</td><td>GST No</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>8</td><td>PAN</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>9</td><td>Regd Address</td><td>Multi-line</td><td>*</td><td>—</td></tr>
+                <tr><td>10</td><td>Billing Address</td><td>Multi-line</td><td></td><td>—</td></tr>
+                <tr><td>11</td><td>Shipping Address</td><td>Multi-line</td><td></td><td>—</td></tr>
+                <tr><td>12</td><td>Site Name</td><td>Text</td><td></td><td>—</td></tr>
+                <tr><td>13</td><td>Site Address</td><td>Multi-line</td><td></td><td>—</td></tr>
+                <tr><td>14</td><td>Site Manager Incharge</td><td>Text</td><td></td><td>—</td></tr>
+                <tr><td>15</td><td>Contact No (Site)</td><td>Phone</td><td></td><td>—</td></tr>
+                <tr><td>16</td><td>Status</td><td>Dropdown</td><td>*</td><td>Active / Inactive</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <div class="phase">
           <div class="phase-header">
             <span class="phase-number">1F</span>
-            <span class="phase-title">Store Master + Bin Location</span>
+            <span class="phase-title">Store Master</span>
             <span class="phase-tag">Like Zoho Inventory Warehouses</span>
           </div>
-          <p>Stores: Code, Name, Type (RM/FG/QC/Site), Location. Bin: Store → Rack → Shelf → Bin.</p>
+          <p>RM/FG/QC/Site store definitions.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Store Code</td><td>Autogen</td><td>*</td><td>—</td></tr>
+                <tr><td>2</td><td>Store Name</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>3</td><td>Store Type</td><td>Dropdown</td><td>*</td><td>RM Store / FG Store / QC Store / Site Store</td></tr>
+                <tr><td>4</td><td>Location</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>5</td><td>Status</td><td>Dropdown</td><td>*</td><td>Active / Inactive</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">1Fb</span>
+            <span class="phase-title">Bin Location Master</span>
+            <span class="phase-tag">Rack → Shelf → Bin</span>
+          </div>
+          <p>Rack/shelf/bin mapping within stores.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Store Name</td><td>Lookup</td><td>*</td><td>From Store Master</td></tr>
+                <tr><td>2</td><td>Rack No</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>3</td><td>Shelf No</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>4</td><td>Bin No</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>5</td><td>Status</td><td>Dropdown</td><td>*</td><td>Active / Inactive</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
 
         <div class="phase">
           <div class="phase-header">
             <span class="phase-number">1G</span>
-            <span class="phase-title">User Access + Approval Matrix</span>
-            <span class="phase-tag">Security Config</span>
+            <span class="phase-title">User Access</span>
+            <span class="phase-tag">Department &amp; Role Mapping</span>
           </div>
-          <p>User → Department → Role (Entry/Review/Approve/Admin). Approval Matrix: Doc Type × Amount × Approver 1/2/3.</p>
+          <p>Define approvers, departments, and access levels.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>User Name</td><td>User lookup</td><td>*</td><td>Zoho Creator user</td></tr>
+                <tr><td>2</td><td>Department</td><td>Dropdown</td><td>*</td><td>Purchase, Sales, Store &amp; Logistics, Account &amp; Finance, Admin, Project Coordinator, Project Manager 1/2/3</td></tr>
+                <tr><td>3</td><td>Role</td><td>Dropdown</td><td>*</td><td>Entry / Review / Approve / Admin</td></tr>
+                <tr><td>4</td><td>Email</td><td>Email</td><td>Auto</td><td>From user profile</td></tr>
+                <tr><td>5</td><td>Status</td><td>Dropdown</td><td>*</td><td>Active / Inactive</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">1Gb</span>
+            <span class="phase-title">Approval Matrix</span>
+            <span class="phase-tag">Tiered Approvals</span>
+          </div>
+          <p>Define PR/PO limits and approvers per department.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Department</td><td>Dropdown</td><td>*</td><td>—</td></tr>
+                <tr><td>2</td><td>Document Type</td><td>Dropdown</td><td>*</td><td>PR / PO / Rate Comparison / GRN / MR</td></tr>
+                <tr><td>3</td><td>Min Amount</td><td>Currency</td><td>*</td><td>—</td></tr>
+                <tr><td>4</td><td>Max Amount</td><td>Currency</td><td>*</td><td>—</td></tr>
+                <tr><td>5</td><td>Approver 1</td><td>User lookup</td><td>*</td><td>—</td></tr>
+                <tr><td>6</td><td>Approver 2</td><td>User lookup</td><td></td><td>If amount exceeds level 1</td></tr>
+                <tr><td>7</td><td>Approver 3</td><td>User lookup</td><td></td><td>If amount exceeds level 2</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
@@ -129,17 +283,34 @@
           <p>Department: Production &amp; R&amp;D. Status: Draft → Pending Approval → Approved → Rejected.</p>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Header Field</th><th>Type</th><th>Notes</th></tr></thead>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
               <tbody>
-                <tr><td>PR Number</td><td>Autogen</td><td>PR-YYYY-XXXX</td></tr>
-                <tr><td>PR Date</td><td>Date</td><td>Today's Date</td></tr>
-                <tr><td><strong>Project ID / Name</strong></td><td>Lookup</td><td>From Project Master</td></tr>
-                <tr><td>Department</td><td>AutoFetch</td><td>As per user login</td></tr>
-                <tr><td>Status</td><td>Dropdown</td><td>Draft / Pending Approval / Approved / Rejected</td></tr>
+                <tr><td>1</td><td>PR Number</td><td>Autogen</td><td>*</td><td>PR-YYYY-XXXX</td></tr>
+                <tr><td>2</td><td>PR Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
+                <tr><td>3</td><td>Reference</td><td>Text</td><td></td><td>Manual reference</td></tr>
+                <tr><td>4</td><td><strong>Project ID / Name</strong></td><td>Lookup</td><td>*</td><td>From Project Master</td></tr>
+                <tr><td>5</td><td>Department</td><td>AutoFetch</td><td>*</td><td>As per user login (Production / R&amp;D)</td></tr>
+                <tr><td>6</td><td>Approved By</td><td>User lookup</td><td></td><td>Filled after approval</td></tr>
+                <tr><td>7</td><td>Status</td><td>Dropdown</td><td>*</td><td>Draft / Pending Approval / Approved / Rejected</td></tr>
               </tbody>
             </table>
           </div>
-          <p><strong>N Line items:</strong> Sr, Item Code (lookup ⇄ bidirectional autofetch), Item Name, Qty, UOM, Lead Time.</p>
+          <h4>Line Items (N items)</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Sr</td><td>Number</td><td>*</td><td>Auto</td></tr>
+                <tr><td>2</td><td>Item Code</td><td>Lookup</td><td>*</td><td>From Purchase Item Muster (autofill if Item Name filled)</td></tr>
+                <tr><td>3</td><td>Item Name</td><td>AutoFetch</td><td>*</td><td>Autofill if Item Code filled</td></tr>
+                <tr><td>4</td><td>Qty</td><td>Number</td><td>*</td><td>—</td></tr>
+                <tr><td>5</td><td>Item Description</td><td>Multi-line</td><td></td><td>—</td></tr>
+                <tr><td>6</td><td>UOM</td><td>AutoFetch</td><td>*</td><td>From Item Muster</td></tr>
+                <tr><td>7</td><td>Lead Time</td><td>AutoFetch</td><td></td><td>Days, from Item Muster</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>Automation:</strong> Item Code &lrarr; Item Name bidirectional autofill. UOM autofill. Lead Time autofill. Status: Draft &rarr; Pending Approval (on submit) &rarr; Approved (after approval). Notification to Purchase dept on approval.</p>
         </div>
 
         <div class="phase">
@@ -148,7 +319,29 @@
             <span class="phase-title">Rate Comparison</span>
             <span class="phase-tag">5 Suppliers</span>
           </div>
-          <p>Up to 5 supplier comparisons per PR item. Finalised supplier + rate → PO reference.</p>
+          <p>Department: Purchase. Up to 5 supplier comparisons per PR item. Finalised supplier + rate → PO reference.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
+                <tr><td>2</td><td>PR Reference No</td><td>Lookup</td><td>*</td><td>From PR Master</td></tr>
+                <tr><td>3</td><td>Product No</td><td>AutoFetch</td><td>*</td><td>From PR items</td></tr>
+                <tr><td>4</td><td>Product Name</td><td>AutoFetch</td><td>*</td><td>From PR items</td></tr>
+                <tr><td>5</td><td>Supplier 1</td><td>Lookup</td><td>*</td><td>From Supplier Master + Price + Credit</td></tr>
+                <tr><td>6</td><td>Supplier 2</td><td>Lookup</td><td></td><td>From Supplier Master + Price + Credit</td></tr>
+                <tr><td>7</td><td>Supplier 3</td><td>Lookup</td><td></td><td>From Supplier Master + Price + Credit</td></tr>
+                <tr><td>8</td><td>Supplier 4</td><td>Lookup</td><td></td><td>From Supplier Master + Price + Credit</td></tr>
+                <tr><td>9</td><td>Supplier 5</td><td>Lookup</td><td></td><td>From Supplier Master + Price + Credit</td></tr>
+                <tr><td>10</td><td>Finalised Supplier</td><td>Lookup</td><td>*</td><td>Selected from above 5</td></tr>
+                <tr><td>11</td><td>Final Rate</td><td>Currency</td><td>*</td><td>—</td></tr>
+                <tr><td>12</td><td>PO No</td><td>Text</td><td></td><td>Linked after PO creation</td></tr>
+                <tr><td>13</td><td>PO Release Date</td><td>Date</td><td></td><td>—</td></tr>
+                <tr><td>14</td><td>Remark</td><td>Multi-line</td><td></td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>Automation:</strong> Supplier dropdown → lookup from Supplier Master. Notification "Rate Comparison Data Missing" to Purchase dept if data incomplete.</p>
         </div>
 
         <div class="phase">
@@ -160,27 +353,66 @@
           <p>Department: Purchase. Dual series: Coding → RMWAD, Non-Coding → RM.</p>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Field</th><th>Notes</th></tr></thead>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
               <tbody>
-                <tr><td>RM Type</td><td>Coding / Non-Coding</td></tr>
-                <tr><td>PO Number</td><td>RMWAD-YYYY-XXXX or RM-YYYY-XXXX</td></tr>
-                <tr><td><strong>Project ID</strong></td><td>AutoFetch from PR</td></tr>
-                <tr><td>Supplier</td><td>Lookup → autofetch GSTIN, Address</td></tr>
+                <tr><td>1</td><td>RM Type</td><td>Dropdown</td><td>*</td><td>1.Coding, 2.Non Coding</td></tr>
+                <tr><td>2</td><td>PO Number</td><td>Autogen</td><td>*</td><td><strong>Dual series:</strong> RMWAD-YYYY-XXXX (Coding), RM-YYYY-XXXX (Non-Coding)</td></tr>
+                <tr><td>3</td><td>PO Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
+                <tr><td>4</td><td>Supplier Code</td><td>Lookup</td><td>*</td><td>From Supplier Master</td></tr>
+                <tr><td>5</td><td>Supplier Name</td><td>AutoFetch</td><td>*</td><td>Autofill from Supplier Code</td></tr>
+                <tr><td>6</td><td>PR Reference</td><td>Lookup</td><td></td><td>From PR</td></tr>
+                <tr><td>7</td><td>Bill To</td><td>Dropdown</td><td>*</td><td>Address list</td></tr>
+                <tr><td>8</td><td>Ship To</td><td>Dropdown</td><td>*</td><td>Address list</td></tr>
               </tbody>
             </table>
           </div>
-          <p><strong>N Line items (like Zoho Books PO):</strong></p>
+          <h4>Line Items</h4>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Sr</th><th>Item Code</th><th>Name</th><th>HSN</th><th>Qty</th><th>UOM</th><th>Rate</th><th>Basic</th><th>GST%</th><th>CGST</th><th>SGST</th><th>IGST</th><th>Total</th></tr></thead>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
               <tbody>
-                <tr><td>1</td><td>RM001</td><td>Epoxy Resin</td><td>3907</td><td>500</td><td>Kg</td><td>₹180</td><td>₹90,000</td><td>18%</td><td>₹8,100</td><td>₹8,100</td><td>—</td><td>₹1,06,200</td></tr>
-                <tr><td>2</td><td>RM002</td><td>Hardener</td><td>3907</td><td>250</td><td>Kg</td><td>₹220</td><td>₹55,000</td><td>18%</td><td>₹4,950</td><td>₹4,950</td><td>—</td><td>₹64,900</td></tr>
+                <tr><td>1</td><td>Sr No</td><td>Number</td><td>*</td><td>Auto</td></tr>
+                <tr><td>2</td><td>Item Code</td><td>Lookup</td><td>*</td><td>From Purchase Item Muster</td></tr>
+                <tr><td>3</td><td>Item Name</td><td>AutoFetch</td><td>*</td><td>—</td></tr>
+                <tr><td>4</td><td>HSN</td><td>AutoFetch</td><td>*</td><td>From Item Muster</td></tr>
+                <tr><td>5</td><td>Quantity</td><td>Number</td><td>*</td><td>—</td></tr>
+                <tr><td>6</td><td>UOM</td><td>AutoFetch</td><td>*</td><td>From Item Muster</td></tr>
+                <tr><td>7</td><td>Rate</td><td>Currency</td><td>*</td><td>From Rate Comparison or manual</td></tr>
+                <tr><td>8</td><td>Basic Amount</td><td>Formula</td><td>*</td><td>Qty &times; Rate</td></tr>
+                <tr><td>9</td><td>GST %</td><td>AutoFetch</td><td>*</td><td>From Item Muster</td></tr>
+                <tr><td>10</td><td>GST Amount</td><td>Formula</td><td>*</td><td>Basic &times; GST%</td></tr>
+                <tr><td>11</td><td>Total Amount</td><td>Formula</td><td>*</td><td>Basic + GST</td></tr>
               </tbody>
             </table>
           </div>
-          <p><strong>Footer:</strong> Basic Total, CGST/SGST/IGST (conditional), Total in Words, Delivery Date, Payment Terms, Transport Scope.</p>
-          <p><strong>Printable PO</strong> with e-way bill, COA, batch nos, quality clause.</p>
+          <p><strong>Example line:</strong></p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Sr</th><th>Item</th><th>HSN</th><th>Qty</th><th>UOM</th><th>Rate</th><th>Basic</th><th>GST%</th><th>CGST</th><th>SGST</th><th>IGST</th><th>Total</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>RM001 Epoxy Resin</td><td>3907</td><td>500</td><td>Kg</td><td>₹180</td><td>₹90,000</td><td>18%</td><td>₹8,100</td><td>₹8,100</td><td>—</td><td>₹1,06,200</td></tr>
+                <tr><td>2</td><td>RM002 Hardener</td><td>3907</td><td>250</td><td>Kg</td><td>₹220</td><td>₹55,000</td><td>18%</td><td>₹4,950</td><td>₹4,950</td><td>—</td><td>₹64,900</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h4>Footer</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>9</td><td>Basic Total</td><td>Formula</td><td>Sum of Basic Amount</td></tr>
+                <tr><td>10</td><td>CGST</td><td>Formula</td><td>Sum of GST/2 (intra-state)</td></tr>
+                <tr><td>11</td><td>SGST</td><td>Formula</td><td>Sum of GST/2 (intra-state)</td></tr>
+                <tr><td>12</td><td>IGST</td><td>Formula</td><td>Sum of GST (inter-state)</td></tr>
+                <tr><td>13</td><td>Total Amount (Words)</td><td>Formula</td><td>In words</td></tr>
+                <tr><td>14</td><td>Delivery Date</td><td>Date</td><td>*</td></tr>
+                <tr><td>15</td><td>Payment Terms</td><td>Text</td><td>*</td></tr>
+                <tr><td>16</td><td>Scope of Transport</td><td>Dropdown</td><td>Supplier / Own</td></tr>
+                <tr><td>17</td><td>Mode of Transport</td><td>Dropdown</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>Printable PO</strong> with e-way bill, COA, batch nos, quality clause. T&amp;C include batch no. requirement, COA attachment, e-way bill mandate, quality return policy.</p>
         </div>
 
         <div class="phase">
@@ -189,7 +421,53 @@
             <span class="phase-title">Goods Receipt Note (GRN)</span>
             <span class="phase-tag">Partial via ✓ · N Items</span>
           </div>
-          <p>PO ref → autofetch items. Checkbox per line for partial GRN. Stock updates only on posting.</p>
+          <p>Department: Purchase / Store. PO ref → autofetch items. Checkbox per line for partial GRN. Stock updates only on posting.</p>
+          <h4>Header</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>GRN Number</td><td>Autogen</td><td>*</td><td>Generated <strong>after posting</strong></td></tr>
+                <tr><td>2</td><td>GRN Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
+                <tr><td>3</td><td>PO Number</td><td>Lookup</td><td>*</td><td>From PO Master</td></tr>
+                <tr><td>4</td><td>Supplier Code</td><td>AutoFetch</td><td>*</td><td>From PO</td></tr>
+                <tr><td>5</td><td>Supplier Name</td><td>AutoFetch</td><td>*</td><td>From PO</td></tr>
+                <tr><td>6</td><td>Vehicle Number</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>7</td><td>Warehouse</td><td>Dropdown</td><td>*</td><td>1.Wadki, 2.Main, 3.Neelo, 4.Gurgaon, 5.Bangalore, 6.Client Site</td></tr>
+                <tr><td>8</td><td>Client/Site Name</td><td>Text</td><td>Cnd</td><td>Visible only if Warehouse = Client Site</td></tr>
+                <tr><td>9</td><td>Invoice Number</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>10</td><td>Invoice Date</td><td>Date</td><td>*</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h4>Line Items — with checkbox for partial GRN</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Checkbox</td><td>Checkbox</td><td></td><td>For item selection (partial GRN)</td></tr>
+                <tr><td>2</td><td>Item Code</td><td>AutoFetch</td><td>*</td><td>From PO</td></tr>
+                <tr><td>3</td><td>Item Name</td><td>AutoFetch</td><td>*</td><td>From PO</td></tr>
+                <tr><td>4</td><td>Ordered Qty</td><td>AutoFetch</td><td>*</td><td>From PO</td></tr>
+                <tr><td>5</td><td>Received Qty</td><td>Number</td><td>*</td><td>—</td></tr>
+                <tr><td>6</td><td>QC Status</td><td>Dropdown</td><td></td><td>Pending / Pass / Fail</td></tr>
+                <tr><td>7</td><td>Packing Quality</td><td>Dropdown</td><td></td><td>Good / Damaged / Partial</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h4>Transport Subform (visible if PO Scope of Transport = Own)</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Transporter Name</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>2</td><td>Transportation Charges</td><td>Currency</td><td>*</td><td>—</td></tr>
+                <tr><td>3</td><td>Local Transport</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>4</td><td>Loading/Unloading Charges</td><td>Currency</td><td>*</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>Automation:</strong> GRN Number generated only after posting. Qty added to stock only after posting. Checkbox selects items for partial GRN.</p>
         </div>
 
         <div class="phase">
@@ -198,7 +476,38 @@
             <span class="phase-title">QC/QA</span>
             <span class="phase-tag">Inspection</span>
           </div>
-          <p>GRN ref → inspect viscosity, density, color, moisture. Pass/Fail/Hold per item.</p>
+          <p>Department: QC. GRN ref → inspect viscosity, density, color, moisture. Pass/Fail/Hold per item.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>QC Number</td><td>Autogen</td><td>*</td><td>—</td></tr>
+                <tr><td>2</td><td>Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
+                <tr><td>3</td><td>GRN Number</td><td>Lookup</td><td>*</td><td>From GRN</td></tr>
+                <tr><td>4</td><td>Supplier Name</td><td>AutoFetch</td><td>*</td><td>From GRN</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h4>Line Items (auto-fetched from GRN)</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Item No</td><td>AutoFetch</td><td>*</td><td>From GRN</td></tr>
+                <tr><td>2</td><td>Item Name</td><td>AutoFetch</td><td>*</td><td>From GRN</td></tr>
+                <tr><td>3</td><td>Inspection Date</td><td>Date</td><td></td><td>—</td></tr>
+                <tr><td>4</td><td>Viscosity Result</td><td>Text</td><td></td><td>—</td></tr>
+                <tr><td>5</td><td>Density Result</td><td>Text</td><td></td><td>—</td></tr>
+                <tr><td>6</td><td>Color Result</td><td>Text</td><td></td><td>—</td></tr>
+                <tr><td>7</td><td>Moisture Result</td><td>Text</td><td></td><td>—</td></tr>
+                <tr><td>8</td><td>Accepted Qty</td><td>Number</td><td>*</td><td>—</td></tr>
+                <tr><td>9</td><td>Rejected Qty</td><td>Number</td><td>*</td><td>—</td></tr>
+                <tr><td>10</td><td>Packaging Quality</td><td>Dropdown</td><td></td><td>Good / Damaged</td></tr>
+                <tr><td>11</td><td>QC Status</td><td>Dropdown</td><td>*</td><td>Pass / Fail / Hold</td></tr>
+                <tr><td>12</td><td>Remarks</td><td>Multi-line</td><td>*</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
@@ -212,7 +521,38 @@
             <span class="phase-title">Material Requisition (MR)</span>
             <span class="phase-tag">N Line Items</span>
           </div>
-          <p>Project ID + items with autofetch available stock. Priority: Low/Medium/High/Urgent.</p>
+          <p>Department: Production &amp; R&amp;D. Project ID + items with autofetch available stock.</p>
+          <h4>Header</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>MR Number</td><td>Autogen</td><td>*</td><td>MR-YYYY-XXXX</td></tr>
+                <tr><td>2</td><td>MR Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
+                <tr><td>3</td><td>Requisition Type</td><td>Dropdown</td><td>*</td><td>Production / R&amp;D</td></tr>
+                <tr><td>4</td><td>Batch Number</td><td>Text</td><td></td><td>—</td></tr>
+                <tr><td>5</td><td>Department</td><td>AutoFetch</td><td>*</td><td>As per user login</td></tr>
+                <tr><td>6</td><td>Requested By</td><td>Text</td><td>*</td><td>Employee Name</td></tr>
+                <tr><td>7</td><td>Priority</td><td>Dropdown</td><td>*</td><td>Low / Medium / High / Urgent</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h4>Line Items</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Sr No</td><td>Number</td><td>*</td><td>Auto</td></tr>
+                <tr><td>2</td><td>Item Code</td><td>Lookup</td><td>*</td><td>From Purchase Item Muster</td></tr>
+                <tr><td>3</td><td>Item Name</td><td>AutoFetch</td><td>*</td><td>—</td></tr>
+                <tr><td>4</td><td>Category</td><td>AutoFetch</td><td>*</td><td>From Item Muster</td></tr>
+                <tr><td>5</td><td>UOM</td><td>AutoFetch</td><td>*</td><td>From Item Muster</td></tr>
+                <tr><td>6</td><td>Available Stock</td><td>AutoFetch</td><td>*</td><td>From inventory (real-time)</td></tr>
+                <tr><td>7</td><td>Required Qty</td><td>Number</td><td>*</td><td>—</td></tr>
+                <tr><td>8</td><td>Remarks</td><td>Multi-line</td><td></td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
         <div class="phase">
           <div class="phase-header">
@@ -220,7 +560,34 @@
             <span class="phase-title">Material Issue Slip (MIS)</span>
             <span class="phase-tag">N Items · Stock −</span>
           </div>
-          <p>MR ref → autofetch items. Issued Qty, Balance Qty (formula). Stock deducted on posting.</p>
+          <p>Department: Stores. MR ref → autofetch items. Issued Qty, Balance Qty (formula). Stock deducted on posting.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>MR No</td><td>Lookup</td><td>*</td><td>From MR</td></tr>
+                <tr><td>2</td><td>MIS Number</td><td>Autogen</td><td>*</td><td>Auto-generated against MR</td></tr>
+                <tr><td>3</td><td>Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
+                <tr><td>4</td><td>Batch Number</td><td>Text</td><td></td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h4>Line Items (auto-fetched from MR)</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Item No</td><td>AutoFetch</td><td>*</td><td>From MR</td></tr>
+                <tr><td>2</td><td>Item Name</td><td>AutoFetch</td><td>*</td><td>From MR</td></tr>
+                <tr><td>3</td><td>Category</td><td>AutoFetch</td><td>*</td><td>From MR</td></tr>
+                <tr><td>4</td><td>Required Qty</td><td>AutoFetch</td><td>*</td><td>From MR</td></tr>
+                <tr><td>5</td><td>Issued Qty</td><td>Number</td><td>*</td><td>—</td></tr>
+                <tr><td>6</td><td>Balance Qty</td><td>Formula</td><td></td><td>Required - Issued (if shortage)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>Footer:</strong> Issued By (Text), Handover To (Text), Remark (Multi-line).</p>
+          <p><strong>Automation:</strong> Items auto-fetched from MR. Balance Qty auto-calculated. Stock reduced on posting.</p>
         </div>
         <div class="phase">
           <div class="phase-header">
@@ -228,7 +595,34 @@
             <span class="phase-title">FG Handover (FGHM)</span>
             <span class="phase-tag">N Items · Notify Store</span>
           </div>
-          <p>Project ID + client/site. FG products with QC status. Pop-up notification to Store on submit.</p>
+          <p>Department: Production. Project ID + client/site. FG products with QC status. Pop-up notification to Store on submit.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>FGH No</td><td>Autogen</td><td>*</td><td>FGH-YYYY-XXXX</td></tr>
+                <tr><td>2</td><td>Handover Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
+                <tr><td>3</td><td>Client/Site Name</td><td>Lookup</td><td>*</td><td>From Customer/Site Master</td></tr>
+                <tr><td>4</td><td>Batch No</td><td>Text</td><td>*</td><td>Can be multiple batch numbers</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h4>Line Items</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Sr No</td><td>Number</td><td>*</td><td>Auto</td></tr>
+                <tr><td>2</td><td>FG Product Code</td><td>Lookup</td><td>*</td><td>From Purchase Item Muster (FG items)</td></tr>
+                <tr><td>3</td><td>FG Product Name</td><td>AutoFetch</td><td>*</td><td>—</td></tr>
+                <tr><td>4</td><td>FG QTY</td><td>Number</td><td>*</td><td>—</td></tr>
+                <tr><td>5</td><td>UOM</td><td>AutoFetch</td><td>*</td><td>—</td></tr>
+                <tr><td>6</td><td>QC Status</td><td>Dropdown</td><td>*</td><td>Pass / Fail / Hold</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>Footer:</strong> Handed Over By (Text), Received By (Text), Remark (Multi-line).</p>
+          <p><strong>Automation:</strong> After submission → Pop-up notification to Store/Logistics.</p>
         </div>
         <div class="phase">
           <div class="phase-header">
@@ -236,7 +630,31 @@
             <span class="phase-title">FG Acceptance (FGAN)</span>
             <span class="phase-tag">Stock + After Approval</span>
           </div>
-          <p>FGH ref → Damaged Qty, Accepted Qty (formula). FG stock updated after approval.</p>
+          <p>Department: Store/Logistics. FGH ref → Damaged Qty, Accepted Qty (formula). FG stock updated after approval. Opens from pop-up notification or task list.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>FGH No</td><td>Lookup</td><td>*</td><td>Autofetch if opened from notification, otherwise manual search</td></tr>
+                <tr><td>2</td><td>Acceptance Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h4>Line Items (auto-fetched from FGH)</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Product No</td><td>AutoFetch</td><td>*</td><td>From FGH</td></tr>
+                <tr><td>2</td><td>Product Name</td><td>AutoFetch</td><td>*</td><td>From FGH</td></tr>
+                <tr><td>3</td><td>Handovered Quantity</td><td>AutoFetch</td><td>*</td><td>From FGH</td></tr>
+                <tr><td>4</td><td>Damaged/Rejected Qty</td><td>Number</td><td>*</td><td>—</td></tr>
+                <tr><td>5</td><td>Accepted Quantity</td><td>Formula</td><td>*</td><td>Handovered - Damaged</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>Footer:</strong> Approved By (User lookup), Remark (Multi-line).</p>
+          <p><strong>Automation:</strong> Acceptance Number generated after approval. FG stock updated after acceptance.</p>
         </div>
         <div class="phase">
           <div class="phase-header">
@@ -244,7 +662,11 @@
             <span class="phase-title">Additional Store Forms</span>
             <span class="phase-tag">Return · Handover · Transport</span>
           </div>
-          <p>Material Return (to stock), Material Handover (inter-store), Vehicle &amp; Transport (delivery costs).</p>
+          <div class="card-grid">
+            <div class="card"><h4>Material Return</h4><p>Return from production/stores. Reference to MIS. Fields: Returned Qty, Reason, Condition.</p></div>
+            <div class="card"><h4>Material Handover</h4><p>Inter-store transfer. From Store, To Store. Items with quantities. Handover notes.</p></div>
+            <div class="card"><h4>Vehicle &amp; Transport</h4><p>Vehicle registration, Trip details, Delivery challans, Cost tracking.</p></div>
+          </div>
         </div>
       </div>
 
@@ -257,23 +679,167 @@
             <span class="phase-title">Production Planning</span>
             <span class="phase-tag">Per Project</span>
           </div>
-          <p>Project ID, Period (Week/Month), SO/WO autofetch, FG Stock, Net Requirement = SO − FG.</p>
+          <p>Department: Production. Project ID, Period (Week/Month), SO/WO autofetch, FG Stock, Net Requirement = SO − FG.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Planning No</td><td>Text</td><td>*</td><td>MR Sheet No reference</td></tr>
+                <tr><td>2</td><td>Planning Date</td><td>Date</td><td>*</td><td>—</td></tr>
+                <tr><td>3</td><td>Planning Period</td><td>Dropdown</td><td>*</td><td>Week / Month</td></tr>
+                <tr><td>4</td><td>Plant</td><td>Dropdown</td><td>*</td><td>—</td></tr>
+                <tr><td>5</td><td>Planner Name</td><td>User lookup</td><td>*</td><td>—</td></tr>
+                <tr><td>6</td><td>Status</td><td>Dropdown</td><td>*</td><td>Draft / Approved / Released</td></tr>
+                <tr><td>7</td><td>Remarks</td><td>Multi-line</td><td></td><td>—</td></tr>
+                <tr><td>8</td><td>Total SO/WO Qty</td><td>AutoFetch</td><td>*</td><td>From MR Sheet</td></tr>
+                <tr><td>9</td><td>FG Stock Available</td><td>AutoFetch</td><td>*</td><td>From current FG stock</td></tr>
+                <tr><td>10</td><td>Net Production Requirement</td><td>Formula</td><td>*</td><td>SO/WO Qty - Available FG Stock</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
         <div class="phase">
           <div class="phase-header">
             <span class="phase-number">4B</span>
-            <span class="phase-title">Production Order + BMR</span>
-            <span class="phase-tag">N Items</span>
+            <span class="phase-title">Production Order</span>
+            <span class="phase-tag">Per MR/Planning</span>
           </div>
-          <p>MR ref, System Code, Batch No. Subforms: Raw Materials, Process Parameters, QC Results.</p>
+          <p>Department: Production. MR/Planning reference, System Code, Planned Qty.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Production Order No</td><td>Autogen</td><td>*</td><td>—</td></tr>
+                <tr><td>2</td><td>MR/Planning Reference</td><td>Lookup</td><td>*</td><td>From Production Planning / MR</td></tr>
+                <tr><td>3</td><td>System Code</td><td>Lookup</td><td>*</td><td>From System Master</td></tr>
+                <tr><td>4</td><td>Planned Qty</td><td>Number</td><td>*</td><td>—</td></tr>
+                <tr><td>5</td><td>Start Date</td><td>Date</td><td>*</td><td>—</td></tr>
+                <tr><td>6</td><td>End Date</td><td>Date</td><td>*</td><td>—</td></tr>
+                <tr><td>7</td><td>Status</td><td>Dropdown</td><td>*</td><td>Planned / In Progress / Completed / On Hold</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
         <div class="phase">
           <div class="phase-header">
             <span class="phase-number">4C</span>
-            <span class="phase-title">RM Consumption + Packing + Rework</span>
-            <span class="phase-tag">Per Project</span>
+            <span class="phase-title">Batch Manufacturing Record (BMR)</span>
+            <span class="phase-tag">N Subforms</span>
           </div>
-          <p>Actual vs Standard comparison. FG packing with material consumption tracking. Rework with QC revalidation.</p>
+          <p>Detailed batch record with raw materials, process parameters, and QC results.</p>
+          <h4>Header</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>BMR No</td><td>Autogen</td><td>*</td><td>—</td></tr>
+                <tr><td>2</td><td>Production Order Ref</td><td>Lookup</td><td>*</td><td>—</td></tr>
+                <tr><td>3</td><td>Batch No</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>4</td><td>Date</td><td>Date</td><td>*</td><td>—</td></tr>
+                <tr><td>5</td><td>System Code</td><td>Lookup</td><td>*</td><td>From System Master</td></tr>
+                <tr><td>6</td><td>Yield / Output</td><td>Number</td><td>*</td><td>—</td></tr>
+                <tr><td>7</td><td>Status</td><td>Dropdown</td><td>*</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h4>Raw Materials Subform</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>Item Code</td><td>Lookup</td><td>From Purchase Item Muster</td></tr>
+                <tr><td>Qty</td><td>Number</td><td>—</td></tr>
+                <tr><td>Batch No</td><td>Text</td><td>—</td></tr>
+                <tr><td>Consumption</td><td>Number</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h4>Process Parameters Subform</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>Step</td><td>Text</td><td>—</td></tr>
+                <tr><td>Time</td><td>Text</td><td>—</td></tr>
+                <tr><td>Temperature</td><td>Text</td><td>—</td></tr>
+                <tr><td>Operator</td><td>Text</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h4>QC Test Results Subform</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>Parameter</td><td>Text</td><td>—</td></tr>
+                <tr><td>Specification</td><td>Text</td><td>—</td></tr>
+                <tr><td>Result</td><td>Text</td><td>—</td></tr>
+                <tr><td>Status</td><td>Dropdown</td><td>Pass / Fail</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">4D</span>
+            <span class="phase-title">RM Consumption Entry</span>
+            <span class="phase-tag">Actual vs Standard</span>
+          </div>
+          <p>Reference to BMR. Item-wise consumption tracking. Actual vs Standard comparison.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>BMR Reference</td><td>Lookup</td><td>From BMR</td></tr>
+                <tr><td>Item Code</td><td>AutoFetch</td><td>From BMR raw materials</td></tr>
+                <tr><td>Standard Qty</td><td>AutoFetch</td><td>From BOM</td></tr>
+                <tr><td>Actual Qty</td><td>Number</td><td>—</td></tr>
+                <tr><td>Variance</td><td>Formula</td><td>Actual - Standard</td></tr>
+                <tr><td>Reason (if variance)</td><td>Text</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">4E</span>
+            <span class="phase-title">Packing Entry</span>
+            <span class="phase-tag">FG + Packing Material</span>
+          </div>
+          <p>FG product packing with material consumption tracking.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>BMR Reference</td><td>Lookup</td><td>—</td></tr>
+                <tr><td>FG Product Code</td><td>Lookup</td><td>—</td></tr>
+                <tr><td>Packed Qty</td><td>Number</td><td>—</td></tr>
+                <tr><td>Batch Numbers</td><td>Text</td><td>—</td></tr>
+                <tr><td>Packing Material</td><td>Subform</td><td>Item Code, Qty</td></tr>
+                <tr><td>Label/Printing Details</td><td>Text</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">4F</span>
+            <span class="phase-title">Rework Register</span>
+            <span class="phase-tag">QC Revalidation</span>
+          </div>
+          <p>Rework tracking with QC revalidation.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>BMR Reference</td><td>Lookup</td><td>—</td></tr>
+                <tr><td>Rework Reason</td><td>Multi-line</td><td>—</td></tr>
+                <tr><td>Rework Qty</td><td>Number</td><td>—</td></tr>
+                <tr><td>Material Consumed</td><td>Subform</td><td>Item Code, Qty</td></tr>
+                <tr><td>QC Revalidation</td><td>Dropdown</td><td>Pass / Fail</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
@@ -289,16 +855,29 @@
           </div>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
               <tbody>
-                <tr><td>Project ID</td><td>Autogen</td><td>—</td></tr>
-                <tr><td>Project Name</td><td>Text</td><td>*</td></tr>
-                <tr><td>SO Reference</td><td>Lookup</td><td>Auto-filled from SO acceptance</td></tr>
-                <tr><td>Project Manager</td><td>User lookup</td><td>*</td></tr>
-                <tr><td>Execution Base</td><td>Dropdown</td><td>Area Basis / Day Basis</td></tr>
-                <tr><td>Start Date / End Date</td><td>Date</td><td>*</td></tr>
-                <tr><td>Project Cost</td><td>Currency</td><td>*</td></tr>
-                <tr><td>Systems subform</td><td>Subform</td><td>System Code, Area, UOM, Description</td></tr>
+                <tr><td>1</td><td>Project ID</td><td>Autogen</td><td>*</td><td>—</td></tr>
+                <tr><td>2</td><td>Project Name</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>3</td><td>SO Reference</td><td>Lookup</td><td></td><td>Auto-filled from SO acceptance</td></tr>
+                <tr><td>4</td><td>Project Manager</td><td>User lookup</td><td>*</td><td>—</td></tr>
+                <tr><td>5</td><td>Execution Base</td><td>Dropdown</td><td>*</td><td>1.Area Basis, 2.Day Basis</td></tr>
+                <tr><td>6</td><td>Start Date</td><td>Date</td><td>*</td><td>—</td></tr>
+                <tr><td>7</td><td>End Date</td><td>Date</td><td>*</td><td>—</td></tr>
+                <tr><td>8</td><td>Project Cost</td><td>Currency</td><td>*</td><td>—</td></tr>
+                <tr><td>9</td><td>Adjustments</td><td>Currency</td><td></td><td>Cost adjustment</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h5>Systems Subform</h5>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>System Code</td><td>Lookup</td><td>From System Master</td></tr>
+                <tr><td>2</td><td>Area</td><td>Number</td><td>—</td></tr>
+                <tr><td>3</td><td>UOM</td><td>Dropdown</td><td>—</td></tr>
+                <tr><td>4</td><td>Description</td><td>Text</td><td>—</td></tr>
               </tbody>
             </table>
           </div>
@@ -310,12 +889,94 @@
             <span class="phase-title">5 Task Categories</span>
             <span class="phase-tag">Like Zoho Projects Task Lists</span>
           </div>
-          <div class="card-grid">
-            <div class="card"><h4>Transportation</h4><p>Budget + multiple dispatches (Intracity/Intercity, Loading/Unloading). Each: From, To, Charges.</p></div>
-            <div class="card"><h4>Application/Execution</h4><p><em>Area Basis only.</em> Grinding, Primer, Screed, Top Coat, Markings. Each: Area, Cost, MP.</p></div>
-            <div class="card"><h4>Manpower</h4><p><em>Day Basis only.</em> Manpower Budget + Count.</p></div>
-            <div class="card"><h4>Tools</h4><p>Budget for tools. Always visible.</p></div>
-            <div class="card"><h4>Additional Expenses</h4><p>Overhead budget. Always visible.</p></div>
+          <div class="phase-container">
+            <div class="phase">
+              <div class="phase-header">
+                <span class="phase-number">5B-i</span>
+                <span class="phase-title">Transportation</span>
+                <span class="phase-tag">Always Visible</span>
+              </div>
+              <p>Budget + multiple dispatches per task.</p>
+              <div class="table-wrap">
+                <table>
+                  <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+                  <tbody>
+                    <tr><td>Transport Budget</td><td>Currency</td><td>—</td></tr>
+                    <tr><td colspan="3"><strong>Subtask 1: Intracity/Intercity Transport</strong> — Multiple dispatches</td></tr>
+                    <tr><td colspan="3"><strong>Subtask 2: Local Transport</strong> — Multiple dispatches</td></tr>
+                    <tr><td colspan="3"><strong>Subtask 3: Loading/Unloading</strong> — Multiple dispatches</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p><strong>Each Dispatch entry:</strong> From (Text), To (Text), Transport Charges (Currency). Add more dispatches via subform.</p>
+            </div>
+            <div class="phase">
+              <div class="phase-header">
+                <span class="phase-number">5B-ii</span>
+                <span class="phase-title">Application/Execution</span>
+                <span class="phase-tag">Area Basis Only</span>
+              </div>
+              <p><em>Visible only when Execution Base = Area Basis.</em> Grinding, Primer, Screed, Top Coat, Markings.</p>
+              <div class="table-wrap">
+                <table>
+                  <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+                  <tbody>
+                    <tr><td>1</td><td>Subtask Name</td><td>Dropdown</td><td>Grinding, Primer, Screed, Top Coat, Yellow, Arrow, Numbering</td></tr>
+                    <tr><td>2</td><td>Area</td><td>Number</td><td>—</td></tr>
+                    <tr><td>3</td><td>Cost</td><td>Currency</td><td>—</td></tr>
+                    <tr><td>4</td><td>MP (Manpower)</td><td>Number</td><td>—</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p>Multiple subtasks per project (A/B/C/D).</p>
+            </div>
+            <div class="phase">
+              <div class="phase-header">
+                <span class="phase-number">5B-iii</span>
+                <span class="phase-title">Manpower</span>
+                <span class="phase-tag">Day Basis Only</span>
+              </div>
+              <p><em>Visible only when Execution Base = Day Basis.</em></p>
+              <div class="table-wrap">
+                <table>
+                  <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+                  <tbody>
+                    <tr><td>Manpower Budget</td><td>Currency</td><td>—</td></tr>
+                    <tr><td>Manpower Count</td><td>Number</td><td>—</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="phase">
+              <div class="phase-header">
+                <span class="phase-number">5B-iv</span>
+                <span class="phase-title">Tools</span>
+                <span class="phase-tag">Always Visible</span>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+                  <tbody>
+                    <tr><td>Budget for Tools</td><td>Currency</td><td>—</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="phase">
+              <div class="phase-header">
+                <span class="phase-number">5B-v</span>
+                <span class="phase-title">Additional Expenses / Overhead</span>
+                <span class="phase-tag">Always Visible</span>
+              </div>
+              <div class="table-wrap">
+                <table>
+                  <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+                  <tbody>
+                    <tr><td>Budget for Overhead</td><td>Currency</td><td>—</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -331,13 +992,125 @@
           </div>
           <p><strong>Dual mode</strong>: Supply+Apply (auto-creates Project) / Supply Only (material sales).</p>
 
-          <h4>Mode A: Supply+Apply</h4>
-          <p>Customer details + <strong>N system line items</strong> (System Code, Thickness, Area, UOM, Rate, Amount). Footer: Total Amount, Payment Terms, Transport, Warranty, Commission.</p>
+          <h4>Mode A: Supply+Apply <span class="badge badge-blue">Auto-creates Project</span></h4>
+          <p>Customer details + <strong>N system line items</strong> (System Code, Thickness, Area, UOM, Rate, Amount).</p>
+          <h5>Header Fields</h5>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
+                <tr><td>2</td><td>Employee Name</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>3</td><td>Customer Code</td><td>Lookup</td><td></td><td>From Customer Master</td></tr>
+                <tr><td>4</td><td>Client Org Name</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>5</td><td>Contact Person</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>6</td><td>Contact No</td><td>Phone</td><td>*</td><td>—</td></tr>
+                <tr><td>7</td><td>Alt Contact No</td><td>Phone</td><td></td><td>—</td></tr>
+                <tr><td>8</td><td>Email</td><td>Email</td><td>*</td><td>—</td></tr>
+                <tr><td>9</td><td>GST No</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>10</td><td>PAN</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>11</td><td>Regd Address</td><td>Multi-line</td><td>*</td><td>—</td></tr>
+                <tr><td>12</td><td>Sales/Work Order No</td><td>Autogen</td><td>*</td><td>—</td></tr>
+                <tr><td>13</td><td>Sales/Work Order Date</td><td>Date</td><td>*</td><td>—</td></tr>
+                <tr><td>14</td><td>Site Name</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>15</td><td>Site Address</td><td>Multi-line</td><td>*</td><td>—</td></tr>
+                <tr><td>16</td><td>Site Manager/Incharge</td><td>Text</td><td></td><td>—</td></tr>
+                <tr><td>17</td><td>Contact No (Site)</td><td>Phone</td><td></td><td>—</td></tr>
+                <tr><td>18</td><td>Project Type</td><td>Dropdown</td><td>*</td><td>1.Industrial, 2.Commercial</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h5>System Subtable (N line items)</h5>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>System Code</td><td>Lookup</td><td>From System Master (autofetch name)</td></tr>
+                <tr><td>2</td><td>System Name</td><td>AutoFetch</td><td>—</td></tr>
+                <tr><td>3</td><td>Thickness</td><td>Text</td><td>—</td></tr>
+                <tr><td>4</td><td>Area</td><td>Number</td><td>—</td></tr>
+                <tr><td>5</td><td>UOM</td><td>Dropdown</td><td>Conditional</td></tr>
+                <tr><td>6</td><td>Rate</td><td>Currency</td><td>—</td></tr>
+                <tr><td>7</td><td>Amount</td><td>Formula</td><td>Area &times; Rate</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h5>Footer</h5>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>19</td><td>Total Work Order Amount</td><td>Formula</td><td>Sum of line amounts</td></tr>
+                <tr><td>20</td><td>Payment Terms</td><td>Text</td><td>—</td></tr>
+                <tr><td>21</td><td>Transportation Scope</td><td>Dropdown</td><td>—</td></tr>
+                <tr><td>22</td><td>Transportation Amount</td><td>Currency</td><td>—</td></tr>
+                <tr><td>23</td><td>Lead Time</td><td>Number (Days)</td><td>—</td></tr>
+                <tr><td>24</td><td>PO/BOQ Attachment</td><td>File upload</td><td>Multiple</td></tr>
+                <tr><td>25</td><td>Warranty</td><td>Text</td><td>—</td></tr>
+                <tr><td>26</td><td>Is proper System Required</td><td>Checkbox</td><td>—</td></tr>
+                <tr><td colspan="4"><strong>Commission (conditional)</strong></td></tr>
+                <tr><td>27</td><td>Commission</td><td>Checkbox</td><td>If checked → show below</td></tr>
+                <tr><td>28</td><td>Based On</td><td>Dropdown</td><td>1.Percentage, 2.Fix Amount</td></tr>
+                <tr><td>29</td><td>Commission Amount</td><td>Currency</td><td>—</td></tr>
+                <tr><td>30</td><td>Remark</td><td>Multi-line</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
 
-          <h4>Mode B: Supply Only</h4>
-          <p>Customer details + <strong>N FG line items</strong> (FG Name, Qty, UOM, Rate, Amount). Footer: Total, Payment Terms, Transport.</p>
+          <h4>Mode B: Supply Only / Material Sales</h4>
+          <p>Customer details + <strong>N FG line items</strong> (FG Name, Qty, UOM, Rate, Amount).</p>
+          <h5>Header Fields</h5>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
+                <tr><td>2</td><td>Employee Name</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>3</td><td>Customer Code</td><td>Lookup</td><td></td><td>From Customer Master</td></tr>
+                <tr><td>4</td><td>Client Org Name</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>5</td><td>Contact Person</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>6</td><td>Contact No</td><td>Phone</td><td>*</td><td>—</td></tr>
+                <tr><td>7</td><td>Alt Contact No</td><td>Phone</td><td></td><td>—</td></tr>
+                <tr><td>8</td><td>Email</td><td>Email</td><td>*</td><td>—</td></tr>
+                <tr><td>9</td><td>GST No</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>10</td><td>PAN</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>11</td><td>Regd Address</td><td>Multi-line</td><td>*</td><td>—</td></tr>
+                <tr><td>12</td><td>Sales Order No</td><td>Autogen</td><td>*</td><td>—</td></tr>
+                <tr><td>13</td><td>Sales Order Date</td><td>Date</td><td>*</td><td>—</td></tr>
+                <tr><td>14</td><td>Billing Address</td><td>Multi-line</td><td>*</td><td>—</td></tr>
+                <tr><td>15</td><td>Shipping Address</td><td>Multi-line</td><td>*</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h5>FG Subtable (N line items)</h5>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>FG Name</td><td>Lookup</td><td>From Purchase Item Muster</td></tr>
+                <tr><td>2</td><td>Quantity</td><td>Number</td><td>—</td></tr>
+                <tr><td>3</td><td>UOM</td><td>AutoFetch</td><td>From Item Muster</td></tr>
+                <tr><td>4</td><td>Rate</td><td>Currency</td><td>—</td></tr>
+                <tr><td>5</td><td>Amount</td><td>Formula</td><td>Qty &times; Rate</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h5>Footer</h5>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>16</td><td>Total Sales Order Amount</td><td>Formula</td><td>—</td></tr>
+                <tr><td>17</td><td>Payment Terms</td><td>Text</td><td>—</td></tr>
+                <tr><td>18</td><td>Transportation Scope</td><td>Dropdown</td><td>—</td></tr>
+                <tr><td>19</td><td>Amount</td><td>Currency</td><td>—</td></tr>
+                <tr><td>20</td><td>Lead Time</td><td>Number (Days)</td><td>—</td></tr>
+                <tr><td>21</td><td>Remark</td><td>Multi-line</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
 
-          <p><span class="badge badge-green">Supply+Apply → auto-creates Project</span> Like Zoho CRM Deal creation triggers downstream processes.</p>
+          <p><span class="badge badge-green">Supply+Apply &rarr; auto-creates Project</span> Like Zoho CRM Deal creation triggers downstream processes.</p>
         </div>
       </div>
 
