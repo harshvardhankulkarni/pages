@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chemsol — 28 Forms</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="sidebar">
+    <h1><span>Chemsol</span> ERP</h1>
+    <a href="index.html">Overview</a>
+    <a class="active" href="forms.html">28 Forms</a>
+    <a href="reports.html">Reports &amp; Automation</a>
+    <a href="security.html">Security &amp; Roles</a>
+    <a href="data-model.html">Data Model</a>
+    <a href="../index.html">← Back to Hub</a>
+  </nav>
+  <div class="main">
+    <h2>Form Inventory — 28 Forms</h2>
+    <p>Complete inventory of all implemented forms with Zoho Creator internal names, phase mapping, and key features.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Form Name</th><th>Internal Name</th><th>Phase</th><th>Type</th><th>Key Feature</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td><strong>Item Master</strong></td><td><code>Item_Master</code></td><td>1A</td><td>Master</td><td>Auto-number by category (RM-001, FG-001)</td></tr>
+          <tr><td>2</td><td><strong>System Master</strong></td><td><code>System_Master</code></td><td>1A</td><td>Master</td><td>9 system types, auto-code by type</td></tr>
+          <tr><td>3</td><td><strong>BOM Master</strong></td><td><code>BOM_Master</code></td><td>1A</td><td>Master</td><td>Header+subform, auto-fetch from Item/System</td></tr>
+          <tr><td>4</td><td><strong>Supplier Master</strong></td><td><code>Supplier_Master</code></td><td>1A</td><td>Master</td><td>16 fields, bank details, GSTIN/PAN</td></tr>
+          <tr><td>5</td><td><strong>Customer Master</strong></td><td><code>Customer_Master</code></td><td>1A</td><td>Master</td><td>3 addresses, GST/PAN, auto-number</td></tr>
+          <tr><td>6</td><td><strong>Store Master</strong></td><td><code>Store_Master</code></td><td>1A</td><td>Master</td><td>Store types: RM/FG/QC/Site</td></tr>
+          <tr><td>7</td><td><strong>Bin Location Master</strong></td><td><code>Bin_Location_Master</code></td><td>1A</td><td>Master</td><td>Rack/Shelf/Bin with Store lookup</td></tr>
+          <tr><td>8</td><td><strong>User Access</strong></td><td><code>User_Access</code></td><td>1A</td><td>Master</td><td>13 roles, approval limits matrix</td></tr>
+          <tr><td>9</td><td><strong>Sales/Work Order</strong></td><td><code>Sales_Work_Order</code></td><td>1B</td><td>Transaction</td><td>Dual-mode: Supply+Apply / Supply-only</td></tr>
+          <tr><td>10</td><td><strong>Purchase Requisition</strong></td><td><code>PR_Master</code></td><td>1C</td><td>Transaction</td><td>2-level approval (₹50K threshold)</td></tr>
+          <tr><td>11</td><td><strong>Rate Comparison</strong></td><td><code>Rate_Comparison</code></td><td>1C</td><td>Transaction</td><td>5 suppliers, auto-fetch PR items</td></tr>
+          <tr><td>12</td><td><strong>Purchase Order</strong></td><td><code>PO_Master</code></td><td>1D</td><td>Transaction</td><td>Dual series (RM/RMWAD), GST calc</td></tr>
+          <tr><td>13</td><td><strong>PO Amendment</strong></td><td><code>PO_Amendment</code></td><td>1D</td><td>Transaction</td><td>₹2L escalation, blocks if GRN exists</td></tr>
+          <tr><td>14</td><td><strong>Goods Receipt Note</strong></td><td><code>GRN_Master</code></td><td>1D</td><td>Transaction</td><td>Partial receipt, Post=stock update</td></tr>
+          <tr><td>15</td><td><strong>QC/QA Master</strong></td><td><code>QC_Master</code></td><td>1E</td><td>Transaction</td><td>Viscosity/Density/Color/Moisture tests</td></tr>
+          <tr><td>16</td><td><strong>Material Requisition</strong></td><td><code>MR_Master</code></td><td>2B</td><td>Transaction</td><td>Stock check, shortage flag</td></tr>
+          <tr><td>17</td><td><strong>Material Issue Slip</strong></td><td><code>MIS_Master</code></td><td>2B</td><td>Transaction</td><td>Stock deduction on post</td></tr>
+          <tr><td>18</td><td><strong>Material Return</strong></td><td><code>Material_Return</code></td><td>2C</td><td>Transaction</td><td>Stock add-back on post</td></tr>
+          <tr><td>19</td><td><strong>Material Handover</strong></td><td><code>Material_Handover</code></td><td>2C</td><td>Transaction</td><td>From/To store transfer</td></tr>
+          <tr><td>20</td><td><strong>FG Receiving</strong></td><td><code>FG_Receiving</code></td><td>2C</td><td>Transaction</td><td>FG stock addition on post</td></tr>
+          <tr><td>21</td><td><strong>Vehicle &amp; Transport</strong></td><td><code>Vehicle_Transport</code></td><td>2C</td><td>Transaction</td><td>Gate pass, transport charges</td></tr>
+          <tr><td>22</td><td><strong>Production Planning</strong></td><td><code>Production_Planning</code></td><td>3B</td><td>Transaction</td><td>SO/WO reference, FG stock check</td></tr>
+          <tr><td>23</td><td><strong>Production Order</strong></td><td><code>Production_Order</code></td><td>3B</td><td>Transaction</td><td>WO reference, BOM auto-fetch</td></tr>
+          <tr><td>24</td><td><strong>BMR Master</strong></td><td><code>BMR_Master</code></td><td>3B</td><td>Transaction</td><td>Actual vs planned consumption</td></tr>
+          <tr><td>25</td><td><strong>RM Consumption</strong></td><td><code>RM_Consumption</code></td><td>3B</td><td>Transaction</td><td>Real-time stock deduction</td></tr>
+          <tr><td>26</td><td><strong>Packing Entry</strong></td><td><code>Packing_Entry</code></td><td>3B</td><td>Transaction</td><td>FG stock addition, QC status</td></tr>
+          <tr><td>27</td><td><strong>Project Master</strong></td><td><code>Project_Master</code></td><td>4A</td><td>Transaction</td><td>5 task buckets, Area/Day modes</td></tr>
+          <tr><td>28</td><td><strong>Project Dashboard</strong></td><td>Page</td><td>4C</td><td>Dashboard</td><td>8 widgets, project analytics</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="footer">
+      <p>Chemsol — Zoho Creator ERP Implementation &middot; ITOTCloud Systems Pvt. Ltd.</p>
+    </div>
+  </div>
+</body>
+</html>

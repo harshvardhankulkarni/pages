@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chemsol — Security &amp; Roles</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="sidebar">
+    <h1><span>Chemsol</span> ERP</h1>
+    <a href="index.html">Overview</a>
+    <a href="forms.html">28 Forms</a>
+    <a href="reports.html">Reports &amp; Automation</a>
+    <a class="active" href="security.html">Security &amp; Roles</a>
+    <a href="data-model.html">Data Model</a>
+    <a href="../index.html">← Back to Hub</a>
+  </nav>
+  <div class="main">
+    <h2>Security Model — 13 Roles</h2>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Role</th><th>Department</th><th>Key Permissions</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Admin</strong></td><td>IT</td><td>Full access — all forms C/R/U/D, user management</td></tr>
+          <tr><td><strong>Purchase Manager</strong></td><td>Purchase</td><td>PR, RC, PO, GRN, Supplier — CRUD + approvals</td></tr>
+          <tr><td><strong>Purchase Executive</strong></td><td>Purchase</td><td>PR, RC, PO — Create/Edit, limited approvals</td></tr>
+          <tr><td><strong>Store Manager</strong></td><td>Store</td><td>MR, MIS, Returns, Handover, FG, Vehicle — CRUD</td></tr>
+          <tr><td><strong>Store Keeper</strong></td><td>Store</td><td>MR, MIS — Create/Edit, limited</td></tr>
+          <tr><td><strong>Production Manager</strong></td><td>Production</td><td>All production forms — CRUD</td></tr>
+          <tr><td><strong>Production Executive</strong></td><td>Production</td><td>Production forms — Create/Edit</td></tr>
+          <tr><td><strong>QC Inspector</strong></td><td>QC</td><td>QC_Master — CRUD</td></tr>
+          <tr><td><strong>Sales Executive</strong></td><td>Sales</td><td>SO/WO, Customer — CRUD, Item/Sys — Read</td></tr>
+          <tr><td><strong>Finance Executive</strong></td><td>Finance</td><td>Read-only on financial forms</td></tr>
+          <tr><td><strong>Project Manager</strong></td><td>Project</td><td>Project_Master — CRUD</td></tr>
+          <tr><td><strong>Project Coordinator</strong></td><td>Project</td><td>Project — Create/Edit</td></tr>
+          <tr><td><strong>Viewer</strong></td><td>All</td><td>Read-only on permitted forms</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Field-Level Restrictions</h3>
+    <ul style="color: var(--muted); margin: 12px 0; padding-left: 20px;">
+      <li style="margin-bottom: 6px;">Supplier_Master: Account_No, IFSC_Code hidden from non-Purchase roles</li>
+      <li style="margin-bottom: 6px;">Item_Master: Standard_Rate hidden from non-Admin/Purchase/Store</li>
+      <li style="margin-bottom: 6px;">User_Access: Approval limits visible only to Admin</li>
+      <li style="margin-bottom: 6px;">QC_Master: Test results (Viscosity, Density, Color, Moisture) — QC Inspector only</li>
+    </ul>
+
+    <h3>Approval Limits</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Form</th><th>Threshold</th><th>Escalation</th></tr></thead>
+        <tbody>
+          <tr><td>PR</td><td>₹50,000</td><td>Purchase Manager (≤₹50K) → Director (&gt;₹50K)</td></tr>
+          <tr><td>PO Amendment</td><td>₹2,00,000</td><td>Director escalation at ₹2L threshold difference</td></tr>
+          <tr><td>MR</td><td>Department-specific</td><td>Production/Project role limits</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="footer">
+      <p>Chemsol — Zoho Creator ERP Implementation &middot; ITOTCloud Systems Pvt. Ltd.</p>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chemsol — Zoho Creator ERP</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="sidebar">
+    <h1><span>Chemsol</span> ERP</h1>
+    <a class="active" href="index.html">Overview</a>
+    <a href="forms.html">28 Forms</a>
+    <a href="reports.html">Reports &amp; Automation</a>
+    <a href="security.html">Security &amp; Roles</a>
+    <a href="data-model.html">Data Model</a>
+    <a href="../index.html">← Back to Hub</a>
+  </nav>
+  <div class="main">
+    <h2>Chemsol — Zoho Creator ERP</h2>
+    <p>Industrial flooring solutions (epoxy, PU, anti-static, ESD). Built on Zoho Creator India (.in) datacenter.</p>
+
+    <div class="stats">
+      <div class="stat"><div class="num">28</div><div class="label">Forms</div></div>
+      <div class="stat"><div class="num">35</div><div class="label">Reports</div></div>
+      <div class="stat"><div class="num">8</div><div class="label">Phases</div></div>
+      <div class="stat"><div class="num">13</div><div class="label">Roles</div></div>
+      <div class="stat"><div class="num">24</div><div class="label">Workflows</div></div>
+    </div>
+
+    <h3>Procurement-to-Project Lifecycle</h3>
+    <div class="flow">
+      <span class="flow-node">PR</span><span class="flow-arrow">→</span>
+      <span class="flow-node">Rate Comparison</span><span class="flow-arrow">→</span>
+      <span class="flow-node">PO</span><span class="flow-arrow">→</span>
+      <span class="flow-node">GRN</span><span class="flow-arrow">→</span>
+      <span class="flow-node">QC</span><span class="flow-arrow">→</span>
+      <span class="flow-green">Stock (+)</span>
+    </div>
+    <div class="flow">
+      <span class="flow-node">SO/WO</span><span class="flow-arrow">→</span>
+      <span class="flow-purple">Project</span><span class="flow-arrow">→</span>
+      <span class="flow-node">MR</span><span class="flow-arrow">→</span>
+      <span class="flow-node">MIS</span><span class="flow-arrow">→</span>
+      <span class="flow-green">Stock (−)</span>
+    </div>
+    <div class="flow">
+      <span class="flow-node">BOM</span><span class="flow-arrow">→</span>
+      <span class="flow-blue">Production Order</span><span class="flow-arrow">→</span>
+      <span class="flow-purple">BMR</span><span class="flow-arrow">→</span>
+      <span class="flow-orange">RM Consumption</span><span class="flow-arrow">→</span>
+      <span class="flow-green">Packing → FG (+)</span>
+    </div>
+
+    <h3>Technology Stack</h3>
+    <div class="card-grid">
+      <div class="card"><h4>Platform</h4><p>Zoho Creator (Low-code) — India datacenter (creator.zoho.in). All API calls use .in domain.</p></div>
+      <div class="card"><h4>Language</h4><p>Deluge (Zoho scripting) for all automation: auto-numbering, lookups, stock updates, validations.</p></div>
+      <div class="card"><h4>Database</h4><p>Zoho Creator's PostgreSQL with native CRUD, 200-record pagination, file storage, audit logging.</p></div>
+      <div class="card"><h4>Security</h4><p>OAuth + role-based form/field/record-level permissions + approval workflows with escalation.</p></div>
+      <div class="card"><h4>Mobile</h4><p>Zoho Creator mobile app (iOS/Android) — all forms accessible with responsive layouts.</p></div>
+    </div>
+
+    <div class="footer">
+      <p>Chemsol — Zoho Creator ERP Implementation &middot; ITOTCloud Systems Pvt. Ltd.</p>
+      <p>28 Forms · 35 Reports · 8 Phases · 13 Roles · 24 Workflows · Built on Zoho Creator India (.in)</p>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chemsol — Data Model</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="sidebar">
+    <h1><span>Chemsol</span> ERP</h1>
+    <a href="index.html">Overview</a>
+    <a href="forms.html">28 Forms</a>
+    <a href="reports.html">Reports &amp; Automation</a>
+    <a href="security.html">Security &amp; Roles</a>
+    <a class="active" href="data-model.html">Data Model</a>
+    <a href="../index.html">← Back to Hub</a>
+  </nav>
+  <div class="main">
+    <h2>Data Model Relationships</h2>
+
+    <h3>Master Data Dependencies</h3>
+    <div class="code-block"><pre><code>Item Master ◄───── BOM Master ────► System Master
+     │                                      │
+     ├── Supplier Master                     │
+     ├── Customer Master                     │
+     └── Store Master ──► Bin Location       │
+                                              │
+Supplier Master ◄────────────────────────────┘
+Customer Master</code></pre></div>
+
+    <h3>Transactional Data Flows</h3>
+    <div class="code-block"><pre><code>PR ──► Rate Comparison ──► PO ──► GRN ──► QC
+                                         │
+                                         └──► Stock Ledger
+
+System Master ──► SO/WO ──► Project ──► Tasks
+                                         │
+                                         └──► MR ──► MIS ──► Stock Ledger
+
+BOM Master ──► Production Order ──► BMR ──► RM Consumption
+                                                 │
+                                                 ├── Packing Entry ──► FG Receiving
+                                                 └── Stock Ledger</code></pre></div>
+
+    <h3>Stock Update Matrix</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Transaction</th><th>Stock Effect</th><th>Direction</th></tr></thead>
+        <tbody>
+          <tr><td>GRN Posted</td><td>Add Received Qty to Warehouse stock</td><td><span style="color: var(--green)">Stock In (+)</span></td></tr>
+          <tr><td>MIS Posted</td><td>Deduct Issued Qty from RM store</td><td><span style="color: var(--orange)">Stock Out (−)</span></td></tr>
+          <tr><td>FG Receiving Posted</td><td>Add FG Qty to FG store</td><td><span style="color: var(--green)">Stock In (+)</span></td></tr>
+          <tr><td>Material Return Posted</td><td>Add returned Qty back to RM store</td><td><span style="color: var(--green)">Stock In (+)</span></td></tr>
+          <tr><td>Material Handover Posted</td><td>Deduct from source, Add to destination</td><td><span style="color: var(--accent)">Transfer</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Key Design Decisions</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Decision</th><th>Choice</th><th>Rationale</th></tr></thead>
+        <tbody>
+          <tr><td>Platform</td><td>Zoho Creator</td><td>Faster delivery, built-in mobile, lower TCO vs custom dev</td></tr>
+          <tr><td>Language</td><td>Deluge</td><td>Native Creator integration, no external infrastructure</td></tr>
+          <tr><td>Datacenter</td><td>India (.in)</td><td>Client is India-based, regulatory compliance</td></tr>
+          <tr><td>PO Series</td><td>Separate RM / RMWAD</td><td>Coding materials require stricter control</td></tr>
+          <tr><td>GRN Posting</td><td>Post = stock update</td><td>Prevents accidental stock updates on save</td></tr>
+          <tr><td>Partial GRN</td><td>Checkbox per line</td><td>Supports real-world partial deliveries</td></tr>
+          <tr><td>Execution Mode</td><td>Area / Day basis</td><td>Matches Chemsol's variable project types</td></tr>
+          <tr><td>SO/WO Mode</td><td>Supply+Apply / Supply-only</td><td>Different business models, different field sets</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="footer">
+      <p>Chemsol — Zoho Creator ERP Implementation &middot; ITOTCloud Systems Pvt. Ltd.</p>
+    </div>
+  </div>
+</body>
+</html>

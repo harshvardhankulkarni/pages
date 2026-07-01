@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chemsol — Reports &amp; Automation</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="sidebar">
+    <h1><span>Chemsol</span> ERP</h1>
+    <a href="index.html">Overview</a>
+    <a href="forms.html">28 Forms</a>
+    <a class="active" href="reports.html">Reports &amp; Automation</a>
+    <a href="security.html">Security &amp; Roles</a>
+    <a href="data-model.html">Data Model</a>
+    <a href="../index.html">← Back to Hub</a>
+  </nav>
+  <div class="main">
+    <h2>Reports &amp; Dashboards — 35 Reports</h2>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Department</th><th>Reports</th><th>Source Forms</th></tr></thead>
+        <tbody>
+          <tr><td><span class="badge badge-purple">Purchase (9)</span></td><td>Total Purchase This Month, Open PO Register, Pending PR Approvals, Overdue Deliveries, PO vs GRN Pending, Vendor Performance, Purchase by Item Group, Price Comparison, Transportation Reports</td><td>PO_Master, PR_Master, Rate_Comparison, Vehicle_Transport</td></tr>
+          <tr><td><span class="badge badge-yellow">Store (6)</span></td><td>Inventory Dashboard, Dispatch Planning, Pending MR, Pending FG Receiving, Material Issue Report, Material Return Report</td><td>MR_Master, MIS_Master, Material_Return, FG_Receiving</td></tr>
+          <tr><td><span class="badge badge-orange">Production (9)</span></td><td>Daily Production, BMR Report, Material Consumption, Production Order Status, BOM vs Actual, Production Loss, FG Handover, Packing, Machine Utilization</td><td>Production_Planning, BMR_Master, RM_Consumption, Packing_Entry</td></tr>
+          <tr><td><span class="badge badge-teal">Project (12)</span></td><td>Manpower Cost, Manpower Count, Tools, Issues, Margin, Execution vs Achievement, Monthly, Annual, Sitewise Costing, Material vs Work, Transport, Task</td><td>Project_Master (all task subforms)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Deluge Automations — 24 Workflows</h2>
+    <p>All automation is implemented using Zoho Deluge scripting across 6 categories:</p>
+
+    <div class="card-grid">
+      <div class="card"><h4>Auto-Numbering (7)</h4><p>PR-{000}, RM-{000}/RMWAD-{000}, GRN-{000}, MR-{000}, MIS-{000}, QC-{000}, SO-{000}/WO-{000}, PROJ-{000}, BOM-{000}</p></div>
+      <div class="card"><h4>Auto-Fetch Lookups (10)</h4><p>Item→Name/UOM/LeadTime, Supplier→GST/Bank, Customer→Contact/Address, System→Name/Thickness, GRN→PO items, QC→GRN items, MR→Available Stock</p></div>
+      <div class="card"><h4>Calculations (4)</h4><p>PO line: Amount=Qty×Rate, GST calc (CGST/SGST/IGST). SO/WO line: Amount=Area×Rate. Commission: % or Fixed.</p></div>
+      <div class="card"><h4>Stock Updates (5)</h4><p>GRN (+), MIS (−), Material Return (+), FG Receiving (+), Material Handover (transfer) — all trigger on Post.</p></div>
+      <div class="card"><h4>Approvals (4)</h4><p>PR (2-level), Rate Comparison, PO (2-level), MR (2-level) — with ₹50K/₹2L thresholds and Director escalation.</p></div>
+      <div class="card"><h4>Validations (6+)</h4><p>Duplicate Item Name, GST range (0-100%), Min≤Max Stock, HSN format (^\d{4,8}$), Insufficient stock on MIS, PO amendment after GRN.</p></div>
+    </div>
+
+    <h3>Sample: PO GST Calculation</h3>
+    <div class="code-block"><pre><code>// GST Calculation per line item (On Qty/Rate/GST% change)
+basicAmount = input.Qty * input.Rate;
+gstAmount = basicAmount * input.GST_Percentage / 100;
+if(input.GST_Type == "Intra-State") {
+    input.CGST_Amount = gstAmount / 2;
+    input.SGST_Amount = gstAmount / 2;
+} else {
+    input.IGST_Amount = gstAmount;
+}
+input.Total_Amount = basicAmount + gstAmount;</code></pre></div>
+
+    <h3>Sample: Post-GRN Stock Update</h3>
+    <div class="code-block"><pre><code>// Post GRN — Update Stock
+for each item in selectedItems {
+    itemRecord = zoho.creator.getRecordById("chemsol",
+        "Item_Master", item.Item_Code);
+    currentStock = itemRecord.get("Current_Stock");
+    zoho.creator.updateRecord("chemsol", "Item_Master",
+        item.Item_Code,
+        {"Current_Stock": currentStock + item.Received_Qty});
+}
+input.Status = "Posted";
+input.Posted_Timestamp = zoho.currenttime;</code></pre></div>
+
+    <div class="footer">
+      <p>Chemsol — Zoho Creator ERP Implementation &middot; ITOTCloud Systems Pvt. Ltd.</p>
+    </div>
+  </div>
+</body>
+</html>
