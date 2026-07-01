@@ -30,16 +30,24 @@
 
     <div class="content">
       <h2>Role Architecture</h2>
-      <div class="phase" style="font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 2.2;">
-        Administrator (IT)<br>
-        &nbsp;&nbsp;└── Admin (Full system access)<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── Purchase (Entry / Review / Approve)<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── Store &amp; Logistics (Entry / Review)<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── Production &amp; R&amp;D (Entry / Review)<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── Project (Manager 1/2/3 / Coordinator)<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── Sales (Entry / Review)<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── QC (Entry / Review)<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── Account &amp; Finance (View only)
+      <div class="tree role-tree">
+        <ul class="tree-list">
+          <li class="tree-item root"><span class="tree-label">Administrator (IT)</span>
+            <ul class="tree-children">
+              <li class="tree-item"><span class="tree-label">Admin <span class="tree-tag red">Full system access</span></span>
+                <ul class="tree-children">
+                  <li class="tree-item"><span class="tree-label">Purchase <span class="tree-tag blue">Entry / Review / Approve</span></span></li>
+                  <li class="tree-item"><span class="tree-label">Store &amp; Logistics <span class="tree-tag green">Entry / Review</span></span></li>
+                  <li class="tree-item"><span class="tree-label">Production &amp; R&amp;D <span class="tree-tag purple">Entry / Review</span></span></li>
+                  <li class="tree-item"><span class="tree-label">Project <span class="tree-tag amber">Manager 1/2/3 / Coordinator</span></span></li>
+                  <li class="tree-item"><span class="tree-label">Sales <span class="tree-tag blue">Entry / Review</span></span></li>
+                  <li class="tree-item"><span class="tree-label">QC <span class="tree-tag blue">Entry / Review</span></span></li>
+                  <li class="tree-item"><span class="tree-label">Account &amp; Finance <span class="tree-tag amber">View only</span></span></li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
       </div>
 
       <h2>Role Definitions</h2>

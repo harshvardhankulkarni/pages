@@ -40,34 +40,70 @@
       <h2>Architecture: Project Unites Everything</h2>
       <p>Just as <strong>Zoho CRM</strong> treats a Deal as the parent record with related lists (Quotes, Invoices, Contacts), Chemsol treats <strong>Project</strong> as the central hub. All transactions — PR, PO, GRN, MR, MIS, Production Orders, FG Handovers — carry a <strong>Project ID lookup</strong>. Nothing exists outside a project context.</p>
 
-      <div class="hub-diagram">
-        <pre>
-<span style="color:var(--accent)">┌─ Sales Order (Supply+Apply) ──► [ PROJECT ] ◄── Purchase Requisition ─┐</span>
-<span style="color:var(--accent)">│                                      │              │                 │</span>
-<span style="color:var(--accent)">│                               ┌──────┼──────┐       │                 │</span>
-<span style="color:var(--accent)">│                          ┌────┤      │      ├────┐  │                 │</span>
-<span style="color:var(--accent)">│                          ▼    ▼      ▼      ▼    ▼  ▼                 │</span>
-<span style="color:var(--accent)">│                    ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐   │</span>
-<span style="color:var(--accent)">│                    │Procure  │ │Inventory│ │Production│ │  Tasks  │   │</span>
-<span style="color:var(--accent)">│                    │PR→PO→GRN│ │MR→MIS→FG│ │Plan→BMR│ │5 Cats   │   │</span>
-<span style="color:var(--accent)">│                    └─────────┘ └─────────┘ └─────────┘ └─────────┘   │</span>
-<span style="color:var(--accent)">│                                                                       │</span>
-<span style="color:var(--accent)">│  Master Data (Global): Item Muster · Supplier Master · System Master │</span>
-<span style="color:var(--accent)">│                         BOM Master · Customer/Site Master            │</span>
-<span style="color:var(--accent)">└───────────────────────────────────────────────────────────────────────┘</span></pre>
+      <div class="hub-arch">
+        <div class="hub-arch-inner">
+          <div class="hub-center">
+            <div class="hub-node">
+              Sales Order (Supply+Apply)
+              <span class="hub-badge">enters</span>
+              <strong>[ PROJECT ]</strong>
+              <span class="hub-badge">receives</span>
+              Purchase Requisition
+            </div>
+          </div>
+          <div class="hub-top-connector"></div>
+          <div class="hub-row">
+            <div class="hub-module green">
+              <span class="hm-icon">📦</span>
+              <span class="hm-name">Procurement</span>
+              <span class="hm-desc">PR → PO → GRN → QC</span>
+            </div>
+            <div class="hub-module blue">
+              <span class="hm-icon">🏭</span>
+              <span class="hm-name">Inventory</span>
+              <span class="hm-desc">MR → MIS → FG</span>
+            </div>
+            <div class="hub-module purple">
+              <span class="hm-icon">⚙️</span>
+              <span class="hm-name">Production</span>
+              <span class="hm-desc">Plan → BMR → Pack</span>
+            </div>
+            <div class="hub-module amber">
+              <span class="hm-icon">📋</span>
+              <span class="hm-name">Tasks</span>
+              <span class="hm-desc">5 Categories</span>
+            </div>
+          </div>
+          <div class="hub-bottom-bar">
+            <span class="hbb-item">📦 Item Muster</span>
+            <span class="hbb-item">🏢 Supplier Master</span>
+            <span class="hbb-item">🔧 System Master</span>
+            <span class="hbb-item">📐 BOM Master</span>
+            <span class="hbb-item">👥 Customer/Site Master</span>
+            <span class="hbb-item" style="font-weight:600;color:var(--gray-700)">— Master Data (Global) —</span>
+          </div>
+        </div>
       </div>
 
       <h3>Initial Process Flow</h3>
-      <div class="pipeline-flow">
-        <pre>
-<span style="color:var(--green);font-weight:700">STEP 1:</span> Sales Order (Supply+Apply) is accepted
-<span style="color:var(--green);font-weight:700">STEP 2:</span> Project record is auto-created with SO reference
-<span style="color:var(--green);font-weight:700">STEP 3:</span> Project Manager assigned → Execution begins
-<span style="color:var(--green);font-weight:700">STEP 4:</span> All procurement (PR→PO→GRN) tagged to this Project
-<span style="color:var(--green);font-weight:700">STEP 5:</span> Material requests (MR→MIS) tagged to this Project
-<span style="color:var(--green);font-weight:700">STEP 6:</span> Production planned &amp; executed per Project
-<span style="color:var(--green);font-weight:700">STEP 7:</span> FG Handover &amp; Acceptance per Project
-<span style="color:var(--green);font-weight:700">STEP 8:</span> 5 Task Categories track execution per Project</pre>
+      <div class="step-flow">
+        <div class="step-flow-row">
+          <div class="step-card green"><span class="step-num">1</span><div class="step-content"><div class="step-title">SO Accepted</div><div class="step-desc">Supply+Apply mode</div></div></div>
+          <span class="step-arrow">→</span>
+          <div class="step-card blue"><span class="step-num">2</span><div class="step-content"><div class="step-title">Project Created</div><div class="step-desc">Auto from SO ref</div></div></div>
+          <span class="step-arrow">→</span>
+          <div class="step-card"><span class="step-num">3</span><div class="step-content"><div class="step-title">PM Assigned</div><div class="step-desc">Execution begins</div></div></div>
+          <span class="step-arrow">→</span>
+          <div class="step-card"><span class="step-num">4</span><div class="step-content"><div class="step-title">Procurement</div><div class="step-desc">PR→PO→GRN→QC</div></div></div>
+          <span class="step-arrow">→</span>
+          <div class="step-card"><span class="step-num">5</span><div class="step-content"><div class="step-title">Materials</div><div class="step-desc">MR→MIS</div></div></div>
+          <span class="step-arrow">→</span>
+          <div class="step-card"><span class="step-num">6</span><div class="step-content"><div class="step-title">Production</div><div class="step-desc">Plan→BMR</div></div></div>
+          <span class="step-arrow">→</span>
+          <div class="step-card"><span class="step-num">7</span><div class="step-content"><div class="step-title">FG Handover</div><div class="step-desc">FGHM→FGAN</div></div></div>
+          <span class="step-arrow">→</span>
+          <div class="step-card amber"><span class="step-num">8</span><div class="step-content"><div class="step-title">Task Tracking</div><div class="step-desc">5 Categories</div></div></div>
+        </div>
       </div>
 
       <h3>Module Structure — Inspired by Zoho Products</h3>
@@ -87,33 +123,33 @@
 
       <h3>Procurement Flow (N Line Items)</h3>
       <p>Like <strong>Zoho Books Purchase Orders</strong>, each PR/PO/GRN has a line-item subtable with autofetch fields, GST split, and HSN codes.</p>
-      <div class="flow">
-        <span class="flow-node" style="border-color:var(--primary);color:var(--primary)">Project</span><span class="flow-arrow">→</span>
-        <span class="flow-node">PR</span><span class="flow-arrow">→</span>
-        <span class="flow-node">Rate Comparison</span><span class="flow-arrow">→</span>
-        <span class="flow-node">PO (RM/RMWAD)</span><span class="flow-arrow">→</span>
-        <span class="flow-node">GRN (partial ✓)</span><span class="flow-arrow">→</span>
-        <span class="flow-node">QC/QA</span><span class="flow-arrow">→</span>
-        <span class="flow-green">Stock +</span>
+      <div class="flow-visual">
+        <span class="fv-node fv-dark">Project</span><span class="fv-arrow">→</span>
+        <span class="fv-node">PR</span><span class="fv-arrow">→</span>
+        <span class="fv-node">Rate Comparison</span><span class="fv-arrow">→</span>
+        <span class="fv-node">PO (RM/RMWAD)</span><span class="fv-arrow">→</span>
+        <span class="fv-node">GRN (partial ✓)</span><span class="fv-arrow">→</span>
+        <span class="fv-node">QC/QA</span><span class="fv-arrow">→</span>
+        <span class="fv-node fv-green">✓ Stock +</span>
       </div>
       <p style="font-size:13px;color:var(--gray-500);">↳ Each PO line: Item Code, Name, HSN, Qty, UOM, Rate, Basic Amount, GST%, CGST/SGST/IGST, Total</p>
 
       <h3>Inventory Flow</h3>
-      <div class="flow">
-        <span class="flow-node" style="border-color:var(--primary);color:var(--primary)">Project</span><span class="flow-arrow">→</span>
-        <span class="flow-node">MR</span><span class="flow-arrow">→</span>
-        <span class="flow-node">MIS</span><span class="flow-arrow">→</span>
-        <span class="flow-orange">Stock −</span>
+      <div class="flow-visual">
+        <span class="fv-node fv-dark">Project</span><span class="fv-arrow">→</span>
+        <span class="fv-node">MR</span><span class="fv-arrow">→</span>
+        <span class="fv-node">MIS</span><span class="fv-arrow">→</span>
+        <span class="fv-node fv-amber">Stock −</span>
       </div>
 
       <h3>Production → FG Flow</h3>
-      <div class="flow">
-        <span class="flow-node" style="border-color:var(--primary);color:var(--primary)">Project</span><span class="flow-arrow">→</span>
-        <span class="flow-node">Production</span><span class="flow-arrow">→</span>
-        <span class="flow-node">FGHM</span><span class="flow-arrow">→</span>
-        <span class="flow-purple">Notify Store</span><span class="flow-arrow">→</span>
-        <span class="flow-node">FGAN</span><span class="flow-arrow">→</span>
-        <span class="flow-green">FG Stock +</span>
+      <div class="flow-visual">
+        <span class="fv-node fv-dark">Project</span><span class="fv-arrow">→</span>
+        <span class="fv-node">Production</span><span class="fv-arrow">→</span>
+        <span class="fv-node">FGHM</span><span class="fv-arrow">→</span>
+        <span class="fv-node fv-purple">Notify Store</span><span class="fv-arrow">→</span>
+        <span class="fv-node">FGAN</span><span class="fv-arrow">→</span>
+        <span class="fv-node fv-green">FG Stock +</span>
       </div>
 
       <h3>Departments</h3>

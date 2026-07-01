@@ -215,19 +215,57 @@
     <h3>Project-Centric Hub Architecture</h3>
     <p>All modules radiate from the <strong>Project</strong>. Every form has a <code>Project ID</code> lookup field.</p>
 
-    <div class="hub-diagram">
-      <div class="hub-center">
-        PROJECT<br><small>Created from Sales Order</small>
-      </div>
-      <div class="hub-ring">
-        <div class="hub-node purple">Sales / SO<br><small>Creates Project</small></div>
-        <div class="hub-node blue">Purchase Requisition<br><small>N items per PR</small></div>
-        <div class="hub-node blue">Purchase Order<br><small>N items per PO</small></div>
-        <div class="hub-node green">Goods Receipt<br><small>Partial GRN supported</small></div>
-        <div class="hub-node green">Material Requisition<br><small>N items per MR</small></div>
-        <div class="hub-node orange">Production Orders<br><small>Batches per Project</small></div>
-        <div class="hub-node teal">FG Handover<br><small>N FG items per FGHM</small></div>
-        <div class="hub-node red">QC / QA<br><small>N items per QC form</small></div>
+    <div class="hub-arch">
+      <div class="hub-arch-inner">
+        <div class="hub-center">
+          <div class="hub-node">
+            <strong>[ PROJECT ]</strong>
+            <span class="hub-badge">Created from Sales Order</span>
+          </div>
+        </div>
+        <div class="hub-top-connector"></div>
+        <div class="hub-row">
+          <div class="hub-module amber">
+            <span class="hm-icon">📋</span>
+            <span class="hm-name">Sales / SO</span>
+            <span class="hm-desc">Creates Project</span>
+          </div>
+          <div class="hub-module blue">
+            <span class="hm-icon">📝</span>
+            <span class="hm-name">PR</span>
+            <span class="hm-desc">N items per PR</span>
+          </div>
+          <div class="hub-module blue">
+            <span class="hm-icon">📄</span>
+            <span class="hm-name">PO</span>
+            <span class="hm-desc">N items per PO</span>
+          </div>
+          <div class="hub-module green">
+            <span class="hm-icon">📥</span>
+            <span class="hm-name">GRN</span>
+            <span class="hm-desc">Partial GRN</span>
+          </div>
+          <div class="hub-module green">
+            <span class="hm-icon">📦</span>
+            <span class="hm-name">MR</span>
+            <span class="hm-desc">N items per MR</span>
+          </div>
+          <div class="hub-module" style="border-color:#f97316">
+            <span class="hm-icon">🏭</span>
+            <span class="hm-name">Production</span>
+            <span class="hm-desc">Batches</span>
+          </div>
+          <div class="hub-module" style="border-color:#14b8a6">
+            <span class="hm-icon">🚚</span>
+            <span class="hm-name">FG Handover</span>
+            <span class="hm-desc">N FG items</span>
+          </div>
+          <div class="hub-module" style="border-color:#ef4444">
+            <span class="hm-icon">🔬</span>
+            <span class="hm-name">QC / QA</span>
+            <span class="hm-desc">N items per QC</span>
+          </div>
+        </div>
       </div>
     </div>
     <div class="info-box">

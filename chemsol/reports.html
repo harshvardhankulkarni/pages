@@ -138,15 +138,43 @@
           <span class="phase-title">Procurement Flow</span>
           <span class="phase-tag">PR→Rate Comparison→PO→GRN→QC</span>
         </div>
-        <div class="code-block"><code>SO (Supply+Apply)
-  → Project Created (auto)
-    → PR (tagged to Project)
-      → Approval (Approval Matrix)
-        → Rate Comparison (Purchase)
-          → PO (Purchase — RM/RMWAD series, GST split)
-            → GRN (Store — partial via checkbox)
-              → QC/QA (QC dept)
-                → Stock Updated (after posting)</code></div>
+        <div class="tree">
+          <ul class="tree-list">
+            <li class="tree-item root"><span class="tree-label">SO <span class="tree-tag amber">Supply+Apply</span></span>
+              <ul class="tree-children">
+                <li class="tree-item"><span class="tree-label">Project Created <span class="tree-tag green">Auto</span></span>
+                  <ul class="tree-children">
+                    <li class="tree-item"><span class="tree-label">PR <span class="tree-tag blue">Tagged to Project</span></span>
+                      <ul class="tree-children">
+                        <li class="tree-item"><span class="tree-label">Approval <span class="tree-tag amber">Approval Matrix</span></span>
+                          <ul class="tree-children">
+                            <li class="tree-item"><span class="tree-label">Rate Comparison <span class="tree-tag blue">Purchase</span></span>
+                              <ul class="tree-children">
+                                <li class="tree-item"><span class="tree-label">PO <span class="tree-tag amber">RM/RMWAD, GST split</span></span>
+                                  <ul class="tree-children">
+                                    <li class="tree-item"><span class="tree-label">GRN <span class="tree-tag green">Partial via checkbox</span></span>
+                                      <ul class="tree-children">
+                                        <li class="tree-item"><span class="tree-label">QC/QA <span class="tree-tag purple">QC dept</span></span>
+                                          <ul class="tree-children">
+                                            <li class="tree-item"><span class="tree-label">Stock Updated <span class="tree-tag green">After posting</span></span></li>
+                                          </ul>
+                                        </li>
+                                      </ul>
+                                    </li>
+                                  </ul>
+                                </li>
+                              </ul>
+                            </li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
       </div>
 
       <div class="phase">
@@ -155,8 +183,36 @@
           <span class="phase-title">Material Issue + FG Flow</span>
           <span class="phase-tag">MR→MIS · FGHM→FGAN</span>
         </div>
-        <div class="code-block"><code>MR (tagged to Project) → MIS (Store issues) → Stock −
-Production (tagged to Project) → FGHM → Notify Store → FGAN → FG Stock +</code></div>
+        <div class="tree">
+          <ul class="tree-list">
+            <li class="tree-item root"><span class="tree-label">MR <span class="tree-tag blue">Tagged to Project</span></span>
+              <ul class="tree-children">
+                <li class="tree-item"><span class="tree-label">MIS <span class="tree-tag amber">Store issues</span></span>
+                  <ul class="tree-children">
+                    <li class="tree-item"><span class="tree-label">Stock − <span class="tree-tag red">Deducted</span></span></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li class="tree-item root" style="margin-top:12px"><span class="tree-label">Production <span class="tree-tag blue">Tagged to Project</span></span>
+              <ul class="tree-children">
+                <li class="tree-item"><span class="tree-label">FGHM <span class="tree-tag purple">Handover</span></span>
+                  <ul class="tree-children">
+                    <li class="tree-item"><span class="tree-label">Notify Store</span>
+                      <ul class="tree-children">
+                        <li class="tree-item"><span class="tree-label">FGAN <span class="tree-tag green">Acceptance</span></span>
+                          <ul class="tree-children">
+                            <li class="tree-item"><span class="tree-label">FG Stock + <span class="tree-tag green">Updated</span></span></li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
       </div>
 
       <div class="phase">

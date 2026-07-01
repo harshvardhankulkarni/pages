@@ -30,72 +30,193 @@
 
     <div class="content">
       <h2>System Architecture — Project-Centric Hub</h2>
-      <div class="hub-diagram">
-        <pre>
-<span style="color:var(--gray-500)">┌─────────────────────────────────────────────────────────────────────┐</span>
-<span style="color:var(--gray-500)">│  MASTER DATA (Global — Phase 1)                                    │</span>
-<span style="color:var(--gray-500)">│  Item Muster ◄──► Supplier Master ◄──► System Master               │</span>
-<span style="color:var(--gray-500)">│  Customer/Site Master ◄──► BOM Master ◄──► Store Master            │</span>
-<span style="color:var(--gray-500)">└─────────────────────────────────────────────────────────────────────┘</span>
-<span style="color:var(--gray-500)">                               │</span>
-<span style="color:var(--gray-500)">                               ▼</span>
-<span style="color:var(--gray-500)">┌─────────────────────────────────────────────────────────────────────┐</span>
-<span style="color:var(--gray-500)">│  SALES ORDER (Phase 6)                                             │</span>
-<span style="color:var(--gray-500)">│  Supply+Apply ──► auto-creates Project                             │</span>
-<span style="color:var(--gray-500)">│  Supply Only  ──► Material Sales (no project)                      │</span>
-<span style="color:var(--gray-500)">└──────────────────────────┬──────────────────────────────────────────┘</span>
-<span style="color:var(--gray-500)">                           │</span>
-<span style="color:var(--gray-500)">                           ▼</span>
-<span style="color:var(--green);font-weight:700">┌─────────────────────────────────────────────────────────────────────┐</span>
-<span style="color:var(--green);font-weight:700">│                    [ PROJECT ]  ◄── ROOT ENTITY                    │</span>
-<span style="color:var(--green);font-weight:700">│  ID | Name | SO Ref | Manager | Cost | Dates | Systems             │</span>
-<span style="color:var(--green);font-weight:700">└──────────┬──────────────────────────────────┬───────────────────────┘</span>
-<span style="color:var(--green);font-weight:700">           │                                  │</span>
-<span style="color:var(--green);font-weight:700">    ┌──────┼──────┐                    ┌──────┼──────┐</span>
-<span style="color:var(--green);font-weight:700">    ▼      ▼      ▼                    ▼      ▼      ▼</span>
-<span style="color:var(--gray-500)">┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐</span>
-<span style="color:var(--gray-500)">│Procure │ │Inventory│ │Productn│ │Transp. │ │Execut. │ │Manpower│</span>
-<span style="color:var(--gray-500)">│Phase 2 │ │Phase 3 │ │Phase 4 │ └────────┘ └────────┘ └────────┘</span>
-<span style="color:var(--gray-500)">│PR→PO   │ │MR→MIS  │ │Plan→   │  ┌────────┐ ┌────────┐</span>
-<span style="color:var(--gray-500)">│→GRN→QC │ │→FGH→FGA│ │BMR→Pack│  │ Tools  │ │ Expenses│</span>
-<span style="color:var(--gray-500)">└────────┘ └────────┘ └────────┘  └────────┘ └────────┘</span>
-<span style="color:var(--gray-500)">                        Project ID on ALL forms</span></pre>
+      <div class="hub-arch">
+        <div class="hub-arch-inner">
+          <div class="hub-bottom-bar" style="border-style:solid;margin-top:0">
+            <span class="hbb-item" style="font-weight:600;color:var(--gray-700)">MASTER DATA (Global — Phase 1)</span>
+            <span class="hbb-item">📦 Item Muster</span>
+            <span class="hbb-item">🏢 Supplier Master</span>
+            <span class="hbb-item">🔧 System Master</span>
+            <span class="hbb-item">📐 BOM Master</span>
+            <span class="hbb-item">👥 Customer/Site Master</span>
+            <span class="hbb-item">🏪 Store Master</span>
+          </div>
+
+          <div class="hub-top-connector"></div>
+
+          <div class="hub-center">
+            <div class="hub-module amber" style="padding:10px 24px;flex-direction:row">
+              <span style="font-size:13px;font-weight:600">SALES ORDER (Phase 6)</span>
+              <span class="tree-tag green" style="font-size:10px;padding:2px 10px;border-radius:999px;background:var(--green-light);color:var(--green)">Supply+Apply → auto-creates Project</span>
+              <span class="tree-tag blue" style="font-size:10px;padding:2px 10px;border-radius:999px;background:var(--primary-light);color:var(--primary)">Supply Only → Material Sales</span>
+            </div>
+          </div>
+
+          <div class="hub-top-connector"></div>
+
+          <div class="hub-center">
+            <div class="hub-node">
+              <strong>[ PROJECT ]</strong>
+              <span class="hub-badge">Root Entity</span>
+              <span style="font-size:11px;font-weight:400;opacity:0.7">ID · Name · SO Ref · Manager · Cost · Dates · Systems</span>
+            </div>
+          </div>
+
+          <div class="hub-top-connector"></div>
+
+          <div class="hub-row">
+            <div class="hub-module green">
+              <span class="hm-icon">📦</span>
+              <span class="hm-name">Procurement</span>
+              <span class="hm-desc">Phase 2<br>PR→PO→GRN→QC</span>
+            </div>
+            <div class="hub-module blue">
+              <span class="hm-icon">🏭</span>
+              <span class="hm-name">Inventory</span>
+              <span class="hm-desc">Phase 3<br>MR→MIS→FGH→FGA</span>
+            </div>
+            <div class="hub-module purple">
+              <span class="hm-icon">⚙️</span>
+              <span class="hm-name">Production</span>
+              <span class="hm-desc">Phase 4<br>Plan→BMR→Pack</span>
+            </div>
+            <div class="hub-module amber">
+              <span class="hm-icon">🚚</span>
+              <span class="hm-name">Transport</span>
+              <span class="hm-desc">Task Category</span>
+            </div>
+            <div class="hub-module" style="border-color:#8b5cf6">
+              <span class="hm-icon">🔨</span>
+              <span class="hm-name">Execution</span>
+              <span class="hm-desc">Area Basis</span>
+            </div>
+            <div class="hub-module" style="border-color:#06b6d4">
+              <span class="hm-icon">👷</span>
+              <span class="hm-name">Manpower</span>
+              <span class="hm-desc">Day Basis</span>
+            </div>
+            <div class="hub-module slate">
+              <span class="hm-icon">🔧</span>
+              <span class="hm-name">Tools</span>
+              <span class="hm-desc">Budget</span>
+            </div>
+            <div class="hub-module" style="border-color:#ec4899">
+              <span class="hm-icon">💰</span>
+              <span class="hm-name">Expenses</span>
+              <span class="hm-desc">Overhead</span>
+            </div>
+          </div>
+
+          <div class="hub-bottom-bar" style="margin-top:0">
+            <span class="hbb-item" style="font-weight:600;color:var(--primary)">Project ID on ALL forms</span>
+          </div>
+        </div>
       </div>
 
       <h3>Flow 1 · Procurement (Phase 2)</h3>
-      <div class="code-block"><code>Project (Root)
-  └── PR (Production/R&D) — Project ID lookup
-       └── Approval (Approval Matrix)
-            └── Rate Comparison (Purchase — 5 suppliers)
-                 └── PO (Purchase — RM/RMWAD, GST split, N line items)
-                      └── GRN (Store — partial via checkbox)
-                           └── QC/QA (QC dept — test results)
-                                └── Stock Updated (after posting)</code></div>
+      <div class="tree">
+        <ul class="tree-list">
+          <li class="tree-item root"><span class="tree-label">Project <span class="tree-tag blue">Root</span></span>
+            <ul class="tree-children">
+              <li class="tree-item"><span class="tree-label">PR (Production/R&amp;D) <span class="tree-tag blue">Project ID lookup</span></span>
+                <ul class="tree-children">
+                  <li class="tree-item"><span class="tree-label">Approval <span class="tree-tag amber">Approval Matrix</span></span>
+                    <ul class="tree-children">
+                      <li class="tree-item"><span class="tree-label">Rate Comparison <span class="tree-tag blue">Purchase — 5 suppliers</span></span>
+                        <ul class="tree-children">
+                          <li class="tree-item"><span class="tree-label">PO <span class="tree-tag amber">RM/RMWAD, GST split, N line items</span></span>
+                            <ul class="tree-children">
+                              <li class="tree-item"><span class="tree-label">GRN <span class="tree-tag green">Partial via checkbox</span></span>
+                                <ul class="tree-children">
+                                  <li class="tree-item"><span class="tree-label">QC/QA <span class="tree-tag purple">Test results</span></span>
+                                    <ul class="tree-children">
+                                      <li class="tree-item"><span class="tree-label">Stock Updated <span class="tree-tag green">After posting</span></span></li>
+                                    </ul>
+                                  </li>
+                                </ul>
+                              </li>
+                            </ul>
+                          </li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
 
       <h3>Flow 2 · Material Issue (Phase 3)</h3>
-      <div class="code-block"><code>Project (Root)
-  └── MR (Production/R&D) — Project ID lookup
-       └── MIS (Store issues material — N items)
-            └── Stock − (deduction on posting)</code></div>
+      <div class="tree">
+        <ul class="tree-list">
+          <li class="tree-item root"><span class="tree-label">Project <span class="tree-tag blue">Root</span></span>
+            <ul class="tree-children">
+              <li class="tree-item"><span class="tree-label">MR (Production/R&amp;D) <span class="tree-tag blue">Project ID lookup</span></span>
+                <ul class="tree-children">
+                  <li class="tree-item"><span class="tree-label">MIS <span class="tree-tag amber">Store issues — N items</span></span>
+                    <ul class="tree-children">
+                      <li class="tree-item"><span class="tree-label">Stock − <span class="tree-tag red">Deduction on posting</span></span></li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
 
       <h3>Flow 3 · FG Handover (Phase 4)</h3>
-      <div class="code-block"><code>Project (Root)
-  └── Production — Project ID lookup
-       └── FGHM (FG Handover — N items)
-            └── Pop-up Notification → Store/Logistics
-                 └── FGAN (FG Acceptance)
-                      └── FG Stock + (after approval)</code></div>
+      <div class="tree">
+        <ul class="tree-list">
+          <li class="tree-item root"><span class="tree-label">Project <span class="tree-tag blue">Root</span></span>
+            <ul class="tree-children">
+              <li class="tree-item"><span class="tree-label">Production <span class="tree-tag blue">Project ID lookup</span></span>
+                <ul class="tree-children">
+                  <li class="tree-item"><span class="tree-label">FGHM <span class="tree-tag purple">FG Handover — N items</span></span>
+                    <ul class="tree-children">
+                      <li class="tree-item"><span class="tree-label">Pop-up Notification <span class="tree-tag amber">Store/Logistics</span></span>
+                        <ul class="tree-children">
+                          <li class="tree-item"><span class="tree-label">FGAN <span class="tree-tag green">FG Acceptance</span></span>
+                            <ul class="tree-children">
+                              <li class="tree-item"><span class="tree-label">FG Stock + <span class="tree-tag green">After approval</span></span></li>
+                            </ul>
+                          </li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
 
       <h3>Flow 4 · Sales → Project (Phases 5–6)</h3>
-      <div class="code-block"><code>SO/Work Order (Dual Mode)
-  ├── Supply+Apply → Auto-creates Project → 5 Task Categories
-  │                                           ├── Transportation
-  │                                           ├── Application/Execution (Area Basis)
-  │                                           ├── Manpower (Day Basis)
-  │                                           ├── Tools
-  │                                           └── Additional Expenses
-  │
-  └── Supply Only → Material Sales (FG dispatch — no project)</code></div>
+      <div class="tree">
+        <ul class="tree-list">
+          <li class="tree-item root"><span class="tree-label">SO/Work Order <span class="tree-tag amber">Dual Mode</span></span>
+            <ul class="tree-children">
+              <li class="tree-item"><span class="tree-label">Supply+Apply <span class="tree-tag green">Auto-creates Project</span></span>
+                <ul class="tree-children">
+                  <li class="tree-item"><span class="tree-label">5 Task Categories</span>
+                    <ul class="tree-children">
+                      <li class="tree-item"><span class="tree-label">Transportation</span></li>
+                      <li class="tree-item"><span class="tree-label">Application/Execution <span class="tree-tag blue">Area Basis</span></span></li>
+                      <li class="tree-item"><span class="tree-label">Manpower <span class="tree-tag blue">Day Basis</span></span></li>
+                      <li class="tree-item"><span class="tree-label">Tools</span></li>
+                      <li class="tree-item"><span class="tree-label">Additional Expenses</span></li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li class="tree-item"><span class="tree-label">Supply Only <span class="tree-tag blue">Material Sales — no project</span></span></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
 
       <h3>Project ID Lookup Chain</h3>
       <div class="table-wrap">
