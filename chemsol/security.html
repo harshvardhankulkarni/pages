@@ -10,58 +10,94 @@
   <nav class="sidebar">
     <h1><span>Chemsol</span> ERP</h1>
     <a href="index.html">Overview</a>
-    <a href="forms.html">28 Forms</a>
+    <a href="forms.html">Forms</a>
     <a href="reports.html">Reports &amp; Automation</a>
     <a class="active" href="security.html">Security &amp; Roles</a>
     <a href="data-model.html">Data Model</a>
     <a href="../index.html">← Back to Hub</a>
   </nav>
   <div class="main">
-    <h2>Security Model — 13 Roles</h2>
+    <h2>User Roles &amp; Access Scope</h2>
 
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Role</th><th>Department</th><th>Key Permissions</th></tr></thead>
+        <thead><tr><th>Role</th><th>Department</th><th>Access Scope</th></tr></thead>
         <tbody>
-          <tr><td><strong>Admin</strong></td><td>IT</td><td>Full access — all forms C/R/U/D, user management</td></tr>
-          <tr><td><strong>Purchase Manager</strong></td><td>Purchase</td><td>PR, RC, PO, GRN, Supplier — CRUD + approvals</td></tr>
-          <tr><td><strong>Purchase Executive</strong></td><td>Purchase</td><td>PR, RC, PO — Create/Edit, limited approvals</td></tr>
-          <tr><td><strong>Store Manager</strong></td><td>Store</td><td>MR, MIS, Returns, Handover, FG, Vehicle — CRUD</td></tr>
-          <tr><td><strong>Store Keeper</strong></td><td>Store</td><td>MR, MIS — Create/Edit, limited</td></tr>
-          <tr><td><strong>Production Manager</strong></td><td>Production</td><td>All production forms — CRUD</td></tr>
-          <tr><td><strong>Production Executive</strong></td><td>Production</td><td>Production forms — Create/Edit</td></tr>
-          <tr><td><strong>QC Inspector</strong></td><td>QC</td><td>QC_Master — CRUD</td></tr>
-          <tr><td><strong>Sales Executive</strong></td><td>Sales</td><td>SO/WO, Customer — CRUD, Item/Sys — Read</td></tr>
-          <tr><td><strong>Finance Executive</strong></td><td>Finance</td><td>Read-only on financial forms</td></tr>
-          <tr><td><strong>Project Manager</strong></td><td>Project</td><td>Project_Master — CRUD</td></tr>
-          <tr><td><strong>Project Coordinator</strong></td><td>Project</td><td>Project — Create/Edit</td></tr>
-          <tr><td><strong>Viewer</strong></td><td>All</td><td>Read-only on permitted forms</td></tr>
+          <tr><td><strong>Admin</strong></td><td>IT</td><td>Full access — all forms, reports, settings, user management</td></tr>
+          <tr><td><strong>Purchase - Entry</strong></td><td>Purchase</td><td>Create/Edit: PR, PO, Rate Comparison, GRN. View: Reports</td></tr>
+          <tr><td><strong>Purchase - Review</strong></td><td>Purchase</td><td>View only: all purchase forms + reports</td></tr>
+          <tr><td><strong>Purchase - Approve</strong></td><td>Purchase</td><td>Approve: PR, PO within limits (per Approval Matrix)</td></tr>
         </tbody>
       </table>
     </div>
 
-    <h3>Field-Level Restrictions</h3>
-    <ul style="color: var(--muted); margin: 12px 0; padding-left: 20px;">
-      <li style="margin-bottom: 6px;">Supplier_Master: Account_No, IFSC_Code hidden from non-Purchase roles</li>
-      <li style="margin-bottom: 6px;">Item_Master: Standard_Rate hidden from non-Admin/Purchase/Store</li>
-      <li style="margin-bottom: 6px;">User_Access: Approval limits visible only to Admin</li>
-      <li style="margin-bottom: 6px;">QC_Master: Test results (Viscosity, Density, Color, Moisture) — QC Inspector only</li>
-    </ul>
-
-    <h3>Approval Limits</h3>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Form</th><th>Threshold</th><th>Escalation</th></tr></thead>
+        <thead><tr><th>Role</th><th>Department</th><th>Access Scope</th></tr></thead>
         <tbody>
-          <tr><td>PR</td><td>₹50,000</td><td>Purchase Manager (≤₹50K) → Director (&gt;₹50K)</td></tr>
-          <tr><td>PO Amendment</td><td>₹2,00,000</td><td>Director escalation at ₹2L threshold difference</td></tr>
-          <tr><td>MR</td><td>Department-specific</td><td>Production/Project role limits</td></tr>
+          <tr><td><strong>Store - Entry</strong></td><td>Store &amp; Logistics</td><td>Create/Edit: GRN, MIS, Material Return, FG Receiving, Vehicle &amp; Transport</td></tr>
+          <tr><td><strong>Store - Review</strong></td><td>Store &amp; Logistics</td><td>View: Inventory stock, GRN, PO, Reports</td></tr>
+          <tr><td><strong>Production - Entry</strong></td><td>Production</td><td>Create/Edit: MR, BMR, Production Planning, RM Consumption, Packing, FGHM</td></tr>
+          <tr><td><strong>Production - Review</strong></td><td>Production</td><td>View: BOM, Stock, Production Reports</td></tr>
+          <tr><td><strong>Sales - Entry</strong></td><td>Sales</td><td>Create/Edit: Sales/Work Order, Customer Master</td></tr>
+          <tr><td><strong>Sales - Review</strong></td><td>Sales</td><td>View: SO reports, project status</td></tr>
+          <tr><td><strong>QC - Entry</strong></td><td>QC</td><td>Create/Edit: QC/QA forms</td></tr>
+          <tr><td><strong>QC - Review</strong></td><td>QC</td><td>View: GRN, Item Muster, BOM</td></tr>
+          <tr><td><strong>Project Manager</strong></td><td>Project</td><td>Create/Edit: Projects, Tasks. View: Stock, PO status</td></tr>
+          <tr><td><strong>Account &amp; Finance</strong></td><td>Finance</td><td>View: PO, GRN, Payment terms, Supplier reports</td></tr>
+          <tr><td><strong>Project Coordinator</strong></td><td>Project</td><td>Create/Edit: MR, view Production and Project status</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Permission by Form</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Form</th><th>Create/Edit</th><th>View Only</th><th>No Access</th></tr></thead>
+        <tbody>
+          <tr><td>Purchase Item Muster</td><td>Admin, Purchase-Entry</td><td>All depts</td><td>—</td></tr>
+          <tr><td>Supplier Master</td><td>Admin, Purchase-Entry</td><td>Purchase, Finance</td><td>Others</td></tr>
+          <tr><td>Customer Master</td><td>Admin, Sales-Entry</td><td>Sales, Projects, Finance</td><td>Others</td></tr>
+          <tr><td>BOM Master</td><td>Admin, Production-Entry</td><td>Production, QC, Costing</td><td>Others</td></tr>
+          <tr><td>PR</td><td>Production, R&amp;D</td><td>Purchase (Review)</td><td>Others</td></tr>
+          <tr><td>Rate Comparison</td><td>Purchase-Entry</td><td>Purchase (Review)</td><td>Others</td></tr>
+          <tr><td>PO</td><td>Purchase-Entry</td><td>Purchase, Finance, Store</td><td>Others</td></tr>
+          <tr><td>GRN</td><td>Purchase-Entry, Store-Entry</td><td>Purchase, Store</td><td>Others</td></tr>
+          <tr><td>QC/QA</td><td>QC-Entry</td><td>Purchase, Production</td><td>Others</td></tr>
+          <tr><td>MR</td><td>Production, R&amp;D</td><td>Store</td><td>Others</td></tr>
+          <tr><td>MIS</td><td>Store-Entry</td><td>Store, Production</td><td>Others</td></tr>
+          <tr><td>FGHM</td><td>Production-Entry</td><td>Store, Logistics</td><td>Others</td></tr>
+          <tr><td>FGAN</td><td>Store-Entry, Logistics</td><td>Production</td><td>Others</td></tr>
+          <tr><td>Project</td><td>Project Manager, Coordinator</td><td>All (view)</td><td>—</td></tr>
+          <tr><td>Tasks</td><td>Project Manager</td><td>All (view)</td><td>—</td></tr>
+          <tr><td>Sales/Work Order</td><td>Sales-Entry</td><td>Sales, Projects, Finance</td><td>Others</td></tr>
+          <tr><td>Production Planning</td><td>Production-Entry</td><td>Production, Store</td><td>Others</td></tr>
+          <tr><td>User Access</td><td>Admin only</td><td>—</td><td>All others</td></tr>
+          <tr><td>Approval Matrix</td><td>Admin only</td><td>Departmental</td><td>Others</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>User Access Form</h3>
+    <p>Defined in User Access form: User Name (Zoho user lookup), Department (Purchase/Sales/Store &amp; Logistics/Account &amp; Finance/Admin/Project Coordinator/Project Manager 1/2/3), Role (Entry/Review/Approve/Admin), Email (autofetch), Status.</p>
+
+    <h3>Approval Matrix</h3>
+    <p>Separate form defining limits: Department, Document Type (PR/PO/Rate Comparison/GRN/MR), Min/Max Amount, Approver 1/2/3 (user lookups). Thresholds:</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Document</th><th>Threshold</th><th>Escalation</th></tr></thead>
+        <tbody>
+          <tr><td>PR</td><td>Per matrix</td><td>Level 1 → Level 2 → Level 3</td></tr>
+          <tr><td>PO</td><td>Per matrix</td><td>Level 1 → Level 2 → Level 3</td></tr>
+          <tr><td>GRN</td><td>Per matrix</td><td>As defined</td></tr>
+          <tr><td>Rate Comparison</td><td>Per matrix</td><td>As defined</td></tr>
+          <tr><td>MR</td><td>Per matrix</td><td>Department-specific</td></tr>
         </tbody>
       </table>
     </div>
 
     <div class="footer">
-      <p>Chemsol — Zoho Creator ERP Implementation &middot; ITOTCloud Systems Pvt. Ltd.</p>
+      <p>Chemsol — Zoho Creator ERP &middot; ITOTCloud Systems Pvt. Ltd.</p>
     </div>
   </div>
 </body>

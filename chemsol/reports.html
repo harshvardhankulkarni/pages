@@ -10,66 +10,184 @@
   <nav class="sidebar">
     <h1><span>Chemsol</span> ERP</h1>
     <a href="index.html">Overview</a>
-    <a href="forms.html">28 Forms</a>
+    <a href="forms.html">Forms</a>
     <a class="active" href="reports.html">Reports &amp; Automation</a>
     <a href="security.html">Security &amp; Roles</a>
     <a href="data-model.html">Data Model</a>
     <a href="../index.html">← Back to Hub</a>
   </nav>
   <div class="main">
-    <h2>Reports &amp; Dashboards — 35 Reports</h2>
+    <h2>Department Dashboards</h2>
 
+    <h3>Purchase Dept Dashboard</h3>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Department</th><th>Reports</th><th>Source Forms</th></tr></thead>
+        <thead><tr><th>Widget</th><th>For Entry</th><th>For Search/Review</th><th>For Changes</th><th>Reports</th></tr></thead>
         <tbody>
-          <tr><td><span class="badge badge-purple">Purchase (9)</span></td><td>Total Purchase This Month, Open PO Register, Pending PR Approvals, Overdue Deliveries, PO vs GRN Pending, Vendor Performance, Purchase by Item Group, Price Comparison, Transportation Reports</td><td>PO_Master, PR_Master, Rate_Comparison, Vehicle_Transport</td></tr>
-          <tr><td><span class="badge badge-yellow">Store (6)</span></td><td>Inventory Dashboard, Dispatch Planning, Pending MR, Pending FG Receiving, Material Issue Report, Material Return Report</td><td>MR_Master, MIS_Master, Material_Return, FG_Receiving</td></tr>
-          <tr><td><span class="badge badge-orange">Production (9)</span></td><td>Daily Production, BMR Report, Material Consumption, Production Order Status, BOM vs Actual, Production Loss, FG Handover, Packing, Machine Utilization</td><td>Production_Planning, BMR_Master, RM_Consumption, Packing_Entry</td></tr>
-          <tr><td><span class="badge badge-teal">Project (12)</span></td><td>Manpower Cost, Manpower Count, Tools, Issues, Margin, Execution vs Achievement, Monthly, Annual, Sitewise Costing, Material vs Work, Transport, Task</td><td>Project_Master (all task subforms)</td></tr>
+          <tr><td><strong>Total Purchase This Month</strong></td><td>Purchase Item Muster</td><td>Purchase Item Muster</td><td>Purchase Item Muster</td><td>Purchase Item Muster</td></tr>
+          <tr><td><strong>Open PO's</strong></td><td>Supplier Master</td><td>Supplier Master</td><td>Supplier Master</td><td>Supplier Master</td></tr>
+          <tr><td><strong>Pending PR Approvals</strong></td><td>PO</td><td>PR</td><td>GRN</td><td>PR</td></tr>
+          <tr><td><strong>Overdue Deliveries</strong></td><td>PO Amendment</td><td>PO</td><td>Rate Comparison</td><td>PO</td></tr>
+          <tr><td><strong>Transport Overview</strong></td><td>GRN</td><td>GRN</td><td>—</td><td>PO Amendment</td></tr>
+          <tr><td></td><td>Rate Comparison</td><td>Payment Overdue</td><td></td><td>GRN / Open PO Register</td></tr>
+          <tr><td></td><td></td><td>Rate Comparison / Transport Data</td><td></td><td>PO vs GRN Pending / Vendor Perf.</td></tr>
+          <tr><td></td><td></td><td></td><td></td><td>Purchase by Item Group</td></tr>
+          <tr><td></td><td></td><td></td><td></td><td>Price Comparison / Transport Reports</td></tr>
         </tbody>
       </table>
     </div>
 
-    <h2>Deluge Automations — 24 Workflows</h2>
-    <p>All automation is implemented using Zoho Deluge scripting across 6 categories:</p>
+    <p><strong>Notification widgets:</strong> Pending PR Approval · PO Awaiting Release · Pending GRN's · Overdue Delivery Follow-up · Overdue Supplier Payment · Rate Comparison Data Missing</p>
 
+    <h3>Store Dept Dashboard</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Widget</th><th>For Entry</th><th>For Search</th><th>For Changes</th><th>Reports</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Inventory Dashboard</strong></td><td>Purchase Item Muster</td><td>Purchase Item Muster</td><td>Purchase Item Muster</td><td>Multiple</td></tr>
+          <tr><td><strong>Dispatch Planning</strong></td><td>Supplier Master, PO, PO Amendment, GRN, Rate Comparison, Material Issue, Material Return, Store Master, Material Handover, FG Receiving, Vehicle &amp; Transport</td><td colspan="2">Same for search &amp; changes</td><td>All store reports</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><strong>Notification widgets:</strong> MR Sheet from Costing · Pending Material Req. · Pending FG Receiving</p>
+
+    <h3>Production Dept Dashboard</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Widget</th><th>Reports Source</th></tr></thead>
+        <tbody>
+          <tr><td>Today's Production</td><td>Production Planning</td></tr>
+          <tr><td>Open Production Orders</td><td>Production Order</td></tr>
+          <tr><td>Planned Batches</td><td>BOM Master</td></tr>
+          <tr><td>Material Consumption</td><td>BMR</td></tr>
+          <tr><td>RM Stock</td><td>MR</td></tr>
+          <tr><td>Completed Batches</td><td>RM Consumption Entry</td></tr>
+          <tr><td>Production Efficiency</td><td>Packing Entry</td></tr>
+          <tr><td>Pending Order</td><td>FG Handover Note</td></tr>
+          <tr><td>Pending FG Handover</td><td>Rework Register</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><strong>Reports:</strong> Daily Production Report · BMR · Production Order Status · Material Consumption · BOM vs Actual Consumption · Production Loss · FG Handover · Packing · Machine Utilization</p>
+
+    <h3>Project Management Dashboard</h3>
     <div class="card-grid">
-      <div class="card"><h4>Auto-Numbering (7)</h4><p>PR-{000}, RM-{000}/RMWAD-{000}, GRN-{000}, MR-{000}, MIS-{000}, QC-{000}, SO-{000}/WO-{000}, PROJ-{000}, BOM-{000}</p></div>
-      <div class="card"><h4>Auto-Fetch Lookups (10)</h4><p>Item→Name/UOM/LeadTime, Supplier→GST/Bank, Customer→Contact/Address, System→Name/Thickness, GRN→PO items, QC→GRN items, MR→Available Stock</p></div>
-      <div class="card"><h4>Calculations (4)</h4><p>PO line: Amount=Qty×Rate, GST calc (CGST/SGST/IGST). SO/WO line: Amount=Area×Rate. Commission: % or Fixed.</p></div>
-      <div class="card"><h4>Stock Updates (5)</h4><p>GRN (+), MIS (−), Material Return (+), FG Receiving (+), Material Handover (transfer) — all trigger on Post.</p></div>
-      <div class="card"><h4>Approvals (4)</h4><p>PR (2-level), Rate Comparison, PO (2-level), MR (2-level) — with ₹50K/₹2L thresholds and Director escalation.</p></div>
-      <div class="card"><h4>Validations (6+)</h4><p>Duplicate Item Name, GST range (0-100%), Min≤Max Stock, HSN format (^\d{4,8}$), Insufficient stock on MIS, PO amendment after GRN.</p></div>
+      <div class="card"><h4>Open Projects</h4><p>Active project count</p></div>
+      <div class="card"><h4>Active PO's</h4><p>Procurement tracking</p></div>
+      <div class="card"><h4>Running Status</h4><p>Task completion %</p></div>
+      <div class="card"><h4>Project Margins</h4><p>Profitability tracking</p></div>
+      <div class="card"><h4>Issues</h4><p>Project issues tracking</p></div>
+      <div class="card"><h4>Execution vs Achievement</h4><p>Target tracking</p></div>
+      <div class="card"><h4>Manpower Cost Monthly</h4><p>Labour costs</p></div>
+      <div class="card"><h4>Transportation Monthly</h4><p>Logistics costs</p></div>
     </div>
 
-    <h3>Sample: PO GST Calculation</h3>
-    <div class="code-block"><pre><code>// GST Calculation per line item (On Qty/Rate/GST% change)
-basicAmount = input.Qty * input.Rate;
-gstAmount = basicAmount * input.GST_Percentage / 100;
-if(input.GST_Type == "Intra-State") {
-    input.CGST_Amount = gstAmount / 2;
-    input.SGST_Amount = gstAmount / 2;
-} else {
-    input.IGST_Amount = gstAmount;
-}
-input.Total_Amount = basicAmount + gstAmount;</code></pre></div>
+    <h2>Project Reports (15)</h2>
+    <div class="card-grid">
+      <div class="card">Project Report (Overall)</div>
+      <div class="card">Monthly Report</div>
+      <div class="card">Annual Report</div>
+      <div class="card">Sitewise Costing Report</div>
+      <div class="card">Manpower Report</div>
+      <div class="card">Machinery Report</div>
+      <div class="card">Tools Report</div>
+      <div class="card">Issues Report</div>
+      <div class="card">Project Margin Report</div>
+      <div class="card">Material Consumption vs Work Completion</div>
+      <div class="card">Manpower vs Work Completion</div>
+      <div class="card">Transportation Report</div>
+      <div class="card">Loading/Unloading Report</div>
+      <div class="card">Consumable Report</div>
+      <div class="card">Task Report</div>
+    </div>
 
-    <h3>Sample: Post-GRN Stock Update</h3>
-    <div class="code-block"><pre><code>// Post GRN — Update Stock
-for each item in selectedItems {
-    itemRecord = zoho.creator.getRecordById("chemsol",
-        "Item_Master", item.Item_Code);
-    currentStock = itemRecord.get("Current_Stock");
-    zoho.creator.updateRecord("chemsol", "Item_Master",
-        item.Item_Code,
-        {"Current_Stock": currentStock + item.Received_Qty});
-}
-input.Status = "Posted";
-input.Posted_Timestamp = zoho.currenttime;</code></pre></div>
+    <hr style="border-color: var(--border); margin: 32px 0;">
+
+    <h2>Automation &amp; Business Rules</h2>
+
+    <h3>Sequential Procurement Flow</h3>
+    <div class="code-block"><pre><code>PR (Created by Production/R&D)
+  → Approval (as per Approval Matrix)
+    → Rate Comparison (Purchase dept)
+      → PO (Purchase dept)
+        → GRN (Store dept on goods arrival)
+          → QC/QA (QC dept)
+            → Stock Updated (after GRN posting)</code></pre></div>
+
+    <h3>Material Issue Flow</h3>
+    <div class="code-block"><pre><code>MR (Created by Production/R&D)
+  → MIS (Store dept issues material)
+    → Stock Updated (deduction)</code></pre></div>
+
+    <h3>FG Flow</h3>
+    <div class="code-block"><pre><code>Production → FGHM (Production hands over FG)
+  → Notification to Store/Logistics
+    → FGAN (Store accepts FG)
+      → FG Stock Updated (after approval)</code></pre></div>
+
+    <h3>Notification Triggers</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Event</th><th>Notifies</th><th>Type</th></tr></thead>
+        <tbody>
+          <tr><td>PR Submitted</td><td>Purchase dept (pending approval)</td><td>In-app</td></tr>
+          <tr><td>PR Approved</td><td>Production/R&amp;D user</td><td>In-app</td></tr>
+          <tr><td>Rate Comparison Data Missing</td><td>Purchase dept</td><td>Alert</td></tr>
+          <tr><td>PO Ready for Release</td><td>Purchase dept</td><td>In-app</td></tr>
+          <tr><td>GRN Overdue</td><td>Purchase + Store dept</td><td>In-app</td></tr>
+          <tr><td>FGHM Submitted</td><td>Store &amp; Logistics dept</td><td>Pop-up</td></tr>
+          <tr><td>FGAN Approval Pending</td><td>Store Manager</td><td>In-app</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>AutoFetch Rules Summary</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Source Field</th><th>Target Forms</th><th>Auto-filled Fields</th></tr></thead>
+        <tbody>
+          <tr><td>Item Code</td><td>PR, PO, MR, MIS, GRN, FGHM, BOM, QC</td><td>Item Name, UOM, Category, HSN, GST%, Lead Time</td></tr>
+          <tr><td>Supplier Code</td><td>PO, GRN, Rate Comparison</td><td>Supplier Name, GSTIN, Address, Contact</td></tr>
+          <tr><td>PR No</td><td>Rate Comparison, PO</td><td>Items, Product Details</td></tr>
+          <tr><td>PO No</td><td>GRN</td><td>Supplier, Items, Ordered Qty</td></tr>
+          <tr><td>GRN No</td><td>QC</td><td>Supplier, Items</td></tr>
+          <tr><td>MR No</td><td>MIS</td><td>Items, Required Qty</td></tr>
+          <tr><td>FGH No</td><td>FGAN</td><td>Products, Qty</td></tr>
+          <tr><td>System Code</td><td>Sales Order, BOM, Project</td><td>System Name</td></tr>
+          <tr><td>User Login</td><td>PR, MR</td><td>Department</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Numbering Series</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Document</th><th>Series Format</th></tr></thead>
+        <tbody>
+          <tr><td>PR</td><td>PR-YYYY-XXXX (auto)</td></tr>
+          <tr><td>PO (Non-Coding)</td><td>RM-YYYY-XXXX</td></tr>
+          <tr><td>PO (Coding)</td><td>RMWAD-YYYY-XXXX</td></tr>
+          <tr><td>GRN</td><td>GRN-YYYY-XXXX (after posting)</td></tr>
+          <tr><td>MR</td><td>MR-YYYY-XXXX</td></tr>
+          <tr><td>MIS</td><td>Auto against MR</td></tr>
+          <tr><td>FGH</td><td>FGH-YYYY-XXXX</td></tr>
+          <tr><td>FGAN</td><td>Auto after approval</td></tr>
+          <tr><td>QC</td><td>QC-YYYY-XXXX</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Stock Management Rules</h3>
+    <ul style="color: var(--muted); margin: 12px 0; padding-left: 20px;">
+      <li style="margin-bottom: 6px;"><strong>GRN posting</strong> — Qty added to stock only after posting; timestamp logged</li>
+      <li style="margin-bottom: 6px;"><strong>MIS posting</strong> — Qty deducted from stock</li>
+      <li style="margin-bottom: 6px;"><strong>FGAN posting</strong> — FG qty added to stock after acceptance approval</li>
+      <li style="margin-bottom: 6px;"><strong>Material Return</strong> — Qty added back to stock</li>
+      <li style="margin-bottom: 6px;"><strong>Min/Max stock</strong> — Alert when stock crosses thresholds (from Item Muster)</li>
+    </ul>
 
     <div class="footer">
-      <p>Chemsol — Zoho Creator ERP Implementation &middot; ITOTCloud Systems Pvt. Ltd.</p>
+      <p>Chemsol — Zoho Creator ERP &middot; ITOTCloud Systems Pvt. Ltd.</p>
     </div>
   </div>
 </body>

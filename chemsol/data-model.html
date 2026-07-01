@@ -10,49 +10,74 @@
   <nav class="sidebar">
     <h1><span>Chemsol</span> ERP</h1>
     <a href="index.html">Overview</a>
-    <a href="forms.html">28 Forms</a>
+    <a href="forms.html">Forms</a>
     <a href="reports.html">Reports &amp; Automation</a>
     <a href="security.html">Security &amp; Roles</a>
     <a class="active" href="data-model.html">Data Model</a>
     <a href="../index.html">← Back to Hub</a>
   </nav>
   <div class="main">
-    <h2>Data Model Relationships</h2>
+    <h2>System Architecture &amp; Integration Map</h2>
+    <p>Each module is linked through lookup/autofetch relationships.</p>
+
+    <div class="code-block"><pre><code>Item Master ← → Supplier Master
+Item Master ← → BOM Master
+System Master ← → BOM Master
+
+Sales Order → Project → Procurement (PR → PO → GRN → QC)
+Sales Order → Production Planning → MR → MIS
+Production → FGHM → FGAN
+MR ← Item Master (Stock Availability)</code></pre></div>
 
     <h3>Master Data Dependencies</h3>
-    <div class="code-block"><pre><code>Item Master ◄───── BOM Master ────► System Master
-     │                                      │
-     ├── Supplier Master                     │
-     ├── Customer Master                     │
-     └── Store Master ──► Bin Location       │
-                                              │
-Supplier Master ◄────────────────────────────┘
-Customer Master</code></pre></div>
+    <div class="code-block"><pre><code>Purchase Item Muster ◄───── BOM Master ────► System Master
+       │                                            │
+       ├── Supplier Master                           │
+       ├── Customer/Site Master                      │
+       └── Store Master ──► Bin Location             │
+                                                      │
+Supplier Master ◄────────────────────────────────────┘
+Customer/Site Master</code></pre></div>
 
-    <h3>Transactional Data Flows</h3>
-    <div class="code-block"><pre><code>PR ──► Rate Comparison ──► PO ──► GRN ──► QC
-                                         │
-                                         └──► Stock Ledger
+    <h3>Procurement Flow</h3>
+    <div class="code-block"><pre><code>PR (Production/R&D)
+  → Approval (Approval Matrix)
+    → Rate Comparison (Purchase)
+      → PO (Purchase — RM/RMWAD series)
+        → GRN (Store — partial via checkbox)
+          → QC/QA (QC dept — test results)
+            → Stock Updated (after posting)</code></pre></div>
 
-System Master ──► SO/WO ──► Project ──► Tasks
-                                         │
-                                         └──► MR ──► MIS ──► Stock Ledger
+    <h3>Material Issue Flow</h3>
+    <div class="code-block"><pre><code>MR (Production/R&D)
+  → MIS (Store issues material)
+    → Stock − (deduction on posting)</code></pre></div>
 
-BOM Master ──► Production Order ──► BMR ──► RM Consumption
-                                                 │
-                                                 ├── Packing Entry ──► FG Receiving
-                                                 └── Stock Ledger</code></pre></div>
+    <h3>FG Handover Flow</h3>
+    <div class="code-block"><pre><code>Production → FGHM (FG Handover)
+  → Pop-up Notification → Store/Logistics
+    → FGAN (FG Acceptance)
+      → FG Stock + (after approval)</code></pre></div>
+
+    <h3>Sales &amp; Project Flow</h3>
+    <div class="code-block"><pre><code>SO/Work Order (Dual Mode)
+  ├── Supply+Apply → Project → 5 Task Buckets
+  └── Supply Only  → Material Sales (FG dispatch)
+
+Project Execution Base:
+  ├── Area Basis  → Application/Execution tasks shown
+  └── Day Basis   → Manpower tasks shown</code></pre></div>
 
     <h3>Stock Update Matrix</h3>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Transaction</th><th>Stock Effect</th><th>Direction</th></tr></thead>
+        <thead><tr><th>Transaction</th><th>Effect</th><th>Direction</th></tr></thead>
         <tbody>
-          <tr><td>GRN Posted</td><td>Add Received Qty to Warehouse stock</td><td><span style="color: var(--green)">Stock In (+)</span></td></tr>
-          <tr><td>MIS Posted</td><td>Deduct Issued Qty from RM store</td><td><span style="color: var(--orange)">Stock Out (−)</span></td></tr>
-          <tr><td>FG Receiving Posted</td><td>Add FG Qty to FG store</td><td><span style="color: var(--green)">Stock In (+)</span></td></tr>
-          <tr><td>Material Return Posted</td><td>Add returned Qty back to RM store</td><td><span style="color: var(--green)">Stock In (+)</span></td></tr>
-          <tr><td>Material Handover Posted</td><td>Deduct from source, Add to destination</td><td><span style="color: var(--accent)">Transfer</span></td></tr>
+          <tr><td>GRN Posted</td><td>Add Received Qty</td><td style="color: var(--green)">Stock In +</td></tr>
+          <tr><td>MIS Posted</td><td>Deduct Issued Qty</td><td style="color: var(--orange)">Stock Out −</td></tr>
+          <tr><td>FGAN Approved</td><td>Add FG Qty</td><td style="color: var(--green)">Stock In +</td></tr>
+          <tr><td>Material Return</td><td>Add back to RM store</td><td style="color: var(--green)">Stock In +</td></tr>
+          <tr><td>Material Handover</td><td>Deduct source, Add destination</td><td style="color: var(--accent)">Transfer</td></tr>
         </tbody>
       </table>
     </div>
@@ -62,20 +87,22 @@ BOM Master ──► Production Order ──► BMR ──► RM Consumption
       <table>
         <thead><tr><th>Decision</th><th>Choice</th><th>Rationale</th></tr></thead>
         <tbody>
-          <tr><td>Platform</td><td>Zoho Creator</td><td>Faster delivery, built-in mobile, lower TCO vs custom dev</td></tr>
-          <tr><td>Language</td><td>Deluge</td><td>Native Creator integration, no external infrastructure</td></tr>
-          <tr><td>Datacenter</td><td>India (.in)</td><td>Client is India-based, regulatory compliance</td></tr>
-          <tr><td>PO Series</td><td>Separate RM / RMWAD</td><td>Coding materials require stricter control</td></tr>
-          <tr><td>GRN Posting</td><td>Post = stock update</td><td>Prevents accidental stock updates on save</td></tr>
-          <tr><td>Partial GRN</td><td>Checkbox per line</td><td>Supports real-world partial deliveries</td></tr>
-          <tr><td>Execution Mode</td><td>Area / Day basis</td><td>Matches Chemsol's variable project types</td></tr>
-          <tr><td>SO/WO Mode</td><td>Supply+Apply / Supply-only</td><td>Different business models, different field sets</td></tr>
+          <tr><td>Platform</td><td>Zoho Creator</td><td>Faster delivery, built-in mobile, lower TCO</td></tr>
+          <tr><td>Language</td><td>Deluge</td><td>Native Creator integration</td></tr>
+          <tr><td>Datacenter</td><td>India (.in)</td><td>India-based client, regulatory compliance</td></tr>
+          <tr><td>PO Series</td><td>RMWAD (Coding) / RM (Non-Coding)</td><td>Coding materials require stricter control</td></tr>
+          <tr><td>GRN Posting</td><td>Post = stock update + timestamp</td><td>Prevents accidental stock updates</td></tr>
+          <tr><td>Partial GRN</td><td>Checkbox per line item</td><td>Real-world partial deliveries</td></tr>
+          <tr><td>FGAN</td><td>Number after approval</td><td>Ensures acceptance workflow completed</td></tr>
+          <tr><td>Execution Mode</td><td>Area / Day basis</td><td>Matches variable project types</td></tr>
+          <tr><td>SO Mode</td><td>Supply+Apply / Supply Only</td><td>Different business models</td></tr>
+          <tr><td>Bidirectional autofetch</td><td>Item Code ↔ Item Name</td><td>Flexible data entry</td></tr>
         </tbody>
       </table>
     </div>
 
     <div class="footer">
-      <p>Chemsol — Zoho Creator ERP Implementation &middot; ITOTCloud Systems Pvt. Ltd.</p>
+      <p>Chemsol — Zoho Creator ERP &middot; ITOTCloud Systems Pvt. Ltd.</p>
     </div>
   </div>
 </body>
