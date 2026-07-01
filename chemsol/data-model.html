@@ -48,7 +48,6 @@
             <div class="hub-module amber" style="padding:10px 24px;flex-direction:row">
               <span style="font-size:13px;font-weight:600">SALES ORDER (Phase 6)</span>
               <span class="tree-tag green" style="font-size:10px;padding:2px 10px;border-radius:999px;background:var(--green-light);color:var(--green)">Supply+Apply → auto-creates Project</span>
-              <span class="tree-tag blue" style="font-size:10px;padding:2px 10px;border-radius:999px;background:var(--primary-light);color:var(--primary)">Supply Only → Material Sales</span>
             </div>
           </div>
 
@@ -197,22 +196,21 @@
       <h3>Flow 4 · Sales → Project (Phases 5–6)</h3>
       <div class="tree">
         <ul class="tree-list">
-          <li class="tree-item root"><span class="tree-label">SO/Work Order <span class="tree-tag amber">Dual Mode</span></span>
+          <li class="tree-item root"><span class="tree-label">SO/Work Order <span class="tree-tag amber">Single Mode</span></span>
             <ul class="tree-children">
               <li class="tree-item"><span class="tree-label">Supply+Apply <span class="tree-tag green">Auto-creates Project</span></span>
                 <ul class="tree-children">
-                  <li class="tree-item"><span class="tree-label">5 Task Categories</span>
+                  <li class="tree-item"><span class="tree-label">Task Budget Table</span>
                     <ul class="tree-children">
-                      <li class="tree-item"><span class="tree-label">Transportation</span></li>
-                      <li class="tree-item"><span class="tree-label">Application/Execution <span class="tree-tag blue">Area Basis</span></span></li>
-                      <li class="tree-item"><span class="tree-label">Manpower <span class="tree-tag blue">Day Basis</span></span></li>
+                      <li class="tree-item"><span class="tree-label">Transport</span></li>
+                      <li class="tree-item"><span class="tree-label">Execution</span></li>
+                      <li class="tree-item"><span class="tree-label">Manpower</span></li>
                       <li class="tree-item"><span class="tree-label">Tools</span></li>
-                      <li class="tree-item"><span class="tree-label">Additional Expenses</span></li>
+                      <li class="tree-item"><span class="tree-label">Overhead</span></li>
                     </ul>
                   </li>
                 </ul>
               </li>
-              <li class="tree-item"><span class="tree-label">Supply Only <span class="tree-tag blue">Material Sales — no project</span></span></li>
             </ul>
           </li>
         </ul>
@@ -259,8 +257,8 @@
             <tr><td>Architecture</td><td>Project-Centric Hub</td><td>All modules tagged via Project ID lookup — like Zoho CRM Deals as parent</td></tr>
             <tr><td>PO Line Items</td><td>N items + GST split</td><td>Like Zoho Books — CGST/SGST/IGST at line level</td></tr>
             <tr><td>Warehouse</td><td>6 fixed + Client Site</td><td>Like Zoho Inventory warehouse tracking</td></tr>
-            <tr><td>Task Categories</td><td>5 types with conditional visibility</td><td>Like Zoho Projects task lists per project</td></tr>
-            <tr><td>SO Mode</td><td>Supply+Apply → Project</td><td>Supply+Apply auto-creates project; Supply Only is standalone</td></tr>
+            <tr><td>Task Budget</td><td>Single table with Category dropdown</td><td>Simpler than 5 nested conditional sections</td></tr>
+            <tr><td>SO Mode</td><td>Supply+Apply → Project</td><td>Each SO creates a Project automatically</td></tr>
             <tr><td>GRN Posting</td><td>Post = stock update + timestamp</td><td>Prevents accidental stock updates</td></tr>
             <tr><td>Partial GRN</td><td>Checkbox per line item</td><td>Real-world partial deliveries</td></tr>
             <tr><td>PO Series</td><td>RMWAD (Coding) / RM (Non-Coding)</td><td>Coding materials require stricter control</td></tr>

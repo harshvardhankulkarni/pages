@@ -641,52 +641,18 @@ Fields needed (from Screens.csv):
 
 | 9 | Adjustments | Currency | No | Cost adjustment |
 
-### 7.2 Task Categories (5 types)
+### 7.2 Task Budget
 
-#### 7.2.1 Transportation Tasks
-**Budget**: Currency
+Single table with Category dropdown — no separate sections or conditional visibility rules.
 
-| Sub-task | Details |
-|----------|---------|
-| Subtask 1: Intracity/Intercity Transport | Multiple dispatches |
-| Subtask 2: Local Transport | Multiple dispatches |
-| Subtask 3: Loading/Unloading | Multiple dispatches |
-
-**Each Dispatch entry:**
-| # | Field | Type |
-|---|-------|------|
-| 1 | From | Text |
-| 2 | To | Text |
-| 3 | Transport Charges | Currency |
-| 4 | (+Options) | Add more dispatches |
-
-#### 7.2.2 Application/Execution Tasks (if Area Basis)
-**Subtasks** (multiple, A/B/C/D):
-| # | Field | Type | Examples |
-|---|-------|------|----------|
-| 1 | Subtask Name | Dropdown | Grinding, Primer, Screed, Top Coat, Yellow, Arrow, Numbering |
-| 2 | Area | Number | — |
-| 3 | Cost | Currency | — |
-| 4 | MP (Manpower) | Number | — |
-
-#### 7.2.3 Manpower Tasks (if Day Basis)
-| # | Field | Type |
-|---|-------|------|
-| 1 | Manpower Budget | Currency |
-| 2 | Manpower Count | Number |
-
-#### 7.2.4 Tools Tasks
-| # | Field | Type |
-|---|-------|------|
-| 1 | Budget for Tools | Currency |
-
-#### 7.2.5 Additional Expenses / Overhead
-| # | Field | Type |
-|---|-------|------|
-| 1 | Budget for Overhead | Currency |
-
-**Conditional logic:**
-- Execution Base = Area Basis → Show Application/Execution tasks
+| # | Field | Type | Notes |
+|---|-------|------|-------|
+| 1 | Category | Dropdown | Transport / Execution / Manpower / Tools / Overhead |
+| 2 | Description | Text | Subtask or work item name |
+| 3 | Qty / Area | Number | Area for Execution, count for others |
+| 4 | Rate | Currency | Per unit |
+| 5 | Amount | Formula | Qty × Rate |
+| 6 | Manpower | Number | Head count (if applicable) |
 - Execution Base = Day Basis → Show Manpower tasks
 - Transportation, Tools, Additional Expenses always shown
 
@@ -713,9 +679,9 @@ Fields needed (from Screens.csv):
 
 ### 8.1 Sales/Work Order Master (SO)
 
-**Dual mode**: Supply+Apply / Supply Only (Material Sales)
+**Single mode**: Supply+Apply (auto-creates Project)
 
-#### Mode A: Supply+Apply (left side)
+#### Fields
 
 | # | Field | Type | Mandatory | Notes |
 |---|-------|------|-----------|-------|
@@ -760,23 +726,7 @@ Fields needed (from Screens.csv):
 | 23 | Remark | Multi-line | — |
 | 24 | Commission | Checkbox | If checked → Based On (Dropdown: 1.Percentage, 2.Fix Amount) + Amount |
 
-#### Mode B: Supply Only / Material Sales (right side)
-
-| # | Field | Type | Notes |
-|---|-------|------|-------|
-| 1-11 | (Same customer fields as Mode A) | — | — |
-| 12 | Sales Order No | Autogen | — |
-| 13 | Sales Order Date | Date | — |
-| 14 | Billing Address | Multi-line | — |
-| 15 | Shipping Address | Multi-line | — |
-| 16-19 | (Contact fields) | — | — |
-
-**FG subtable:**
-| # | Field | Type |
-|---|-------|------|
-| 1 | FG Name | Lookup |
-| 2 | Quantity | Number |
-| 3 | UOM | Autofetch |
+#### Automation
 | 4 | Rate | Currency |
 | 5 | Amount | Formula |
 
@@ -1033,7 +983,7 @@ Production → FGHM (Production hands over FG)
 - Build all project reports
 
 ### Phase 6: Sales (Week 9-10)
-- Build SO Master with dual mode (Supply+Apply / Supply Only)
+- Build SO Master with single mode (Supply+Apply → auto-creates Project)
 - System subtable with thickness, area, UOM, rate
 - Commission, warranty, transport fields
 - Link SO to Projects

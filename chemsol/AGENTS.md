@@ -31,9 +31,9 @@ Nothing exists outside a project context. Master Data (Item Muster, Suppliers, C
 - **Customer/Site Master** — client org, contact, GST, PAN, addresses.
 
 ### Project Hub (Root) + Sales
-- **Sales Order Master** — dual-mode: Supply+Apply (auto-creates Project) / Supply Only. System-code subtable with thickness, area, UOM, rate, amount. Commission, warranty, transport scope.
+- **Sales Order Master** — Supply+Apply mode (auto-creates Project). System-code subtable with thickness, area, UOM, rate, amount. Commission, warranty, transport scope.
 - **Project** — Project ID, name, SO ref, address, manager, execution base (Area/Day), start/end date, cost. Systems subform.
-- **Tasks** — 5 categories: Transport (Intracity/Intercity/Loading with multiple dispatches), Application/Execution (grinding, primer, screed, top coat, markings per sub-area with cost/MP), Manpower (budget + count), Tools, Additional Expenses.
+- **Task Budget** — Single table with Category dropdown (Transport / Execution / Manpower / Tools / Overhead), Description, Qty/Area, Rate, Amount, Manpower.
 
 ### Procurement (PR→PO→GRN→QC) — Tagged to Project
 1. **PR** (Purchase Requisition) — PR# autogen, Project ID lookup, dept auto from login, items with autofill code/name/UOM/lead time.

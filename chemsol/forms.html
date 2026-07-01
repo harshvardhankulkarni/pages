@@ -277,12 +277,9 @@
           <div class="phase-header">
             <span class="phase-number">2A</span>
             <span class="phase-title">Sales/Work Order Master (SO)</span>
-            <span class="phase-tag">Dual Mode · N Line Items · Like Zoho CRM</span>
+            <span class="phase-tag">N System Line Items · Auto-creates Project</span>
           </div>
-          <p><strong>Dual mode</strong>: Supply+Apply (auto-creates Project) / Supply Only (material sales).</p>
-
-          <h4>Mode A: Supply+Apply <span class="badge badge-blue">Auto-creates Project</span></h4>
-          <p>Customer details + <strong>N system line items</strong> (System Code, Thickness, Area, UOM, Rate, Amount).</p>
+          <p>Customer details + <strong>N system line items</strong> (System Code, Thickness, Area, UOM, Rate, Amount).<br><span class="badge badge-green">Supply+Apply &rarr; auto-creates Project</span></p>
           <h5>Header Fields</h5>
           <div class="table-wrap">
             <table>
@@ -345,66 +342,11 @@
               </tbody>
             </table>
           </div>
-
-          <h4>Mode B: Supply Only / Material Sales</h4>
-          <p>Customer details + <strong>N FG line items</strong> (FG Name, Qty, UOM, Rate, Amount).</p>
-          <h5>Header Fields</h5>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
-              <tbody>
-                <tr><td>1</td><td>Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
-                <tr><td>2</td><td>Employee Name</td><td>Text</td><td>*</td><td>—</td></tr>
-                <tr><td>3</td><td>Customer Code</td><td>Lookup</td><td></td><td>From Customer Master</td></tr>
-                <tr><td>4</td><td>Client Org Name</td><td>Text</td><td>*</td><td>—</td></tr>
-                <tr><td>5</td><td>Contact Person</td><td>Text</td><td>*</td><td>—</td></tr>
-                <tr><td>6</td><td>Contact No</td><td>Phone</td><td>*</td><td>—</td></tr>
-                <tr><td>7</td><td>Alt Contact No</td><td>Phone</td><td></td><td>—</td></tr>
-                <tr><td>8</td><td>Email</td><td>Email</td><td>*</td><td>—</td></tr>
-                <tr><td>9</td><td>GST No</td><td>Text</td><td>*</td><td>—</td></tr>
-                <tr><td>10</td><td>PAN</td><td>Text</td><td>*</td><td>—</td></tr>
-                <tr><td>11</td><td>Regd Address</td><td>Multi-line</td><td>*</td><td>—</td></tr>
-                <tr><td>12</td><td>Sales Order No</td><td>Autogen</td><td>*</td><td>—</td></tr>
-                <tr><td>13</td><td>Sales Order Date</td><td>Date</td><td>*</td><td>—</td></tr>
-                <tr><td>14</td><td>Billing Address</td><td>Multi-line</td><td>*</td><td>—</td></tr>
-                <tr><td>15</td><td>Shipping Address</td><td>Multi-line</td><td>*</td><td>—</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <h5>FG Subtable (N line items)</h5>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
-              <tbody>
-                <tr><td>1</td><td>FG Name</td><td>Lookup</td><td>From Purchase Item Muster</td></tr>
-                <tr><td>2</td><td>Quantity</td><td>Number</td><td>—</td></tr>
-                <tr><td>3</td><td>UOM</td><td>AutoFetch</td><td>From Item Muster</td></tr>
-                <tr><td>4</td><td>Rate</td><td>Currency</td><td>—</td></tr>
-                <tr><td>5</td><td>Amount</td><td>Formula</td><td>Qty &times; Rate</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <h5>Footer</h5>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
-              <tbody>
-                <tr><td>16</td><td>Total Sales Order Amount</td><td>Formula</td><td>—</td></tr>
-                <tr><td>17</td><td>Payment Terms</td><td>Text</td><td>—</td></tr>
-                <tr><td>18</td><td>Transportation Scope</td><td>Dropdown</td><td>—</td></tr>
-                <tr><td>19</td><td>Amount</td><td>Currency</td><td>—</td></tr>
-                <tr><td>20</td><td>Lead Time</td><td>Number (Days)</td><td>—</td></tr>
-                <tr><td>21</td><td>Remark</td><td>Multi-line</td><td>—</td></tr>
-              </tbody>
-            </table>
-          </div>
-
-          <p><span class="badge badge-green">Supply+Apply &rarr; auto-creates Project</span> Like Zoho CRM Deal creation triggers downstream processes.</p>
         </div>
       </div>
 
       <h2>3 · Project Management <span class="badge badge-blue">Root Entity</span></h2>
-      <p>Like <strong>Zoho Projects</strong> — Project is the hub with 5 task categories. Auto-created from SO acceptance.</p>
+      <p>Like <strong>Zoho Projects</strong> — Project is the hub with a single task budget table. Auto-created from SO acceptance.</p>
 
       <div class="phase-container">
         <div class="phase">
@@ -446,97 +388,22 @@
         <div class="phase">
           <div class="phase-header">
             <span class="phase-number">3B</span>
-            <span class="phase-title">5 Task Categories</span>
-            <span class="phase-tag">Like Zoho Projects Task Lists</span>
+            <span class="phase-title">Task Budget</span>
+            <span class="phase-tag">Single Task Table · No Conditional Sections</span>
           </div>
-          <div class="phase-container">
-            <div class="phase">
-              <div class="phase-header">
-                <span class="phase-number">3B-i</span>
-                <span class="phase-title">Transportation</span>
-                <span class="phase-tag">Always Visible</span>
-              </div>
-              <p>Budget + multiple dispatches per task.</p>
-              <div class="table-wrap">
-                <table>
-                  <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
-                  <tbody>
-                    <tr><td>Transport Budget</td><td>Currency</td><td>—</td></tr>
-                    <tr><td colspan="3"><strong>Subtask 1: Intracity/Intercity Transport</strong> — Multiple dispatches</td></tr>
-                    <tr><td colspan="3"><strong>Subtask 2: Local Transport</strong> — Multiple dispatches</td></tr>
-                    <tr><td colspan="3"><strong>Subtask 3: Loading/Unloading</strong> — Multiple dispatches</td></tr>
-                  </tbody>
-                </table>
-              </div>
-              <p><strong>Each Dispatch entry:</strong> From (Text), To (Text), Transport Charges (Currency). Add more dispatches via subform.</p>
-            </div>
-            <div class="phase">
-              <div class="phase-header">
-                <span class="phase-number">3B-ii</span>
-                <span class="phase-title">Application/Execution</span>
-                <span class="phase-tag">Area Basis Only</span>
-              </div>
-              <p><em>Visible only when Execution Base = Area Basis.</em> Grinding, Primer, Screed, Top Coat, Markings.</p>
-              <div class="table-wrap">
-                <table>
-                  <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
-                  <tbody>
-                    <tr><td>1</td><td>Subtask Name</td><td>Dropdown</td><td>Grinding, Primer, Screed, Top Coat, Yellow, Arrow, Numbering</td></tr>
-                    <tr><td>2</td><td>Area</td><td>Number</td><td>—</td></tr>
-                    <tr><td>3</td><td>Cost</td><td>Currency</td><td>—</td></tr>
-                    <tr><td>4</td><td>MP (Manpower)</td><td>Number</td><td>—</td></tr>
-                  </tbody>
-                </table>
-              </div>
-              <p>Multiple subtasks per project (A/B/C/D).</p>
-            </div>
-            <div class="phase">
-              <div class="phase-header">
-                <span class="phase-number">3B-iii</span>
-                <span class="phase-title">Manpower</span>
-                <span class="phase-tag">Day Basis Only</span>
-              </div>
-              <p><em>Visible only when Execution Base = Day Basis.</em></p>
-              <div class="table-wrap">
-                <table>
-                  <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
-                  <tbody>
-                    <tr><td>Manpower Budget</td><td>Currency</td><td>—</td></tr>
-                    <tr><td>Manpower Count</td><td>Number</td><td>—</td></tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            <div class="phase">
-              <div class="phase-header">
-                <span class="phase-number">3B-iv</span>
-                <span class="phase-title">Tools</span>
-                <span class="phase-tag">Always Visible</span>
-              </div>
-              <div class="table-wrap">
-                <table>
-                  <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
-                  <tbody>
-                    <tr><td>Budget for Tools</td><td>Currency</td><td>—</td></tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            <div class="phase">
-              <div class="phase-header">
-                <span class="phase-number">3B-v</span>
-                <span class="phase-title">Additional Expenses / Overhead</span>
-                <span class="phase-tag">Always Visible</span>
-              </div>
-              <div class="table-wrap">
-                <table>
-                  <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
-                  <tbody>
-                    <tr><td>Budget for Overhead</td><td>Currency</td><td>—</td></tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
+          <p>One table for all task categories. No more separate sections with conditional visibility.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Category</td><td>Dropdown</td><td>*</td><td>Transport / Execution / Manpower / Tools / Overhead</td></tr>
+                <tr><td>2</td><td>Description</td><td>Text</td><td>*</td><td>Subtask name or work item</td></tr>
+                <tr><td>3</td><td>Qty / Area</td><td>Number</td><td></td><td>Area for Execution, count for others</td></tr>
+                <tr><td>4</td><td>Rate</td><td>Currency</td><td></td><td>Per unit rate</td></tr>
+                <tr><td>5</td><td>Amount</td><td>Formula</td><td></td><td>Qty &times; Rate</td></tr>
+                <tr><td>6</td><td>Manpower</td><td>Number</td><td></td><td>Head count (if applicable)</td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>

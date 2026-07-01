@@ -314,7 +314,7 @@
     <p><strong>Purpose:</strong> Central entity — every form in the system links here. A project is created when a Sales Order is accepted. All procurement, inventory, and production activities are tracked against this project.</p>
     <p><strong>Who enters:</strong> Project Manager / Coordinator</p>
     <div class="info-box">
-      <strong>Data entry:</strong> Project auto-created from SO → Fill Project Name, Address, Manager → Execution Base (Area/Day) → Start/End Dates → Cost → Add Systems (Code, Area, UOM) → Add 5 Task categories → Project becomes the parent for all downstream forms
+      <strong>Data entry:</strong> Project auto-created from SO → Fill Project Name, Address, Manager → Execution Base (Area/Day) → Start/End Dates → Cost → Add Systems (Code, Area, UOM) → Add Task budget items → Project becomes the parent for all downstream forms
     </div>
 
     <h4>Header Fields</h4>
@@ -344,28 +344,28 @@
       </table>
     </div>
 
-    <h4>5 Task Categories</h4>
+    <h4>Task Budget</h4>
     <table class="field-table">
-      <tr><th>Category</th><th>Fields</th><th>Visibility</th></tr>
-      <tr><td>1. Transportation</td><td>Budget + Dispatch subform (From/To/Charges, multiple dispatches)</td><td>Always</td></tr>
-      <tr><td>2. Application/Execution</td><td>Subtasks A-D: Name, Area, Cost, MP (manpower). Examples: Grinding, Primer, Screed, Top Coat, Yellow, Arrow, Numbering</td><td><strong>Area Basis</strong></td></tr>
-      <tr><td>3. Manpower</td><td>Manpower Budget + Manpower Count</td><td><strong>Day Basis</strong></td></tr>
-      <tr><td>4. Tools</td><td>Tools Budget</td><td>Always</td></tr>
-      <tr><td>5. Additional Expenses</td><td>Overhead Budget</td><td>Always</td></tr>
+      <tr><th>#</th><th>Field</th><th>Type</th><th>Notes</th></tr>
+      <tr><td>1</td><td>Category</td><td>Dropdown</td><td>Transport / Execution / Manpower / Tools / Overhead</td></tr>
+      <tr><td>2</td><td>Description</td><td>Text</td><td>Subtask or work item name</td></tr>
+      <tr><td>3</td><td>Qty / Area</td><td>Number</td><td>Area for Execution, count for others</td></tr>
+      <tr><td>4</td><td>Rate</td><td>Currency</td><td>Per unit</td></tr>
+      <tr><td>5</td><td>Amount</td><td>Formula</td><td>Qty &times; Rate</td></tr>
+      <tr><td>6</td><td>Manpower</td><td>Number</td><td>Head count (if applicable)</td></tr>
     </table>
-    <div class="info-box"><strong>Conditional logic:</strong> Execution Base = Area Basis → Show Application tasks. Day Basis → Show Manpower tasks. Transport, Tools, Expenses always visible.</div>
   </div>
 </section>
 
 <section id="so">
   <div class="card">
     <h3>Sales / Work Order <span class="badge badge-purple">Hub</span></h3>
-    <p><strong>Purpose:</strong> Create customer orders. When accepted, auto-creates a Project. Two modes: Supply+Apply (installation) or Supply Only (material sales).</p>
+    <p><strong>Purpose:</strong> Create customer orders for installation projects. On acceptance, auto-creates a Project.</p>
     <p><strong>Who enters:</strong> Sales dept</p>
 
-    <div class="two-col">
+    <div>
       <div>
-        <h4>Mode A: Supply+Apply</h4>
+        <h4>Fields</h4>
         <table class="field-table">
           <tr><th>Field</th><th>Req</th><th>Notes</th></tr>
           <tr><td>Date / Employee</td><td class="mand">*</td><td>Today's Date / Name</td></tr>
@@ -383,20 +383,6 @@
           <tr><td>Warranty</td><td class="opt">—</td><td>Text</td></tr>
           <tr><td>Commission</td><td class="opt">—</td><td>Checkbox → Percentage or Fix Amount</td></tr>
           <tr><td>Is System Required</td><td class="opt">—</td><td>Checkbox</td></tr>
-        </table>
-      </div>
-      <div>
-        <h4>Mode B: Supply Only</h4>
-        <table class="field-table">
-          <tr><th>Field</th><th>Req</th><th>Notes</th></tr>
-          <tr><td>Client Details</td><td class="mand">*</td><td>Same as Mode A + Billing/Shipping Address</td></tr>
-          <tr><td>Sales Order No/Date</td><td class="mand">*</td><td>Autogen / Today</td></tr>
-          <tr><td>FG Subtable</td><td class="mand">*</td><td>FG Name (lookup), Qty, UOM (autofetch), Rate, Amount (formula)</td></tr>
-          <tr><td>Total Amount</td><td class="mand">*</td><td>Formula — sum of line items</td></tr>
-          <tr><td>Payment Terms</td><td class="mand">*</td><td>—</td></tr>
-          <tr><td>Transport Scope</td><td class="mand">*</td><td>Dropdown + Amount</td></tr>
-          <tr><td>Lead Time</td><td class="mand">*</td><td>Days</td></tr>
-          <tr><td>Remark</td><td class="opt">—</td><td>Multi-line</td></tr>
         </table>
       </div>
     </div>
