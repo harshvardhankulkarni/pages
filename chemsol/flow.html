@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Form Flow Demo · Chemsol ERP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+  .form-demo {
+    background: #fff; border: 1px solid var(--gray-200);
+    border-radius: 12px; padding: 20px; margin: 16px 0;
+  }
+  .form-demo label {
+    display: block; font-size: 12px; font-weight: 600;
+    color: var(--gray-600); margin-bottom: 4px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .form-demo input, .form-demo select, .form-demo textarea {
+    width: 100%; padding: 8px 12px; font-size: 14px;
+    border: 1px solid var(--gray-300); border-radius: 6px;
+    font-family: var(--font-sans); background: #fff;
+    color: var(--gray-800); transition: border-color 0.15s;
+    margin-bottom: 12px;
+  }
+  .form-demo input:focus, .form-demo select:focus, .form-demo textarea:focus {
+    outline: none; border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-light);
+  }
+  .form-demo .form-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  }
+  .form-demo .form-row-3 {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;
+  }
+  .form-demo .form-row-4 {
+    display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px;
+  }
+
+  .flow-bar {
+    display: flex; gap: 6px; overflow-x: auto; padding: 12px 16px;
+    background: #fff; border: 1px solid var(--gray-200);
+    border-radius: 10px; margin: 16px 0;
+    position: sticky; top: 0; z-index: 10;
+  }
+  .flow-bar a {
+    white-space: nowrap; font-size: 11px; font-weight: 600;
+    padding: 6px 12px; border-radius: 6px;
+    text-decoration: none; color: var(--gray-600);
+    background: var(--gray-50); border: 1px solid var(--gray-200);
+    transition: all 0.15s;
+  }
+  .flow-bar a:hover { background: var(--primary-light); color: var(--primary); border-color: var(--primary); }
+  .flow-bar .arrow { color: var(--gray-300); font-size: 14px; padding: 0 2px; }
+
+  .form-card {
+    background: #fff; border: 2px solid var(--gray-200);
+    border-radius: 12px; padding: 20px; margin: 16px 0;
+    transition: border-color 0.2s;
+    position: relative;
+  }
+  .form-card:hover { border-color: var(--primary-light); }
+  .form-card .fc-header {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+  }
+  .form-card .fc-num {
+    display: flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 8px;
+    font-weight: 700; font-size: 13px; color: #fff;
+    background: var(--primary); flex-shrink: 0;
+  }
+  .form-card .fc-title { font-size: 16px; font-weight: 700; color: var(--gray-900); }
+  .form-card .fc-tag {
+    margin-left: auto; font-size: 10px; font-weight: 600;
+    padding: 4px 10px; border-radius: 999px;
+    background: var(--gray-100); color: var(--gray-500);
+    white-space: nowrap;
+  }
+  .form-card .fc-flow {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px;
+  }
+  .form-card .fc-flow span {
+    font-size: 11px; padding: 3px 10px; border-radius: 6px;
+    font-weight: 500;
+  }
+  .fc-flow-in { background: var(--green-light); color: var(--green); }
+  .fc-flow-out { background: var(--primary-light); color: var(--primary); }
+  .fc-flow-key { background: var(--accent-light); color: #92400e; }
+
+  .module-group { margin: 32px 0; }
+  .module-group > h3 {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 22px; font-weight: 700; color: var(--gray-900);
+    margin: 24px 0 16px; padding-bottom: 8px;
+    border-bottom: 3px solid var(--primary-light);
+  }
+  .module-group > h3 .mg-badge {
+    font-size: 11px; font-weight: 600; padding: 3px 12px;
+    border-radius: 999px; background: var(--gray-100); color: var(--gray-500);
+  }
+  .connector-down {
+    text-align: center; padding: 4px 0; color: var(--gray-300);
+    font-size: 20px; font-weight: 300;
+    position: relative;
+  }
+  .connector-down::before {
+    content: ''; display: block; width: 2px; height: 8px;
+    background: var(--gray-200); margin: 0 auto;
+  }
+  .connector-down::after {
+    content: ''; display: block; width: 2px; height: 8px;
+    background: var(--gray-200); margin: 0 auto;
+  }
+
+  .subtable-demo {
+    border: 1px dashed var(--gray-300); border-radius: 8px;
+    padding: 12px; margin: 8px 0 12px; background: var(--gray-50);
+  }
+  .subtable-demo .st-hint {
+    font-size: 11px; color: var(--gray-500); font-weight: 600;
+    margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .subtable-row {
+    display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    gap: 8px; align-items: end; margin-bottom: 6px;
+  }
+  .subtable-row input, .subtable-row select {
+    margin-bottom: 0; font-size: 12px; padding: 6px 8px;
+  }
+
+  .data-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600;
+  }
+  .data-badge.pid { background: #eef2ff; color: #4338ca; }
+  .data-badge.ref { background: #f0fdf4; color: #16a34a; }
+  .data-badge.type { background: #fefce8; color: #a16207; }
+</style>
+</head>
+<body>
+
+<div class="sidebar">
+  <h1>Chemsol ERP <span>Form Flow Demo</span>
+    <span class="client-badge">Interactive Prototype</span>
+  </h1>
+  <nav class="sidebar-nav">
+    <div class="section-label">Modules</div>
+    <a href="#master-data">Master Data</a>
+    <a href="#sales">Sales</a>
+    <a href="#project-mgmt">Project Management</a>
+    <a href="#procurement">Procurement</a>
+    <a href="#inventory">Inventory</a>
+    <a href="#production">Production</a>
+    <div class="section-label">Reference</div>
+    <a href="index.html">Home</a>
+    <a href="forms.html">Forms</a>
+    <a href="flow.html" class="active">Form Flow Demo</a>
+    <a href="reports.html">Reports</a>
+    <a href="data-model.html">Data Model</a>
+    <a href="security.html">Security</a>
+    <a href="implementation-plan.html">Plan</a>
+  </nav>
+</div>
+
+<div class="main">
+  <div class="hero">
+    <div class="hero-eyebrow">Interactive Demo</div>
+    <h1>Form Flow Demo</h1>
+    <p>See how all 27 forms connect — fill them in order, follow the data as it flows from Sales Order through to Finished Goods.</p>
+  </div>
+
+  <div class="content">
+
+    <!-- Flow Pipeline -->
+    <div class="flow-bar" id="flow-bar">
+      <a href="#so-so">SO</a><span class="arrow">&rarr;</span>
+      <a href="#pm-project">Project</a><span class="arrow">&rarr;</span>
+      <a href="#pm-tasks">Tasks</a><span class="arrow">&rarr;</span>
+      <a href="#pr-pr">PR</a><span class="arrow">&rarr;</span>
+      <a href="#pr-rc">RC</a><span class="arrow">&rarr;</span>
+      <a href="#pr-po">PO</a><span class="arrow">&rarr;</span>
+      <a href="#pr-grn">GRN</a><span class="arrow">&rarr;</span>
+      <a href="#pr-qc">QC</a><span class="arrow">&rarr;</span>
+      <a href="#inv-mr">MR</a><span class="arrow">&rarr;</span>
+      <a href="#inv-mis">MIS</a><span class="arrow">&rarr;</span>
+      <a href="#inv-fghm">FGHM</a><span class="arrow">&rarr;</span>
+      <a href="#inv-fgan">FGAN</a><span class="arrow">&rarr;</span>
+      <a href="#prod-plan">Plan</a><span class="arrow">&rarr;</span>
+      <a href="#prod-order">Order</a><span class="arrow">&rarr;</span>
+      <a href="#prod-bmr">BMR</a><span class="arrow">&rarr;</span>
+      <a href="#prod-consume">RMC</a><span class="arrow">&rarr;</span>
+      <a href="#prod-pack">Pack</a><span class="arrow">&rarr;</span>
+      <a href="#prod-rework">Rework</a>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- MASTER DATA -->
+    <!-- ============================================================ -->
+    <div class="module-group" id="master-data">
+      <h3>Master Data <span class="mg-badge">Fill First — Global Reference Data</span></h3>
+      <p>Master Data forms are independent — they don't reference any other form. Fill these <strong>first</strong> before any transactional forms.</p>
+
+      <div class="form-card">
+        <div class="fc-header">
+          <span class="fc-num">1A</span>
+          <span class="fc-title">Purchase Item Muster</span>
+          <span class="fc-tag">Global</span>
+        </div>
+        <div class="fc-flow">
+          <span class="fc-flow-key">No dependencies</span>
+          <span class="fc-flow-out">Used by: PR, PO, GRN, MR, MIS, BMR</span>
+        </div>
+        <div class="form-demo">
+          <div class="form-row-4">
+            <div><label>Item Code</label><input type="text" value="RM-EP-001" placeholder="Autogen"></div>
+            <div><label>Item Name</label><input type="text" value="Epoxy Resin Grade A"></div>
+            <div><label>UOM</label><select><option>Kg</option><option>Ltr</option><option>Nos</option><option>Mtr</option><option selected>Kit</option></select></div>
+            <div><label>HSN Code</label><input type="text" value="3907.30"></div>
+          </div>
+          <div class="form-row-3">
+            <div><label>GST %</label><select><option>5%</option><option selected>12%</option><option>18%</option><option>28%</option></select></div>
+            <div><label>Min Stock</label><input type="number" value="50"></div>
+            <div><label>Max Stock</label><input type="number" value="500"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="connector-down">&#x25BC;</div>
+
+      <div class="form-card">
+        <div class="fc-header">
+          <span class="fc-num">1B</span>
+          <span class="fc-title">System Master</span>
+          <span class="fc-tag">Global</span>
+        </div>
+        <div class="fc-flow">
+          <span class="fc-flow-key">No dependencies</span>
+          <span class="fc-flow-out">Used by: SO, Project, BOM, BMR</span>
+        </div>
+        <div class="form-demo">
+          <div class="form-row-4">
+            <div><label>System Code</label><input type="text" value="EP01"></div>
+            <div><label>System Name</label><input type="text" value="Epoxy Flooring 1mm"></div>
+            <div><label>Category</label><select><option selected>Epoxy</option><option>PU</option><option>DEM</option><option>ESD</option></select></div>
+            <div><label>Unit Rate</label><input type="number" value="285"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="connector-down">&#x25BC;</div>
+
+      <div class="form-card">
+        <div class="fc-header">
+          <span class="fc-num">1C</span>
+          <span class="fc-title">BOM Master</span>
+          <span class="fc-tag">Global</span>
+        </div>
+        <div class="fc-flow">
+          <span class="fc-flow-in">From: System Master</span>
+          <span class="fc-flow-out">Used by: PR, Production</span>
+        </div>
+        <div class="form-demo">
+          <div class="form-row">
+            <div><label>System Code</label><select><option>EP01 — Epoxy Flooring 1mm</option></select></div>
+            <div><label>Item Code</label><select><option>RM-EP-001 — Epoxy Resin</option></select></div>
+          </div>
+          <div class="form-row-3">
+            <div><label>Qty per Unit</label><input type="number" value="0.85"></div>
+            <div><label>UOM</label><input type="text" value="Kg" disabled style="background:var(--gray-50)"></div>
+            <div><label>Waste %</label><input type="number" value="5"></div>
+          </div>
+          <div class="subtable-demo">
+            <div class="st-hint">BOM Line Items (multiple materials per system)</div>
+            <div class="subtable-row">
+              <span style="font-size:11px;font-weight:600">Item Code</span>
+              <span style="font-size:11px;font-weight:600">Qty</span>
+              <span style="font-size:11px;font-weight:600">UOM</span>
+              <span style="font-size:11px;font-weight:600">Waste%</span>
+              <span></span>
+            </div>
+            <div class="subtable-row">
+              <select style="font-size:12px"><option>RM-EP-001 — Epoxy Resin</option></select>
+              <input type="number" value="0.85" style="font-size:12px">
+              <input type="text" value="Kg" disabled style="font-size:12px;background:var(--gray-50)">
+              <input type="number" value="5" style="font-size:12px">
+              <span style="color:var(--green);font-size:11px">&#x2713;</span>
+            </div>
+            <div class="subtable-row">
+              <select style="font-size:12px"><option>RM-EP-002 — Epoxy Hardener</option></select>
+              <input type="number" value="0.15" style="font-size:12px">
+              <input type="text" value="Kg" disabled style="font-size:12px;background:var(--gray-50)">
+              <input type="number" value="3" style="font-size:12px">
+              <span style="color:var(--green);font-size:11px">&#x2713;</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="connector-down">&#x25BC;</div>
+
+      <div class="form-card">
+        <div class="fc-header">
+          <span class="fc-num">1D</span>
+          <span class="fc-title">Supplier Master</span>
+          <span class="fc-tag">Global</span>
+        </div>
+        <div class="fc-flow">
+          <span class="fc-flow-key">No dependencies</span>
+          <span class="fc-flow-out">Used by: PO, Rate Comparison</span>
+        </div>
+        <div class="form-demo">
+          <div class="form-row-4">
+            <div><label>Supplier Code</label><input type="text" value="SUP-001" placeholder="Autogen"></div>
+            <div><label>Name</label><input type="text" value="ABC Chemicals Pvt Ltd"></div>
+            <div><label>Type</label><select><option selected>Raw Material</option><option>Packaging</option><option>Service</option></select></div>
+            <div><label>GSTIN</label><input type="text" value="27AABCC1234D1Z5"></div>
+          </div>
+          <div class="form-row-3">
+            <div><label>Payment Terms</label><select><option>Immediate</option><option selected>30 Days</option><option>45 Days</option><option>60 Days</option></select></div>
+            <div><label>Credit Days</label><input type="number" value="30"></div>
+            <div><label>Status</label><select><option selected>Active</option><option>Inactive</option></select></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="connector-down">&#x25BC;</div>
+
+      <div class="form-card">
+        <div class="fc-header">
+          <span class="fc-num">1E</span>
+          <span class="fc-title">Customer / Site Master</span>
+          <span class="fc-tag">Global</span>
+        </div>
+        <div class="fc-flow">
+          <span class="fc-flow-key">No dependencies</span>
+          <span class="fc-flow-out">Used by: SO, FGHM</span>
+        </div>
+        <div class="form-demo">
+          <div class="form-row-4">
+            <div><label>Customer Code</label><input type="text" value="CUST-001" placeholder="Autogen"></div>
+            <div><label>Client Org</label><input type="text" value="Tata Motors Ltd"></div>
+            <div><label>Contact Person</label><input type="text" value="Rajesh Sharma"></div>
+            <div><label>Contact No</label><input type="text" value="9876543210"></div>
+          </div>
+          <div class="form-row-3">
+            <div><label>GST No</label><input type="text" value="27AABCT1234D1Z5"></div>
+            <div><label>Site Name</label><input type="text" value="Pune Plant - Unit 2"></div>
+            <div><label>Site Address</label><input type="text" value="MIDC Bhosari, Pune"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="connector-down">&#x25BC;</div>
+
+      <div class="form-card">
+        <div class="fc-header">
+          <span class="fc-num">1F</span>
+          <span class="fc-title">Store Master</span>
+          <span class="fc-tag">Global</span>
+        </div>
+        <div class="fc-flow">
+          <span class="fc-flow-key">No dependencies</span>
+          <span class="fc-flow-out">Used by: GRN, MIS</span>
+        </div>
+        <div class="form-demo">
+          <div class="form-row-4">
+            <div><label>Store Code</label><input type="text" value="WH-01"></div>
+            <div><label>Store Name</label><select><option selected>Wadki</option><option>Main</option><option>Neelo</option><option>Gurgaon</option><option>Bangalore</option></select></div>
+            <div><label>Location</label><input type="text" value="Pune"></div>
+            <div><label>Incharge</label><input type="text" value="Suresh Patil"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="connector-down">&#x25BC;</div>
+
+      <div class="form-card">
+        <div class="fc-header">
+          <span class="fc-num">1G</span>
+          <span class="fc-title">User Access &amp; Approval Matrix</span>
+          <span class="fc-tag">Admin</span>
+        </div>
+        <div class="fc-flow">
+          <span class="fc-flow-key">No dependencies</span>
+          <span class="fc-flow-out">Used by: All forms (login + approval checks)</span>
+        </div>
+        <div class="form-demo">
+          <div class="form-row-3">
+            <div><label>User</label><select><option>Rajesh (Purchase)</option><option>Priya (Sales)</option><option selected>Anil (Store)</option></select></div>
+            <div><label>Department</label><input type="text" value="Store & Logistics" disabled style="background:var(--gray-50)"></div>
+            <div><label>Role</label><select><option>User</option><option selected>Approver</option><option>Admin</option></select></div>
+          </div>
+          <div style="border-top:1px solid var(--gray-200);padding-top:12px;margin-top:4px">
+            <div class="form-row-4">
+              <div><label>Module</label><select><option selected>PR</option><option>PO</option><option>MIS</option></select></div>
+              <div><label>Min Limit</label><input type="number" value="0"></div>
+              <div><label>Max Limit</label><input type="number" value="50000"></div>
+              <div><label>Approver</label><select><option>Sanjay (Manager)</option></select></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SALES -->
+    <!-- ============================================================ -->
+    <div class="module-group" id="sales">
+      <h3>Sales <span class="mg-badge">Step 1 of Business Flow</span></h3>
+      <p>SO creates the Project. This is the <strong>starting point</strong> — everything downstream references the Project.</p>
+
+      <div class="form-card" id="so-so">
+        <div class="fc-header">
+          <span class="fc-num">2A</span>
+          <span class="fc-title">Sales / Work Order (SO)</span>
+          <span class="fc-tag blue" style="background:var(--green-light);color:var(--green)">Creates Project</span>
+        </div>
+        <div class="fc-flow">
+          <span class="fc-flow-in">From: Customer Master</span>
+          <span class="fc-flow-key">Select Customer / System items</span>
+          <span class="fc-flow-out">Creates: Project record</span>
+        </div>
+        <div class="form-demo">
+          <div class="form-row-4">
+            <div><label>Date</label><input type="date" value="2026-07-01"></div>
+            <div><label>Employee</label><input type="text" value="Priya Sharma"></div>
+            <div><label>Customer</label><select><option selected>CUST-001 — Tata Motors Ltd</option></select></div>
+            <div><label>Project Type</label><select><option selected>Industrial</option><option>Commercial</option></select></div>
+          </div>
+          <div class="form-row-3">
+            <div><label>Site Name</label><input type="text" value="Pune Plant - Unit 2"></div>
+            <div><label>Site Manager</label><input type="text" value="Rajesh Sharma"></div>
+            <div><label>Contact</label><input type="text" value="9876543210"></div>
+          </div>
+
+          <div class="subtable-demo">
+            <div class="st-hint">System Line Items (N items)</div>
+            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr">
+              <span style="font-size:11px;font-weight:600">System Code</span>
+              <span style="font-size:11px;font-weight:600">Thickness</span>
+              <span style="font-size:11px;font-weight:600">Area (sqm)</span>
+              <span style="font-size:11px;font-weight:600">UOM</span>
+              <span style="font-size:11px;font-weight:600">Rate</span>
+              <span style="font-size:11px;font-weight:600">Amount</span>
+            </div>
+            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr">
+              <select style="font-size:12px"><option selected>EP01 — Epoxy 1mm</option></select>
+              <input type="text" value="1mm" style="font-size:12px">
+              <input type="number" value="500" style="font-size:12px">
+              <select style="font-size:12px"><option selected>Sqm</option></select>
+              <input type="number" value="285" style="font-size:12px">
+              <input type="number" value="142500" style="font-size:12px;font-weight:700;color:var(--primary)" readonly>
+            </div>
+            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr">
+              <select style="font-size:12px"><option selected>EP02 — Epoxy 2mm</option></select>
+              <input type="text" value="2mm" style="font-size:12px">
+              <input type="number" value="300" style="font-size:12px">
+              <select style="font-size:12px"><option selected>Sqm</option></select>
+              <input type="number" value="450" style="font-size:12px">
+              <input type="number" value="135000" style="font-size:12px;font-weight:700;color:var(--primary)" readonly>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:12px;align-items:center;padding:12px;background:var(--green-light);border-radius:8px;margin-top:8px">
+            <strong style="font-size:14px;color:var(--green)">Total: &#8377;2,77,500</strong>
+            <span style="font-size:11px;color:var(--gray-600)">Payment Terms: 30 Days</span>
+            <span style="font-size:11px;color:var(--gray-600)">Transport: Included</span>
+            <span style="margin-left:auto;padding:4px 12px;border-radius:6px;background:var(--green);color:#fff;font-size:11px;font-weight:600">Supply+Apply &rarr; Creates Project</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- PROJECT MANAGEMENT -->
+    <!-- ============================================================ -->
+    <div class="module-group" id="project-mgmt">
+      <h3>Project Management <span class="mg-badge">Step 2 — Root Entity</span></h3>
+      <p>Auto-created from SO. Every downstream form carries the Project ID.</p>
+
+      <div class="form-card" id="pm-project">
+        <div class="fc-header">
+          <span class="fc-num">3A</span>
+          <span class="fc-title">Create Project</span>
+          <span class="fc-tag blue" style="background:var(--green-light);color:var(--green)">Auto from SO</span>
+        </div>
+        <div class="fc-flow">
+          <span class="fc-flow-in">From: SO (auto-created)</span>
+          <span class="fc-flow-key">Project ID links ALL downstream forms</span>
+          <span class="fc-flow-out">To: PR, MR, Production, FGHM</span>
+        </div>
+        <div class="form-demo">
+          <div class="form-row-4">
+            <div><label>Project ID</label><input type="text" value="PRJ-2026-001" disabled style="background:var(--gray-50)"></div>
+            <div><label>Project Name</label><input type="text" value="Tata Motors Pune - Epoxy Flooring"></div>
+            <div><label>SO Reference</label><input type="text" value="SO-2026-001" disabled style="background:var(--gray-50)"></div>
+            <div><label>Customer</label><input type="text" value="Tata Motors Ltd" disabled style="background:var(--gray-50)"></div>
+          </div>
+          <div class="form-row-4">
+            <div><label>Project Manager</label><select><option selected>Amit Verma</option></select></div>
+            <div><label>Execution Base</label><select><option selected>Area Basis</option><option>Day Basis</option></select></div>
+            <div><label>Start Date</label><input type="date" value="2026-07-15"></div>
+            <div><label>End Date</label><input type="date" value="2026-09-15"></div>
+          </div>
+          <div class="form-row-3">
+            <div><label>Project Cost</label><input type="number" value="277500"></div>
+            <div><label>Adjustments</label><input type="number" value="0"></div>
+            <div><label>Status</label><select><option selected>Active</option><option>On Hold</option><option>Completed</option></select></div>
+          </div>
+          <div class="subtable-demo">
+            <div class="st-hint">Systems (copied from SO)</div>
+            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
+              <span style="font-size:11px;font-weight:600">System</span><span style="font-size:11px;font-weight:600">Area</span><span style="font-size:11px;font-weight:600">UOM</span><span style="font-size:11px;font-weight:600">Description</span>
+            </div>
+            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
+              <input type="text" value="EP01 — Epoxy 1mm" style="font-size:12px">
+              <input type="number" value="500" style="font-size:12px">
+              <input type="text" value="Sqm" style="font-size:12px">
+              <input type="text" value="Production Floor" style="font-size:12px">
+            </div>
+          </div>
+          <div style="padding:8px 12px;background:var(--accent-light);border-radius:6px;font-size:12px;color:#92400e;margin-top:8px">
+            <strong>&#x2139; Project ID = PRJ-2026-001</strong> — This ID flows into PR, MR, Production Planning, FGHM
+          </div>
+        </div>
+      </div>
+
+      <div class="connector-down">&#x25BC;</div>
+
+      <div class="form-card" id="pm-tasks">
+        <div class="fc-header">
+          <span class="fc-num">3B</span>
+          <span class="fc-title">Task Budget</span>
+          <span class="fc-tag">5 Categories in one table</span>
+        </div>
+        <div class="fc-flow">
+          <span class="fc-flow-in">From: Project (Execution Base)</span>
+          <span class="fc-flow-key">Budget planning per category</span>
+        </div>
+        <div class="form-demo">
+          <div class="subtable-demo">
+            <div class="st-hint">Task Items (N rows)</div>
+            <div class="subtable-row" style="grid-template-columns:1fr 2fr 1fr 1fr 1fr 1fr">
+              <span style="font-size:11px;font-weight:600">Category</span>
+              <span style="font-size:11px;font-weight:600">Description</span>
+              <span style="font-size:11px;font-weight:600">Qty/Area</span>
+              <span style="font-size:11px;font-weight:600">Rate</span>
+              <span style="font-size:11px;font-weight:600">Amount</span>
+              <span style="font-size:11px;font-weight:600">Manpower</span>
+            </div>
+            <div class="subtable-row" style="grid-template-columns:1fr 2fr 1fr 1fr 1fr 1fr">
+              <select style="font-size:12px"><option selected>Transport</option><option>Execution</option><option>Manpower</option><option>Tools</option><option>Overhead</option></select>
+              <input type="text" value="Intracity material movement" style="font-size:12px">
+              <input type="number" value="15" style="font-size:12px">
+              <input type="number" value="2000" style="font-size:12px">
+              <input type="number" value="30000" style="font-size:12px" readonly>
+              <input type="number" value="2" style="font-size:12px">
+            </div>
+            <div class="subtable-row" style="grid-template-columns:1fr 2fr 1fr 1fr 1fr 1fr">
+              <select style="font-size:12px"><option selected>Execution</option><option>Transport</option><option>Manpower</option><option>Tools</option><option>Overhead</option></select>
+              <input type="text" value="Grinding & Primer application" style="font-size:12px">
+              <input type="number" value="500" style="font-size:12px">
+              <input type="number" value="85" style="font-size:12px">
+              <input type="number" value="42500" style="font-size:12px" readonly>
+              <input type="number" value="4" style="font-size:12px">
+            </div>
+            <div class="subtable-row" style="grid-template-columns:1fr 2fr 1fr 1fr 1fr 1fr">
+              <select style="font-size:12px"><option selected>Manpower</option><option>Transport</option><option>Execution</option><option>Tools</option><option>Overhead</option></select>
+              <input type="text" value="Skilled labour - Day basis" style="font-size:12px">
+              <input type="number" value="60" style="font-size:12px">
+              <input type="number" value="800" style="font-size:12px">
+              <input type="number" value="48000" style="font-size:12px" readonly>
+              <input type="number" value="6" style="font-size:12px">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- PROCUREMENT -->
+    <!-- ============================================================ -->
+    <div class="module-group" id="procurement">
+      <h3>Procurement <span class="mg-badge">Step 3 — PR &rarr; PO &rarr; GRN &rarr; QC</span></h3>
+      <p>All forms carry Project ID from Project Management. PR starts the procurement chain.</p>
+
+      <div class="form-card" id="pr-pr">
+        <div class="fc-header">
+          <span class="fc-num">4A</span>
+          <span class="fc-title">Purchase Requisition (PR)</span>
+          <span class="fc-tag">N Items</span>
+        </div>
+        <div class="fc-flow">
+          <span class="fc-flow-in">From: Project ID</span>
+          <span class="fc-flow-key">Select Project &rarr; Add items</span>
+          <span class="fc-flow-out">To: Rate Comparison</span>
+        </div>
+        <div class="form-demo">
+          <div class="form-row-4">
+            <div><label>PR No</label><input type="text" value="PR-2026-001" disabled style="background:var(--gray-50)"></div>
+            <div><label>PR Date</label><input type="date" value="2026-07-02"></div>
+            <div><label>Project ID</label><select><option selected>PRJ-2026-001 — Tata Motors</option></select></div>
+            <div><label>Department</label><input type="text" value="Production & R&D" disabled style="background:var(--gray-50)"></div>
+          </div>
+          <div class="subtable-demo">
+            <div class="st-hint">PR Items (N items)</div>
+            <div class="subtable-row" style="grid-template-columns:2fr 2fr 1fr 1fr 1fr">
+              <span style="font-size:11px;font-weight:600">Item Code</span>
+              <span style="font-size:11px;font-weight:600">Description</span>
+              <span style="font-size:11px;font-weight:600">Qty</span>
+              <span style="font-size:11px;font-weight:600">UOM</span>
+              <span style="font-size:11px;font-weight:600">Lead Time</span>
+            </div>
+            <div class="subtable-row" style="grid-template-columns:2fr 2fr 1fr 1fr 1fr">
+              <select style="font-size:12px"><option selected>RM-EP-001 — Epoxy Resin</option></select>
+              <input type="text" value="Epoxy Resin Grade A" style="font-size:12px">
+              <input type="number" value="425" style="font-size:12px">
+              <input type="text" value="Kg" style="font-size:12px" disabled style="background:var(--gray-50)">
+              <input type="text" value="7 days" style="font-size:12px" disabled style="background:var(--gray-50)">
+            </div>
+            <div class="subtable-row" style="grid-template-columns:2fr 2fr 1fr 1fr 1fr">
+              <select style="font-size:12px"><option selected>RM-EP-002 — Epoxy Hardener</option></select>
+              <input type="text" value="Epoxy Hardener Grade B" style="font-size:12px">
+              <input type="number" value="75" style="font-size:12px">
+              <input type="text" value="Kg" style="font-size:12px" disabled style="background:var(--gray-50)">
+              <input type="text" value="5 days" style="font-size:12px" disabled style="background:var(--gray-50)">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="connector-down">&#x25BC;</div>
+
+      <div class="form-card" id="pr-rc">
+        <div class="fc-header">
+          <span class="fc-num">4B</span>
+          <span class="fc-title">Rate Comparison</span>
+          <span class="fc-tag">5 Supplier Quotes</span>
+        </div>
+        <div class="fc-flow">
+          <span class="fc-flow-in">From: PR (autofetch items)</span>
+          <span class="fc-flow-key">Compare 5 suppliers per item</span>
+          <span class="fc-flow-out">To: PO (finalised rate)</span>
+        </div>
+        <div class="form-demo">
+          <div class="form-row-3">
+            <div><label>RC No</label><input type="text" value="RC-2026-001" disabled style="background:var(--gray-50)"></div>
+            <div><label>PR Reference</label><select><option selected>PR-2026-001</option></select></div>
+            <div><label>Project ID</label><input type="text" value="PRJ-2026-001" disabled style="background:var(--gray-50)"></div>
+          </div>
+          <div class="subtable-demo">
+            <div class="st-hint">Supplier Comparison (5 per item)</div>
+            <div class="subtable-row" style="grid-template-columns:2fr 1.5fr 1fr 1fr 1fr">
+              <span style="font-size:11px;font-weight:600">Item</span>
+              <span style="font-size:11px;font-weight:600">Supplier</span>
+              <span style="font-size:11px;font-weight:600">Rate</span>
+              <span style="font-size:11px;font-weight:600">Credit</span>
+              <span style="font-size:11px;font-weight:600">Selected</span>
+            </div>
+            <div class="subtable-row" style="grid-template-columns:2fr 1.5fr 1fr 1fr 1fr">
+              <input type="text" value="Epoxy Resin" style="font-size:12px">
+              <select style="font-size:12px"><option selected>ABC Chemicals — Rs 245</option><option>XYZ Corp — Rs 260</option><option>PQR Ltd — Rs 238</option></select>
+              <input type="number" value="238" style="font-size:12px">
+              <input type="text" value="30 days" style="font-size:12px">
+              <input type="radio" checked style="width:auto;margin:0">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="connector-down">&#x25BC;</div>
+
+      <div class="form-card" id="pr-po">
+        <div class="fc-header">
+          <span class="fc-num">4C</span>
+          <span class="fc-title">Purchase Order (PO)</span>
+          <span class="fc-tag">N Items · GST Split</span>
+        </div>
+        <div class="fc-flow">
+          <span class="fc-flow-in">From: PR, Rate Comparison</span>
+          <span class="fc-flow-key">Project ID, Supplier autofetched</span>
+          <span class="fc-flow-out">To: GRN</span>
+        </div>
+        <div class="form-demo">
+          <div class="form-row-4">
+            <div><label>PO No</label><input type="text" value="RM-2026-001" disabled style="background:var(--gray-50);font-family:var(--font-mono)"></div>
+            <div><label>PO Date</label><input type="date" value="2026-07-05"></div>
+            <div><label>PR Reference</label><input type="text" value="PR-2026-001" disabled style="background:var(--gray-50)"></div>
+            <div><label>Supplier</label><select><option selected>PQR Ltd — Rs 238</option></select>
+            </div>
+          </div>
+          <div class="form-row-3">
+            <div><label>Project ID</label><input type="text" value="PRJ-2026-001" disabled style="background:var(--gray-50)"></div>
+            <div><label>Delivery Date</label><input type="date" value="2026-07-12"></div>
+            <div><label>Payment Terms</label><select><option selected>30 Days</option><option>Immediate</option><option>45 Days</option></select></div>
+          </div>
+          <div class="subtable-demo">
+            <div class="st-hint">PO Line Items with GST Split (CGST 6% + SGST 6%)</div>
+            <div class="subtable-row" style="grid-template-columns:1.5fr 1fr 1fr 1fr 1fr 1fr 1fr">
+              <span style="font-size:11px;font-weight:600">Item</span>
+              <span style="font-size:11px;font-weight:600">HSN</span>
+              <span style="font-size:11px;font-weight:600">Qty</span>
+              <span style="font-size:11px;font-weight:600">Rate</span>
+              <span style="font-size:11px;font-weight:600">Amount</span>
+              <span style="font-size:11px;font-weight:600">CGST</span>
+              <span style="font-size:11px;font-weight:600">SGST</span>
+            </div>
+            <div class="subtable-row" style="grid-template-columns:1.5fr 1fr 1fr 1fr 1fr 1fr 1fr">
+              <input type="text" value="Epoxy Resin" style="font-size:12px">
+              <input type="text" value="3907.30" style="font-size:12px">
+              <input type="number" value="425" style="font-size:12px">
+              <input type="number" value="238" style="font-size:12px">
+              <input type="number" value="101150" style="font-size:12px" readonly>
+              <input type="number" value="6069" style="font-size:12px" readonly>
+              <input type="number" value="6069" style="font-size:12px" readonly>
+            </div>
+          </div>
+          <div style="padding:8px 12px;background:var(--gray-50);border-radius:6px;font-size:12px;margin-top:4px">
+            <strong>Total: &#8377;1,01,150</strong> + CGST &#8377;6,069 + SGST &#8377;6,069 = <strong>&#8377;1,13,288</strong>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:8px;padding:8px 12px;background:var(--gray-50);border-radius:6px;font-size:11px;color:var(--gray-500)">
+            <span class="data-badge type">RM Series (Non-Coding)</span>
+            <span class="data-badge type">Transport Scope: Supplier to Wadki</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="connector-down">&#x25BC;</div>
+
+      <div class="form-card" id="pr-grn">
+        <div class="fc-header">
+          <span class="fc-num">4D</span>
+          <span class="fc-title">Goods Receipt Note (GRN)</span>
+          <span class="fc-tag">Partial Receipt · Post = Stock +</span>
+        </div>
+        <div class="fc-flow">
+          <span class="fc-flow-in">From: PO (autofetch items)</span>
+          <span class="fc-flow-key">Checkbox per item for partial GRN</span>
+          <span class="fc-flow-out">To: QC, Stock Update</span>
+        </div>
+        <div class="form-demo">
+          <div class="form-row-4">
+            <div><label>GRN No</label><input type="text" value="GRN-2026-001" disabled style="background:var(--gray-50)"></div>
+            <div><label>GRN Date</label><input type="date" value="2026-07-10"></div>
+            <div><label>PO Reference</label><select><option selected>RM-2026-001 — PQR Ltd</option></select></div>
+            <div><label>Warehouse</label><select><option selected>Wadki</option><option>Main</option><option>Neelo</option><option>Client Site</option></select></div>
+          </div>
+          <div class="subtable-demo">
+            <div class="st-hint">GRN Items (check = receive, uncheck = pending)</div>
+            <div class="subtable-row" style="grid-template-columns:1fr 2fr 1fr 1fr 1fr 1fr">
+              <span style="font-size:11px;font-weight:600">Receive</span>
+              <span style="font-size:11px;font-weight:600">Item</span>
+              <span style="font-size:11px;font-weight:600">Ordered</span>
+              <span style="font-size:11px;font-weight:600">Received</span>
+              <span style="font-size:11px;font-weight:600">Pending</span>
+              <span style="font-size:11px;font-weight:600">QC Status</span>
+            </div>
+            <div class="subtable-row" style="grid-template-columns:1fr 2fr 1fr 1fr 1fr 1fr">
+              <input type="checkbox" checked style="width:auto;margin:0">
+              <input type="text" value="Epoxy Resin" style="font-size:12px">
+              <input type="number" value="425" style="font-size:12px" disabled style="background:var(--gray-50)">
+              <input type="number" value="425" style="font-size:12px">
+              <span style="font-size:12px;color:var(--green)">0</span>
+              <span style="font-size:12px;color:var(--gray-400)">Pending</span>
+            </div>
+            <div class="subtable-row" style="grid-template-columns:1fr 2fr 1fr 1fr 1fr 1fr">
+              <input type="checkbox" style="width:auto;margin:0">
+              <input type="text" value="Epoxy Hardener" style="font-size:12px">
+              <input type="number" value="75" style="font-size:12px" disabled style="background:var(--gray-50)">
+              <input type="number" value="0" style="font-size:12px">
+              <span style="font-size:12px;color:var(--accent)">75</span>
+              <span style="font-size:12px;color:var(--gray-400)">—</span>
+            </div>
+          </div>
+          <div style="padding:8px 12px;background:var(--accent-light);border-radius:6px;font-size:12px;color:#92400e;margin-top:8px">
+            <strong>&#x26A0; Stock is NOT updated until GRN is Posted.</strong> Posting creates a timestamped stock entry.
+          </div>
+        </div>
+      </div>
+
+      <div class="connector-down">&#x25BC;</div>
+
+      <div class="form-card" id="pr-qc">
+        <div class="fc-header">
+          <span class="fc-num">4E</span>
+          <span class="fc-title">QC / QA</span>
+          <span class="fc-tag">Pass/Fail per Item</span>
+        </div>
+        <div class="fc-flow">
+          <span class="fc-flow-in">From: GRN (items to inspect)</span>
+          <span class="fc-flow-key">Test results per parameter</span>
+          <span class="fc-flow-out">Status: Accepted / Rejected / Rework</span>
+        </div>
+        <div class="form-demo">
+          <div class="form-row-3">
+            <div><label>QC No</label><input type="text" value="QC-2026-001" disabled style="background:var(--gray-50)"></div>
+            <div><label>GRN Reference</label><select><option selected>GRN-2026-001</option></select></div>
+            <div><label>Inspected By</label><input type="text" value="Vikram Joshi"></div>
+          </div>
+          <div class="subtable-demo">
+            <div class="st-hint">QC Test Results</div>
+            <div class="subtable-row" style="grid-template-columns:1.5fr 1fr 1fr 1fr">
+              <span style="font-size:11px;font-weight:600">Parameter</span>
+              <span style="font-size:11px;font-weight:600">Specification</span>
+              <span style="font-size:11px;font-weight:600">Result</span>
+              <span style="font-size:11px;font-weight:600">Status</span>
+            </div>
+            <div class="subtable-row" style="grid-template-columns:1.5fr 1fr 1fr 1fr">
+              <input type="text" value="Viscosity" style="font-size:12px">
+              <input type="text" value="800-1200 cP" style="font-size:12px">
+              <input type="text" value="950 cP" style="font-size:12px">
+              <select style="font-size:12px"><option selected>Pass</option><option>Fail</option></select>
+            </div>
+            <div class="subtable-row" style="grid-template-columns:1.5fr 1fr 1fr 1fr">
+              <input type="text" value="Density" style="font-size:12px">
+              <input type="text" value="1.05-1.15 g/cm³" style="font-size:12px">
+              <input type="text" value="1.10 g/cm³" style="font-size:12px">
+              <select style="font-size:12px"><option selected>Pass</option><option>Fail</option></select>
+            </div>
+          </div>
+          <div class="form-row-3">
+            <div><label>Accepted Qty</label><input type="number" value="425"></div>
+            <div><label>Rejected Qty</label><input type="number" value="0"></div>
+            <div><label>Final Status</label><select><option selected>Accepted</option><option>Rejected</option><option>Rework</option></select></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- INVENTORY -->
+    <!-- ============================================================ -->
+    <div class="module-group" id="inventory">
+      <h3>Inventory / Stores <span class="mg-badge">Step 4 — MR &rarr; MIS &rarr; FGHM &rarr; FGAN</span></h3>
+      <p>Material moves from store to site. FG comes back for handover. All tagged to Project.</p>
+
+      <div class="form-card" id="inv-mr">
+        <div class="fc-header">
+          <span class="fc-num">5A</span>
+          <span class="fc-title">Material Requisition (MR)</span>
+          <span class="fc-tag">N Items</span>
+        </div>
+        <div class="fc-flow">
+          <span class="fc-flow-in">From: Project ID</span>
+          <span class="fc-flow-key">Request materials from store</span>
+          <span class="fc-flow-out">To: MIS</span>
+        </div>
+        <div class="form-demo">
+          <div class="form-row-4">
+            <div><label>MR No</label><input type="text" value="MR-2026-001" disabled style="background:var(--gray-50)"></div>
+            <div><label>MR Date</label><input type="date" value="2026-07-20"></div>
+            <div><label>Project ID</label><select><option selected>PRJ-2026-001 — Tata Motors</option></select></div>
+            <div><label>Priority</label><select><option selected>Normal</option><option>Urgent</option><option>Critical</option></select></div>
+          </div>
+          <div class="subtable-demo">
+            <div class="st-hint">Items Required</div>
+            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
+              <span style="font-size:11px;font-weight:600">Item</span>
+              <span style="font-size:11px;font-weight:600">Required</span>
+              <span style="font-size:11px;font-weight:600">Available</span>
+              <span style="font-size:11px;font-weight:600">UOM</span>
+            </div>
+            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
+              <select style="font-size:12px"><option selected>RM-EP-001 — Epoxy Resin</option></select>
+              <input type="number" value="200" style="font-size:12px">
+              <span style="font-size:12px;color:var(--green);font-weight:600">350</span>
+              <input type="text" value="Kg" style="font-size:12px" disabled style="background:var(--gray-50)">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="connector-down">&#x25BC;</div>
+
+      <div class="form-card" id="inv-mis">
+        <div class="fc-header">
+          <span class="fc-num">5B</span>
+          <span class="fc-title">Material Issue Slip (MIS)</span>
+          <span class="fc-tag">Stock − on Post</span>
+        </div>
+        <div class="fc-flow">
+          <span class="fc-flow-in">From: MR (autofetch items)</span>
+          <span class="fc-flow-key">Actual Qty issued, Balance tracked</span>
+          <span class="fc-flow-out">Stock deducted on posting</span>
+        </div>
+        <div class="form-demo">
+          <div class="form-row-4">
+            <div><label>MIS No</label><input type="text" value="MIS-2026-001" disabled style="background:var(--gray-50)"></div>
+            <div><label>MR Reference</label><select><option selected>MR-2026-001</option></select></div>
+            <div><label>Issued By</label><input type="text" value="Anil Surve (Store)"></div>
+            <div><label>Handover To</label><input type="text" value="Rahul (Site)"></div>
+          </div>
+          <div class="subtable-demo">
+            <div class="st-hint">Issue Items</div>
+            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr">
+              <span style="font-size:11px;font-weight:600">Item</span>
+              <span style="font-size:11px;font-weight:600">Required</span>
+              <span style="font-size:11px;font-weight:600">Issued</span>
+              <span style="font-size:11px;font-weight:600">Balance</span>
+              <span style="font-size:11px;font-weight:600">UOM</span>
+            </div>
+            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr">
+              <input type="text" value="Epoxy Resin" style="font-size:12px" disabled style="background:var(--gray-50)">
+              <input type="number" value="200" style="font-size:12px" disabled style="background:var(--gray-50)">
+              <input type="number" value="180" style="font-size:12px">
+              <span style="font-size:12px;color:var(--green)">20</span>
+              <input type="text" value="Kg" style="font-size:12px" disabled style="background:var(--gray-50)">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="connector-down">&#x25BC;</div>
+
+      <div class="form-card" id="inv-fghm">
+        <div class="fc-header">
+          <span class="fc-num">5C</span>
+          <span class="fc-title">FG Handover (FGHM)</span>
+          <span class="fc-tag">Notify Store</span>
+        </div>
+        <div class="fc-flow">
+          <span class="fc-flow-in">From: Project ID, Customer</span>
+          <span class="fc-flow-key">Production hands FG to Store</span>
+          <span class="fc-flow-out">To: FGAN</span>
+        </div>
+        <div class="form-demo">
+          <div class="form-row-4">
+            <div><label>FGHM No</label><input type="text" value="FGHM-2026-001" disabled style="background:var(--gray-50)"></div>
+            <div><label>Project ID</label><select><option selected>PRJ-2026-001 — Tata Motors</option></select></div>
+            <div><label>Customer</label><input type="text" value="Tata Motors Ltd" disabled style="background:var(--gray-50)"></div>
+            <div><label>Handover Date</label><input type="date" value="2026-08-15"></div>
+          </div>
+          <div class="subtable-demo">
+            <div class="st-hint">FG Products</div>
+            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
+              <span style="font-size:11px;font-weight:600">Item</span>
+              <span style="font-size:11px;font-weight:600">Qty</span>
+              <span style="font-size:11px;font-weight:600">UOM</span>
+              <span style="font-size:11px;font-weight:600">Batch</span>
+            </div>
+            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
+              <input type="text" value="Epoxy Flooring — 1mm" style="font-size:12px">
+              <input type="number" value="500" style="font-size:12px">
+              <input type="text" value="Sqm" style="font-size:12px">
+              <input type="text" value="BATCH-EP-001" style="font-size:12px">
+            </div>
+          </div>
+          <div class="form-row-3">
+            <div><label>Handed Over By</label><input type="text" value="Suresh (Production)"></div>
+            <div><label>Received By</label><input type="text" value="Anil (Store)"></div>
+            <div><label>QC Status</label><select><option selected>Passed</option><option>Pending</option></select></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="connector-down">&#x25BC;</div>
+
+      <div class="form-card" id="inv-fgan">
+        <div class="fc-header">
+          <span class="fc-num">5D</span>
+          <span class="fc-title">FG Acceptance (FGAN)</span>
+          <span class="fc-tag">Stock + After Approval</span>
+        </div>
+        <div class="fc-flow">
+          <span class="fc-flow-in">From: FGHM (notification)</span>
+          <span class="fc-flow-key">Accept or reject FG items</span>
+          <span class="fc-flow-out">Stock updated on acceptance</span>
+        </div>
+        <div class="form-demo">
+          <div class="form-row-4">
+            <div><label>FGAN No</label><input type="text" value="FGAN-2026-001" disabled style="background:var(--gray-50)"></div>
+            <div><label>FGHM Reference</label><select><option selected>FGHM-2026-001</option></select></div>
+            <div><label>Accepted By</label><input type="text" value="Anil Surve (Store)"></div>
+            <div><label>Date</label><input type="date" value="2026-08-16"></div>
+          </div>
+          <div class="subtable-demo">
+            <div class="st-hint">Acceptance</div>
+            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr">
+              <span style="font-size:11px;font-weight:600">Item</span>
+              <span style="font-size:11px;font-weight:600">Handover Qty</span>
+              <span style="font-size:11px;font-weight:600">Accepted</span>
+              <span style="font-size:11px;font-weight:600">Damaged</span>
+              <span style="font-size:11px;font-weight:600">Status</span>
+            </div>
+            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr">
+              <input type="text" value="Epoxy Flooring 1mm" style="font-size:12px">
+              <input type="number" value="500" style="font-size:12px" disabled style="background:var(--gray-50)">
+              <input type="number" value="480" style="font-size:12px">
+              <input type="number" value="20" style="font-size:12px">
+              <select style="font-size:12px"><option selected>Accepted</option><option>Partial</option><option>Rejected</option></select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- PRODUCTION -->
+    <!-- ============================================================ -->
+    <div class="module-group" id="production">
+      <h3>Production <span class="mg-badge">Step 5 — Plan &rarr; Order &rarr; BMR &rarr; RMC &rarr; Pack &rarr; Rework</span></h3>
+      <p>Production takes materials from store and converts them to finished goods. All tagged to Project.</p>
+
+      <div class="form-card" id="prod-plan">
+        <div class="fc-header">
+          <span class="fc-num">6A</span>
+          <span class="fc-title">Production Planning</span>
+          <span class="fc-tag">Per Project</span>
+        </div>
+        <div class="fc-flow">
+          <span class="fc-flow-in">From: Project ID, MR Sheet</span>
+          <span class="fc-flow-key">SO Qty − FG Stock = Net Requirement</span>
+          <span class="fc-flow-out">To: Production Order</span>
+        </div>
+        <div class="form-demo">
+          <div class="form-row-4">
+            <div><label>Plan No</label><input type="text" value="PLAN-2026-001" disabled style="background:var(--gray-50)"></div>
+            <div><label>Project ID</label><select><option selected>PRJ-2026-001 — Tata Motors</option></select></div>
+            <div><label>Period</label><select><option selected>Week</option><option>Month</option></select></div>
+            <div><label>Planner</label><input type="text" value="Suresh Patil"></div>
+          </div>
+          <div class="form-row-3">
+            <div><label>SO/WO Qty</label><input type="number" value="800" disabled style="background:var(--gray-50)"></div>
+            <div><label>FG Stock Available</label><input type="number" value="0" disabled style="background:var(--gray-50)"></div>
+            <div><label>Net Requirement</label><input type="number" value="800" disabled style="background:var(--gray-50);font-weight:700;color:var(--primary)"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="connector-down">&#x25BC;</div>
+
+      <div class="form-card" id="prod-order">
+        <div class="fc-header">
+          <span class="fc-num">6B</span>
+          <span class="fc-title">Production Order</span>
+          <span class="fc-tag">Per System</span>
+        </div>
+        <div class="fc-flow">
+          <span class="fc-flow-in">From: Production Planning</span>
+          <span class="fc-flow-key">System Code, Planned Qty</span>
+          <span class="fc-flow-out">To: BMR</span>
+        </div>
+        <div class="form-demo">
+          <div class="form-row-4">
+            <div><label>Order No</label><input type="text" value="PROD-2026-001" disabled style="background:var(--gray-50)"></div>
+            <div><label>Plan Reference</label><select><option selected>PLAN-2026-001</option></select></div>
+            <div><label>System Code</label><select><option selected>EP01 — Epoxy 1mm</option></select></div>
+            <div><label>Planned Qty</label><input type="number" value="500"></div>
+          </div>
+          <div class="form-row-3">
+            <div><label>Start Date</label><input type="date" value="2026-07-21"></div>
+            <div><label>End Date</label><input type="date" value="2026-08-15"></div>
+            <div><label>Status</label><select><option selected>Planned</option><option>In Progress</option><option>Completed</option></select></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="connector-down">&#x25BC;</div>
+
+      <div class="form-card" id="prod-bmr">
+        <div class="fc-header">
+          <span class="fc-num">6C</span>
+          <span class="fc-title">Batch Manufacturing Record (BMR)</span>
+          <span class="fc-tag">3 Subforms</span>
+        </div>
+        <div class="fc-flow">
+          <span class="fc-flow-in">From: Production Order</span>
+          <span class="fc-flow-key">Raw Materials + Process + QC</span>
+          <span class="fc-flow-out">To: RM Consumption, Packing</span>
+        </div>
+        <div class="form-demo">
+          <div class="form-row-4">
+            <div><label>BMR No</label><input type="text" value="BMR-2026-001" disabled style="background:var(--gray-50)"></div>
+            <div><label>Production Order</label><select><option selected>PROD-2026-001</option></select></div>
+            <div><label>Batch No</label><input type="text" value="BATCH-EP-001"></div>
+            <div><label>Yield</label><input type="number" value="500"></div>
+          </div>
+          <div class="subtable-demo">
+            <div class="st-hint">Raw Materials Consumed</div>
+            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
+              <span style="font-size:11px;font-weight:600">Item</span>
+              <span style="font-size:11px;font-weight:600">Std Qty</span>
+              <span style="font-size:11px;font-weight:600">Actual Qty</span>
+              <span style="font-size:11px;font-weight:600">Batch</span>
+            </div>
+            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
+              <input type="text" value="Epoxy Resin" style="font-size:12px">
+              <input type="number" value="425" style="font-size:12px" disabled style="background:var(--gray-50)">
+              <input type="number" value="430" style="font-size:12px">
+              <input type="text" value="BATCH-EP-001" style="font-size:12px">
+            </div>
+          </div>
+          <div class="subtable-demo">
+            <div class="st-hint">Process Parameters</div>
+            <div class="subtable-row" style="grid-template-columns:1fr 1fr 1fr 1fr">
+              <span style="font-size:11px;font-weight:600">Step</span><span style="font-size:11px;font-weight:600">Time</span><span style="font-size:11px;font-weight:600">Temp</span><span style="font-size:11px;font-weight:600">Operator</span>
+            </div>
+            <div class="subtable-row" style="grid-template-columns:1fr 1fr 1fr 1fr">
+              <input type="text" value="Mixing" style="font-size:12px">
+              <input type="text" value="15 min" style="font-size:12px">
+              <input type="text" value="25°C" style="font-size:12px">
+              <input type="text" value="Ramesh" style="font-size:12px">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="connector-down">&#x25BC;</div>
+
+      <div class="form-card" id="prod-consume">
+        <div class="fc-header">
+          <span class="fc-num">6D</span>
+          <span class="fc-title">RM Consumption Entry</span>
+          <span class="fc-tag">Actual vs Standard</span>
+        </div>
+        <div class="fc-flow">
+          <span class="fc-flow-in">From: BMR</span>
+          <span class="fc-flow-key">Compare actual vs standard consumption</span>
+        </div>
+        <div class="form-demo">
+          <div class="form-row-3">
+            <div><label>BMR Reference</label><select><option selected>BMR-2026-001</option></select></div>
+            <div><label>Item</label><input type="text" value="Epoxy Resin" disabled style="background:var(--gray-50)"></div>
+            <div><label>Variance</label><input type="text" value="+5 Kg (1.2%)" disabled style="background:var(--gray-50);color:var(--accent);font-weight:600"></div>
+          </div>
+          <div class="form-row-3">
+            <div><label>Standard Qty</label><input type="number" value="425" disabled style="background:var(--gray-50)"></div>
+            <div><label>Actual Qty</label><input type="number" value="430"></div>
+            <div><label>Reason</label><input type="text" value="Slight overmix during startup"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="connector-down">&#x25BC;</div>
+
+      <div class="form-card" id="prod-pack">
+        <div class="fc-header">
+          <span class="fc-num">6E</span>
+          <span class="fc-title">Packing Entry</span>
+          <span class="fc-tag">FG + Packing Material</span>
+        </div>
+        <div class="fc-flow">
+          <span class="fc-flow-in">From: BMR</span>
+          <span class="fc-flow-key">Pack FG, track packing material used</span>
+          <span class="fc-flow-out">To: FGHM</span>
+        </div>
+        <div class="form-demo">
+          <div class="form-row-3">
+            <div><label>BMR Reference</label><select><option selected>BMR-2026-001</option></select></div>
+            <div><label>FG Product</label><select><option selected>EP01 — Epoxy 1mm</option></select></div>
+            <div><label>Packed Qty</label><input type="number" value="500"></div>
+          </div>
+          <div class="subtable-demo">
+            <div class="st-hint">Packing Material Used</div>
+            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr">
+              <span style="font-size:11px;font-weight:600">Item</span><span style="font-size:11px;font-weight:600">Qty</span><span style="font-size:11px;font-weight:600">UOM</span>
+            </div>
+            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr">
+              <input type="text" value="5L Plastic Pail" style="font-size:12px">
+              <input type="number" value="100" style="font-size:12px">
+              <input type="text" value="Nos" style="font-size:12px">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="connector-down">&#x25BC;</div>
+
+      <div class="form-card" id="prod-rework">
+        <div class="fc-header">
+          <span class="fc-num">6F</span>
+          <span class="fc-title">Rework Register</span>
+          <span class="fc-tag">QC Revalidation</span>
+        </div>
+        <div class="fc-flow">
+          <span class="fc-flow-in">From: BMR (failed QC)</span>
+          <span class="fc-flow-key">Track rework reasons and revalidation</span>
+        </div>
+        <div class="form-demo">
+          <div class="form-row-3">
+            <div><label>BMR Reference</label><select><option>BMR-2026-002</option></select></div>
+            <div><label>Rework Reason</label><input type="text" value="Viscosity out of spec"></div>
+            <div><label>Rework Qty</label><input type="number" value="50"></div>
+          </div>
+          <div class="subtable-demo">
+            <div class="st-hint">Material Consumed for Rework</div>
+            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr">
+              <span style="font-size:11px;font-weight:600">Item</span><span style="font-size:11px;font-weight:600">Qty</span><span style="font-size:11px;font-weight:600">UOM</span>
+            </div>
+            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr">
+              <input type="text" value="Epoxy Resin" style="font-size:12px">
+              <input type="number" value="15" style="font-size:12px">
+              <input type="text" value="Kg" style="font-size:12px">
+            </div>
+          </div>
+          <div class="form-row-3">
+            <div><label>QC Revalidation</label><select><option selected>Pass</option><option>Fail</option></select></div>
+            <div><label>Approved By</label><input type="text" value="Vikram Joshi (QC)"></div>
+            <div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- FLOW SUMMARY -->
+    <!-- ============================================================ -->
+    <h2>Form Flow Summary</h2>
+    <p>How data passes from one form to the next.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Order</th><th>Form</th><th>Data Source</th><th>What It Creates</th><th>Next Form</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>SO</td><td>Customer Master</td><td>System line items, Total</td><td>Creates Project</td></tr>
+          <tr><td>2</td><td>Project</td><td>SO (auto)</td><td>Project ID, Manager, Dates</td><td>PR, MR, FGHM, Production</td></tr>
+          <tr><td>3</td><td>Task Budget</td><td>Project</td><td>Budget line items per category</td><td>—</td></tr>
+          <tr><td>4</td><td>PR</td><td>Project ID</td><td>PR No, Item requests</td><td>Rate Comparison</td></tr>
+          <tr><td>5</td><td>Rate Comparison</td><td>PR items</td><td>5 supplier quotes, selected rate</td><td>PO</td></tr>
+          <tr><td>6</td><td>PO</td><td>PR + Rate Comparison</td><td>PO with GST split items</td><td>GRN</td></tr>
+          <tr><td>7</td><td>GRN</td><td>PO items</td><td>Received qty, partial checkboxes</td><td>QC</td></tr>
+          <tr><td>8</td><td>QC</td><td>GRN items</td><td>Test results, Pass/Fail</td><td>Stock update</td></tr>
+          <tr><td>9</td><td>MR</td><td>Project ID</td><td>Material request with stock check</td><td>MIS</td></tr>
+          <tr><td>10</td><td>MIS</td><td>MR items</td><td>Issued qty, balance tracking</td><td>Stock deduction</td></tr>
+          <tr><td>11</td><td>FGHM</td><td>Project ID</td><td>FG handover from production</td><td>FGAN</td></tr>
+          <tr><td>12</td><td>FGAN</td><td>FGHM</td><td>Acceptance, damaged qty</td><td>Stock addition</td></tr>
+          <tr><td>13</td><td>Production Planning</td><td>Project ID + MR</td><td>Net requirement = SO − FG</td><td>Production Order</td></tr>
+          <tr><td>14</td><td>Production Order</td><td>Planning</td><td>Order for specific system</td><td>BMR</td></tr>
+          <tr><td>15</td><td>BMR</td><td>Production Order</td><td>Batch record with RM + Process + QC</td><td>RMC, Packing</td></tr>
+          <tr><td>16</td><td>RM Consumption</td><td>BMR</td><td>Actual vs standard variance</td><td>—</td></tr>
+          <tr><td>17</td><td>Packing</td><td>BMR</td><td>FG packed, packing material used</td><td>FGHM</td></tr>
+          <tr><td>18</td><td>Rework</td><td>BMR (failed)</td><td>Rework with QC revalidation</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Data Flow Key -->
+    <h2>Data Flow Key</h2>
+    <div style="display:flex;flex-wrap:wrap;gap:12px;margin:16px 0">
+      <span class="data-badge pid">&#x1F517; Project ID</span> <span style="font-size:12px;color:var(--gray-500)">flows through ALL forms</span>
+      <span class="data-badge ref" style="margin-left:16px">&#x1F517; Reference No</span> <span style="font-size:12px;color:var(--gray-500)">PR&rarr;RC&rarr;PO&rarr;GRN&rarr;QC</span>
+      <span class="data-badge type" style="margin-left:16px">&#x1F517; AutoFetch</span> <span style="font-size:12px;color:var(--gray-500)">Item details, UOM, rates</span>
+    </div>
+
+    <div class="callout callout-info">
+      <strong>Pro tip:</strong> Every transactional form carries the <strong>Project ID</strong> — that's how the system stays linked. You never enter data in isolation.
+    </div>
+
+    <div class="footer">
+      <p>Chemsol — Zoho Creator ERP &middot; ITOTCloud Systems Pvt. Ltd.</p>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
