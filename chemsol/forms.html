@@ -17,6 +17,8 @@
     <a href="../index.html">← Back to Hub</a>
   </nav>
   <div class="main">
+    <p style="margin-bottom:16px;"><span class="badge badge-teal">Project-Centric</span> All transactional forms carry <strong>Project ID lookup</strong> — nothing exists outside a project context.</p>
+
     <h2>Master Data Forms</h2>
 
     <h3>Purchase Item Muster</h3>
@@ -138,7 +140,55 @@
 
     <hr style="border-color: var(--border); margin: 32px 0;">
 
-    <h2>Procurement Forms</h2>
+    <h2>Project Hub + Sales Module</h2>
+    <p><span class="badge badge-teal">Root Entity</span> Project is the hub — all downstream forms reference Project ID.</p>
+
+    <h3>Sales/Work Order Master</h3>
+    <p><strong>Dual mode</strong> via selectbox: Supply+Apply (Work Order) / Supply Only (Material Sales). <span class="badge badge-green">Supply+Apply → Auto-creates Project</span></p>
+
+    <h4>Mode A: Supply+Apply</h4>
+    <p>Fields: Date, Employee Name, Customer Code, Client Org Name *, Contact Person *, Contact No *, Alt Contact No, Email *, GST No *, PAN *, Regd Address *, Sales/Work Order No (autogen), Date, Site Name *, Site Address *, Site Manager, Contact No (Site), Project Type (Industrial/Commercial).</p>
+    <p><strong>System subtable:</strong> System Code (lookup, autofetch name), Thickness, Area, UOM (conditional dropdown), Rate, Amount (Area×Rate).</p>
+    <p><strong>Footer:</strong> Total Work Order Amount (formula), Payment Terms, Transportation Scope + Amount, Lead Time (Days), PO/BOQ Attachment (multiple), Warranty, Is Proper System Required (checkbox), Remark, Commission (checkbox → Percentage/Fix Amount + Amount).</p>
+
+    <h4>Mode B: Supply Only (Material Sales)</h4>
+    <p>Same customer fields + Sales Order No (autogen), Billing Address, Shipping Address.</p>
+    <p><strong>FG subtable:</strong> FG Name (lookup), Quantity, UOM (autofetch), Rate, Amount (formula).</p>
+    <p><strong>Footer:</strong> Total Sales Order Amount, Payment Terms, Transportation Scope + Amount, Lead Time, Remark.</p>
+
+    <h3>Create Project</h3>
+    <p><span class="badge badge-green">Auto-created</span> from SO acceptance (Supply+Apply). Also allows manual creation.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>Project ID</td><td>Autogen</td><td>—</td></tr>
+          <tr><td>Project Name</td><td>Text</td><td>*</td></tr>
+          <tr><td>SO Reference</td><td>Lookup</td><td>Auto-filled when created from SO</td></tr>
+          <tr><td>Address</td><td>Multi-line</td><td>*</td></tr>
+          <tr><td>Project Manager</td><td>User lookup</td><td>*</td></tr>
+          <tr><td>Execution Base</td><td>Dropdown</td><td>Area Basis / Day Basis</td></tr>
+          <tr><td>Start Date / End Date</td><td>Date</td><td>*</td></tr>
+          <tr><td>Project Cost</td><td>Currency</td><td>*</td></tr>
+          <tr><td>Adjustments</td><td>Currency</td><td>Cost adjustment</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><strong>Systems subform:</strong> System Code (lookup from System Master), Area, UOM, Description.</p>
+
+    <h3>5 Task Categories</h3>
+    <div class="card-grid">
+      <div class="card"><h4>Transportation</h4><p>Budget. Subtasks: Intracity/Intercity, Local Transport, Loading/Unloading — each with multiple dispatches (From, To, Charges).</p></div>
+      <div class="card"><h4>Application/Execution</h4><p><em>Only if Area Basis.</em> Subtasks: Grinding, Primer, Screed, Top Coat, Yellow, Arrow, Numbering. Each has Area, Cost, MP.</p></div>
+      <div class="card"><h4>Manpower</h4><p><em>Only if Day Basis.</em> Manpower Budget + Manpower Count.</p></div>
+      <div class="card"><h4>Tools</h4><p>Budget for Tools. Always visible.</p></div>
+      <div class="card"><h4>Additional Expenses</h4><p>Overhead budget. Always visible.</p></div>
+    </div>
+
+    <hr style="border-color: var(--border); margin: 32px 0;">
+
+    <h2>Procurement Forms <span class="badge badge-teal">Tagged to Project</span></h2>
+    <p>All procurement forms carry a <strong>Project ID lookup</strong> — every purchase is linked to a project.</p>
 
     <h3>Purchase Requisition (PR)</h3>
     <p>Department: Production &amp; R&amp;D. Status lifecycle: Draft → Pending Approval → Approved → Rejected.</p>
@@ -148,6 +198,7 @@
         <tbody>
           <tr><td>PR Number</td><td>Autogen</td><td>PR-YYYY-XXXX</td></tr>
           <tr><td>PR Date</td><td>Date</td><td>Today's Date</td></tr>
+          <tr><td>Project ID / Name</td><td>Lookup</td><td>From Project Master</td></tr>
           <tr><td>Reference</td><td>Text</td><td>Manual reference</td></tr>
           <tr><td>Department</td><td>AutoFetch</td><td>As per user login (Production / R&amp;D)</td></tr>
           <tr><td>Approved By</td><td>User lookup</td><td>Filled after approval</td></tr>
@@ -155,7 +206,7 @@
         </tbody>
       </table>
     </div>
-    <p><strong>Line items:</strong> Sr, Item Code (lookup with bidirectonal autofetch), Item Name (autofetch), Qty, Item Description, UOM (autofetch), Lead Time (autofetch).</p>
+    <p><strong>Line items:</strong> Sr, Item Code (lookup with bidirectional autofetch), Item Name (autofetch), Qty, Item Description, UOM (autofetch), Lead Time (autofetch).</p>
     <p><strong>Automation:</strong> Item Code ↔ Item Name bidirectional autofill, UOM/Lead Time autofetch, notification to Purchase dept on approval.</p>
 
     <h3>Rate Comparison</h3>
@@ -187,6 +238,7 @@
           <tr><td>RM Type</td><td>Dropdown</td><td>Coding / Non-Coding</td></tr>
           <tr><td>PO Number</td><td>Autogen</td><td>RMWAD-YYYY-XXXX or RM-YYYY-XXXX</td></tr>
           <tr><td>PO Date</td><td>Date</td><td>Today's Date</td></tr>
+          <tr><td>Project ID / Name</td><td>AutoFetch</td><td>From PR's Project (via lookup)</td></tr>
           <tr><td>Supplier Code</td><td>Lookup</td><td>Autofetch all details</td></tr>
           <tr><td>PR Reference</td><td>Lookup</td><td>From PR</td></tr>
           <tr><td>Bill To / Ship To</td><td>Dropdown</td><td>Address list</td></tr>
@@ -204,7 +256,7 @@
         <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
         <tbody>
           <tr><td>GRN Number</td><td>Autogen</td><td>Generated <strong>after posting</strong></td></tr>
-          <tr><td>PO Number</td><td>Lookup</td><td>Autofetch supplier + items</td></tr>
+          <tr><td>PO Number</td><td>Lookup</td><td>Autofetch supplier + items + project</td></tr>
           <tr><td>Vehicle Number</td><td>Text</td><td>*</td></tr>
           <tr><td>Warehouse</td><td>Dropdown</td><td>Wadki / Main / Neelo / Gurgaon / Bangalore / Client Site</td></tr>
           <tr><td>Client/Site Name</td><td>Text</td><td>Conditional — only if Warehouse = Client Site</td></tr>
@@ -237,7 +289,8 @@
 
     <hr style="border-color: var(--border); margin: 32px 0;">
 
-    <h2>Inventory / Stores Forms</h2>
+    <h2>Inventory / Stores Forms <span class="badge badge-teal">Tagged to Project</span></h2>
+    <p>All inventory forms carry a <strong>Project ID lookup</strong> — material movements are project-tracked.</p>
 
     <h3>Material Requisition (MR)</h3>
     <p>Department: Production &amp; R&amp;D.</p>
@@ -246,6 +299,7 @@
         <thead><tr><th>Field</th><th>Notes</th></tr></thead>
         <tbody>
           <tr><td>MR Number</td><td>Autogen (MR-YYYY-XXXX)</td></tr>
+          <tr><td>Project ID / Name</td><td>Lookup from Project Master</td></tr>
           <tr><td>Requisition Type</td><td>Dropdown (Production / R&amp;D)</td></tr>
           <tr><td>Batch Number</td><td>Text</td></tr>
           <tr><td>Department</td><td>AutoFetch from login</td></tr>
@@ -262,7 +316,7 @@
       <table>
         <thead><tr><th>Field</th><th>Notes</th></tr></thead>
         <tbody>
-          <tr><td>MR No</td><td>Lookup — autofetch all items</td></tr>
+          <tr><td>MR No</td><td>Lookup — autofetch all items + project</td></tr>
           <tr><td>MIS Number</td><td>Autogen against MR</td></tr>
           <tr><td>Issued Qty</td><td>Number *</td></tr>
           <tr><td>Balance Qty</td><td>Formula: Required − Issued</td></tr>
@@ -279,6 +333,7 @@
         <thead><tr><th>Field</th><th>Notes</th></tr></thead>
         <tbody>
           <tr><td>FGH No</td><td>Autogen (FGH-YYYY-XXXX)</td></tr>
+          <tr><td>Project ID / Name</td><td>Lookup from Project Master</td></tr>
           <tr><td>Client/Site Name</td><td>Lookup from Customer/Site Master</td></tr>
           <tr><td>Batch No</td><td>Text (can be multiple)</td></tr>
           <tr><td>FG Product Code / Name</td><td>Lookup from Item Muster (FG filter)</td></tr>
@@ -307,70 +362,23 @@
 
     <h3>Additional Store Forms</h3>
     <div class="card-grid">
-      <div class="card"><h4>Material Return</h4><p>Return from production. Reference to MIS. Returned Qty, Reason, Condition.</p></div>
-      <div class="card"><h4>Material Handover</h4><p>Inter-store transfer. From Store, To Store. Items with quantities.</p></div>
-      <div class="card"><h4>Vehicle &amp; Transport</h4><p>Vehicle registration, trip details, delivery challans, cost tracking.</p></div>
+      <div class="card"><h4>Material Return</h4><p>Return from production. Reference to MIS. Returned Qty, Reason, Condition. <strong>Tagged to project.</strong></p></div>
+      <div class="card"><h4>Material Handover</h4><p>Inter-store transfer. From Store, To Store. Items with quantities. <strong>Tagged to project.</strong></p></div>
+      <div class="card"><h4>Vehicle &amp; Transport</h4><p>Vehicle registration, trip details, delivery challans, cost tracking. <strong>Tagged to project.</strong></p></div>
     </div>
 
     <hr style="border-color: var(--border); margin: 32px 0;">
 
-    <h2>Production Forms</h2>
+    <h2>Production Forms <span class="badge badge-teal">Tagged to Project</span></h2>
+    <p>All production forms carry a <strong>Project ID lookup</strong> — production is planned and executed per project.</p>
 
     <div class="card-grid">
-      <div class="card"><h4>Production Planning</h4><p>Planning No, Period (Week/Month), Plant, SO/WO Qty (autofetch), FG Stock Available, Net Production Requirement = SO/WO Qty − Available FG. Status: Draft/Approved/Released.</p></div>
-      <div class="card"><h4>Production Order</h4><p>MR/Planning ref, System Code, Planned Qty, Start/End Date. Status: Planned/In Progress/Completed/On Hold.</p></div>
-      <div class="card"><h4>BMR Master</h4><p>BMR No, Production Order ref, Batch No, System Code. Subforms: Raw Materials, Process Parameters, QC Test Results. Yield/Output tracking.</p></div>
-      <div class="card"><h4>RM Consumption Entry</h4><p>BMR reference. Item-wise consumption. Actual vs Standard comparison.</p></div>
-      <div class="card"><h4>Packing Entry</h4><p>FG packing. Packing material consumption. Packed qty, batch numbers.</p></div>
-      <div class="card"><h4>Rework Register</h4><p>Rework reason, BMR ref, qty, material consumed, QC revalidation.</p></div>
-    </div>
-
-    <hr style="border-color: var(--border); margin: 32px 0;">
-
-    <h2>Sales Module</h2>
-
-    <h3>Sales/Work Order Master</h3>
-    <p><strong>Dual mode</strong> via selectbox: Supply+Apply (Work Order) / Supply Only (Material Sales).</p>
-
-    <h4>Mode A: Supply+Apply</h4>
-    <p>Fields: Date, Employee Name, Customer Code, Client Org Name *, Contact Person *, Contact No *, Alt Contact No, Email *, GST No *, PAN *, Regd Address *, Sales/Work Order No (autogen), Date, Site Name *, Site Address *, Site Manager, Contact No (Site), Project Type (Industrial/Commercial).</p>
-    <p><strong>System subtable:</strong> System Code (lookup, autofetch name), Thickness, Area, UOM (conditional dropdown), Rate, Amount (Area×Rate).</p>
-    <p><strong>Footer:</strong> Total Work Order Amount (formula), Payment Terms, Transportation Scope + Amount, Lead Time (Days), PO/BOQ Attachment (multiple), Warranty, Is Proper System Required (checkbox), Remark, Commission (checkbox → Percentage/Fix Amount + Amount).</p>
-
-    <h4>Mode B: Supply Only (Material Sales)</h4>
-    <p>Same customer fields + Sales Order No (autogen), Billing Address, Shipping Address.</p>
-    <p><strong>FG subtable:</strong> FG Name (lookup), Quantity, UOM (autofetch), Rate, Amount (formula).</p>
-    <p><strong>Footer:</strong> Total Sales Order Amount, Payment Terms, Transportation Scope + Amount, Lead Time, Remark.</p>
-
-    <hr style="border-color: var(--border); margin: 32px 0;">
-
-    <h2>Project Management</h2>
-
-    <h3>Create Project</h3>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
-        <tbody>
-          <tr><td>Project ID</td><td>Autogen</td><td>—</td></tr>
-          <tr><td>Project Name</td><td>Text</td><td>*</td></tr>
-          <tr><td>Address</td><td>Multi-line</td><td>*</td></tr>
-          <tr><td>Project Manager</td><td>User lookup</td><td>*</td></tr>
-          <tr><td>Execution Base</td><td>Dropdown</td><td>Area Basis / Day Basis</td></tr>
-          <tr><td>Start Date / End Date</td><td>Date</td><td>*</td></tr>
-          <tr><td>Project Cost</td><td>Currency</td><td>*</td></tr>
-          <tr><td>Adjustments</td><td>Currency</td><td>Cost adjustment</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p><strong>Systems subform:</strong> System Code (lookup from System Master), Area, UOM, Description.</p>
-
-    <h3>5 Task Categories</h3>
-    <div class="card-grid">
-      <div class="card"><h4>🚛 Transportation</h4><p>Budget. Subtasks: Intracity/Intercity, Local Transport, Loading/Unloading — each with multiple dispatches (From, To, Charges).</p></div>
-      <div class="card"><h4>🔧 Application/Execution</h4><p><em>Only if Area Basis.</em> Subtasks: Grinding, Primer, Screed, Top Coat, Yellow, Arrow, Numbering. Each has Area, Cost, MP.</p></div>
-      <div class="card"><h4>👷 Manpower</h4><p><em>Only if Day Basis.</em> Manpower Budget + Manpower Count.</p></div>
-      <div class="card"><h4>🛠 Tools</h4><p>Budget for Tools. Always visible.</p></div>
-      <div class="card"><h4>📋 Additional Expenses</h4><p>Overhead budget. Always visible.</p></div>
+      <div class="card"><h4>Production Planning</h4><p>Planning No, Project ID, Period (Week/Month), Plant, SO/WO Qty (autofetch), FG Stock Available, Net Production Requirement = SO/WO Qty − Available FG. Status: Draft/Approved/Released.</p></div>
+      <div class="card"><h4>Production Order</h4><p>MR/Planning ref, Project ID, System Code, Planned Qty, Start/End Date. Status: Planned/In Progress/Completed/On Hold.</p></div>
+      <div class="card"><h4>BMR Master</h4><p>BMR No, Production Order ref, Project ID, Batch No, System Code. Subforms: Raw Materials, Process Parameters, QC Test Results. Yield/Output tracking.</p></div>
+      <div class="card"><h4>RM Consumption Entry</h4><p>BMR reference. Item-wise consumption. Actual vs Standard comparison. <strong>Per project.</strong></p></div>
+      <div class="card"><h4>Packing Entry</h4><p>FG packing. Packing material consumption. Packed qty, batch numbers. <strong>Per project.</strong></p></div>
+      <div class="card"><h4>Rework Register</h4><p>Rework reason, BMR ref, qty, material consumed, QC revalidation. <strong>Per project.</strong></p></div>
     </div>
 
     <div class="footer">

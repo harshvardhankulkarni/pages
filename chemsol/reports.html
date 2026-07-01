@@ -17,7 +17,40 @@
     <a href="../index.html">← Back to Hub</a>
   </nav>
   <div class="main">
-    <h2>Department Dashboards</h2>
+    <p style="margin-bottom:16px;"><span class="badge badge-teal">Project-Centric</span> All reports filterable by <strong>Project ID</strong> — every dashboard shows data within a project context.</p>
+
+    <h2>Project Management Dashboard</h2>
+    <div class="card-grid">
+      <div class="card"><h4>Open Projects</h4><p>Active project count with status</p></div>
+      <div class="card"><h4>Active PO's per Project</h4><p>Procurement tracking by project</p></div>
+      <div class="card"><h4>Project Running Status</h4><p>Task completion % per project</p></div>
+      <div class="card"><h4>Project Margins</h4><p>Profitability tracking per project</p></div>
+      <div class="card"><h4>Issues per Project</h4><p>Project issues tracking</p></div>
+      <div class="card"><h4>Execution vs Achievement</h4><p>Target tracking per project</p></div>
+      <div class="card"><h4>Manpower Cost Monthly</h4><p>Labour costs per project</p></div>
+      <div class="card"><h4>Transportation Monthly</h4><p>Logistics costs per project</p></div>
+    </div>
+
+    <h3>Project Reports (15)</h3>
+    <div class="card-grid">
+      <div class="card">Project Report (Overall)</div>
+      <div class="card">Monthly Report</div>
+      <div class="card">Annual Report</div>
+      <div class="card">Sitewise Costing Report</div>
+      <div class="card">Manpower Report</div>
+      <div class="card">Machinery Report</div>
+      <div class="card">Tools Report</div>
+      <div class="card">Issues Report</div>
+      <div class="card">Project Margin Report</div>
+      <div class="card">Material Consumption vs Work Completion</div>
+      <div class="card">Manpower vs Work Completion</div>
+      <div class="card">Transportation Report</div>
+      <div class="card">Loading/Unloading Report</div>
+      <div class="card">Consumable Report</div>
+      <div class="card">Task Report</div>
+    </div>
+
+    <h2>Department Dashboards <span class="badge badge-teal">Filtered by Project</span></h2>
 
     <h3>Purchase Dept Dashboard</h3>
     <div class="table-wrap">
@@ -31,12 +64,12 @@
           <tr><td><strong>Transport Overview</strong></td><td>GRN</td><td>GRN</td><td>—</td><td>PO Amendment</td></tr>
           <tr><td></td><td>Rate Comparison</td><td>Payment Overdue</td><td></td><td>GRN / Open PO Register</td></tr>
           <tr><td></td><td></td><td>Rate Comparison / Transport Data</td><td></td><td>PO vs GRN Pending / Vendor Perf.</td></tr>
-          <tr><td></td><td></td><td></td><td></td><td>Purchase by Item Group</td></tr>
+          <tr><td></td><td></td><td></td><td></td><td>Purchase by Item Group / Project</td></tr>
           <tr><td></td><td></td><td></td><td></td><td>Price Comparison / Transport Reports</td></tr>
         </tbody>
       </table>
     </div>
-
+    <p><strong>Project filter:</strong> All purchase reports filterable by Project ID to show procurement per project.</p>
     <p><strong>Notification widgets:</strong> Pending PR Approval · PO Awaiting Release · Pending GRN's · Overdue Delivery Follow-up · Overdue Supplier Payment · Rate Comparison Data Missing</p>
 
     <h3>Store Dept Dashboard</h3>
@@ -49,6 +82,7 @@
         </tbody>
       </table>
     </div>
+    <p><strong>Project filter:</strong> All store reports filterable by Project ID to show project-wise material movements.</p>
     <p><strong>Notification widgets:</strong> MR Sheet from Costing · Pending Material Req. · Pending FG Receiving</p>
 
     <h3>Production Dept Dashboard</h3>
@@ -68,59 +102,31 @@
         </tbody>
       </table>
     </div>
+    <p><strong>Project filter:</strong> All production reports filterable by Project ID to show production per project.</p>
     <p><strong>Reports:</strong> Daily Production Report · BMR · Production Order Status · Material Consumption · BOM vs Actual Consumption · Production Loss · FG Handover · Packing · Machine Utilization</p>
-
-    <h3>Project Management Dashboard</h3>
-    <div class="card-grid">
-      <div class="card"><h4>Open Projects</h4><p>Active project count</p></div>
-      <div class="card"><h4>Active PO's</h4><p>Procurement tracking</p></div>
-      <div class="card"><h4>Running Status</h4><p>Task completion %</p></div>
-      <div class="card"><h4>Project Margins</h4><p>Profitability tracking</p></div>
-      <div class="card"><h4>Issues</h4><p>Project issues tracking</p></div>
-      <div class="card"><h4>Execution vs Achievement</h4><p>Target tracking</p></div>
-      <div class="card"><h4>Manpower Cost Monthly</h4><p>Labour costs</p></div>
-      <div class="card"><h4>Transportation Monthly</h4><p>Logistics costs</p></div>
-    </div>
-
-    <h2>Project Reports (15)</h2>
-    <div class="card-grid">
-      <div class="card">Project Report (Overall)</div>
-      <div class="card">Monthly Report</div>
-      <div class="card">Annual Report</div>
-      <div class="card">Sitewise Costing Report</div>
-      <div class="card">Manpower Report</div>
-      <div class="card">Machinery Report</div>
-      <div class="card">Tools Report</div>
-      <div class="card">Issues Report</div>
-      <div class="card">Project Margin Report</div>
-      <div class="card">Material Consumption vs Work Completion</div>
-      <div class="card">Manpower vs Work Completion</div>
-      <div class="card">Transportation Report</div>
-      <div class="card">Loading/Unloading Report</div>
-      <div class="card">Consumable Report</div>
-      <div class="card">Task Report</div>
-    </div>
 
     <hr style="border-color: var(--border); margin: 32px 0;">
 
     <h2>Automation &amp; Business Rules</h2>
 
-    <h3>Sequential Procurement Flow</h3>
-    <div class="code-block"><pre><code>PR (Created by Production/R&D)
-  → Approval (as per Approval Matrix)
-    → Rate Comparison (Purchase dept)
-      → PO (Purchase dept)
-        → GRN (Store dept on goods arrival)
-          → QC/QA (QC dept)
-            → Stock Updated (after GRN posting)</code></pre></div>
+    <h3>Project-Centric Sequential Procurement Flow</h3>
+    <div class="code-block"><pre><code>SO (Supply+Apply)
+  → Project Created (auto)
+    → PR (tagged to Project)
+      → Approval (as per Approval Matrix)
+        → Rate Comparison (Purchase dept)
+          → PO (Purchase dept — tagged to Project via PR)
+            → GRN (Store dept — tagged to Project via PO)
+              → QC/QA (QC dept)
+                → Stock Updated (after GRN posting)</code></pre></div>
 
     <h3>Material Issue Flow</h3>
-    <div class="code-block"><pre><code>MR (Created by Production/R&D)
+    <div class="code-block"><pre><code>MR (tagged to Project, created by Production/R&D)
   → MIS (Store dept issues material)
     → Stock Updated (deduction)</code></pre></div>
 
     <h3>FG Flow</h3>
-    <div class="code-block"><pre><code>Production → FGHM (Production hands over FG)
+    <div class="code-block"><pre><code>Production (tagged to Project) → FGHM (Production hands over FG)
   → Notification to Store/Logistics
     → FGAN (Store accepts FG)
       → FG Stock Updated (after approval)</code></pre></div>
@@ -149,12 +155,13 @@
           <tr><td>Item Code</td><td>PR, PO, MR, MIS, GRN, FGHM, BOM, QC</td><td>Item Name, UOM, Category, HSN, GST%, Lead Time</td></tr>
           <tr><td>Supplier Code</td><td>PO, GRN, Rate Comparison</td><td>Supplier Name, GSTIN, Address, Contact</td></tr>
           <tr><td>PR No</td><td>Rate Comparison, PO</td><td>Items, Product Details</td></tr>
-          <tr><td>PO No</td><td>GRN</td><td>Supplier, Items, Ordered Qty</td></tr>
+          <tr><td>PO No</td><td>GRN</td><td>Supplier, Items, Ordered Qty, Project</td></tr>
           <tr><td>GRN No</td><td>QC</td><td>Supplier, Items</td></tr>
-          <tr><td>MR No</td><td>MIS</td><td>Items, Required Qty</td></tr>
+          <tr><td>MR No</td><td>MIS</td><td>Items, Required Qty, Project</td></tr>
           <tr><td>FGH No</td><td>FGAN</td><td>Products, Qty</td></tr>
           <tr><td>System Code</td><td>Sales Order, BOM, Project</td><td>System Name</td></tr>
           <tr><td>User Login</td><td>PR, MR</td><td>Department</td></tr>
+          <tr><td>Project ID</td><td>PR, PO, GRN, MR, MIS, Production, FGHM</td><td>Project Name, Manager</td></tr>
         </tbody>
       </table>
     </div>

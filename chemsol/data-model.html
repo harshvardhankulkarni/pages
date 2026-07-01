@@ -17,19 +17,45 @@
     <a href="../index.html">← Back to Hub</a>
   </nav>
   <div class="main">
-    <h2>System Architecture &amp; Integration Map</h2>
-    <p>Each module is linked through lookup/autofetch relationships.</p>
+    <p style="margin-bottom:16px;"><span class="badge badge-teal">Project-Centric</span> Project is the central hub — all modules connect to it via lookup relationships.</p>
 
-    <div class="code-block"><pre><code>Item Master ← → Supplier Master
-Item Master ← → BOM Master
-System Master ← → BOM Master
+    <h2>System Architecture — Project-Centric Hub</h2>
+    <div class="code-block"><pre><code>                     ┌─────────────────────────┐
+                     │   Customer/Site Master   │
+                     └──────────┬──────────────┘
+                                │
+                     ┌──────────▼──────────────┐
+                     │   Sales/Work Order (SO) │
+                     │  (Supply+Apply / Supply) │
+                     └──────────┬──────────────┘
+                                │ SO acceptance auto-creates
+                     ┌──────────▼──────────────┐
+                     │      [ PROJECT ]        │ ◄── Root Entity
+                     │  (ID, Name, Manager,     │
+                     │   Cost, Dates, Systems)  │
+                     └──────────┬──────────────┘
+                                │
+          ┌─────────────────────┼─────────────────────┐
+          │                     │                     │
+          ▼                     ▼                     ▼
+  ┌───────────────┐    ┌───────────────┐    ┌───────────────┐
+  │  Procurement  │    │   Inventory   │    │  Production   │
+  │  (PR→PO→GRN)  │    │  (MR→MIS→FG)  │    │  (Planning,   │
+  │   Tagged to   │    │   Tagged to   │    │   BMR, Pack)  │
+  │   Project ID  │    │   Project ID  │    │   Tagged to   │
+  └───────┬───────┘    └───────┬───────┘    └───────┬───────┘
+          │                     │                     │
+          ▼                     ▼                     ▼
+  ┌───────────────┐    ┌───────────────┐    ┌───────────────┐
+  │   QC/QA      │    │  FGHM→FGAN   │    │   Task Mgmt   │
+  │  (GRN-based)  │    │  (FG Stock)  │    │  (5 Categories)│
+  └───────────────┘    └───────────────┘    └───────────────┘
 
-Sales Order → Project → Procurement (PR → PO → GRN → QC)
-Sales Order → Production Planning → MR → MIS
-Production → FGHM → FGAN
-MR ← Item Master (Stock Availability)</code></pre></div>
+  Master Data (global, not project-specific):
+    Item Muster ← Supplier Master ← System Master
+    BOM Master ← Store Master ← Bin Location</code></pre></div>
 
-    <h3>Master Data Dependencies</h3>
+    <h3>Master Data (Global — Not Project-Specific)</h3>
     <div class="code-block"><pre><code>Purchase Item Muster ◄───── BOM Master ────► System Master
        │                                            │
        ├── Supplier Master                           │
@@ -39,45 +65,70 @@ MR ← Item Master (Stock Availability)</code></pre></div>
 Supplier Master ◄────────────────────────────────────┘
 Customer/Site Master</code></pre></div>
 
-    <h3>Procurement Flow</h3>
-    <div class="code-block"><pre><code>PR (Production/R&D)
-  → Approval (Approval Matrix)
-    → Rate Comparison (Purchase)
-      → PO (Purchase — RM/RMWAD series)
-        → GRN (Store — partial via checkbox)
-          → QC/QA (QC dept — test results)
-            → Stock Updated (after posting)</code></pre></div>
+    <h3>Project-Centric Procurement Flow</h3>
+    <div class="code-block"><pre><code>Project (Root)
+  └── PR (Production/R&D) — tagged to Project
+       └── Approval (Approval Matrix)
+            └── Rate Comparison (Purchase)
+                 └── PO (Purchase — RM/RMWAD series)
+                      └── GRN (Store — partial via checkbox)
+                           └── QC/QA (QC dept — test results)
+                                └── Stock Updated (after posting)</code></pre></div>
 
-    <h3>Material Issue Flow</h3>
-    <div class="code-block"><pre><code>MR (Production/R&D)
-  → MIS (Store issues material)
-    → Stock − (deduction on posting)</code></pre></div>
+    <h3>Project-Centric Material Issue Flow</h3>
+    <div class="code-block"><pre><code>Project (Root)
+  └── MR (Production/R&D) — tagged to Project
+       └── MIS (Store issues material)
+            └── Stock − (deduction on posting)</code></pre></div>
 
-    <h3>FG Handover Flow</h3>
-    <div class="code-block"><pre><code>Production → FGHM (FG Handover)
-  → Pop-up Notification → Store/Logistics
-    → FGAN (FG Acceptance)
-      → FG Stock + (after approval)</code></pre></div>
+    <h3>Project-Centric FG Handover Flow</h3>
+    <div class="code-block"><pre><code>Project (Root)
+  └── Production — tagged to Project
+       └── FGHM (FG Handover)
+            └── Pop-up Notification → Store/Logistics
+                 └── FGAN (FG Acceptance)
+                      └── FG Stock + (after approval)</code></pre></div>
 
     <h3>Sales &amp; Project Flow</h3>
     <div class="code-block"><pre><code>SO/Work Order (Dual Mode)
-  ├── Supply+Apply → Project → 5 Task Buckets
-  └── Supply Only  → Material Sales (FG dispatch)
+  ├── Supply+Apply → Auto-creates Project → 5 Task Buckets
+  │                                          ├── Transportation
+  │                                          ├── Application/Execution (Area Basis)
+  │                                          ├── Manpower (Day Basis)
+  │                                          ├── Tools
+  │                                          └── Additional Expenses
+  │
+  └── Supply Only → Material Sales (FG dispatch — no project)</code></pre></div>
 
-Project Execution Base:
-  ├── Area Basis  → Application/Execution tasks shown
-  └── Day Basis   → Manpower tasks shown</code></pre></div>
+    <h3>Project ID Lookup Chain</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Form</th><th>Project ID Source</th><th>Flow</th></tr></thead>
+        <tbody>
+          <tr><td>Sales/Work Order</td><td>Supply+Apply → auto-creates Project</td><td>SO → Project</td></tr>
+          <tr><td>PR</td><td>Direct lookup from Project Master</td><td>Project → PR</td></tr>
+          <tr><td>Rate Comparison</td><td>AutoFetch from PR</td><td>Project → PR → RC</td></tr>
+          <tr><td>PO</td><td>AutoFetch from PR</td><td>Project → PR → PO</td></tr>
+          <tr><td>GRN</td><td>AutoFetch from PO</td><td>Project → PR → PO → GRN</td></tr>
+          <tr><td>MR</td><td>Direct lookup from Project Master</td><td>Project → MR</td></tr>
+          <tr><td>MIS</td><td>AutoFetch from MR</td><td>Project → MR → MIS</td></tr>
+          <tr><td>Production Planning</td><td>Direct lookup from Project Master</td><td>Project → Production</td></tr>
+          <tr><td>FGHM</td><td>Direct lookup from Project Master</td><td>Project → FGHM</td></tr>
+          <tr><td>FGAN</td><td>AutoFetch from FGHM</td><td>Project → FGHM → FGAN</td></tr>
+        </tbody>
+      </table>
+    </div>
 
     <h3>Stock Update Matrix</h3>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Transaction</th><th>Effect</th><th>Direction</th></tr></thead>
+        <thead><tr><th>Transaction</th><th>Effect</th><th>Direction</th><th>Project Impact</th></tr></thead>
         <tbody>
-          <tr><td>GRN Posted</td><td>Add Received Qty</td><td style="color: var(--green)">Stock In +</td></tr>
-          <tr><td>MIS Posted</td><td>Deduct Issued Qty</td><td style="color: var(--orange)">Stock Out −</td></tr>
-          <tr><td>FGAN Approved</td><td>Add FG Qty</td><td style="color: var(--green)">Stock In +</td></tr>
-          <tr><td>Material Return</td><td>Add back to RM store</td><td style="color: var(--green)">Stock In +</td></tr>
-          <tr><td>Material Handover</td><td>Deduct source, Add destination</td><td style="color: var(--accent)">Transfer</td></tr>
+          <tr><td>GRN Posted</td><td>Add Received Qty</td><td style="color: var(--green)">Stock In +</td><td>Project material cost updated</td></tr>
+          <tr><td>MIS Posted</td><td>Deduct Issued Qty</td><td style="color: var(--orange)">Stock Out −</td><td>Project consumption tracked</td></tr>
+          <tr><td>FGAN Approved</td><td>Add FG Qty</td><td style="color: var(--green)">Stock In +</td><td>Project production output tracked</td></tr>
+          <tr><td>Material Return</td><td>Add back to RM store</td><td style="color: var(--green)">Stock In +</td><td>Project cost adjusted</td></tr>
+          <tr><td>Material Handover</td><td>Deduct source, Add destination</td><td style="color: var(--accent)">Transfer</td><td>Project unaffected</td></tr>
         </tbody>
       </table>
     </div>
@@ -87,6 +138,7 @@ Project Execution Base:
       <table>
         <thead><tr><th>Decision</th><th>Choice</th><th>Rationale</th></tr></thead>
         <tbody>
+          <tr><td>Architecture</td><td>Project-Centric Hub</td><td>Project is root — all modules tagged to it via Project ID lookup</td></tr>
           <tr><td>Platform</td><td>Zoho Creator</td><td>Faster delivery, built-in mobile, lower TCO</td></tr>
           <tr><td>Language</td><td>Deluge</td><td>Native Creator integration</td></tr>
           <tr><td>Datacenter</td><td>India (.in)</td><td>India-based client, regulatory compliance</td></tr>
@@ -95,8 +147,9 @@ Project Execution Base:
           <tr><td>Partial GRN</td><td>Checkbox per line item</td><td>Real-world partial deliveries</td></tr>
           <tr><td>FGAN</td><td>Number after approval</td><td>Ensures acceptance workflow completed</td></tr>
           <tr><td>Execution Mode</td><td>Area / Day basis</td><td>Matches variable project types</td></tr>
-          <tr><td>SO Mode</td><td>Supply+Apply / Supply Only</td><td>Different business models</td></tr>
+          <tr><td>SO Mode</td><td>Supply+Apply / Supply Only</td><td>Different business models; Supply+Apply → Project</td></tr>
           <tr><td>Bidirectional autofetch</td><td>Item Code ↔ Item Name</td><td>Flexible data entry</td></tr>
+          <tr><td>Project Auto-creation</td><td>SO acceptance triggers Project</td><td>Ensures every project has a sales origin</td></tr>
         </tbody>
       </table>
     </div>

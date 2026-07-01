@@ -17,6 +17,8 @@
     <a href="../index.html">← Back to Hub</a>
   </nav>
   <div class="main">
+    <p style="margin-bottom:16px;"><span class="badge badge-teal">Project-Centric</span> Roles are scoped by project — Project Managers/Coordinators see only their assigned projects.</p>
+
     <h2>User Roles &amp; Access Scope</h2>
 
     <div class="table-wrap">
@@ -24,7 +26,7 @@
         <thead><tr><th>Role</th><th>Department</th><th>Access Scope</th></tr></thead>
         <tbody>
           <tr><td><strong>Admin</strong></td><td>IT</td><td>Full access — all forms, reports, settings, user management</td></tr>
-          <tr><td><strong>Purchase - Entry</strong></td><td>Purchase</td><td>Create/Edit: PR, PO, Rate Comparison, GRN. View: Reports</td></tr>
+          <tr><td><strong>Purchase - Entry</strong></td><td>Purchase</td><td>Create/Edit: PR, PO, Rate Comparison, GRN (per project). View: Reports</td></tr>
           <tr><td><strong>Purchase - Review</strong></td><td>Purchase</td><td>View only: all purchase forms + reports</td></tr>
           <tr><td><strong>Purchase - Approve</strong></td><td>Purchase</td><td>Approve: PR, PO within limits (per Approval Matrix)</td></tr>
         </tbody>
@@ -35,17 +37,17 @@
       <table>
         <thead><tr><th>Role</th><th>Department</th><th>Access Scope</th></tr></thead>
         <tbody>
-          <tr><td><strong>Store - Entry</strong></td><td>Store &amp; Logistics</td><td>Create/Edit: GRN, MIS, Material Return, FG Receiving, Vehicle &amp; Transport</td></tr>
-          <tr><td><strong>Store - Review</strong></td><td>Store &amp; Logistics</td><td>View: Inventory stock, GRN, PO, Reports</td></tr>
-          <tr><td><strong>Production - Entry</strong></td><td>Production</td><td>Create/Edit: MR, BMR, Production Planning, RM Consumption, Packing, FGHM</td></tr>
-          <tr><td><strong>Production - Review</strong></td><td>Production</td><td>View: BOM, Stock, Production Reports</td></tr>
+          <tr><td><strong>Store - Entry</strong></td><td>Store &amp; Logistics</td><td>Create/Edit: GRN, MIS, Material Return, FG Receiving, Vehicle &amp; Transport (per project)</td></tr>
+          <tr><td><strong>Store - Review</strong></td><td>Store &amp; Logistics</td><td>View: Inventory stock, GRN, PO, Reports (per project)</td></tr>
+          <tr><td><strong>Production - Entry</strong></td><td>Production</td><td>Create/Edit: MR, BMR, Production Planning, RM Consumption, Packing, FGHM (per project)</td></tr>
+          <tr><td><strong>Production - Review</strong></td><td>Production</td><td>View: BOM, Stock, Production Reports (per project)</td></tr>
           <tr><td><strong>Sales - Entry</strong></td><td>Sales</td><td>Create/Edit: Sales/Work Order, Customer Master</td></tr>
           <tr><td><strong>Sales - Review</strong></td><td>Sales</td><td>View: SO reports, project status</td></tr>
           <tr><td><strong>QC - Entry</strong></td><td>QC</td><td>Create/Edit: QC/QA forms</td></tr>
           <tr><td><strong>QC - Review</strong></td><td>QC</td><td>View: GRN, Item Muster, BOM</td></tr>
-          <tr><td><strong>Project Manager</strong></td><td>Project</td><td>Create/Edit: Projects, Tasks. View: Stock, PO status</td></tr>
-          <tr><td><strong>Account &amp; Finance</strong></td><td>Finance</td><td>View: PO, GRN, Payment terms, Supplier reports</td></tr>
-          <tr><td><strong>Project Coordinator</strong></td><td>Project</td><td>Create/Edit: MR, view Production and Project status</td></tr>
+          <tr><td><strong>Project Manager 1/2/3</strong></td><td>Project</td><td>Create/Edit: Assigned Projects, Tasks. View: Stock, PO status for their projects.</td></tr>
+          <tr><td><strong>Project Coordinator</strong></td><td>Project</td><td>Create/Edit: MR, view Production and Project status for assigned projects.</td></tr>
+          <tr><td><strong>Account &amp; Finance</strong></td><td>Finance</td><td>View: PO, GRN, Payment terms, Supplier reports (per project)</td></tr>
         </tbody>
       </table>
     </div>
@@ -59,6 +61,9 @@
           <tr><td>Supplier Master</td><td>Admin, Purchase-Entry</td><td>Purchase, Finance</td><td>Others</td></tr>
           <tr><td>Customer Master</td><td>Admin, Sales-Entry</td><td>Sales, Projects, Finance</td><td>Others</td></tr>
           <tr><td>BOM Master</td><td>Admin, Production-Entry</td><td>Production, QC, Costing</td><td>Others</td></tr>
+          <tr><td>Sales/Work Order</td><td>Sales-Entry</td><td>Sales, Projects, Finance</td><td>Others</td></tr>
+          <tr><td>Project</td><td>Project Manager, Coordinator</td><td>All (view — scoped to assigned)</td><td>—</td></tr>
+          <tr><td>Tasks</td><td>Project Manager</td><td>All (view — scoped to project)</td><td>—</td></tr>
           <tr><td>PR</td><td>Production, R&amp;D</td><td>Purchase (Review)</td><td>Others</td></tr>
           <tr><td>Rate Comparison</td><td>Purchase-Entry</td><td>Purchase (Review)</td><td>Others</td></tr>
           <tr><td>PO</td><td>Purchase-Entry</td><td>Purchase, Finance, Store</td><td>Others</td></tr>
@@ -68,15 +73,22 @@
           <tr><td>MIS</td><td>Store-Entry</td><td>Store, Production</td><td>Others</td></tr>
           <tr><td>FGHM</td><td>Production-Entry</td><td>Store, Logistics</td><td>Others</td></tr>
           <tr><td>FGAN</td><td>Store-Entry, Logistics</td><td>Production</td><td>Others</td></tr>
-          <tr><td>Project</td><td>Project Manager, Coordinator</td><td>All (view)</td><td>—</td></tr>
-          <tr><td>Tasks</td><td>Project Manager</td><td>All (view)</td><td>—</td></tr>
-          <tr><td>Sales/Work Order</td><td>Sales-Entry</td><td>Sales, Projects, Finance</td><td>Others</td></tr>
           <tr><td>Production Planning</td><td>Production-Entry</td><td>Production, Store</td><td>Others</td></tr>
           <tr><td>User Access</td><td>Admin only</td><td>—</td><td>All others</td></tr>
           <tr><td>Approval Matrix</td><td>Admin only</td><td>Departmental</td><td>Others</td></tr>
         </tbody>
       </table>
     </div>
+
+    <h3>Project-Level Access Control</h3>
+    <p>Users are assigned to projects via the <strong>Project Team</strong> configuration. A Project Manager can only see/edit forms tagged to their assigned projects. Key rules:</p>
+    <ul style="color: var(--muted); margin: 12px 0; padding-left: 20px;">
+      <li style="margin-bottom: 6px;"><strong>Project Manager 1/2/3</strong> — Full CRUD on their assigned projects and tasks. View-only on procurement/inventory for their projects.</li>
+      <li style="margin-bottom: 6px;"><strong>Project Coordinator</strong> — Create MR for their projects, view production and project status.</li>
+      <li style="margin-bottom: 6px;"><strong>Sales</strong> — Create SO (which creates project). View all projects.</li>
+      <li style="margin-bottom: 6px;"><strong>Purchase</strong> — See all projects' procurement data. No access to task management.</li>
+      <li style="margin-bottom: 6px;"><strong>Store</strong> — See all projects' inventory movements. No access to project finances.</li>
+    </ul>
 
     <h3>User Access Form</h3>
     <p>Defined in User Access form: User Name (Zoho user lookup), Department (Purchase/Sales/Store &amp; Logistics/Account &amp; Finance/Admin/Project Coordinator/Project Manager 1/2/3), Role (Entry/Review/Approve/Admin), Email (autofetch), Status.</p>
