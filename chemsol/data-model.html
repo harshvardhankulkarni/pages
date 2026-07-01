@@ -20,7 +20,11 @@
     <p style="margin-bottom:16px;"><span class="badge badge-teal">Project-Centric</span> Project is the central hub — all modules connect to it via lookup relationships.</p>
 
     <h2>System Architecture — Project-Centric Hub</h2>
-    <div class="code-block"><pre><code>                     ┌─────────────────────────┐
+    <div class="code-block"><pre><code>  Master Data (global — Phase 1)
+    Item Muster ← Supplier Master ← System Master
+    BOM Master ← Store Master ← Bin Location
+
+                     ┌─────────────────────────┐
                      │   Customer/Site Master   │
                      └──────────┬──────────────┘
                                 │
@@ -35,25 +39,24 @@
                      │   Cost, Dates, Systems)  │
                      └──────────┬──────────────┘
                                 │
-          ┌─────────────────────┼─────────────────────┐
-          │                     │                     │
-          ▼                     ▼                     ▼
-  ┌───────────────┐    ┌───────────────┐    ┌───────────────┐
-  │  Procurement  │    │   Inventory   │    │  Production   │
-  │  (PR→PO→GRN)  │    │  (MR→MIS→FG)  │    │  (Planning,   │
-  │   Tagged to   │    │   Tagged to   │    │   BMR, Pack)  │
-  │   Project ID  │    │   Project ID  │    │   Tagged to   │
-  └───────┬───────┘    └───────┬───────┘    └───────┬───────┘
-          │                     │                     │
-          ▼                     ▼                     ▼
-  ┌───────────────┐    ┌───────────────┐    ┌───────────────┐
-  │   QC/QA      │    │  FGHM→FGAN   │    │   Task Mgmt   │
-  │  (GRN-based)  │    │  (FG Stock)  │    │  (5 Categories)│
-  └───────────────┘    └───────────────┘    └───────────────┘
-
-  Master Data (global, not project-specific):
-    Item Muster ← Supplier Master ← System Master
-    BOM Master ← Store Master ← Bin Location</code></pre></div>
+                    ┌───────────┼───────────────┐
+                    │           │               │
+                    ▼           ▼               ▼
+            ┌──────────┐ ┌──────────┐ ┌──────────────┐
+            │Procurement│ │Inventory │ │  Production  │
+            │(Phase 2)  │ │(Phase 3) │ │  (Phase 4)   │
+            │PR→PO→GRN  │ │MR→MIS→FG │ │ Planning,BMR │
+            │ + QC/QA   │ │+FGH/FGAN │ │ Pack,Rework  │
+            └──────────┘ └──────────┘ └──────────────┘
+                    │           │               │
+                    └───────────┼───────────────┘
+                                │
+                     ┌──────────▼──────────────┐
+                     │  Project Management     │
+                     │  (Phase 5)              │
+                     │  + Sales Module         │
+                     │  (Phase 6)              │
+                     └─────────────────────────┘</code></pre></div>
 
     <h3>Master Data (Global — Not Project-Specific)</h3>
     <div class="code-block"><pre><code>Purchase Item Muster ◄───── BOM Master ────► System Master
@@ -65,7 +68,7 @@
 Supplier Master ◄────────────────────────────────────┘
 Customer/Site Master</code></pre></div>
 
-    <h3>Project-Centric Procurement Flow</h3>
+    <h3>Flow 1 · Procurement (Phase 2)</h3>
     <div class="code-block"><pre><code>Project (Root)
   └── PR (Production/R&D) — tagged to Project
        └── Approval (Approval Matrix)
@@ -75,13 +78,13 @@ Customer/Site Master</code></pre></div>
                            └── QC/QA (QC dept — test results)
                                 └── Stock Updated (after posting)</code></pre></div>
 
-    <h3>Project-Centric Material Issue Flow</h3>
+    <h3>Flow 2 · Material Issue (Phase 3)</h3>
     <div class="code-block"><pre><code>Project (Root)
   └── MR (Production/R&D) — tagged to Project
        └── MIS (Store issues material)
             └── Stock − (deduction on posting)</code></pre></div>
 
-    <h3>Project-Centric FG Handover Flow</h3>
+    <h3>Flow 3 · FG Handover (Phase 4)</h3>
     <div class="code-block"><pre><code>Project (Root)
   └── Production — tagged to Project
        └── FGHM (FG Handover)
@@ -89,7 +92,7 @@ Customer/Site Master</code></pre></div>
                  └── FGAN (FG Acceptance)
                       └── FG Stock + (after approval)</code></pre></div>
 
-    <h3>Sales &amp; Project Flow</h3>
+    <h3>Flow 4 · Sales &amp; Project (Phases 5–6)</h3>
     <div class="code-block"><pre><code>SO/Work Order (Dual Mode)
   ├── Supply+Apply → Auto-creates Project → 5 Task Buckets
   │                                          ├── Transportation
@@ -103,18 +106,18 @@ Customer/Site Master</code></pre></div>
     <h3>Project ID Lookup Chain</h3>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Form</th><th>Project ID Source</th><th>Flow</th></tr></thead>
+        <thead><tr><th>#</th><th>Form</th><th>Project ID Source</th><th>Flow</th></tr></thead>
         <tbody>
-          <tr><td>Sales/Work Order</td><td>Supply+Apply → auto-creates Project</td><td>SO → Project</td></tr>
-          <tr><td>PR</td><td>Direct lookup from Project Master</td><td>Project → PR</td></tr>
-          <tr><td>Rate Comparison</td><td>AutoFetch from PR</td><td>Project → PR → RC</td></tr>
-          <tr><td>PO</td><td>AutoFetch from PR</td><td>Project → PR → PO</td></tr>
-          <tr><td>GRN</td><td>AutoFetch from PO</td><td>Project → PR → PO → GRN</td></tr>
-          <tr><td>MR</td><td>Direct lookup from Project Master</td><td>Project → MR</td></tr>
-          <tr><td>MIS</td><td>AutoFetch from MR</td><td>Project → MR → MIS</td></tr>
-          <tr><td>Production Planning</td><td>Direct lookup from Project Master</td><td>Project → Production</td></tr>
-          <tr><td>FGHM</td><td>Direct lookup from Project Master</td><td>Project → FGHM</td></tr>
-          <tr><td>FGAN</td><td>AutoFetch from FGHM</td><td>Project → FGHM → FGAN</td></tr>
+          <tr><td>2</td><td>PR</td><td>Direct lookup from Project Master</td><td>Project → PR</td></tr>
+          <tr><td>2</td><td>Rate Comparison</td><td>AutoFetch from PR</td><td>Project → PR → RC</td></tr>
+          <tr><td>2</td><td>PO</td><td>AutoFetch from PR</td><td>Project → PR → PO</td></tr>
+          <tr><td>2</td><td>GRN</td><td>AutoFetch from PO</td><td>Project → PR → PO → GRN</td></tr>
+          <tr><td>3</td><td>MR</td><td>Direct lookup from Project Master</td><td>Project → MR</td></tr>
+          <tr><td>3</td><td>MIS</td><td>AutoFetch from MR</td><td>Project → MR → MIS</td></tr>
+          <tr><td>3</td><td>FGHM</td><td>Direct lookup from Project Master</td><td>Project → FGHM</td></tr>
+          <tr><td>3</td><td>FGAN</td><td>AutoFetch from FGHM</td><td>Project → FGHM → FGAN</td></tr>
+          <tr><td>4</td><td>Production Planning</td><td>Direct lookup from Project Master</td><td>Project → Production</td></tr>
+          <tr><td>5–6</td><td>Sales/Work Order</td><td>Supply+Apply → auto-creates Project</td><td>SO → Project</td></tr>
         </tbody>
       </table>
     </div>

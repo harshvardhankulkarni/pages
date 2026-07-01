@@ -46,7 +46,7 @@
     <h3>Core Philosophy</h3>
     <p>Every transaction originates from or is tagged to a <strong>Project</strong>. A Sales Order (Supply+Apply mode) auto-creates a Project. PRs, POs, GRNs, MRs, Production Orders, and FG movements all carry a <strong>Project ID lookup</strong>. Nothing exists outside a project context.</p>
 
-    <h3>Core Flows</h3>
+    <h3>Core Flows <span style="color:var(--muted);font-weight:400;font-size:0.85rem;">(per IMPLEMENTATION_PLAN phase order)</span></h3>
 
     <div class="flow">
       <span class="flow-node">SO (Supply+Apply)</span><span class="flow-arrow">→</span>
@@ -100,11 +100,11 @@
 
     <h3>Departments</h3>
     <div class="card-grid">
-      <div class="card"><h4>Project</h4><p>Create Project, 5 task categories, execution tracking. Central to all operations.</p></div>
-      <div class="card"><h4>Sales</h4><p>SO/Work Orders, Customer/Site Master. SO acceptance triggers Project creation.</p></div>
       <div class="card"><h4>Purchase</h4><p>PR, Rate Comparison, PO, GRN, Supplier management — all tagged to Project.</p></div>
       <div class="card"><h4>Store &amp; Logistics</h4><p>GRN, MIS, Material Return, Handover, FG Receiving, Vehicle &amp; Transport — per Project.</p></div>
       <div class="card"><h4>Production &amp; R&amp;D</h4><p>MR, BMR, Production Planning, RM Consumption, Packing, FGHM — per Project.</p></div>
+      <div class="card"><h4>Project</h4><p>Create Project, 5 task categories, execution tracking. Central to all operations.</p></div>
+      <div class="card"><h4>Sales</h4><p>SO/Work Orders, Customer/Site Master. SO acceptance triggers Project creation.</p></div>
       <div class="card"><h4>QC</h4><p>QC/QA inspection, testing results on GRN items.</p></div>
       <div class="card"><h4>Account &amp; Finance</h4><p>Read-only on financial forms, project-wise payment tracking.</p></div>
       <div class="card"><h4>Admin</h4><p>Full access, user management, approval matrix.</p></div>
@@ -116,13 +116,13 @@
     <h3>Project-Centric Module Map</h3>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Module</th><th>Project Tagging</th><th>Key Forms</th></tr></thead>
+        <thead><tr><th>#</th><th>Module</th><th>Project Tagging</th><th>Key Forms</th></tr></thead>
         <tbody>
-          <tr><td>Sales</td><td>SO → creates Project</td><td>Sales/Work Order Master, Customer/Site Master</td></tr>
-          <tr><td>Procurement</td><td>PR, PO, GRN carry Project ID</td><td>PR, Rate Comparison, PO, GRN, QC/QA</td></tr>
-          <tr><td>Inventory</td><td>MR, MIS carry Project ID</td><td>MR, MIS, FGHM, FGAN, Material Return, Vehicle</td></tr>
-          <tr><td>Production</td><td>Production Orders carry Project ID</td><td>Production Planning, BMR, Packing, Rework</td></tr>
-          <tr><td>Project Mgmt</td><td>Root entity</td><td>Project Record, 5 Task Categories, 15 Reports</td></tr>
+          <tr><td>2</td><td>Procurement</td><td>PR, PO, GRN carry Project ID</td><td>PR, Rate Comparison, PO, GRN, QC/QA</td></tr>
+          <tr><td>3</td><td>Inventory</td><td>MR, MIS carry Project ID</td><td>MR, MIS, FGHM, FGAN, Material Return, Vehicle</td></tr>
+          <tr><td>4</td><td>Production</td><td>Production Orders carry Project ID</td><td>Production Planning, BMR, Packing, Rework</td></tr>
+          <tr><td>5</td><td>Project Mgmt</td><td>Root entity</td><td>Project Record, 5 Task Categories, 15 Reports</td></tr>
+          <tr><td>6</td><td>Sales</td><td>SO → creates Project</td><td>Sales/Work Order Master, Customer/Site Master</td></tr>
         </tbody>
       </table>
     </div>
