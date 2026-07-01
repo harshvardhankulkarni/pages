@@ -4,389 +4,346 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chemsol — Forms</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <nav class="sidebar">
-    <h1><span>Chemsol</span> ERP</h1>
-    <a href="index.html">Overview</a>
-    <a class="active" href="forms.html">Forms</a>
-    <a href="reports.html">Reports &amp; Automation</a>
-    <a href="security.html">Security &amp; Roles</a>
-    <a href="data-model.html">Data Model</a>
-    <a href="../index.html">← Back to Hub</a>
+    <h1>Chemsol<span class="client-badge">Zoho Creator ERP</span></h1>
+    <div class="sidebar-nav">
+      <a href="index.html">Overview</a>
+      <a class="active" href="forms.html">Forms</a>
+      <a href="reports.html">Reports &amp; Automation</a>
+      <a href="security.html">Security &amp; Roles</a>
+      <a href="data-model.html">Data Model</a>
+      <a href="../index.html">← Back to Hub</a>
+    </div>
   </nav>
   <div class="main">
-    <p style="margin-bottom:16px;"><span class="badge badge-teal">Project-Centric</span> All transactional forms carry <strong>Project ID lookup</strong> — nothing exists outside a project context.</p>
+    <section class="hero">
+      <div class="hero-eyebrow">Phase 1→6</div>
+      <h1>Forms &amp; Module Structure</h1>
+      <p>All transactional forms carry <strong>Project ID lookup</strong>. PR, PO, MR, GRN support <strong>N line items</strong> with autofetch — just like Zoho Books/CRM line items.</p>
+    </section>
 
-    <h2>1 · Master Data Forms <span class="badge">Global</span></h2>
+    <div class="content">
+      <h2>1 · Master Data <span class="badge badge-blue">Global — Shared Across Projects</span></h2>
+      <p>Foundation for all operations. Like <strong>Zoho Books Items List</strong> and <strong>Zoho CRM Contacts</strong> — these are global lookups used by every project.</p>
 
-    <h3>Purchase Item Muster</h3>
-    <p>Central item repository for all RM, PM, FG, consumables. Categories: RM, Packaging Material, Tools &amp; Consumable, Maintenance &amp; Utility, Capital &amp; Assets, Administration.</p>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Notes</th></tr></thead>
-        <tbody>
-          <tr><td>Category of Purchase Item</td><td>Dropdown</td><td>*</td><td>1.RM, 2.Packaging Material, 3.Tools &amp; Consumable, 4.Maintenance &amp; Utility, 5.Capital &amp; Assets, 6.Administration</td></tr>
-          <tr><td>Purchase Item Code</td><td>Text (autogen)</td><td>*</td><td>Auto-generated based on category</td></tr>
-          <tr><td>Purchase Item Name</td><td>Text</td><td>*</td><td>—</td></tr>
-          <tr><td>UOM</td><td>Dropdown</td><td>*</td><td>Nos, Kg, Ltr, Mtr, Kit</td></tr>
-          <tr><td>HSN Code</td><td>Text</td><td>*</td><td>—</td></tr>
-          <tr><td>GST %</td><td>Number</td><td></td><td>—</td></tr>
-          <tr><td>Min Stock</td><td>Number</td><td>*</td><td>Alert when crossed</td></tr>
-          <tr><td>Max Stock</td><td>Number</td><td></td><td>—</td></tr>
-          <tr><td>Standard Rate</td><td>Currency</td><td></td><td>Hidden from non-Purchase/Admin/Store</td></tr>
-          <tr><td>Preferred Supplier</td><td>Multi-select lookup</td><td></td><td>From Supplier Master</td></tr>
-          <tr><td>Lead Time</td><td>Number (Days)</td><td></td><td>—</td></tr>
-          <tr><td>Status</td><td>Dropdown</td><td>*</td><td>Active / Inactive</td></tr>
-        </tbody>
-      </table>
-    </div>
+      <div class="phase-container">
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">1A</span>
+            <span class="phase-title">Purchase Item Muster</span>
+            <span class="phase-tag">Like Zoho Books Items</span>
+          </div>
+          <p>Central item repository for all RM, PM, FG, consumables. 6 categories: RM, Packaging Material, Tools &amp; Consumable, Maintenance &amp; Utility, Capital &amp; Assets, Administration.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>Category</td><td>Dropdown</td><td>*</td><td>1.RM, 2.Packaging, 3.Tools, 4.Maintenance, 5.Capital, 6.Admin</td></tr>
+                <tr><td>Item Code</td><td>Autogen</td><td>*</td><td>Auto-generated based on category</td></tr>
+                <tr><td>Item Name</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>UOM</td><td>Dropdown</td><td>*</td><td>Nos, Kg, Ltr, Mtr, Kit</td></tr>
+                <tr><td>HSN Code</td><td>Text</td><td>*</td><td>For GST (like Zoho Books)</td></tr>
+                <tr><td>GST %</td><td>Number</td><td></td><td>—</td></tr>
+                <tr><td>Min Stock / Max Stock</td><td>Number</td><td>*</td><td>Alert thresholds</td></tr>
+                <tr><td>Standard Rate</td><td>Currency</td><td></td><td>Hidden from non-Purchase/Admin/Store</td></tr>
+                <tr><td>Preferred Supplier</td><td>Multi-lookup</td><td></td><td>From Supplier Master</td></tr>
+                <tr><td>Lead Time</td><td>Number (Days)</td><td></td><td>—</td></tr>
+                <tr><td>Status</td><td>Dropdown</td><td>*</td><td>Active / Inactive</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>AutoFetch target:</strong> PR, PO, MR, MIS, GRN, FGHM, BOM, QC — Item Code ⇄ Item Name bidirectional (like Zoho CRM lookup behavior)</p>
+        </div>
 
-    <h3>System Master</h3>
-    <p>Define flooring systems. Code format: prefix + number (e.g., EP01 = 1mm Epoxy).</p>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Notes</th></tr></thead>
-        <tbody>
-          <tr><td>System Code</td><td>Text</td><td>*</td><td>e.g., EP01, PU02</td></tr>
-          <tr><td>System Name</td><td>Text</td><td>*</td><td>e.g., "1mm Epoxy Flooring"</td></tr>
-          <tr><td>Description</td><td>Multi-line</td><td></td><td>—</td></tr>
-          <tr><td>Status</td><td>Dropdown</td><td>*</td><td>Active / Inactive</td></tr>
-        </tbody>
-      </table>
-    </div>
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">1B</span>
+            <span class="phase-title">System Master</span>
+            <span class="phase-tag">Product Catalog</span>
+          </div>
+          <p>Flooring system definitions (EP01=1mm Epoxy, PU02=2mm PU). Code auto-format from prefix + number.</p>
+        </div>
 
-    <h3>BOM Master</h3>
-    <p>Header + subform — material consumption per system.</p>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Header Field</th><th>Type</th><th>Notes</th></tr></thead>
-        <tbody>
-          <tr><td>BOM No</td><td>Autogen</td><td>—</td></tr>
-          <tr><td>System Code</td><td>Lookup</td><td>From System Master</td></tr>
-          <tr><td>System Name</td><td>AutoFetch</td><td>From System Code</td></tr>
-          <tr><td>Revision No</td><td>Text</td><td>—</td></tr>
-          <tr><td>Date</td><td>Date</td><td>Today's Date</td></tr>
-          <tr><td>Status</td><td>Dropdown</td><td>Draft / Approved / Released</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p><strong>Line items:</strong> Item Code (lookup from Purchase Item Muster), Item Name (autofetch), UOM (autofetch), Qty per Unit, Waste %, Total Qty (formula: Qty + Waste%). <span class="badge badge-teal">Auto Quantity Calculation</span></p>
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">1C</span>
+            <span class="phase-title">BOM Master</span>
+            <span class="phase-tag">Like Zoho Books BOM</span>
+          </div>
+          <p>Header + N line items: System Code → Item Code, UOM, Qty, Waste %. Auto Quantity Calculation formula.</p>
+        </div>
 
-    <h3>Supplier Master</h3>
-    <p>16 fields — vendor management with bank details, payment terms, credit days.</p>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Field</th><th>Type</th><th>Required</th></tr></thead>
-        <tbody>
-          <tr><td>Supplier Code</td><td>Autogen</td><td>*</td></tr>
-          <tr><td>Supplier Name</td><td>Text</td><td>*</td></tr>
-          <tr><td>Supplier Type</td><td>Dropdown</td><td></td></tr>
-          <tr><td>GSTIN</td><td>Text</td><td>*</td></tr>
-          <tr><td>PAN No</td><td>Text</td><td>*</td></tr>
-          <tr><td>Contact Person</td><td>Text</td><td>*</td></tr>
-          <tr><td>Mobile No</td><td>Phone</td><td>*</td></tr>
-          <tr><td>Email ID</td><td>Email</td><td>*</td></tr>
-          <tr><td>Address</td><td>Multi-line</td><td>*</td></tr>
-          <tr><td>Pincode</td><td>Text</td><td></td></tr>
-          <tr><td>Bank Name</td><td>Text</td><td>*</td></tr>
-          <tr><td>Account No</td><td>Text</td><td>*</td></tr>
-          <tr><td>IFSC Code</td><td>Text</td><td>*</td></tr>
-          <tr><td>Payment Terms</td><td>Text</td><td>*</td></tr>
-          <tr><td>Credit Days</td><td>Number</td><td>*</td></tr>
-          <tr><td>Status</td><td>Dropdown</td><td>*</td></tr>
-        </tbody>
-      </table>
-    </div>
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">1D</span>
+            <span class="phase-title">Supplier Master</span>
+            <span class="phase-tag">Like Zoho Books Vendor</span>
+          </div>
+          <p>16 fields: Code, Name, Type, GSTIN, PAN, Contact, Bank, Payment Terms, Credit Days.</p>
+        </div>
 
-    <h3>Customer/Site Master</h3>
-    <p>16 fields — client organization, contact, site details.</p>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Field</th><th>Type</th></tr></thead>
-        <tbody>
-          <tr><td>Customer Code</td><td>Autogen</td></tr>
-          <tr><td>Client Org Name</td><td>Text *</td></tr>
-          <tr><td>Contact Person</td><td>Text *</td></tr>
-          <tr><td>Contact No</td><td>Phone *</td></tr>
-          <tr><td>Alt Contact No</td><td>Phone</td></tr>
-          <tr><td>Email</td><td>Email *</td></tr>
-          <tr><td>GST No</td><td>Text *</td></tr>
-          <tr><td>PAN</td><td>Text *</td></tr>
-          <tr><td>Regd Address</td><td>Multi-line *</td></tr>
-          <tr><td>Billing Address</td><td>Multi-line</td></tr>
-          <tr><td>Shipping Address</td><td>Multi-line</td></tr>
-          <tr><td>Site Name</td><td>Text</td></tr>
-          <tr><td>Site Address</td><td>Multi-line</td></tr>
-          <tr><td>Site Manager Incharge</td><td>Text</td></tr>
-          <tr><td>Contact No (Site)</td><td>Phone</td></tr>
-          <tr><td>Status</td><td>Dropdown * (Active/Inactive)</td></tr>
-        </tbody>
-      </table>
-    </div>
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">1E</span>
+            <span class="phase-title">Customer/Site Master</span>
+            <span class="phase-tag">Like Zoho CRM Accounts</span>
+          </div>
+          <p>16 fields: Org, Contact, GST, PAN, Billing/Shipping, Site details.</p>
+        </div>
 
-    <h3>Store Master</h3>
-    <p>5 fields — Store Code (autogen), Store Name *, Store Type (RM / FG / QC / Site), Location *, Status (Active/Inactive).</p>
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">1F</span>
+            <span class="phase-title">Store Master + Bin Location</span>
+            <span class="phase-tag">Like Zoho Inventory Warehouses</span>
+          </div>
+          <p>Stores: Code, Name, Type (RM/FG/QC/Site), Location. Bin: Store → Rack → Shelf → Bin.</p>
+        </div>
 
-    <h3>Bin Location Master</h3>
-    <p>Store Name (lookup), Rack No *, Shelf No *, Bin No *, Status (Active/Inactive).</p>
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">1G</span>
+            <span class="phase-title">User Access + Approval Matrix</span>
+            <span class="phase-tag">Security Config</span>
+          </div>
+          <p>User → Department → Role (Entry/Review/Approve/Admin). Approval Matrix: Doc Type × Amount × Approver 1/2/3.</p>
+        </div>
+      </div>
 
-    <h3>User Access</h3>
-    <p>User Name (lookup from Zoho users), Department (Purchase/Sales/Store &amp; Logistics/Account &amp; Finance/Admin/Project Coordinator/Project Manager 1/2/3), Role (Entry / Review / Approve / Admin), Email (autofetch), Status.</p>
+      <h2>2 · Procurement <span class="badge badge-green">Tagged to Project — N Line Items</span></h2>
+      <p>Structured like <strong>Zoho Books Purchase Orders</strong>: header fields + N line items with GST split (CGST/SGST/IGST), HSN codes, autofetch from Item Muster.</p>
 
-    <h3>Approval Matrix</h3>
-    <p>Department, Document Type (PR / PO / Rate Comparison / GRN / MR), Min Amount, Max Amount, Approver 1 *, Approver 2, Approver 3.</p>
+      <div class="phase-container">
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">2A</span>
+            <span class="phase-title">Purchase Requisition (PR)</span>
+            <span class="phase-tag">N Line Items</span>
+          </div>
+          <p>Department: Production &amp; R&amp;D. Status: Draft → Pending Approval → Approved → Rejected.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Header Field</th><th>Type</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>PR Number</td><td>Autogen</td><td>PR-YYYY-XXXX</td></tr>
+                <tr><td>PR Date</td><td>Date</td><td>Today's Date</td></tr>
+                <tr><td><strong>Project ID / Name</strong></td><td>Lookup</td><td>From Project Master</td></tr>
+                <tr><td>Department</td><td>AutoFetch</td><td>As per user login</td></tr>
+                <tr><td>Status</td><td>Dropdown</td><td>Draft / Pending Approval / Approved / Rejected</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>N Line items:</strong> Sr, Item Code (lookup ⇄ bidirectional autofetch), Item Name, Qty, UOM, Lead Time.</p>
+        </div>
 
-    <hr style="border-color: var(--border); margin: 32px 0;">
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">2B</span>
+            <span class="phase-title">Rate Comparison</span>
+            <span class="phase-tag">5 Suppliers</span>
+          </div>
+          <p>Up to 5 supplier comparisons per PR item. Finalised supplier + rate → PO reference.</p>
+        </div>
 
-    <h2>2 · Procurement Forms <span class="badge badge-teal">Tagged to Project</span></h2>
-    <p>All procurement forms carry a <strong>Project ID lookup</strong> — every purchase is linked to a project.</p>
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">2C</span>
+            <span class="phase-title">Purchase Order (PO)</span>
+            <span class="phase-tag">N Line Items · GST Split · Like Zoho Books</span>
+          </div>
+          <p>Department: Purchase. Dual series: Coding → RMWAD, Non-Coding → RM.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Field</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>RM Type</td><td>Coding / Non-Coding</td></tr>
+                <tr><td>PO Number</td><td>RMWAD-YYYY-XXXX or RM-YYYY-XXXX</td></tr>
+                <tr><td><strong>Project ID</strong></td><td>AutoFetch from PR</td></tr>
+                <tr><td>Supplier</td><td>Lookup → autofetch GSTIN, Address</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>N Line items (like Zoho Books PO):</strong></p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Sr</th><th>Item Code</th><th>Name</th><th>HSN</th><th>Qty</th><th>UOM</th><th>Rate</th><th>Basic</th><th>GST%</th><th>CGST</th><th>SGST</th><th>IGST</th><th>Total</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>RM001</td><td>Epoxy Resin</td><td>3907</td><td>500</td><td>Kg</td><td>₹180</td><td>₹90,000</td><td>18%</td><td>₹8,100</td><td>₹8,100</td><td>—</td><td>₹1,06,200</td></tr>
+                <tr><td>2</td><td>RM002</td><td>Hardener</td><td>3907</td><td>250</td><td>Kg</td><td>₹220</td><td>₹55,000</td><td>18%</td><td>₹4,950</td><td>₹4,950</td><td>—</td><td>₹64,900</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>Footer:</strong> Basic Total, CGST/SGST/IGST (conditional), Total in Words, Delivery Date, Payment Terms, Transport Scope.</p>
+          <p><strong>Printable PO</strong> with e-way bill, COA, batch nos, quality clause.</p>
+        </div>
 
-    <h3>Purchase Requisition (PR)</h3>
-    <p>Department: Production &amp; R&amp;D. Status lifecycle: Draft → Pending Approval → Approved → Rejected.</p>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Header Field</th><th>Type</th><th>Notes</th></tr></thead>
-        <tbody>
-          <tr><td>PR Number</td><td>Autogen</td><td>PR-YYYY-XXXX</td></tr>
-          <tr><td>PR Date</td><td>Date</td><td>Today's Date</td></tr>
-          <tr><td>Project ID / Name</td><td>Lookup</td><td>From Project Master</td></tr>
-          <tr><td>Reference</td><td>Text</td><td>Manual reference</td></tr>
-          <tr><td>Department</td><td>AutoFetch</td><td>As per user login (Production / R&amp;D)</td></tr>
-          <tr><td>Approved By</td><td>User lookup</td><td>Filled after approval</td></tr>
-          <tr><td>Status</td><td>Dropdown</td><td>Draft / Pending Approval / Approved / Rejected</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p><strong>Line items:</strong> Sr, Item Code (lookup with bidirectional autofetch), Item Name (autofetch), Qty, Item Description, UOM (autofetch), Lead Time (autofetch).</p>
-    <p><strong>Automation:</strong> Item Code ↔ Item Name bidirectional autofill, UOM/Lead Time autofetch, notification to Purchase dept on approval.</p>
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">2D</span>
+            <span class="phase-title">Goods Receipt Note (GRN)</span>
+            <span class="phase-tag">Partial via ✓ · N Items</span>
+          </div>
+          <p>PO ref → autofetch items. Checkbox per line for partial GRN. Stock updates only on posting.</p>
+        </div>
 
-    <h3>Rate Comparison</h3>
-    <p>Department: Purchase. Up to 5 supplier comparisons per PR item.</p>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
-        <tbody>
-          <tr><td>Date</td><td>Date</td><td>Today's Date</td></tr>
-          <tr><td>PR Reference No</td><td>Lookup</td><td>From PR Master</td></tr>
-          <tr><td>Product No / Name</td><td>AutoFetch</td><td>From PR items</td></tr>
-          <tr><td>Supplier 1-5</td><td>Lookup</td><td>From Supplier Master + Price + Credit</td></tr>
-          <tr><td>Finalised Supplier</td><td>Lookup</td><td>Selected from above</td></tr>
-          <tr><td>Final Rate</td><td>Currency</td><td>—</td></tr>
-          <tr><td>PO No</td><td>Text</td><td>Linked after PO creation</td></tr>
-          <tr><td>PO Release Date</td><td>Date</td><td>—</td></tr>
-          <tr><td>Remark</td><td>Multi-line</td><td>—</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p><span class="badge badge-orange">Notification</span> "Rate Comparison Data Missing" to Purchase dept if data incomplete.</p>
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">2E</span>
+            <span class="phase-title">QC/QA</span>
+            <span class="phase-tag">Inspection</span>
+          </div>
+          <p>GRN ref → inspect viscosity, density, color, moisture. Pass/Fail/Hold per item.</p>
+        </div>
+      </div>
 
-    <h3>Purchase Order (PO)</h3>
-    <p>Department: Purchase. <strong>Dual numbering series:</strong> Coding → RMWAD prefix, Non-Coding → RM prefix.</p>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
-        <tbody>
-          <tr><td>RM Type</td><td>Dropdown</td><td>Coding / Non-Coding</td></tr>
-          <tr><td>PO Number</td><td>Autogen</td><td>RMWAD-YYYY-XXXX or RM-YYYY-XXXX</td></tr>
-          <tr><td>PO Date</td><td>Date</td><td>Today's Date</td></tr>
-          <tr><td>Project ID / Name</td><td>AutoFetch</td><td>From PR's Project (via lookup)</td></tr>
-          <tr><td>Supplier Code</td><td>Lookup</td><td>Autofetch all details</td></tr>
-          <tr><td>PR Reference</td><td>Lookup</td><td>From PR</td></tr>
-          <tr><td>Bill To / Ship To</td><td>Dropdown</td><td>Address list</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p><strong>Line items:</strong> Sr, Item Code, Item Name, HSN (autofetch), Qty, UOM (autofetch), Rate, Basic Amount (Qty×Rate), GST% (autofetch), GST Amount, Total Amount.</p>
-    <p><strong>Footer:</strong> Basic Total, CGST, SGST, IGST (conditional logic), Total Amount in Words, Delivery Date, Payment Terms, Scope of Transport (Supplier/Own), Mode of Transport.</p>
-    <p><strong>Printable PO</strong> with full T&amp;C (e-way bill, COA, batch nos, quality clause, acceptance terms).</p>
+      <h2>3 · Inventory / Stores <span class="badge badge-green">Tagged to Project</span></h2>
+      <p>Like <strong>Zoho Inventory</strong>: warehouse-based tracking with stock in/out/transfer. All tagged to project.</p>
 
-    <h3>Goods Receipt Note (GRN)</h3>
-    <p>Department: Purchase / Store. Partial GRN via checkbox.</p>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
-        <tbody>
-          <tr><td>GRN Number</td><td>Autogen</td><td>Generated <strong>after posting</strong></td></tr>
-          <tr><td>PO Number</td><td>Lookup</td><td>Autofetch supplier + items + project</td></tr>
-          <tr><td>Vehicle Number</td><td>Text</td><td>*</td></tr>
-          <tr><td>Warehouse</td><td>Dropdown</td><td>Wadki / Main / Neelo / Gurgaon / Bangalore / Client Site</td></tr>
-          <tr><td>Client/Site Name</td><td>Text</td><td>Conditional — only if Warehouse = Client Site</td></tr>
-          <tr><td>Invoice Number / Date</td><td>Text / Date</td><td>*</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p><strong>Line items:</strong> ✅ Checkbox (partial GRN), Item Code/Name, Ordered Qty (autofetch), Received Qty, QC Status, Packing Quality.</p>
-    <p><strong>Transport subform</strong> — visible only if PO scope = "Own". Transporter Name, Charges, Local Transport, Loading/Unloading.</p>
-    <p><span class="badge badge-green">Post</span> GRN Number generated + stock updated + timestamp logged on posting only.</p>
+      <div class="phase-container">
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">3A</span>
+            <span class="phase-title">Material Requisition (MR)</span>
+            <span class="phase-tag">N Line Items</span>
+          </div>
+          <p>Project ID + items with autofetch available stock. Priority: Low/Medium/High/Urgent.</p>
+        </div>
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">3B</span>
+            <span class="phase-title">Material Issue Slip (MIS)</span>
+            <span class="phase-tag">N Items · Stock −</span>
+          </div>
+          <p>MR ref → autofetch items. Issued Qty, Balance Qty (formula). Stock deducted on posting.</p>
+        </div>
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">3C</span>
+            <span class="phase-title">FG Handover (FGHM)</span>
+            <span class="phase-tag">N Items · Notify Store</span>
+          </div>
+          <p>Project ID + client/site. FG products with QC status. Pop-up notification to Store on submit.</p>
+        </div>
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">3D</span>
+            <span class="phase-title">FG Acceptance (FGAN)</span>
+            <span class="phase-tag">Stock + After Approval</span>
+          </div>
+          <p>FGH ref → Damaged Qty, Accepted Qty (formula). FG stock updated after approval.</p>
+        </div>
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">3E</span>
+            <span class="phase-title">Additional Store Forms</span>
+            <span class="phase-tag">Return · Handover · Transport</span>
+          </div>
+          <p>Material Return (to stock), Material Handover (inter-store), Vehicle &amp; Transport (delivery costs).</p>
+        </div>
+      </div>
 
-    <h3>QC/QA</h3>
-    <p>Department: QC. Inspection results per GRN item.</p>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
-        <tbody>
-          <tr><td>QC Number</td><td>Autogen</td><td>QC-YYYY-XXXX</td></tr>
-          <tr><td>GRN Number</td><td>Lookup</td><td>Autofetch supplier + items</td></tr>
-          <tr><td>Item No / Name</td><td>AutoFetch</td><td>From GRN</td></tr>
-          <tr><td>Inspection Date</td><td>Date</td><td>—</td></tr>
-          <tr><td>Viscosity / Density / Color / Moisture</td><td>Text</td><td>Test results</td></tr>
-          <tr><td>Accepted / Rejected Qty</td><td>Number</td><td>*</td></tr>
-          <tr><td>Packaging Quality</td><td>Dropdown</td><td>Good / Damaged</td></tr>
-          <tr><td>QC Status</td><td>Dropdown</td><td>Pass / Fail / Hold</td></tr>
-          <tr><td>Remarks</td><td>Multi-line</td><td>*</td></tr>
-        </tbody>
-      </table>
-    </div>
+      <h2>4 · Production <span class="badge badge-green">Tagged to Project</span></h2>
 
-    <hr style="border-color: var(--border); margin: 32px 0;">
+      <div class="phase-container">
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">4A</span>
+            <span class="phase-title">Production Planning</span>
+            <span class="phase-tag">Per Project</span>
+          </div>
+          <p>Project ID, Period (Week/Month), SO/WO autofetch, FG Stock, Net Requirement = SO − FG.</p>
+        </div>
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">4B</span>
+            <span class="phase-title">Production Order + BMR</span>
+            <span class="phase-tag">N Items</span>
+          </div>
+          <p>MR ref, System Code, Batch No. Subforms: Raw Materials, Process Parameters, QC Results.</p>
+        </div>
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">4C</span>
+            <span class="phase-title">RM Consumption + Packing + Rework</span>
+            <span class="phase-tag">Per Project</span>
+          </div>
+          <p>Actual vs Standard comparison. FG packing with material consumption tracking. Rework with QC revalidation.</p>
+        </div>
+      </div>
 
-    <h2>3 · Inventory / Stores Forms <span class="badge badge-teal">Tagged to Project</span></h2>
-    <p>All inventory forms carry a <strong>Project ID lookup</strong> — material movements are project-tracked.</p>
+      <h2>5 · Project Management <span class="badge badge-blue">Root Entity</span></h2>
+      <p>Like <strong>Zoho Projects</strong> — Project is the hub with 5 task categories. Auto-created from SO acceptance.</p>
 
-    <h3>Material Requisition (MR)</h3>
-    <p>Department: Production &amp; R&amp;D.</p>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Field</th><th>Notes</th></tr></thead>
-        <tbody>
-          <tr><td>MR Number</td><td>Autogen (MR-YYYY-XXXX)</td></tr>
-          <tr><td>Project ID / Name</td><td>Lookup from Project Master</td></tr>
-          <tr><td>Requisition Type</td><td>Dropdown (Production / R&amp;D)</td></tr>
-          <tr><td>Batch Number</td><td>Text</td></tr>
-          <tr><td>Department</td><td>AutoFetch from login</td></tr>
-          <tr><td>Requested By</td><td>Employee Name *</td></tr>
-          <tr><td>Priority</td><td>Dropdown (Low / Medium / High / Urgent)</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p><strong>Line items:</strong> Sr, Item Code (lookup), Item Name/Category/UOM/Available Stock (autofetch), Required Qty, Remarks.</p>
+      <div class="phase-container">
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">5A</span>
+            <span class="phase-title">Create Project</span>
+            <span class="phase-tag">Auto from SO · Like Zoho CRM Deal</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>Project ID</td><td>Autogen</td><td>—</td></tr>
+                <tr><td>Project Name</td><td>Text</td><td>*</td></tr>
+                <tr><td>SO Reference</td><td>Lookup</td><td>Auto-filled from SO acceptance</td></tr>
+                <tr><td>Project Manager</td><td>User lookup</td><td>*</td></tr>
+                <tr><td>Execution Base</td><td>Dropdown</td><td>Area Basis / Day Basis</td></tr>
+                <tr><td>Start Date / End Date</td><td>Date</td><td>*</td></tr>
+                <tr><td>Project Cost</td><td>Currency</td><td>*</td></tr>
+                <tr><td>Systems subform</td><td>Subform</td><td>System Code, Area, UOM, Description</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
 
-    <h3>Material Issue Slip (MIS)</h3>
-    <p>Department: Stores. Linked to MR.</p>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Field</th><th>Notes</th></tr></thead>
-        <tbody>
-          <tr><td>MR No</td><td>Lookup — autofetch all items + project</td></tr>
-          <tr><td>MIS Number</td><td>Autogen against MR</td></tr>
-          <tr><td>Issued Qty</td><td>Number *</td></tr>
-          <tr><td>Balance Qty</td><td>Formula: Required − Issued</td></tr>
-          <tr><td>Issued By / Handover To</td><td>Supervisor Name *</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p><span class="badge badge-orange">Stock −</span> Stock reduced in inventory upon MIS posting.</p>
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">5B</span>
+            <span class="phase-title">5 Task Categories</span>
+            <span class="phase-tag">Like Zoho Projects Task Lists</span>
+          </div>
+          <div class="card-grid">
+            <div class="card"><h4>Transportation</h4><p>Budget + multiple dispatches (Intracity/Intercity, Loading/Unloading). Each: From, To, Charges.</p></div>
+            <div class="card"><h4>Application/Execution</h4><p><em>Area Basis only.</em> Grinding, Primer, Screed, Top Coat, Markings. Each: Area, Cost, MP.</p></div>
+            <div class="card"><h4>Manpower</h4><p><em>Day Basis only.</em> Manpower Budget + Count.</p></div>
+            <div class="card"><h4>Tools</h4><p>Budget for tools. Always visible.</p></div>
+            <div class="card"><h4>Additional Expenses</h4><p>Overhead budget. Always visible.</p></div>
+          </div>
+        </div>
+      </div>
 
-    <h3>FG Handover Master (FGHM)</h3>
-    <p>Department: Production.</p>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Field</th><th>Notes</th></tr></thead>
-        <tbody>
-          <tr><td>FGH No</td><td>Autogen (FGH-YYYY-XXXX)</td></tr>
-          <tr><td>Project ID / Name</td><td>Lookup from Project Master</td></tr>
-          <tr><td>Client/Site Name</td><td>Lookup from Customer/Site Master</td></tr>
-          <tr><td>Batch No</td><td>Text (can be multiple)</td></tr>
-          <tr><td>FG Product Code / Name</td><td>Lookup from Item Muster (FG filter)</td></tr>
-          <tr><td>FG QTY / UOM</td><td>Number / Autofetch</td></tr>
-          <tr><td>QC Status</td><td>Dropdown (Pass / Fail / Hold)</td></tr>
-          <tr><td>Handed Over By / Received By</td><td>Employee Name *</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p><span class="badge badge-purple">Pop-up</span> Notification to Store/Logistics on submission.</p>
+      <h2>6 · Sales <span class="badge badge-blue">Creates Project</span></h2>
 
-    <h3>FG Acceptance Note (FGAN)</h3>
-    <p>Department: Store/Logistics. Opens from notification.</p>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Field</th><th>Notes</th></tr></thead>
-        <tbody>
-          <tr><td>FGH No</td><td>Lookup (autofetch from notification)</td></tr>
-          <tr><td>Damaged/Rejected Qty</td><td>Number *</td></tr>
-          <tr><td>Accepted Quantity</td><td>Formula: Handovered − Damaged</td></tr>
-          <tr><td>Approved By</td><td>User lookup *</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p>Acceptance Number generated <strong>after approval</strong>. FG stock updated after acceptance.</p>
+      <div class="phase-container">
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">6A</span>
+            <span class="phase-title">Sales/Work Order Master (SO)</span>
+            <span class="phase-tag">Dual Mode · N Line Items · Like Zoho CRM</span>
+          </div>
+          <p><strong>Dual mode</strong>: Supply+Apply (auto-creates Project) / Supply Only (material sales).</p>
 
-    <h3>Additional Store Forms</h3>
-    <div class="card-grid">
-      <div class="card"><h4>Material Return</h4><p>Return from production. Reference to MIS. Returned Qty, Reason, Condition. <strong>Tagged to project.</strong></p></div>
-      <div class="card"><h4>Material Handover</h4><p>Inter-store transfer. From Store, To Store. Items with quantities. <strong>Tagged to project.</strong></p></div>
-      <div class="card"><h4>Vehicle &amp; Transport</h4><p>Vehicle registration, trip details, delivery challans, cost tracking. <strong>Tagged to project.</strong></p></div>
-    </div>
+          <h4>Mode A: Supply+Apply</h4>
+          <p>Customer details + <strong>N system line items</strong> (System Code, Thickness, Area, UOM, Rate, Amount). Footer: Total Amount, Payment Terms, Transport, Warranty, Commission.</p>
 
-    <hr style="border-color: var(--border); margin: 32px 0;">
+          <h4>Mode B: Supply Only</h4>
+          <p>Customer details + <strong>N FG line items</strong> (FG Name, Qty, UOM, Rate, Amount). Footer: Total, Payment Terms, Transport.</p>
 
-    <h2>4 · Production Forms <span class="badge badge-teal">Tagged to Project</span></h2>
-    <p>All production forms carry a <strong>Project ID lookup</strong> — production is planned and executed per project.</p>
+          <p><span class="badge badge-green">Supply+Apply → auto-creates Project</span> Like Zoho CRM Deal creation triggers downstream processes.</p>
+        </div>
+      </div>
 
-    <div class="card-grid">
-      <div class="card"><h4>Production Planning</h4><p>Planning No, Project ID, Period (Week/Month), Plant, SO/WO Qty (autofetch), FG Stock Available, Net Production Requirement = SO/WO Qty − Available FG. Status: Draft/Approved/Released.</p></div>
-      <div class="card"><h4>Production Order</h4><p>MR/Planning ref, Project ID, System Code, Planned Qty, Start/End Date. Status: Planned/In Progress/Completed/On Hold.</p></div>
-      <div class="card"><h4>BMR Master</h4><p>BMR No, Production Order ref, Project ID, Batch No, System Code. Subforms: Raw Materials, Process Parameters, QC Test Results. Yield/Output tracking.</p></div>
-      <div class="card"><h4>RM Consumption Entry</h4><p>BMR reference. Item-wise consumption. Actual vs Standard comparison. <strong>Per project.</strong></p></div>
-      <div class="card"><h4>Packing Entry</h4><p>FG packing. Packing material consumption. Packed qty, batch numbers. <strong>Per project.</strong></p></div>
-      <div class="card"><h4>Rework Register</h4><p>Rework reason, BMR ref, qty, material consumed, QC revalidation. <strong>Per project.</strong></p></div>
-    </div>
-
-    <hr style="border-color: var(--border); margin: 32px 0;">
-
-    <h2>5 · Project Management <span class="badge badge-teal">Root Entity</span></h2>
-    <p>Project is the hub — all downstream forms reference Project ID. Auto-created from SO acceptance.</p>
-
-    <h3>Create Project</h3>
-    <p><span class="badge badge-green">Auto-created</span> from SO acceptance (Supply+Apply). Also allows manual creation.</p>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
-        <tbody>
-          <tr><td>Project ID</td><td>Autogen</td><td>—</td></tr>
-          <tr><td>Project Name</td><td>Text</td><td>*</td></tr>
-          <tr><td>SO Reference</td><td>Lookup</td><td>Auto-filled when created from SO</td></tr>
-          <tr><td>Address</td><td>Multi-line</td><td>*</td></tr>
-          <tr><td>Project Manager</td><td>User lookup</td><td>*</td></tr>
-          <tr><td>Execution Base</td><td>Dropdown</td><td>Area Basis / Day Basis</td></tr>
-          <tr><td>Start Date / End Date</td><td>Date</td><td>*</td></tr>
-          <tr><td>Project Cost</td><td>Currency</td><td>*</td></tr>
-          <tr><td>Adjustments</td><td>Currency</td><td>Cost adjustment</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p><strong>Systems subform:</strong> System Code (lookup from System Master), Area, UOM, Description.</p>
-
-    <h3>5 Task Categories</h3>
-    <div class="card-grid">
-      <div class="card"><h4>Transportation</h4><p>Budget. Subtasks: Intracity/Intercity, Local Transport, Loading/Unloading — each with multiple dispatches (From, To, Charges).</p></div>
-      <div class="card"><h4>Application/Execution</h4><p><em>Only if Area Basis.</em> Subtasks: Grinding, Primer, Screed, Top Coat, Yellow, Arrow, Numbering. Each has Area, Cost, MP.</p></div>
-      <div class="card"><h4>Manpower</h4><p><em>Only if Day Basis.</em> Manpower Budget + Manpower Count.</p></div>
-      <div class="card"><h4>Tools</h4><p>Budget for Tools. Always visible.</p></div>
-      <div class="card"><h4>Additional Expenses</h4><p>Overhead budget. Always visible.</p></div>
-    </div>
-
-    <hr style="border-color: var(--border); margin: 32px 0;">
-
-    <h2>6 · Sales Module</h2>
-
-    <h3>Sales/Work Order Master</h3>
-    <p><strong>Dual mode</strong> via selectbox: Supply+Apply (Work Order) / Supply Only (Material Sales). <span class="badge badge-green">Supply+Apply → Auto-creates Project</span></p>
-
-    <h4>Mode A: Supply+Apply</h4>
-    <p>Fields: Date, Employee Name, Customer Code, Client Org Name *, Contact Person *, Contact No *, Alt Contact No, Email *, GST No *, PAN *, Regd Address *, Sales/Work Order No (autogen), Date, Site Name *, Site Address *, Site Manager, Contact No (Site), Project Type (Industrial/Commercial).</p>
-    <p><strong>System subtable:</strong> System Code (lookup, autofetch name), Thickness, Area, UOM (conditional dropdown), Rate, Amount (Area×Rate).</p>
-    <p><strong>Footer:</strong> Total Work Order Amount (formula), Payment Terms, Transportation Scope + Amount, Lead Time (Days), PO/BOQ Attachment (multiple), Warranty, Is Proper System Required (checkbox), Remark, Commission (checkbox → Percentage/Fix Amount + Amount).</p>
-
-    <h4>Mode B: Supply Only (Material Sales)</h4>
-    <p>Same customer fields + Sales Order No (autogen), Billing Address, Shipping Address.</p>
-    <p><strong>FG subtable:</strong> FG Name (lookup), Quantity, UOM (autofetch), Rate, Amount (formula).</p>
-    <p><strong>Footer:</strong> Total Sales Order Amount, Payment Terms, Transportation Scope + Amount, Lead Time, Remark.</p>
-
-    <div class="footer">
-      <p>Chemsol — Zoho Creator ERP &middot; ITOTCloud Systems Pvt. Ltd.</p>
+      <div class="footer">
+        <p>Chemsol — Zoho Creator ERP &middot; ITOTCloud Systems Pvt. Ltd.</p>
+      </div>
     </div>
   </div>
 </body>

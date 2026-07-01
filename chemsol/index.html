@@ -4,132 +4,155 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chemsol — Zoho Creator ERP</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <nav class="sidebar">
-    <h1><span>Chemsol</span> ERP</h1>
-    <a class="active" href="index.html">Overview</a>
-    <a href="forms.html">Forms</a>
-    <a href="reports.html">Reports &amp; Automation</a>
-    <a href="security.html">Security &amp; Roles</a>
-    <a href="data-model.html">Data Model</a>
-    <a href="../index.html">← Back to Hub</a>
+    <h1>Chemsol<span class="client-badge">Zoho Creator ERP</span></h1>
+    <div class="sidebar-nav">
+      <a class="active" href="index.html">Overview</a>
+      <a href="forms.html">Forms</a>
+      <a href="reports.html">Reports &amp; Automation</a>
+      <a href="security.html">Security &amp; Roles</a>
+      <a href="data-model.html">Data Model</a>
+      <a href="../index.html">← Back to Hub</a>
+    </div>
   </nav>
   <div class="main">
-    <h2>Chemsol — Project-Centric ERP</h2>
-    <p>Flooring/construction materials company (Epoxy, PU, Demarcation). <strong>Project is the root entity</strong> — all procurement, inventory, production, and sales modules are tagged to a Project record.</p>
+    <section class="hero">
+      <div class="hero-eyebrow">Project-Centric ERP · v2.0</div>
+      <h1>Chemsol<br>Zoho Creator ERP</h1>
+      <p>Flooring/construction materials company (Epoxy, PU, Demarcation). <strong>Project is the root entity</strong> — all procurement, inventory, production, and sales modules are tagged to a Project record.</p>
+      <div class="hero-meta">
+        <div class="hero-meta-item"><span class="label">Root Entity</span><span class="value">Project</span></div>
+        <div class="hero-meta-item"><span class="label">Modules</span><span class="value">6</span></div>
+        <div class="hero-meta-item"><span class="label">Forms</span><span class="value">25+</span></div>
+        <div class="hero-meta-item"><span class="label">Reports</span><span class="value">35+</span></div>
+        <div class="hero-meta-item"><span class="label">Depts</span><span class="value">7</span></div>
+        <div class="hero-meta-item"><span class="label">Impl. Phases</span><span class="value">9</span></div>
+      </div>
+    </section>
 
-    <div class="stats">
-      <div class="stat"><div class="num">1</div><div class="label">Root Entity (Project)</div></div>
-      <div class="stat"><div class="num">6</div><div class="label">Modules</div></div>
-      <div class="stat"><div class="num">25+</div><div class="label">Forms</div></div>
-      <div class="stat"><div class="num">35+</div><div class="label">Reports</div></div>
-      <div class="stat"><div class="num">7</div><div class="label">Departments</div></div>
-    </div>
+    <div class="content">
+      <h2>Architecture: Project Unites Everything</h2>
+      <p>Just as <strong>Zoho CRM</strong> treats a Deal as the parent record with related lists (Quotes, Invoices, Contacts), Chemsol treats <strong>Project</strong> as the central hub. All transactions — PR, PO, GRN, MR, MIS, Production Orders, FG Handovers — carry a <strong>Project ID lookup</strong>. Nothing exists outside a project context.</p>
 
-    <div class="hub-diagram">
-      <pre style="background:#0c1220;border:1px solid var(--border);border-radius:8px;padding:20px;font-size:0.8rem;line-height:1.7;overflow-x:auto;color:#e2e8f0;">
-<span style="color:var(--green)">Sales Order</span> ──→ <span style="color:var(--accent);font-weight:700">[ PROJECT ]</span> ←── <span style="color:var(--orange)">PR / PO / GRN</span>
-                              │                  ←── <span style="color:var(--orange)">MR / MIS</span>
-                              │                  ←── <span style="color:var(--teal)">Production</span>
-                              │                  ←── <span style="color:var(--purple)">FGHM / FGAN</span>
-                              │
-                    ┌─────────┼─────────┐
-                    │         │         │
-               <span style="color:var(--yellow)">Transport</span>  <span style="color:var(--green)">Execution</span>  <span style="color:var(--orange)">Manpower</span>
-                    │         │         │
-                 <span style="color:var(--teal)">Tools</span>  <span style="color:var(--purple)">Expenses</span>  <span style="color:var(--muted)">(5 Task Categories)</span>
-      </pre>
-    </div>
+      <div class="hub-diagram">
+        <pre>
+<span style="color:var(--accent)">┌─ Sales Order (Supply+Apply) ──► [ PROJECT ] ◄── Purchase Requisition ─┐</span>
+<span style="color:var(--accent)">│                                      │              │                 │</span>
+<span style="color:var(--accent)">│                               ┌──────┼──────┐       │                 │</span>
+<span style="color:var(--accent)">│                          ┌────┤      │      ├────┐  │                 │</span>
+<span style="color:var(--accent)">│                          ▼    ▼      ▼      ▼    ▼  ▼                 │</span>
+<span style="color:var(--accent)">│                    ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐   │</span>
+<span style="color:var(--accent)">│                    │Procure  │ │Inventory│ │Production│ │  Tasks  │   │</span>
+<span style="color:var(--accent)">│                    │PR→PO→GRN│ │MR→MIS→FG│ │Plan→BMR│ │5 Cats   │   │</span>
+<span style="color:var(--accent)">│                    └─────────┘ └─────────┘ └─────────┘ └─────────┘   │</span>
+<span style="color:var(--accent)">│                                                                       │</span>
+<span style="color:var(--accent)">│  Master Data (Global): Item Muster · Supplier Master · System Master │</span>
+<span style="color:var(--accent)">│                         BOM Master · Customer/Site Master            │</span>
+<span style="color:var(--accent)">└───────────────────────────────────────────────────────────────────────┘</span></pre>
+      </div>
 
-    <h3>Core Philosophy</h3>
-    <p>Every transaction originates from or is tagged to a <strong>Project</strong>. A Sales Order (Supply+Apply mode) auto-creates a Project. PRs, POs, GRNs, MRs, Production Orders, and FG movements all carry a <strong>Project ID lookup</strong>. Nothing exists outside a project context.</p>
+      <h3>Initial Process Flow</h3>
+      <div class="pipeline-flow">
+        <pre>
+<span style="color:var(--green);font-weight:700">STEP 1:</span> Sales Order (Supply+Apply) is accepted
+<span style="color:var(--green);font-weight:700">STEP 2:</span> Project record is auto-created with SO reference
+<span style="color:var(--green);font-weight:700">STEP 3:</span> Project Manager assigned → Execution begins
+<span style="color:var(--green);font-weight:700">STEP 4:</span> All procurement (PR→PO→GRN) tagged to this Project
+<span style="color:var(--green);font-weight:700">STEP 5:</span> Material requests (MR→MIS) tagged to this Project
+<span style="color:var(--green);font-weight:700">STEP 6:</span> Production planned &amp; executed per Project
+<span style="color:var(--green);font-weight:700">STEP 7:</span> FG Handover &amp; Acceptance per Project
+<span style="color:var(--green);font-weight:700">STEP 8:</span> 5 Task Categories track execution per Project</pre>
+      </div>
 
-    <h3>Core Flows <span style="color:var(--muted);font-weight:400;font-size:0.85rem;">(per IMPLEMENTATION_PLAN phase order)</span></h3>
+      <h3>Module Structure — Inspired by Zoho Products</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Module</th><th>Zoho Pattern</th><th>Key Features</th><th>Project Link</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td><strong>Master Data</strong></td><td>Zoho Books Items + Contacts</td><td>Item Muster, Supplier, Customer, System, BOM, Store</td><td>Global (shared)</td></tr>
+            <tr><td>2</td><td><strong>Procurement</strong></td><td>Zoho Books Purchase Module</td><td>PR→Rate Comparison→PO→GRN→QC. N line items with GST split (CGST/SGST/IGST) like Zoho Books line items</td><td>Project ID on PR, PO, GRN</td></tr>
+            <tr><td>3</td><td><strong>Inventory</strong></td><td>Zoho Inventory</td><td>MR→MIS→FG Handover/Acceptance. Warehouse tracking (Wadki/Main/Neelo/Gurgaon/Bangalore/Client Site). Stock in/out/transfer</td><td>Project ID on MR, MIS, FGHM</td></tr>
+            <tr><td>4</td><td><strong>Production</strong></td><td>Zoho Books Manufacturing</td><td>Planning→Order→BMR→Consumption→Packing→Rework. BOM vs actual tracking</td><td>Project ID on all forms</td></tr>
+            <tr><td>5</td><td><strong>Project Mgmt</strong></td><td>Zoho Projects</td><td>5 task categories: Transport, Execution, Manpower, Tools, Expenses. Conditional visibility (Area/Day)</td><td>Root entity</td></tr>
+            <tr><td>6</td><td><strong>Sales</strong></td><td>Zoho CRM + Zoho Books</td><td>SO dual-mode (Supply+Apply / Supply Only). System subtable line items like Zoho CRM line items. Commissions, warranty</td><td>SO → creates Project</td></tr>
+          </tbody>
+        </table>
+      </div>
 
-    <div class="flow">
-      <span class="flow-node">SO (Supply+Apply)</span><span class="flow-arrow">→</span>
-      <span class="flow-node" style="border-color:var(--accent);color:var(--accent)">Project</span><span class="flow-arrow">→</span>
-      <span class="flow-node">5 Task Buckets</span>
-    </div>
+      <h3>Procurement Flow (N Line Items)</h3>
+      <p>Like <strong>Zoho Books Purchase Orders</strong>, each PR/PO/GRN has a line-item subtable with autofetch fields, GST split, and HSN codes.</p>
+      <div class="flow">
+        <span class="flow-node" style="border-color:var(--primary);color:var(--primary)">Project</span><span class="flow-arrow">→</span>
+        <span class="flow-node">PR</span><span class="flow-arrow">→</span>
+        <span class="flow-node">Rate Comparison</span><span class="flow-arrow">→</span>
+        <span class="flow-node">PO (RM/RMWAD)</span><span class="flow-arrow">→</span>
+        <span class="flow-node">GRN (partial ✓)</span><span class="flow-arrow">→</span>
+        <span class="flow-node">QC/QA</span><span class="flow-arrow">→</span>
+        <span class="flow-green">Stock +</span>
+      </div>
+      <p style="font-size:13px;color:var(--gray-500);">↳ Each PO line: Item Code, Name, HSN, Qty, UOM, Rate, Basic Amount, GST%, CGST/SGST/IGST, Total</p>
 
-    <div class="flow">
-      <span class="flow-node" style="border-color:var(--accent);color:var(--accent)">Project</span><span class="flow-arrow">→</span>
-      <span class="flow-node">PR</span><span class="flow-arrow">→</span>
-      <span class="flow-node">Rate Comparison</span><span class="flow-arrow">→</span>
-      <span class="flow-node">PO (RM/RMWAD)</span><span class="flow-arrow">→</span>
-      <span class="flow-node">GRN</span><span class="flow-arrow">→</span>
-      <span class="flow-node">QC/QA</span><span class="flow-arrow">→</span>
-      <span class="flow-green">Stock +</span>
-    </div>
+      <h3>Inventory Flow</h3>
+      <div class="flow">
+        <span class="flow-node" style="border-color:var(--primary);color:var(--primary)">Project</span><span class="flow-arrow">→</span>
+        <span class="flow-node">MR</span><span class="flow-arrow">→</span>
+        <span class="flow-node">MIS</span><span class="flow-arrow">→</span>
+        <span class="flow-orange">Stock −</span>
+      </div>
 
-    <div class="flow">
-      <span class="flow-node" style="border-color:var(--accent);color:var(--accent)">Project</span><span class="flow-arrow">→</span>
-      <span class="flow-node">MR</span><span class="flow-arrow">→</span>
-      <span class="flow-node">MIS</span><span class="flow-arrow">→</span>
-      <span class="flow-orange">Stock −</span>
-    </div>
+      <h3>Production → FG Flow</h3>
+      <div class="flow">
+        <span class="flow-node" style="border-color:var(--primary);color:var(--primary)">Project</span><span class="flow-arrow">→</span>
+        <span class="flow-node">Production</span><span class="flow-arrow">→</span>
+        <span class="flow-node">FGHM</span><span class="flow-arrow">→</span>
+        <span class="flow-purple">Notify Store</span><span class="flow-arrow">→</span>
+        <span class="flow-node">FGAN</span><span class="flow-arrow">→</span>
+        <span class="flow-green">FG Stock +</span>
+      </div>
 
-    <div class="flow">
-      <span class="flow-node" style="border-color:var(--accent);color:var(--accent)">Project</span><span class="flow-arrow">→</span>
-      <span class="flow-node">Production</span><span class="flow-arrow">→</span>
-      <span class="flow-node">FGHM</span><span class="flow-arrow">→</span>
-      <span class="flow-purple">Notify Store</span><span class="flow-arrow">→</span>
-      <span class="flow-node">FGAN</span><span class="flow-arrow">→</span>
-      <span class="flow-green">FG Stock +</span>
-    </div>
+      <h3>Departments</h3>
+      <div class="card-grid">
+        <div class="card"><h4>Purchase</h4><p>PR, Rate Comparison, PO, GRN, Supplier management — all tagged to Project. Like Zoho Books purchase workflow.</p></div>
+        <div class="card"><h4>Store &amp; Logistics</h4><p>GRN, MIS, Material Return, Handover, FG Receiving, Vehicle &amp; Transport — per Project. Like Zoho Inventory warehouse ops.</p></div>
+        <div class="card"><h4>Production &amp; R&amp;D</h4><p>MR, BMR, Production Planning, RM Consumption, Packing, FGHM — per Project. Manufacturing execution.</p></div>
+        <div class="card"><h4>Project</h4><p>Create Project, 5 task categories, execution tracking. Like Zoho Projects — central to all operations.</p></div>
+        <div class="card"><h4>Sales</h4><p>SO/Work Orders, Customer/Site Master. Like Zoho CRM — SO acceptance triggers Project creation.</p></div>
+        <div class="card"><h4>QC</h4><p>QC/QA inspection, testing results on GRN items.</p></div>
+        <div class="card"><h4>Account &amp; Finance</h4><p>Read-only on financial forms, project-wise payment tracking.</p></div>
+        <div class="card"><h4>Admin</h4><p>Full access, user management, approval matrix.</p></div>
+      </div>
 
-    <h3>System Code Prefixes</h3>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>Prefix</th><th>Meaning</th><th>Example</th></tr></thead>
-        <tbody>
-          <tr><td>EP</td><td>Epoxy Flooring</td><td>EP01 (1mm), EP02 (2mm)</td></tr>
-          <tr><td>PU</td><td>PU Flooring</td><td>PU01 (1mm)</td></tr>
-          <tr><td>DEM</td><td>Demarcation Line</td><td>—</td></tr>
-          <tr><td>NUM</td><td>Numbering</td><td>—</td></tr>
-          <tr><td>ARR</td><td>Arrow Marking</td><td>—</td></tr>
-          <tr><td>ANTI</td><td>Anti Static Flooring</td><td>—</td></tr>
-          <tr><td>ESD</td><td>ESD Flooring</td><td>—</td></tr>
-          <tr><td>FIL</td><td>Filling</td><td>—</td></tr>
-          <tr><td>COV</td><td>Coving</td><td>—</td></tr>
-        </tbody>
-      </table>
-    </div>
+      <h3>System Codes (Flooring Systems)</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Prefix</th><th>Meaning</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr><td>EP</td><td>Epoxy Flooring</td><td>EP01 (1mm), EP02 (2mm)</td></tr>
+            <tr><td>PU</td><td>PU Flooring</td><td>PU01 (1mm)</td></tr>
+            <tr><td>DEM</td><td>Demarcation Line</td><td>—</td></tr>
+            <tr><td>NUM</td><td>Numbering</td><td>—</td></tr>
+            <tr><td>ARR</td><td>Arrow Marking</td><td>—</td></tr>
+            <tr><td>ANTI</td><td>Anti Static Flooring</td><td>—</td></tr>
+            <tr><td>ESD</td><td>ESD Flooring</td><td>—</td></tr>
+            <tr><td>FIL</td><td>Filling</td><td>—</td></tr>
+            <tr><td>COV</td><td>Coving</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
 
-    <h3>Departments</h3>
-    <div class="card-grid">
-      <div class="card"><h4>Purchase</h4><p>PR, Rate Comparison, PO, GRN, Supplier management — all tagged to Project.</p></div>
-      <div class="card"><h4>Store &amp; Logistics</h4><p>GRN, MIS, Material Return, Handover, FG Receiving, Vehicle &amp; Transport — per Project.</p></div>
-      <div class="card"><h4>Production &amp; R&amp;D</h4><p>MR, BMR, Production Planning, RM Consumption, Packing, FGHM — per Project.</p></div>
-      <div class="card"><h4>Project</h4><p>Create Project, 5 task categories, execution tracking. Central to all operations.</p></div>
-      <div class="card"><h4>Sales</h4><p>SO/Work Orders, Customer/Site Master. SO acceptance triggers Project creation.</p></div>
-      <div class="card"><h4>QC</h4><p>QC/QA inspection, testing results on GRN items.</p></div>
-      <div class="card"><h4>Account &amp; Finance</h4><p>Read-only on financial forms, project-wise payment tracking.</p></div>
-      <div class="card"><h4>Admin</h4><p>Full access, user management, approval matrix.</p></div>
-    </div>
+      <h3>Warehouses</h3>
+      <p>Wadki w/h · Main w/h 1 · Neelo w/h 2 · Gurgaon · Bangalore · Client Site (conditional textbox)</p>
 
-    <h3>Warehouses</h3>
-    <p>Wadki w/h · Main w/h 1 · Neelo w/h 2 · Gurgaon · Bangalore · Client Site (conditional textbox)</p>
-
-    <h3>Project-Centric Module Map</h3>
-    <div class="table-wrap">
-      <table>
-        <thead><tr><th>#</th><th>Module</th><th>Project Tagging</th><th>Key Forms</th></tr></thead>
-        <tbody>
-          <tr><td>2</td><td>Procurement</td><td>PR, PO, GRN carry Project ID</td><td>PR, Rate Comparison, PO, GRN, QC/QA</td></tr>
-          <tr><td>3</td><td>Inventory</td><td>MR, MIS carry Project ID</td><td>MR, MIS, FGHM, FGAN, Material Return, Vehicle</td></tr>
-          <tr><td>4</td><td>Production</td><td>Production Orders carry Project ID</td><td>Production Planning, BMR, Packing, Rework</td></tr>
-          <tr><td>5</td><td>Project Mgmt</td><td>Root entity</td><td>Project Record, 5 Task Categories, 15 Reports</td></tr>
-          <tr><td>6</td><td>Sales</td><td>SO → creates Project</td><td>Sales/Work Order Master, Customer/Site Master</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="footer">
-      <p>Chemsol — Zoho Creator ERP &middot; ITOTCloud Systems Pvt. Ltd.</p>
-      <p>9 Phases · 25+ Forms · 35+ Reports · Project-Centric Architecture · Built on Zoho Creator India (.in)</p>
+      <div class="footer">
+        <p>Chemsol — Zoho Creator ERP &middot; ITOTCloud Systems Pvt. Ltd.</p>
+        <p>9 Phases · 25+ Forms · 35+ Reports · Project-Centric Architecture · Built on Zoho Creator India (.in)</p>
+      </div>
     </div>
   </div>
 </body>
