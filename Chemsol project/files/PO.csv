@@ -1,0 +1,36 @@
+Unnamed: 0,Unnamed: 1,Unnamed: 2,Unnamed: 3,Unnamed: 4,Unnamed: 5,Unnamed: 6,Unnamed: 7,Unnamed: 8,Unnamed: 9,Unnamed: 10,Unnamed: 11
+,,Purchase Order (PO) Master,,,For Purchase>>,,,,,,
+,,,,,,,,,,,
+,*,RM Type,,,"1. Coding, 2. Non Coding",,,,,,
+,,,,,,,,,,,
+,*,PO Number,,,Autogenerate as per Categery,,,,,,
+,,,,,,,"(Different PO NO series for coding material (accssed by only purchase dept) 1. RM for Non coading, 2. RMWAD for Coding",,,,
+,*,PO Date,,,Today's Date,,,,,,
+,,,,,,,,,,,
+,*,Supplier Code,,,,,,,,,
+,,,,,,,,,,,
+,*,Supplier Name,,,(Supplier details Auto Fetch showed as per supplier selection),,,,,,
+,,,,,,,,,,,
+,,PR Reference,,,,,,,,,
+,,,,,,,,,,,
+,*,Bill to ,(Dropdown),*,Ship to,(Dropdown),,,,,
+,,,,,,,,,,,
+*,Sr No,Item Code,Item Name,HNS,Quantity,UOM,Rate,Basic Amount,GST%,GST Amount,Total Amount
+,1,,Require sub textbox for item description,,,,,,,,
+,2,,,,,,,,,,
+,3,,,,,,,,,,
+,4,,,,,,,,,,
+,5,,,,,,,,,,
+,,,,,,,,,,Basic,
+,*,Delivery Date,,,,,,,,CGST,
+,*,Payment Terms,,,,,,,,SGST,
+,*,Scope of Transport,Supplier/Own,,,,,,,IGST,
+,*,Mode of Transport,,,,,,,,Total Amt,
+,,,,,,,,,,(In word),
+,For Printable PO,T&C,,,,,,,,,
+,,"Please acknowledge acceptance of this order.
+Always quote our Purchase Order No. on all Challans, Bills, Correspondence. 
+Please supply the following material as per the instructions & specifications given in this order. 
+Deliveries will be accepted on any working days except national holidays, within working hours only.
+Mention batch nos. on your Invoice & attach certificate of analysis along with material safety data sheets, wherever applicable.
+Bill will not be accepted without e-way bill. If the material is not approved by our Quality Department as per COA/Test Report, the material will be returned to you. We will charge you the transportation charges for the same",,,,,,,,,
