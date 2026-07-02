@@ -540,16 +540,19 @@
         </div>
         <div class="form-demo">
           <div class="subtable-demo">
-            <div class="st-hint">Task Items (N rows)</div>
-            <div class="subtable-row" style="grid-template-columns:1fr 2fr 1fr 1fr 1fr 1fr">
+            <div class="st-hint">Task Items (N rows) <span style="color:var(--gray-400);font-weight:400;margin-left:8px">— Budget → Actual columns</span></div>
+            <div class="subtable-row" style="grid-template-columns:1fr 2fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr">
               <span style="font-size:11px;font-weight:600">Category</span>
               <span style="font-size:11px;font-weight:600">Description</span>
               <span style="font-size:11px;font-weight:600">Qty/Area</span>
               <span style="font-size:11px;font-weight:600">Rate</span>
               <span style="font-size:11px;font-weight:600">Amount</span>
               <span style="font-size:11px;font-weight:600">Manpower</span>
+              <span style="font-size:11px;font-weight:600;color:var(--green)">Actual Qty</span>
+              <span style="font-size:11px;font-weight:600;color:var(--green)">Actual Rate</span>
+              <span style="font-size:11px;font-weight:600;color:var(--green)">Actual Amt</span>
             </div>
-            <div class="subtable-row" style="grid-template-columns:1fr 2fr 1fr 1fr 1fr 1fr">
+            <div class="subtable-row" style="grid-template-columns:1fr 2fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr">
               <select style="font-size:12px"><option selected>Transport</option><option>Execution</option><option>Manpower</option><option>Tools</option><option>Overhead</option></select>
               <input type="text" value="Intracity material movement" style="font-size:12px">
               <input type="number" value="15" style="font-size:12px">
@@ -557,21 +560,27 @@
               <input type="number" value="30000" style="font-size:12px" readonly>
               <input type="number" value="2" style="font-size:12px">
             </div>
-            <div class="subtable-row" style="grid-template-columns:1fr 2fr 1fr 1fr 1fr 1fr">
+            <div class="subtable-row" style="grid-template-columns:1fr 2fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr">
               <select style="font-size:12px"><option selected>Execution</option><option>Transport</option><option>Manpower</option><option>Tools</option><option>Overhead</option></select>
               <input type="text" value="Grinding & Primer application" style="font-size:12px">
               <input type="number" value="500" style="font-size:12px">
               <input type="number" value="85" style="font-size:12px">
               <input type="number" value="42500" style="font-size:12px" readonly>
               <input type="number" value="4" style="font-size:12px">
+              <input type="number" value="520" style="font-size:12px">
+              <input type="number" value="82" style="font-size:12px">
+              <input type="number" value="42640" style="font-size:12px" readonly>
             </div>
-            <div class="subtable-row" style="grid-template-columns:1fr 2fr 1fr 1fr 1fr 1fr">
+            <div class="subtable-row" style="grid-template-columns:1fr 2fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr">
               <select style="font-size:12px"><option selected>Manpower</option><option>Transport</option><option>Execution</option><option>Tools</option><option>Overhead</option></select>
               <input type="text" value="Skilled labour - Day basis" style="font-size:12px">
               <input type="number" value="60" style="font-size:12px">
               <input type="number" value="800" style="font-size:12px">
               <input type="number" value="48000" style="font-size:12px" readonly>
               <input type="number" value="6" style="font-size:12px">
+              <input type="number" value="62" style="font-size:12px">
+              <input type="number" value="800" style="font-size:12px">
+              <input type="number" value="49600" style="font-size:12px" readonly>
             </div>
           </div>
         </div>
@@ -1232,6 +1241,45 @@
           <tr><td>18</td><td>Rework</td><td>BMR (failed)</td><td>Rework with QC revalidation</td><td>—</td></tr>
         </tbody>
       </table>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- P&L Summary -->
+    <!-- ============================================================ -->
+    <div class="module-group" id="pnl" style="border: 2px solid var(--primary);">
+      <h3>Project P&amp;L Statement <span class="mg-badge">Computed — No data entry</span></h3>
+      <p>Revenue minus all tracked costs, computed automatically from transactional forms. All figures are formula-driven.</p>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0">
+        <div style="background:#f0fdf4;border-radius:10px;padding:16px">
+          <h4 style="color:var(--green);margin:0 0 8px 0;font-size:14px">Revenue</h4>
+          <table style="width:100%;border-collapse:collapse;font-size:13px">
+            <tr><td>SO Work Order Amount</td><td style="text-align:right;font-weight:600">&#8377; 2,15,000</td></tr>
+            <tr><td>Transportation (billed)</td><td style="text-align:right;font-weight:600">&#8377; 30,000</td></tr>
+            <tr style="border-top:2px solid var(--green);font-weight:700"><td>Total Revenue</td><td style="text-align:right">&#8377; 2,45,000</td></tr>
+          </table>
+        </div>
+        <div style="background:#fef2f2;border-radius:10px;padding:16px">
+          <h4 style="color:var(--red);margin:0 0 8px 0;font-size:14px">Costs</h4>
+          <table style="width:100%;border-collapse:collapse;font-size:13px">
+            <tr><td>Materials (GRN &times; PO Rate)</td><td style="text-align:right">&#8377; 82,000</td></tr>
+            <tr><td>Execution (Task Actual)</td><td style="text-align:right">&#8377; 42,640</td></tr>
+            <tr><td>Manpower (Task Actual)</td><td style="text-align:right">&#8377; 49,600</td></tr>
+            <tr><td>Transport + Loading (Task + GRN)</td><td style="text-align:right">&#8377; 35,400</td></tr>
+            <tr><td>Tools + Overhead (Task Actual)</td><td style="text-align:right">&#8377; 12,000</td></tr>
+            <tr><td>Production (BMR RM + Packing)</td><td style="text-align:right">&#8377; 8,960</td></tr>
+            <tr style="border-top:2px solid var(--red);font-weight:700"><td>Total Cost</td><td style="text-align:right">&#8377; 2,30,600</td></tr>
+          </table>
+        </div>
+      </div>
+      <div style="background:#f0fdf4;border-radius:10px;padding:16px;text-align:center;font-size:18px;font-weight:700">
+        Gross Margin: <span style="color:var(--green)">&#8377; 14,400</span>
+        <span style="margin:0 16px;color:var(--gray-300)">|</span>
+        Margin %: <span style="color:var(--green)">5.88%</span>
+      </div>
+      <p style="font-size:12px;color:var(--gray-500);margin:8px 0 0 0">
+        <strong>Data sources:</strong> SO (Revenue) &middot; PO &times; GRN (Material Cost) &middot; Task Budget Actuals (Execution, Manpower, Transport, Tools, Overhead) &middot; GRN Transport subform (Logistics) &middot; BMR + RM Consumption + Packing (Production)
+      </p>
     </div>
 
     <!-- Data Flow Key -->

@@ -393,6 +393,7 @@
             <span class="phase-tag">Single Task Table · No Conditional Sections</span>
           </div>
           <p>One table for all task categories. No more separate sections with conditional visibility.</p>
+          <h5>Budget</h5>
           <div class="table-wrap">
             <table>
               <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
@@ -403,6 +404,17 @@
                 <tr><td>4</td><td>Rate</td><td>Currency</td><td></td><td>Per unit rate</td></tr>
                 <tr><td>5</td><td>Amount</td><td>Formula</td><td></td><td>Qty &times; Rate</td></tr>
                 <tr><td>6</td><td>Manpower</td><td>Number</td><td></td><td>Head count (if applicable)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h5>Actuals (captured during execution)</h5>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>7</td><td>Actual Qty</td><td>Number</td><td></td><td>Actual quantity consumed / work done</td></tr>
+                <tr><td>8</td><td>Actual Rate</td><td>Currency</td><td></td><td>Actual per-unit rate paid</td></tr>
+                <tr><td>9</td><td>Actual Amount</td><td>Formula</td><td></td><td>Actual Qty &times; Actual Rate</td></tr>
               </tbody>
             </table>
           </div>
@@ -979,6 +991,129 @@
               </tbody>
             </table>
           </div>
+        </div>
+      </div>
+
+      <h2>7 · Project P&amp;L Statement <span class="badge badge-blue">Computed View</span></h2>
+      <p>Project-level Profit &amp; Loss — revenue from SO minus all tracked costs. Data is pulled from transactional forms (read-only computed view, no data entry).</p>
+
+      <div class="phase-container">
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">7A</span>
+            <span class="phase-title">Revenue</span>
+            <span class="phase-tag">From Sales Order</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Component</th><th>Source</th><th>Formula</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Work Order Amount</td><td>SO System subtable</td><td>&Sigma; (Area &times; Rate) per line</td></tr>
+                <tr><td>2</td><td>Transportation Charges</td><td>SO header</td><td>Transportation Amount (if charged to client)</td></tr>
+                <tr><td>3</td><td>Total Revenue</td><td>Formula</td><td>Work Order Amount + Transportation Charges</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">7B</span>
+            <span class="phase-title">Cost of Materials</span>
+            <span class="phase-tag">From PO &times; GRN</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Component</th><th>Source</th><th>Formula</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Raw Material Cost</td><td>PO + GRN</td><td>&Sigma; (GRN Received Qty &times; PO Rate) per item</td></tr>
+                <tr><td>2</td><td>Packing Material Cost</td><td>PO + GRN</td><td>&Sigma; (GRN Received Qty &times; PO Rate) for packing items</td></tr>
+                <tr><td>3</td><td>Consumable / Tool Cost</td><td>PO + GRN</td><td>&Sigma; (GRN Received Qty &times; PO Rate) for consumable items</td></tr>
+                <tr><td>4</td><td>Total Material Cost</td><td>Formula</td><td>RM + Packing + Consumable</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">7C</span>
+            <span class="phase-title">Execution &amp; Manpower Cost</span>
+            <span class="phase-tag">From Task Budget Actuals</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Component</th><th>Source</th><th>Formula</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Execution Cost</td><td>Task Budget</td><td>SUM of Actual Amount where Category = Execution</td></tr>
+                <tr><td>2</td><td>Manpower Cost</td><td>Task Budget</td><td>SUM of Actual Amount where Category = Manpower</td></tr>
+                <tr><td>3</td><td>Subtotal</td><td>Formula</td><td>Execution + Manpower</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">7D</span>
+            <span class="phase-title">Logistics &amp; Overhead Cost</span>
+            <span class="phase-tag">From Task Budget Actuals + GRN Transport</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Component</th><th>Source</th><th>Formula</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Transport Cost</td><td>Task Budget + GRN Transport</td><td>SUM Actual Amount (Category=Transport) + &Sigma; GRN Transport subform charges</td></tr>
+                <tr><td>2</td><td>Tools Cost</td><td>Task Budget</td><td>SUM of Actual Amount where Category = Tools</td></tr>
+                <tr><td>3</td><td>Overhead Cost</td><td>Task Budget</td><td>SUM of Actual Amount where Category = Overhead</td></tr>
+                <tr><td>4</td><td>Loading / Unloading</td><td>GRN Transport subform</td><td>&Sigma; Loading/Unloading Charges from GRN</td></tr>
+                <tr><td>5</td><td>Subtotal</td><td>Formula</td><td>Transport + Tools + Overhead + Loading/Unloading</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">7E</span>
+            <span class="phase-title">Production Cost</span>
+            <span class="phase-tag">From BMR + RM Consumption + Packing</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Component</th><th>Source</th><th>Formula</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>RM Consumption (Actual)</td><td>RM Consumption Entry</td><td>&Sigma; (Actual Qty &times; Item Rate from PIM)</td></tr>
+                <tr><td>2</td><td>Packing Material (Actual)</td><td>Packing Entry</td><td>&Sigma; packing material costs</td></tr>
+                <tr><td>3</td><td>Rework Cost</td><td>Rework Register</td><td>&Sigma; rework material consumed costs</td></tr>
+                <tr><td>4</td><td>Subtotal</td><td>Formula</td><td>RM Consumption + Packing + Rework</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="phase" style="border: 2px solid var(--primary); border-radius: 12px;">
+          <div class="phase-header">
+            <span class="phase-number">7F</span>
+            <span class="phase-title">Project P&amp;L Summary</span>
+            <span class="phase-tag">Auto-computed on Project Close</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Line</th><th>Amount</th><th>Source</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td><strong>Total Revenue (7A)</strong></td><td>Formula</td><td>SO Work Order Amount + Transportation</td></tr>
+                <tr><td style="border-left: 3px solid var(--red);">2</td><td><strong>Total Material Cost (7B)</strong></td><td>Formula</td><td>RM + Packing + Consumable (PO &times; GRN)</td></tr>
+                <tr><td style="border-left: 3px solid var(--red);">3</td><td><strong>Total Execution &amp; Manpower (7C)</strong></td><td>Formula</td><td>Task Budget Actuals sum</td></tr>
+                <tr><td style="border-left: 3px solid var(--red);">4</td><td><strong>Total Logistics &amp; Overhead (7D)</strong></td><td>Formula</td><td>Task Budget Actuals + GRN Transport</td></tr>
+                <tr><td style="border-left: 3px solid var(--red);">5</td><td><strong>Total Production Cost (7E)</strong></td><td>Formula</td><td>RM Consumption + Packing + Rework</td></tr>
+                <tr><td>6</td><td><strong>Total Cost</strong></td><td>Formula</td><td>7B + 7C + 7D + 7E</td></tr>
+                <tr style="background: #f0fdf4; font-weight: 700;"><td>7</td><td><strong>Gross Margin</strong></td><td>Formula</td><td>Total Revenue − Total Cost</td></tr>
+                <tr style="background: #f0fdf4; font-weight: 700;"><td>8</td><td><strong>Margin %</strong></td><td>Formula</td><td>(Gross Margin / Total Revenue) &times; 100</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>Automation:</strong> P&amp;L auto-calculated on Project Close. Real-time view accessible from Project dashboard. Exportable as PDF.</p>
         </div>
       </div>
 

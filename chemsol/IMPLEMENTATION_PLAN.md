@@ -645,6 +645,7 @@ Fields needed (from Screens.csv):
 
 Single table with Category dropdown — no separate sections or conditional visibility rules.
 
+**Budget columns:**
 | # | Field | Type | Notes |
 |---|-------|------|-------|
 | 1 | Category | Dropdown | Transport / Execution / Manpower / Tools / Overhead |
@@ -653,8 +654,17 @@ Single table with Category dropdown — no separate sections or conditional visi
 | 4 | Rate | Currency | Per unit |
 | 5 | Amount | Formula | Qty × Rate |
 | 6 | Manpower | Number | Head count (if applicable) |
+
+**Actual columns (added for P&amp;L):**
+| # | Field | Type | Notes |
+|---|-------|------|-------|
+| 7 | Actual Qty | Number | Actual quantity consumed / work done |
+| 8 | Actual Rate | Currency | Actual per-unit rate paid |
+| 9 | Actual Amount | Formula | Actual Qty × Actual Rate |
+
 - Execution Base = Day Basis → Show Manpower tasks
 - Transportation, Tools, Additional Expenses always shown
+- Actual columns feed Project P&amp;L cost calculation
 
 ### 7.3 Project Reports
 - Project Report (overall)
@@ -809,18 +819,49 @@ Single table with Category dropdown — no separate sections or conditional visi
 | Open Projects | Project Report |
 | Active PO's | Monthly Report |
 | Running Status | Annual Report |
-| Project Margins | Sitewise Costing Report |
+| Project P&amp;L | Sitewise Costing Report |
 | Issues | Manpower Report |
 | Execution Target vs Achievement | Machinery Report |
 | Manpower Cost Monthly | Tools Report |
 | Transportation Monthly | Issues Report |
-| Loading/Unloading Charges | Project Margin Report |
+| Loading/Unloading Charges | Project P&amp;L Report |
 | | Material Consumption vs Work Completion |
 | | Manpower vs Work Completion |
 | | Transportation Report |
 | | Loading/Unloading Report |
 | | Consumable Report |
 | | Task Report |
+
+### 9.5 Project P&amp;L Report (New)
+
+Computed at Project level — no data entry required. All figures derived from transactional forms.
+
+| Line | Component | Data Source | Formula |
+|------|-----------|-------------|---------|
+| Revenue | Work Order Amount | SO System subtable | Σ (Area × Rate) per system line |
+| Revenue | Transportation billed | SO header | Transportation Amount field |
+| Cost | Raw Materials | PO × GRN | Σ (GRN Received Qty × PO Rate) for RM items |
+| Cost | Packing Materials | PO × GRN | Σ (GRN Received Qty × PO Rate) for packing items |
+| Cost | Execution (labour) | Task Budget Actuals | SUM Actual Amount (Category=Execution) |
+| Cost | Manpower | Task Budget Actuals | SUM Actual Amount (Category=Manpower) |
+| Cost | Transport | Task Budget Actuals + GRN Transport | SUM Actual Amount (Category=Transport) + Σ GRN Transport Charges |
+| Cost | Tools | Task Budget Actuals | SUM Actual Amount (Category=Tools) |
+| Cost | Overhead | Task Budget Actuals | SUM Actual Amount (Category=Overhead) |
+| Cost | Loading/Unloading | GRN Transport subform | Σ Loading/Unloading Charges |
+| Cost | RM Consumption (actual) | RM Consumption Entry | Σ (Actual Qty × Item Rate from PIM) |
+| Cost | Packing Material (actual) | Packing Entry subform | Σ packing item costs |
+| Cost | Rework | Rework Register Material subform | Σ rework material costs |
+| **Summary** | **Total Revenue** | — | SO Work Order + SO Transportation |
+| | **Total Cost** | — | Material + Execution + Manpower + Logistics + Production |
+| | **Gross Margin** | — | Total Revenue − Total Cost |
+| | **Margin %** | — | (Gross Margin / Total Revenue) × 100 |
+
+**Automation:**
+- Auto-calculated on Project Close (snapshot stored)
+- Real-time view from Project dashboard anytime
+- Data completeness check before calculation
+- Margin threshold alert if < 15%
+- Exportable as PDF with company logo and signatures
 
 ---
 
@@ -898,6 +939,15 @@ Production → FGHM (Production hands over FG)
 - **FGAN posting**: FG qty added to stock after acceptance approval
 - **Material Return**: Qty added back to stock
 - **Min/Max stock**: Alert when stock level crosses thresholds (from Item Muster)
+
+### 10.8 P&amp;L Calculation Rules (New)
+- **On Project Close**: P&amp;L auto-calculated from all linked forms; snapshot stored
+- **Real-time view**: Live P&amp;L accessible from Project dashboard at any time
+- **Data completeness check**: Before calculation, verify all GRNs posted, all Task Budget Actuals filled, all BMRs closed
+- **Margin threshold alert**: If Gross Margin < 15%, notify Account & Finance + Project Manager
+- **P&amp;L snapshot**: On project close, frozen P&amp;L record created (no further changes)
+- **Export**: P&amp;L report exportable as PDF with company logo, project details, signatures
+- **Project margin calculation**: Total Revenue − (Material Cost + Execution + Manpower + Transport + Tools + Overhead + Production Cost)
 
 ---
 

@@ -105,7 +105,7 @@
           <div class="card"><h4>Open Projects</h4><p>Active projects with status</p></div>
           <div class="card"><h4>Active PO's per Project</h4><p>Procurement tracking</p></div>
           <div class="card"><h4>Running Status</h4><p>Task completion %</p></div>
-          <div class="card"><h4>Project Margins</h4><p>Profitability tracking</p></div>
+          <div class="card"><h4>Project P&amp;L</h4><p>Revenue − Material − Execution − Manpower − Logistics − Production</p></div>
           <div class="card"><h4>Issues per Project</h4><p>Issue tracking</p></div>
           <div class="card"><h4>Execution vs Achievement</h4><p>Target tracking</p></div>
           <div class="card"><h4>Manpower Cost Monthly</h4><p>Labour costs</p></div>
@@ -129,6 +129,47 @@
           <div class="card">Consumable Report</div>
           <div class="card">Task Report</div>
         </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">6</span>
+          <span class="phase-title">Project P&amp;L Report</span>
+          <span class="phase-tag">Computed · Project-level</span>
+        </div>
+        <p>Project-level Profit &amp; Loss automatically computed from transactional data. No data entry required — all figures are formula-driven from existing forms.</p>
+
+        <h4>P&amp;L Summary (per Project)</h4>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Line</th><th>Component</th><th>Data Source</th><th>Computation</th></tr></thead>
+            <tbody>
+              <tr><td style="font-weight:600;border-left:3px solid var(--green);">Revenue</td><td>Work Order Amount</td><td>SO System subtable</td><td>&Sigma; (Area &times; Rate) per system line item</td></tr>
+              <tr><td style="font-weight:600;border-left:3px solid var(--green);"></td><td>Transportation Charges (billed)</td><td>SO header</td><td>Transportation Amount field</td></tr>
+              <tr><th colspan="4" style="background:var(--gray-50);">Cost of Materials</th></tr>
+              <tr><td style="border-left:3px solid var(--red);">Cost</td><td>Raw Materials</td><td>PO line items &times; GRN received qty</td><td>&Sigma; (GRN Received Qty &times; PO Rate) for RM items</td></tr>
+              <tr><td style="border-left:3px solid var(--red);">Cost</td><td>Packing Materials</td><td>PO line items &times; GRN received qty</td><td>&Sigma; (GRN Received Qty &times; PO Rate) for packing items</td></tr>
+              <tr><th colspan="4" style="background:var(--gray-50);">Execution &amp; Manpower</th></tr>
+              <tr><td style="border-left:3px solid var(--red);">Cost</td><td>Execution (labour/work)</td><td>Task Budget Actuals (Category = Execution)</td><td>SUM of Actual Amount</td></tr>
+              <tr><td style="border-left:3px solid var(--red);">Cost</td><td>Manpower</td><td>Task Budget Actuals (Category = Manpower)</td><td>SUM of Actual Amount</td></tr>
+              <tr><th colspan="4" style="background:var(--gray-50);">Logistics &amp; Overhead</th></tr>
+              <tr><td style="border-left:3px solid var(--red);">Cost</td><td>Transport</td><td>Task Budget Actuals (Category = Transport) + GRN Transport subform</td><td>SUM Actual Amount + &Sigma; GRN Transportation Charges</td></tr>
+              <tr><td style="border-left:3px solid var(--red);">Cost</td><td>Tools</td><td>Task Budget Actuals (Category = Tools)</td><td>SUM of Actual Amount</td></tr>
+              <tr><td style="border-left:3px solid var(--red);">Cost</td><td>Overhead</td><td>Task Budget Actuals (Category = Overhead)</td><td>SUM of Actual Amount</td></tr>
+              <tr><td style="border-left:3px solid var(--red);">Cost</td><td>Loading/Unloading</td><td>GRN Transport subform</td><td>&Sigma; Loading/Unloading Charges</td></tr>
+              <tr><th colspan="4" style="background:var(--gray-50);">Production</th></tr>
+              <tr><td style="border-left:3px solid var(--red);">Cost</td><td>RM Consumption (actual)</td><td>RM Consumption Entry</td><td>&Sigma; (Actual Qty &times; Item Rate from PIM)</td></tr>
+              <tr><td style="border-left:3px solid var(--red);">Cost</td><td>Packing Material (actual)</td><td>Packing Entry subform</td><td>&Sigma; packing item costs</td></tr>
+              <tr><td style="border-left:3px solid var(--red);">Cost</td><td>Rework</td><td>Rework Register Material subform</td><td>&Sigma; rework material costs</td></tr>
+              <tr style="background:#f0fdf4;font-weight:700;"><th colspan="4">P&amp;L Summary</th></tr>
+              <tr><td></td><td>Total Revenue</td><td colspan="2">SO Work Order Amount + SO Transportation</td></tr>
+              <tr><td></td><td>Total Cost</td><td colspan="2">Material + Execution + Manpower + Logistics + Production</td></tr>
+              <tr style="background:#f0fdf4;font-weight:700;"><td></td><td>Gross Margin</td><td colspan="2">Total Revenue − Total Cost</td></tr>
+              <tr style="background:#f0fdf4;font-weight:700;"><td></td><td>Margin %</td><td colspan="2">(Gross Margin / Total Revenue) &times; 100</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p><strong>Filters:</strong> By Project ID, Date Range (SO Date), Project Status. <strong>Export:</strong> PDF / CSV.</p>
       </div>
 
       <h2>Automation &amp; Business Rules</h2>
@@ -232,6 +273,9 @@
               <tr><td>GRN Overdue</td><td>Purchase + Store</td><td>In-app</td></tr>
               <tr><td>FGHM Submitted</td><td>Store &amp; Logistics</td><td>Pop-up</td></tr>
               <tr><td>FGAN Approval Pending</td><td>Store Manager</td><td>In-app</td></tr>
+              <tr><td><strong>Project Close</strong></td><td>Account &amp; Finance + Project Manager</td><td>In-app + Email</td></tr>
+              <tr><td><strong>P&amp;L Margin below threshold</strong></td><td>Account &amp; Finance + Project Manager</td><td>Alert</td></tr>
+              <tr><td><strong>Task Budget Actuals pending</strong></td><td>Project Coordinator</td><td>Alert</td></tr>
             </tbody>
           </table>
         </div>
@@ -293,6 +337,22 @@
           <li style="margin-bottom: 6px;"><strong>FGAN approval</strong> — FG qty added to stock after acceptance</li>
           <li style="margin-bottom: 6px;"><strong>Material Return</strong> — Qty added back to stock</li>
           <li style="margin-bottom: 6px;"><strong>Min/Max stock</strong> — Alert when stock crosses thresholds</li>
+        </ul>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">G</span>
+          <span class="phase-title">P&amp;L Calculation Rules</span>
+          <span class="phase-tag">Auto-computed on Project Close</span>
+        </div>
+        <ul style="color: var(--gray-600); margin: 12px 0; padding-left: 20px;">
+          <li style="margin-bottom: 6px;"><strong>On Project Close</strong> — P&amp;L auto-calculated from all linked forms; snapshot stored</li>
+          <li style="margin-bottom: 6px;"><strong>Real-time view</strong> — Live P&amp;L accessible from Project dashboard at any time (not just at close)</li>
+          <li style="margin-bottom: 6px;"><strong>Data completeness check</strong> — Before calculation, verify all GRNs are posted, all Task Budget Actuals filled, all BMRs closed</li>
+          <li style="margin-bottom: 6px;"><strong>Margin threshold alert</strong> — If Gross Margin &lt; 15%, notify Account &amp; Finance + Project Manager</li>
+          <li style="margin-bottom: 6px;"><strong>P&amp;L snapshot</strong> — On project close, a frozen P&amp;L record is created (no further changes)</li>
+          <li style="margin-bottom: 6px;"><strong>Export</strong> — P&amp;L report exportable as PDF (with company logo, project details, signatures)</li>
         </ul>
       </div>
 

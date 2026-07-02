@@ -33,7 +33,7 @@ Nothing exists outside a project context. Master Data (Item Muster, Suppliers, C
 ### Project Hub (Root) + Sales
 - **Sales Order Master** — Supply+Apply mode (auto-creates Project). System-code subtable with thickness, area, UOM, rate, amount. Commission, warranty, transport scope.
 - **Project** — Project ID, name, SO ref, address, manager, execution base (Area/Day), start/end date, cost. Systems subform.
-- **Task Budget** — Single table with Category dropdown (Transport / Execution / Manpower / Tools / Overhead), Description, Qty/Area, Rate, Amount, Manpower.
+- **Task Budget** — Single table with Category dropdown (Transport / Execution / Manpower / Tools / Overhead), Description, Qty/Area, Rate, Amount, Manpower. Plus Actual Qty, Actual Rate, Actual Amount columns for P&amp;L.
 
 ### Procurement (PR→PO→GRN→QC) — Tagged to Project
 1. **PR** (Purchase Requisition) — PR# autogen, Project ID lookup, dept auto from login, items with autofill code/name/UOM/lead time.
@@ -87,6 +87,7 @@ Nothing exists outside a project context. Master Data (Item Muster, Suppliers, C
 - **Rate Comparison**: Missing data notification to Purchase dept.
 - **Notifications**: Pop-up triggers (e.g., FGHM submission → Store/Logistics notified).
 - **SO → Project**: Auto-create Project on SO acceptance (Supply+Apply mode).
+- **P&amp;L Calculation**: Project-level P&amp;L auto-computed on Project Close. Revenue from SO minus costs from Materials (PO×GRN), Execution/Manpower/Transport/Tools/Overhead (Task Budget Actuals), Production (BMR RM Consumption + Packing).
 
 ## Key Conventions
 
@@ -101,4 +102,5 @@ Nothing exists outside a project context. Master Data (Item Muster, Suppliers, C
 - Open PO Register, PO vs GRN Pending, Vendor Performance, Purchase by Item Group/Project, Price Comparison, Transport Reports
 - Daily Production Report, BOM vs Actual Consumption, Machine Utilization
 - Project Margin, Sitewise Costing, Manpower vs Work Completion, Task Report
+- Project P&amp;L Report (Revenue − Total Cost = Gross Margin, computed view)
 - All reports filterable by Project ID
