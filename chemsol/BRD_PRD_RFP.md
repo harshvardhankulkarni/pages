@@ -28,7 +28,7 @@
 
 **Company:** Chemsol — Flooring & Construction Materials  
 **Platform:** Zoho Creator (India .in instance)  
-**Architecture:** Two-Stream — Stream A (Pre-Project): Procurement for stock, no Project ID. Stream B (Project-Centric): SO→Project triggers downstream forms with Project ID.  
+**Architecture:** Two-Stream — Stream A (Pre-Project): Procurement for stock, no Project ID. Stream B (Project-Centric): SO (Supply+Apply)→Project triggers downstream forms with Project ID; SO (Supply Only) is a direct FG sale with no Project.  
 **Users:** Purchase, Sales, Store & Logistics, Account & Finance, Admin, Project Coordinator, Project Managers (3)  
 **Modules:** 7 groups — Master Data, Sales, Project Management, Procurement, Inventory, Production, P&L  
 **Forms:** 18 forms + 2 computed reports  
@@ -255,9 +255,10 @@ Every form uses a **single field table** with a **Section** column. The Section 
 
 #### FORM: Sales / Work Order Master (SO)
 
-**Purpose:** Customer order intake. Auto-creates Project on acceptance.  
-**Mode:** Supply+Apply (single mode)  
-**Subforms:** System Line Items (N rows), Commission (1 row, conditional)
+**Purpose:** Customer order intake with **conditional line-item subform** driven by a `Sales Type` controlling field.  
+**Mode:** Dual — (A) **Supply+Apply** sells a **SYSTEM** (auto-creates Project, Stream B root); (B) **Supply Only** sells **FG directly** (NO Project, direct stock sale).  
+**Controlling Field:** `Sales Type` (Header dropdown) toggles subform visibility + downstream automation.  
+**Subforms:** Subform A — System Lines (N rows, Supply+Apply), Subform B — FG Lines (N rows, Supply Only), Commission (1 row, conditional)
 
 | # | Field Name | Field Type | Section | Req | Notes / Options |
 |---|---|---|---|---|---|
@@ -278,30 +279,45 @@ Every form uses a **single field table** with a **Section** column. The Section 
 | 15 | Site Address | Multi-line | Header | * | — |
 | 16 | Site Manager/Incharge | Text | Header | | — |
 | 17 | Contact No (Site) | Phone | Header | | — |
-| 18 | Project Type | Dropdown | Header | * | 1.Industrial, 2.Commercial |
-| 19 | **System Line Items** | **Subform (N rows)** | **Subform** | * | System/Product line items |
+| 18 | Project Type | Dropdown | Header | | 1.Industrial, 2.Commercial — **conditional: shown/required only when Sales Type = Supply+Apply** |
+| 19 | **Sales Type (CONTROLLING FIELD)** | Dropdown | Header | * | 1. Supply+Apply (sell SYSTEM → auto-creates Project) · 2. Supply Only (sell FG directly → NO Project). Drives subform visibility + automation. |
+| 20 | **Subform A — System Lines** | **Subform (N rows)** | **Subform** | | **Visible when Sales Type = Supply+Apply.** System/Product line items |
 |   | — System Code | Lookup | Subform Column | * | From System Master |
 |   | — System Name | AutoFetch | Subform Column | * | — |
-|   | — Thickness | Text | Subform Column | | — |
+|   | — Thickness | Text | Subform Column | | e.g., 1mm, 2mm |
 |   | — Area | Number | Subform Column | * | Area in SqM |
-|   | — UOM | Dropdown | Subform Column | | Conditional |
-|   | — Rate | Currency | Subform Column | * | Per unit rate |
+|   | — UOM | Dropdown | Subform Column | | SqM / Mtr / Nos (area UOM) |
+|   | — Rate | Currency | Subform Column | * | Per-unit system rate |
 |   | — Amount | Formula | Subform Column | * | Area × Rate |
-| 20 | **Commission** | **Subform (1 row, conditional)** | **Subform** | | Visible if Commission checkbox checked |
+|   | — Commission % | Number | Subform Column | | Per-line commission % |
+|   | — Warranty | Text | Subform Column | | Per-line warranty (copies to Project) |
+|   | — Transport Scope | Dropdown | Subform Column | | Per-line transport scope |
+| 21 | **Subform B — FG Lines** | **Subform (N rows)** | **Subform** | | **Visible when Sales Type = Supply Only.** Direct FG sale — NO Project |
+|   | — FG Code | Lookup | Subform Column | * | From FG Handover / Item Muster (FG type) |
+|   | — FG Name | AutoFetch | Subform Column | * | — |
+|   | — Qty | Number | Subform Column | * | FG quantity sold |
+|   | — UOM | AutoFetch | Subform Column | * | From Item Muster |
+|   | — Rate | Currency | Subform Column | * | FG unit rate |
+|   | — Amount | Formula | Subform Column | * | Qty × Rate |
+| 22 | **Commission** | **Subform (1 row, conditional)** | **Subform** | | Visible if Commission checkbox checked (Supply+Apply) |
 |   | — Commission | Checkbox | Subform Column | | Show/hide toggle for this subform |
 |   | — Based On | Dropdown | Subform Column | * | Percentage / Fix Amount |
 |   | — Commission Amount | Currency | Subform Column | * | — |
 |   | — Commission Paid To | Text | Subform Column | | — |
-| 21 | Total Work Order Amount | Formula | Footer | * | Sum of line Amounts |
-| 22 | Payment Terms | Text | Footer | * | — |
-| 23 | Transportation Scope | Dropdown | Footer | | — |
-| 24 | Transportation Amount | Currency | Footer | | — |
-| 25 | Lead Time | Number (Days) | Footer | | — |
-| 26 | PO/BOQ Attachment | File upload | Footer | | Multiple files |
-| 27 | Warranty | Text | Footer | | — |
-| 28 | Is Proper System Required | Checkbox | Footer | | — |
+| 23 | Total Work Order Amount | Formula | Footer | * | Sum of **active** subform line Amounts (System or FG) |
+| 24 | Payment Terms | Text | Footer | * | — |
+| 25 | Transportation Scope | Dropdown | Footer | | — |
+| 26 | Transportation Amount | Currency | Footer | | — |
+| 27 | Lead Time | Number (Days) | Footer | | — |
+| 28 | PO/BOQ Attachment | File upload | Footer | | Multiple files |
+| 29 | Warranty | Text | Footer | | — |
+| 30 | Is Proper System Required | Checkbox | Footer | | — |
 
-**Automation:** Supply+Apply → on acceptance, auto-creates Project record. Commission conditional on checkbox. System Code → autofetch System Name.
+**Controlling-Field Logic (Zoho Creator):** One SO form with **two subforms**. A show/hide rule on `Sales Type` displays Subform A (Supply+Apply) or Subform B (Supply Only); the inactive subform is hidden and its validation skipped. At least one line is required in the active subform.
+
+**Automation per Sales Type:**
+- **Supply+Apply:** Subform A shown → validate ≥1 system line → on acceptance **auto-creates Project** (Stream B root); Systems subform copied from SO System Lines → downstream MR/MIS/Production/Service/Finance/Logistics carry Project ID → **MR Material Allocation + 80% alert active**. System composition (System→FG→RM via BOM) drives backend consumption.
+- **Supply Only:** Subform B shown → validate ≥1 FG line → **NO Project created** → routes to FG dispatch / customer invoice only (Stream A-adjacent stock sale). **No MR allocation, no 80% alert, no project consumption tracking.**
 
 ---
 
@@ -522,10 +538,11 @@ Every form uses a **single field table** with a **Section** column. The Section 
 | 2 | MR Date | Date | Header | * | Today's Date |
 | 3 | Requisition Type | Dropdown | Header | * | Production / R&D |
 | 4 | Batch Number | Text | Header | | — |
-| 5 | Department | AutoFetch | Header | * | As per user login |
-| 6 | Requested By | Text | Header | * | Employee Name |
-| 7 | Priority | Dropdown | Header | * | Normal / Urgent / Emergency |
-| 8 | **Line Items** | **Subform (N rows)** | **Subform** | * | Materials requested |
+| 5 | Project ID | Lookup | Header | * | From Project Master (Stream B root) — anchors the Material Allocation |
+| 6 | Department | AutoFetch | Header | * | As per user login |
+| 7 | Requested By | Text | Header | * | Employee Name |
+| 8 | Priority | Dropdown | Header | * | Normal / Urgent / Emergency |
+| 9 | **Line Items** | **Subform (N rows)** | **Subform** | * | Materials requested (RM only) |
 |   | — Sr No | Number | Subform Column | * | Auto |
 |   | — Item Code | Lookup | Subform Column | * | From Purchase Item Muster |
 |   | — Item Name | AutoFetch | Subform Column | | — |
@@ -534,8 +551,18 @@ Every form uses a **single field table** with a **Section** column. The Section 
 |   | — Available Stock | AutoFetch | Subform Column | | From current stock |
 |   | — Required Qty | Number | Subform Column | * | — |
 |   | — Remarks | Multi-line | Subform Column | | — |
+| 10 | **Material Allocation** | **Subform (N rows)** | **Subform** | * | **Per-project consumption budget (NEW)** — one line per allocated RM |
+|   | — Item Code | Lookup | Subform Column | * | From Purchase Item Muster (RM) |
+|   | — Item Name | AutoFetch | Subform Column | * | — |
+|   | — UOM | AutoFetch | Subform Column | * | From Item Muster |
+|   | — Assigned Qty | Number | Subform Column | * | Allocation baseline for this Project (e.g., X=10, Y=20, Z=30). Defaults from Required Qty |
+|   | — Allocation Ratio % | Formula | Subform Column | * | = Assigned Qty ÷ Σ Assigned Qty × 100 |
+|   | — 80% Threshold Alert Flag | Checkbox | Subform Column | | Default ON — alert when consumption ≥ 80% of Assigned Qty |
+|   | — Consumed Qty | Number (auto) | Subform Column | | Running total; incremented by FG production + Site entries |
+|   | — Consumption % | Formula | Subform Column | | = Consumed Qty ÷ Assigned Qty × 100 |
+|   | — Alert Triggered | Checkbox (readonly) | Subform Column | | Auto-set TRUE once Consumption % ≥ 80% |
 
-**Automation:** Item Code → autofetch Name, Category, UOM, Available Stock. Project ID lookup from Project Master.
+**Automation:** Item Code → autofetch Name, Category, UOM, Available Stock. Project ID lookup from Project Master. **Material Allocation** establishes the per-project RM budget; `Assigned Qty` defaults from `Required Qty`. **Consumption resolution (backend):** FG production (BMR / RM Consumption) and Site Manager entries expand the SO System→FG→RM via BOM and increment `Consumed Qty` on the matching MR Allocation line (`Project ID + Item Code`) — never a generic pool. **80% Alert:** when Consumption % ≥ 80% (flag ON) → pop-up + dashboard banner + email to Project Manager.
 
 ---
 
@@ -809,8 +836,9 @@ Forms requiring subforms:
 | System Composition | FG Line Items | N |
 | BOM / FG Formulation | RM Line Items | N |
 | Customer/Site Master | (none) | — |
-| Sales/Work Order Master | System Line Items | N |
-| Sales/Work Order Master | Commission (conditional) | 1 |
+| Sales/Work Order Master | Subform A — System Lines (Supply+Apply) | N |
+| Sales/Work Order Master | Subform B — FG Lines (Supply Only) | N |
+| Sales/Work Order Master | Commission (conditional, Supply+Apply) | 1 |
 | Create Project | Systems | N |
 | Create Project | Task Budget | N |
 | Purchase Requisition (PR) | Line Items | N |
@@ -820,6 +848,7 @@ Forms requiring subforms:
 | Goods Receipt Note (GRN) | Transport (conditional) | 1 |
 | QC / QA | Inspection Line Items | N |
 | Material Requisition (MR) | Line Items | N |
+| Material Requisition (MR) | Material Allocation (per-project RM budget) | N |
 | Material Issue Slip (MIS) | Line Items | N |
 | Finish Goods Handover (FGHM) | FG Items (inline acceptance) | N |
 | Production Planning | (none) | — |
@@ -845,7 +874,7 @@ Footer fields (totals, formulas, terms) sit on the **main form**, below the subf
 Purchase Dept → PR → Rate Comparison → PO → GRN → QC → Material Handover → Store
 
 === STREAM B (Project-Centric — Project ID on all forms) ===
-SO (creates) → Project (root)
+SO (Supply+Apply → creates Project; Supply Only → NO Project, FG sale only) → Project (root, Supply+Apply only)
                 ├── MR → MIS (Project ID autofetched)
                 ├── Production Planning → Order → BMR → Packing → FGHM (inline acceptance)
                 ├── Costing Approval (valuation gate)
@@ -887,6 +916,7 @@ The Project ID is passed from parent to child in Stream B only:
 | Project Close | Account & Finance + Project Manager | In-app + Email |
 | P&L Margin below threshold (< 15%) | Account & Finance + Project Manager | Alert |
 | Task Budget Actuals pending | Project Coordinator | Alert |
+| **Material 80% Allocation Consumed** | **Project Manager + Coordinator (pop-up + dashboard banner + Email)** | **Alert** |
 
 ### 4.6 Key Automation Rules
 
@@ -901,6 +931,9 @@ The Project ID is passed from parent to child in Stream B only:
 | P&L Auto-calculation | On Project Close — revenue minus all costs |
 | Material Return | Qty added back to stock |
 | Min/Max Alert | Alert when stock crosses threshold from Item Muster |
+| MR Material Allocation | Each MR records per-project RM allocation (Assigned Qty, Allocation Ratio, 80% Alert Flag) as the consumption budget baseline |
+| Consumption → Project-Assigned RM | BMR/RM Consumption and Site Manager entries increment `Consumed Qty` on the matching MR Allocation line (`Project ID + Item Code`), never a generic pool |
+| 80% Consumption Alert | When any allocated RM hits 80% of Assigned Qty (flag ON) → pop-up + dashboard banner + email to Project Manager |
 
 ### 4.7 AutoFetch Rules
 
@@ -963,26 +996,23 @@ The Project ID is passed from parent to child in Stream B only:
 
 ```
 [Master Data] ──→ [Sales: SO]
-                      │ (Supply+Apply)
-                      ▼
-                 [Project] ──→ [Project: Task Budget]
-                   │                    │
-                   │                    ▼ (Actuals → P&L)
-                   │              [P&L Statement]
-                   │
-       ┌───────────┼───────────────┐
-       ▼           ▼               ▼
-  [PR]──→[RC]──→ [PO]──→[GRN]──→[QC]    Procurement
-       ▼
-  [MR]──→[MIS]    Inventory / Stores
-       ▼
-  [Production Planning]──→[Production Order]──→[BMR]──→[RM Consumption]
-       │                                              │
-       │                                              ▼
-       │                                         [Packing]
-       │                                              │
-       │                                              ▼
-        └────────────────────────────────────→ [FGHM (inline acceptance)]
+                      │ Sales Type (controlling field)
+            ┌─────────┴───────────────┐
+            ▼ (Supply+Apply)          ▼ (Supply Only)
+       [Project] ──→ … (Stream B)   [FG Dispatch / Invoice]  (no Project · Stream A-adjacent)
+            │
+            ▼
+   [PR]──→[RC]──→ [PO]──→[GRN]──→[QC]    Procurement
+        ▼
+   [MR]──→[MIS]    Inventory / Stores
+        ▼
+   [Production Planning]──→[Production Order]──→[BMR]──→[RM Consumption]
+        │                                              │
+        │                                              ▼
+        │                                         [Packing]
+        │                                              │
+        │                                              ▼
+        │                                         [FGHM (inline acceptance)]
                                                    FG Flow
 ```
 

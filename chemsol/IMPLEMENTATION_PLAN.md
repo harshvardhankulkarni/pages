@@ -689,7 +689,9 @@ Single table with Category dropdown — no separate sections or conditional visi
 
 ### 8.1 Sales/Work Order Master (SO)
 
-**Single mode**: Supply+Apply (auto-creates Project)
+**Dual mode** — controlled by a `Sales Type` header dropdown:
+- **Supply+Apply**: Subform A — System Lines (sells a SYSTEM) → auto-creates Project (Stream B root).
+- **Supply Only**: Subform B — FG Lines (sells FG directly) → NO Project (direct stock sale).
 
 #### Fields
 
@@ -1108,10 +1110,10 @@ Production → FGHM (Production hands over FG, inline acceptance)
 - Build all project reports
 
 ### Phase 7: Sales (Week 9-10)
-- Build SO Master with single mode (Supply+Apply → auto-creates Project)
-- System subtable with thickness, area, UOM, rate
-- Commission, warranty, transport fields
-- Link SO to Projects
+- Build SO Master with conditional `Sales Type`: Subform A (System Lines, Supply+Apply → auto-creates Project) / Subform B (FG Lines, Supply Only → NO Project)
+- System Lines subtable with thickness, area, UOM, rate; FG Lines subtable with code, qty, UOM, rate
+- Commission, warranty, transport fields (System Lines)
+- Link SO to Projects (Supply+Apply only)
 
 ### Phase 8: Service Team (Week 10)
 - Build Service Entry form with Area/Work tracking

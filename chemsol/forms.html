@@ -452,16 +452,31 @@
         </div>
       </div>
 
-      <h2 id="sales">2 · Sales <span class="badge badge-blue">Creates Project</span></h2>
+      <h2 id="sales">2 · Sales <span class="badge badge-blue">Dual Mode · Project only on Supply+Apply</span></h2>
 
       <div class="phase-container">
         <div class="phase">
           <div class="phase-header">
             <span class="phase-number">2A</span>
             <span class="phase-title">Sales/Work Order Master (SO)</span>
-            <span class="phase-tag">N System Line Items · Auto-creates Project</span>
+            <span class="phase-tag">Conditional Subforms · System (Supply+Apply) / FG (Supply Only)</span>
           </div>
-          <p>Customer details + <strong>N system line items</strong> (System Code, Thickness, Area, UOM, Rate, Amount).<br><span class="badge badge-green">Supply+Apply &rarr; auto-creates Project</span></p>
+          <p>Customer details + a line-item subform that <strong>changes based on the <span class="badge badge-blue">Sales Type</span> controlling field</strong>:<br>
+          <span class="badge badge-green">Supply+Apply</span> &rarr; sells a <strong>SYSTEM</strong> (System-code lines) and <strong>auto-creates a Project</strong> (Stream B root).<br>
+          <span class="badge badge-amber" style="background:#fef3c7;color:#92400e">Supply Only</span> &rarr; sells <strong>FG directly</strong> (FG-code lines), <strong>NO Project</strong> created — direct stock sale (Stream A-adjacent).</p>
+          <div style="padding:10px 14px;background:#eff6ff;border-left:4px solid var(--primary);border-radius:6px;font-size:13px;color:#1e3a8a;margin:10px 0">
+            <strong>&#x1F39B; Controlling-Field Logic:</strong> <code>Sales Type</code> (header dropdown) drives a <strong>show/hide rule</strong> on the two subforms. Zoho Creator implementation = two subforms on one form, toggled by <code>Sales Type</code> value. Only <strong>Supply+Apply</strong> fires the <em>SO &rarr; Project</em> automation.
+          </div>
+          <div style="padding:10px 14px;background:#f8fafc;border:1px dashed var(--primary);border-radius:6px;font-size:12px;color:var(--gray-700);margin:10px 0">
+            <strong>&#x2699; Zoho Creator Implementation Recipe (controlling field = <code>Sales Type</code>):</strong>
+            <ol style="margin:6px 0 0 18px;padding:0">
+              <li><strong>Form layout:</strong> One SO form. Place <em>Subform A (System Lines)</em> and <em>Subform B (FG Lines)</em> as two separate subform fields.</li>
+              <li><strong>Show/hide rule:</strong> Field rule on <code>Sales Type</code> &rarr; value = <em>Supply+Apply</em> shows Subform A &amp; hides Subform B; value = <em>Supply Only</em> shows Subform B &amp; hides Subform A (use <em>on user input</em> / <em>on load</em>).</li>
+              <li><strong>Validation gating:</strong> The <em>visible</em> subform must have &ge;1 row. Use a Deluge <code>on validate</code> check that targets only the active subform; skip the hidden one so it never blocks submit.</li>
+              <li><strong>Downstream automation:</strong> On SO accept/submit, branch in Deluge &mdash; <code>Sales Type == "Supply+Apply"</code> &rarr; create <strong>Project</strong> (Stream B root) + copy Subform A lines into Project <em>Systems</em> subform; <code>== "Supply Only"</code> &rarr; <strong>NO</strong> Project, route to FG dispatch / customer invoice only.</li>
+              <li><strong>Project-ID guard:</strong> MR, MIS, Production, FGHM, Service, Finance, Logistics are reachable only from a Supply+Apply SO. Supply Only FG sales skip them entirely (no MR allocation, no 80% alert).</li>
+            </ol>
+          </div>
           <h5>Header Fields</h5>
           <div class="table-wrap">
             <table>
@@ -484,48 +499,85 @@
                 <tr><td>15</td><td>Site Address</td><td>Multi-line</td><td>*</td><td>—</td></tr>
                 <tr><td>16</td><td>Site Manager/Incharge</td><td>Text</td><td></td><td>—</td></tr>
                 <tr><td>17</td><td>Contact No (Site)</td><td>Phone</td><td></td><td>—</td></tr>
-                <tr><td>18</td><td>Project Type</td><td>Dropdown</td><td>*</td><td>1.Industrial, 2.Commercial</td></tr>
+                <tr><td>18</td><td>Project Type</td><td>Dropdown</td><td></td><td>1.Industrial, 2.Commercial — <em>conditional: only shown/required when Sales Type = Supply+Apply</em></td></tr>
+                <tr style="background:#eff6ff"><td>19</td><td><strong>Sales Type</strong> (CONTROLLING FIELD)</td><td>Dropdown</td><td>*</td><td>1. Supply+Apply (sell SYSTEM &rarr; auto-creates Project) · 2. Supply Only (sell FG directly &rarr; NO Project). Drives subform visibility + automation.</td></tr>
               </tbody>
             </table>
           </div>
           <div style="padding:8px 12px;background:#fef3c7;border-radius:6px;font-size:12px;color:#92400e;margin:12px 0;border:1px solid #fde68a">
             <strong>Client PO Reference:</strong> <input type="text" value="PO-2026-042 — Tata Motors" style="padding:4px 8px;border:1px solid #fde68a;border-radius:4px;font-size:12px;width:300px;margin-left:8px"> <span style="color:#92400e;opacity:0.8">— just a reference record attached to SO</span>
           </div>
-          <h5>System Subtable (N line items)</h5>
+          <h5>Subform A — System Lines <span class="badge badge-green">Visible when Sales Type = Supply+Apply</span></h5>
           <div class="table-wrap">
             <table>
               <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
               <tbody>
                 <tr><td>1</td><td>System Code</td><td>Lookup</td><td>From System Master (autofetch name)</td></tr>
                 <tr><td>2</td><td>System Name</td><td>AutoFetch</td><td>—</td></tr>
-                <tr><td>3</td><td>Thickness</td><td>Text</td><td>—</td></tr>
-                <tr><td>4</td><td>Area</td><td>Number</td><td>—</td></tr>
-                <tr><td>5</td><td>UOM</td><td>Dropdown</td><td>Conditional</td></tr>
-                <tr><td>6</td><td>Rate</td><td>Currency</td><td>—</td></tr>
+                <tr><td>3</td><td>Thickness</td><td>Text</td><td>e.g., 1mm, 2mm</td></tr>
+                <tr><td>4</td><td>Area</td><td>Number</td><td>Area in SqM</td></tr>
+                <tr><td>5</td><td>UOM</td><td>Dropdown</td><td>SqM / Mtr / Nos (area UOM)</td></tr>
+                <tr><td>6</td><td>Rate</td><td>Currency</td><td>Per-unit system rate</td></tr>
                 <tr><td>7</td><td>Amount</td><td>Formula</td><td>Area &times; Rate</td></tr>
+                <tr><td>8</td><td>Commission %</td><td>Number</td><td>Per-line commission %</td></tr>
+                <tr><td>9</td><td>Warranty</td><td>Text</td><td>Per-line warranty / copies to Project</td></tr>
+                <tr><td>10</td><td>Transport Scope</td><td>Dropdown</td><td>Per-line transport scope</td></tr>
               </tbody>
             </table>
+          </div>
+          <div style="padding:10px 14px;background:#ecfdf5;border-left:4px solid var(--green);border-radius:6px;font-size:13px;color:#065f46;margin:10px 0">
+            <strong>&#x2705; Supply+Apply automation:</strong> On SO acceptance, auto-creates the <strong>Project</strong> (Stream B root). The System lines (e.g., EP01) define the <strong>System &rarr; FG &rarr; RM composition</strong> (via System Composition + BOM) that drives backend RM consumption. <strong>MR Material Allocation + 80% alert apply here only.</strong>
+          </div>
+
+          <h5>Subform B — FG Lines <span class="badge badge-amber" style="background:#fef3c7;color:#92400e">Visible when Sales Type = Supply Only</span></h5>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>FG Code</td><td>Lookup</td><td>From FG Handover / Item Muster (FG type) — autofetch name</td></tr>
+                <tr><td>2</td><td>FG Name</td><td>AutoFetch</td><td>—</td></tr>
+                <tr><td>3</td><td>Qty</td><td>Number</td><td>FG quantity sold</td></tr>
+                <tr><td>4</td><td>UOM</td><td>AutoFetch</td><td>From Item Muster</td></tr>
+                <tr><td>5</td><td>Rate</td><td>Currency</td><td>FG unit rate</td></tr>
+                <tr><td>6</td><td>Amount</td><td>Formula</td><td>Qty &times; Rate</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="padding:10px 14px;background:#fffbeb;border-left:4px solid #f59e0b;border-radius:6px;font-size:13px;color:#92400e;margin:10px 0">
+            <strong>&#x26D4; Supply Only automation:</strong> <strong>NO Project created.</strong> Direct FG sale &mdash; flows to FG dispatch / customer invoice only (Stream A-adjacent stock sale). <strong>No project consumption tracking, no MR allocation, no 80% alert.</strong> FG stock is decremented on dispatch/invoice, not via project-assigned RM.
+          </div>
+
+          <div style="padding:10px 14px;background:#eff6ff;border-left:4px solid var(--primary);border-radius:6px;font-size:13px;color:#1e3a8a;margin:10px 0">
+            <strong>&#x1F517; SO &rarr; Consumption Tracking Linkage (Supply+Apply only):</strong> On acceptance it auto-creates the <strong>Project</strong> (Stream B root). The SO <strong>System subtable</strong> (e.g., EP01) defines the <strong>System &rarr; FG &rarr; RM composition</strong> (via System Composition + BOM). This composition is the template that drives <strong>backend RM consumption</strong>: when the Site Manager logs a consumption entry, the system expands the FG/System into its RMs using BOM ratios, then deducts from the <strong>project-assigned RM</strong> recorded in the MR <a href="#mr-allocation">Material Allocation</a> &mdash; not a generic stock pool. The Project is the anchor tying SO, MR allocation, FG production, and site consumption together. <em>(Not applicable to Supply Only FG sales.)</em>
           </div>
           <h5>Footer</h5>
           <div class="table-wrap">
             <table>
               <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
               <tbody>
-                <tr><td>19</td><td>Total Work Order Amount</td><td>Formula</td><td>Sum of line amounts</td></tr>
-                <tr><td>20</td><td>Payment Terms</td><td>Text</td><td>—</td></tr>
-                <tr><td>21</td><td>Transportation Scope</td><td>Dropdown</td><td>—</td></tr>
-                <tr><td>22</td><td>Transportation Amount</td><td>Currency</td><td>—</td></tr>
-                <tr><td>23</td><td>Lead Time</td><td>Number (Days)</td><td>—</td></tr>
-                <tr><td>24</td><td>PO/BOQ Attachment</td><td>File upload</td><td>Multiple</td></tr>
-                <tr><td>25</td><td>Warranty</td><td>Text</td><td>—</td></tr>
-                <tr><td>26</td><td>Is proper System Required</td><td>Checkbox</td><td>—</td></tr>
-                <tr><td colspan="4"><strong>Commission (conditional)</strong></td></tr>
-                <tr><td>27</td><td>Commission</td><td>Checkbox</td><td>If checked &rarr; show below</td></tr>
-                <tr><td>28</td><td>Based On</td><td>Dropdown</td><td>1.Percentage, 2.Fix Amount</td></tr>
-                <tr><td>29</td><td>Commission Amount</td><td>Currency</td><td>—</td></tr>
-                <tr><td>30</td><td>Remark</td><td>Multi-line</td><td>—</td></tr>
+                <tr><td>20</td><td>Total Work Order Amount</td><td>Formula</td><td>Sum of <em>active</em> subform line amounts (System or FG)</td></tr>
+                <tr><td>21</td><td>Payment Terms</td><td>Text</td><td>—</td></tr>
+                <tr><td>22</td><td>Transportation Scope</td><td>Dropdown</td><td>—</td></tr>
+                <tr><td>23</td><td>Transportation Amount</td><td>Currency</td><td>—</td></tr>
+                <tr><td>24</td><td>Lead Time</td><td>Number (Days)</td><td>—</td></tr>
+                <tr><td>25</td><td>PO/BOQ Attachment</td><td>File upload</td><td>Multiple</td></tr>
+                <tr><td>26</td><td>Warranty</td><td>Text</td><td>—</td></tr>
+                <tr><td>27</td><td>Is proper System Required</td><td>Checkbox</td><td>—</td></tr>
+                <tr><td colspan="4"><strong>Commission (conditional — applies to Supply+Apply)</strong></td></tr>
+                <tr><td colspan="4" style="background:#f8fafc;font-size:11px;color:var(--gray-500)">Note: Per-line <strong>Commission %</strong> (Subform A row 8) computes the agent&rsquo;s cut per system line. This header block records the <strong>commission arrangement</strong> (basis + amount + payee) for the whole SO. Both apply <strong>only to Supply+Apply</strong>; Supply Only carries no commission.</td></tr>
+                <tr><td>28</td><td>Commission</td><td>Checkbox</td><td>If checked &rarr; show below</td></tr>
+                <tr><td>29</td><td>Based On</td><td>Dropdown</td><td>1.Percentage, 2.Fix Amount</td></tr>
+                <tr><td>30</td><td>Commission Amount</td><td>Currency</td><td>—</td></tr>
+                <tr><td>31</td><td>Remark</td><td>Multi-line</td><td>—</td></tr>
               </tbody>
             </table>
+          </div>
+          <div style="padding:10px 14px;background:#f8fafc;border:1px dashed var(--gray-300);border-radius:6px;font-size:12px;color:var(--gray-600);margin:10px 0">
+            <strong>&#x2699; Automation fired per Sales Type:</strong>
+            <ul style="margin:6px 0 0 18px;padding:0">
+              <li><strong>Supply+Apply:</strong> Show Subform A (System Lines) &rarr; validate &ge;1 system line &rarr; on acceptance <strong>auto-create Project</strong> (Stream B root); Systems subform copied from SO &rarr; downstream MR/MIS/Production/Service/Finance/Logistics carry Project ID &rarr; MR Material Allocation + 80% alert active.</li>
+              <li><strong>Supply Only:</strong> Show Subform B (FG Lines) &rarr; validate &ge;1 FG line &rarr; <strong>NO Project</strong> &rarr; route to FG dispatch / customer invoice only. No MR allocation, no 80% alert, no project consumption tracking.</li>
+            </ul>
           </div>
         </div>
       </div>
@@ -907,17 +959,20 @@
       </div>
 
       <h2 id="inventory">5 · MR → MIS → Costing <span class="badge badge-purple">Stream B — Project ID</span></h2>
-      <p>Like <strong>Zoho Inventory</strong>: warehouse-based tracking with stock in/out/transfer. MR <strong>consumes from Store inventory</strong> → MIS (stock deduction) → FGHM → Costing valuation. <strong>All tagged to Project.</strong></p>
+      <p>Like <strong>Zoho Inventory</strong>: warehouse-based tracking with stock in/out/transfer. MR <strong>consumes from Store inventory</strong> → MIS (stock deduction) → FGHM → Costing valuation. <strong>Tagged to Project via Project ID (Stream B).</strong></p>
+      <div style="padding:10px 14px;background:#ecfdf5;border-left:4px solid var(--green);border-radius:6px;font-size:13px;color:#065f46;margin:10px 0">
+        <strong>&#x1F4CC; Per-Project Material Allocation Model (NEW):</strong> The <strong>Project</strong> is the anchor for consumption tracking. Each MR against a Project carries a <strong>Material Allocation</strong> subform that records, per RM, the <strong>Assigned Qty</strong> (allocation baseline), its <strong>Allocation Ratio</strong> (share of total project RM allocation), and an <strong>80% Threshold Alert Flag</strong>. Consumption (FG production + Site Manager entries) is measured against this <em>assigned</em> quantity — not global stock. When any allocated RM reaches <strong>80% of its Assigned Qty</strong>, the system raises a pop-up + dashboard banner + email to the Project Manager. See <a href="#mr-allocation">Section 5A Material Allocation</a> and the <a href="#alert-80">80% Alert rule</a>.
+      </div>
 
       <div class="phase-container">
-        <div class="phase">
+        <div class="phase" id="mr-allocation">
           <div class="phase-header">
             <span class="phase-number">5A</span>
             <span class="phase-title">Material Requisition (MR)</span>
-            <span class="phase-tag">N Line Items</span>
+            <span class="phase-tag">N Line Items + Allocation</span>
           </div>
-          <p>Department: Production &amp; R&amp;D. Project ID + items with autofetch available stock.</p>
-          <h4>Header</h4>
+          <p>Department: Production &amp; R&amp;D. Project ID lookup + RM line items with autofetch available stock. <strong>Now also carries a <a href="#mr-allocation">Material Allocation</a> subform</strong> — the per-project consumption budget with per-RM allocation ratios and 80% alert flags.</p>
+            <h4>Header</h4>
           <div class="table-wrap">
             <table>
               <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
@@ -926,9 +981,10 @@
                 <tr><td>2</td><td>MR Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
                 <tr><td>3</td><td>Requisition Type</td><td>Dropdown</td><td>*</td><td>Production / R&amp;D</td></tr>
                 <tr><td>4</td><td>Batch Number</td><td>Text</td><td></td><td>—</td></tr>
-                <tr><td>5</td><td>Department</td><td>AutoFetch</td><td>*</td><td>As per user login</td></tr>
-                <tr><td>6</td><td>Requested By</td><td>Text</td><td>*</td><td>Employee Name</td></tr>
-                <tr><td>7</td><td>Priority</td><td>Dropdown</td><td>*</td><td>Low / Medium / High / Urgent</td></tr>
+                <tr><td>5</td><td>Project ID</td><td>Lookup</td><td>*</td><td>From Project Master (Stream B root) — anchors the Material Allocation</td></tr>
+                <tr><td>6</td><td>Department</td><td>AutoFetch</td><td>*</td><td>As per user login</td></tr>
+                <tr><td>7</td><td>Requested By</td><td>Text</td><td>*</td><td>Employee Name</td></tr>
+                <tr><td>8</td><td>Priority</td><td>Dropdown</td><td>*</td><td>Low / Medium / High / Urgent</td></tr>
               </tbody>
             </table>
           </div>
@@ -948,6 +1004,35 @@
               </tbody>
             </table>
           </div>
+          <h4 id="mr-allocation-sub">Material Allocation (Project Consumption Budget) — <span style="color:var(--green);font-weight:600">NEW</span></h4>
+          <div style="padding:8px 12px;background:#ecfdf5;border-radius:6px;font-size:12px;color:#065f46;margin-bottom:8px">
+            <strong>Why:</strong> This subform is the <strong>per-project allocation baseline</strong>. It records exactly how much of each RM is assigned to THIS Project (the Project is the anchor). FG production and Site Manager consumption entries deduct from these assigned quantities — not a generic stock pool. <strong>Assigned Qty</strong> defaults from Required Qty but can be edited to set the formal project budget.
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Item Code</td><td>Lookup</td><td>*</td><td>From Purchase Item Muster (RM). Same RMs as Line Items</td></tr>
+                <tr><td>2</td><td>Item Name</td><td>AutoFetch</td><td>*</td><td>—</td></tr>
+                <tr><td>3</td><td>UOM</td><td>AutoFetch</td><td>*</td><td>From Item Muster</td></tr>
+                <tr><td>4</td><td>Assigned Qty</td><td>Number</td><td>*</td><td><strong>Allocation baseline for this Project</strong> (e.g., X=10, Y=20, Z=30). Defaults from Required Qty</td></tr>
+                <tr><td>5</td><td>Allocation Ratio %</td><td>Formula</td><td>*</td><td>= Assigned Qty ÷ Σ Assigned Qty × 100. Example 10:20:30 → 20% : 40% : 60%</td></tr>
+                <tr><td>6</td><td>80% Threshold Alert Flag</td><td>Checkbox</td><td></td><td>Default ON. Raises alert when consumption ≥ 80% of Assigned Qty</td></tr>
+                <tr><td>7</td><td>Consumed Qty</td><td>Number (auto-cumulative)</td><td></td><td>Running total; incremented by FG production + Site consumption entries (backend rule)</td></tr>
+                <tr><td>8</td><td>Consumption %</td><td>Formula</td><td></td><td>= Consumed Qty ÷ Assigned Qty × 100</td></tr>
+                <tr style="background:#fef3c7"><td>9</td><td>Alert Triggered</td><td>Checkbox (readonly)</td><td></td><td>Auto-set TRUE once Consumption % ≥ 80%. Drives the 80% Alert notification</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>Backend rule (consumption resolution):</strong> Every consumption of this RM against the Project — whether from <em>FG production (BMR / RM Consumption)</em> or a <em>Site Manager consumption entry</em> — increments <strong>Consumed Qty</strong> on the matching MR Allocation line (matched by Project ID + Item Code). The system <strong>never</strong> deducts from a generic pool for project-tagged material. See <a href="flow.html#consumption-rule">Consumption Flow (flow.html)</a>.</p>
+          <p><strong>80% Alert:</strong> When Consumption % crosses 80% for any line with the Alert Flag ON, the system fires a pop-up + dashboard banner + email to the Project Manager. See <a href="#alert-80">80% Consumption Alert</a>.</p>
+        </div>
+        <!-- 80% CONSUMPTION ALERT -->
+        <div id="alert-80" style="margin:16px 0;padding:14px 16px;background:#fff7ed;border:1px solid #fdba74;border-left:5px solid #ea580c;border-radius:8px">
+          <h4 style="margin:0 0 8px;color:#9a3412">&#x26A0; 80% Consumption Alert — Per Allocated Material (KEY REQUIREMENT)</h4>
+          <p style="margin:0 0 8px;font-size:13px;color:#7c2d12"><strong>Trigger:</strong> For each RM line in the MR <strong>Material Allocation</strong> subform, when <code>Consumed Qty ÷ Assigned Qty × 100 ≥ 80%</code> AND the <strong>80% Threshold Alert Flag</strong> is ON, raise a warning.</p>
+          <p style="margin:0 0 6px;font-size:13px;color:#7c2d12"><strong>Example:</strong> Material X assigned 10 units → alert fires when X has been consumed 8 units (80%). Material Y (20) → at 16 units. Material Z (30) → at 24 units.</p>
+          <p style="margin:0;font-size:13px;color:#7c2d12"><strong>Notifications fired:</strong> (1) In-app <strong>pop-up</strong> to the user saving the consumption entry; (2) <strong>Dashboard banner</strong> on the Project dashboard (and Store/Service dashboards); (3) <strong>Email</strong> to the Project Manager (and Project Coordinator). Banner escalates to "Allocation Exhausted" at 100%.</p>
         </div>
         <div class="phase">
           <div class="phase-header">

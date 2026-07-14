@@ -1,7 +1,7 @@
 # Chemsol Zoho Creator ERP Implementation
 
 ## Specification Summary
-**Original Requirements**: Project-centric ERP system for flooring materials company with 18 forms across Master Data, Sales, Project Management, Procurement, Inventory, Production, and P&L modules. Complete digitization of 18+ paper forms with 75+ automations documented. Project is the root entity; all transactions carry a Project ID with sequential flow.
+**Original Requirements**: Project-centric ERP system for flooring materials company with 18 forms across Master Data, Sales, Project Management, Procurement, Inventory, Production, and P&L modules. Complete digitization of 18+ paper forms with 75+ automations documented. Project is the root entity for Stream B; SO <code>Sales Type</code> (Supply+Apply vs Supply Only) controls a dual subform and whether a Project is created. Stream A (pre-project procurement) carries NO Project ID. See Two-Stream Architecture.
 
 **Technical Stack**: Zoho Creator (India .in instance), GenAI Builder, HTML5/CSS3, JavaScript, Forms, custom scripts. Mobile responsive design with 768px + 480px breakpoints.
 
@@ -66,18 +66,19 @@
 **Files to Create/Edit**: Master form configuration
 **Reference**: Section 3.1.5, Lines 203-224
 
-### [ ] Task 6: Sales Setup - Sales Work Order Master (SO)
-**Description**: Implement comprehensive SO form with header fields (Date, Employee, Customer, Contacts, Order Details) and two subforms: System Line Items (7 fields) and Commission (5 fields). Configure Supply+Apply mode with auto-creation of Projects.
+### [ ] Task 6: Sales Setup - Sales Work Order Master (SO) — Dual Subform (Supply+Apply / Supply Only)
+**Description**: Implement SO form with header + a <code>Sales Type</code> controlling dropdown (Supply+Apply / Supply Only) that toggles between two subforms. **Supply+Apply** → Subform A "System Lines" (System Code lookup from System Master, System Name, Thickness, Area, UOM, Rate, Amount=Area×Rate, Commission%, Warranty, Transport Scope) and auto-creates a Project (Stream B root). **Supply Only** → Subform B "FG Lines" (FG Code lookup from FG Handover/Item Muster, FG Name, Qty, UOM, Rate, Amount=Qty×Rate) with NO Project (direct FG sale, Stream A-adjacent). Client PO is a reference field only.
 **Acceptance Criteria**: 
-- SO Number auto-generated
-- Customer lookup from Customer Master
-- System Code lookup from System Master with auto-fetch Name
-- Area × Rate formula calculates Amount
-- Commission conditional on checkbox
-- Total Work Order Amount formula footer
+- SO Number auto-generated; Customer lookup from Customer Master
+- <code>Sales Type</code> is the controlling field; show/hide rule swaps Subform A / Subform B
+- Supply+Apply: ≥1 System line; on accept auto-creates Project; Subform A copied to Project Systems
+- Supply Only: ≥1 FG line; NO Project; routes to FG dispatch / customer invoice only
+- Area × Rate (or Qty × Rate) formula calculates line Amount; Total Work Order Amount = sum of active subform
+- Commission (per-line % in Subform A + header arrangement) applies ONLY to Supply+Apply
+- MR Material Allocation + 80% alert fire ONLY for Supply+Apply projects (not Supply Only)
 
-**Files to Create/Edit**: Sales form with subforms
-**Reference**: Section 3.2, Lines 230-279
+**Files to Create/Edit**: Sales form with dual subforms + controlling field rule
+**Reference**: forms.html §2A (Lines 455-571), BRD §3.2 (Lines 256-321), flow.html SO node (Lines 582-690)
 
 ### [ ] Task 7: Project Management Setup - Create Project
 **Description**: Implement central Project form as root entity with Project ID auto-generation. Include 15 header fields and Systems subform (5 fields) and Task Budget subform (11 fields). Configure autofetch from SO line items.
@@ -265,7 +266,7 @@
 - [ ] Mobile responsive design with 768px + 480px breakpoints
 - [ ] All 18 forms from specification implemented
 - [ ] Auto-fetch relationships functional across all forms
-- [ ] Project ID flows through all transactions (SO → PR → PO → GRN → QC → MR → MIS → Production → FGHM → FGAN)
+- [ ] Project ID flows through Stream B transactions only (SO Supply+Apply → Project → PR → PO → GRN → QC → MR → MIS → Production → FGHM [inline acceptance, FGAN eliminated]). Stream A (Supply Only FG sales / pre-project procurement) carries NO Project ID.
 - [ ] Budget tracking: Execution / Manpower / Tools / Overhead categories
 - [ ] GST compliance: All GST calculations and validations
 - [ ] Supplier Credit Limit monitoring (80% alert)
@@ -274,5 +275,5 @@
 
 ## Technical Notes
 **Development Stack**: Zoho Creator (India .in instance), GenAI Builder, HTML5/CSS3, JavaScript, Forms
-**Special Instructions**: All forms follow Zoho Creator Subform convention. Feed each form section directly into Zoho Creator GenAI. Project-centric architecture - nothing exists outside a project context.
+**Special Instructions**: All forms follow Zoho Creator Subform convention. Feed each form section directly into Zoho Creator GenAI. **Two-Stream Architecture**: Stream A = pre-project stock procurement (no Project ID); Stream B = project-centric (Project ID root). The SO <code>Sales Type</code> toggle decides which stream an order enters — Supply+Apply → Stream B (Project created), Supply Only → Stream A-adjacent direct FG sale (no Project).
 **Timeline Expectations**: 8-week phase cycles with overlapping deliverables, 24-28 weeks total for complete implementation
