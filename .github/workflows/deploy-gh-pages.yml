@@ -1,0 +1,32 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - gh-pages-temp
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Push to gh-pages branch
+        run: |
+          git checkout --orphan gh-pages
+          git reset --hard
+          git checkout gh-pages-temp -- .
+          git add -A
+          git commit -m "Deploy from gh-pages-temp: $(date -u +%Y-%m-%d-%H:%M:%S)"
+          git push origin gh-pages --force
