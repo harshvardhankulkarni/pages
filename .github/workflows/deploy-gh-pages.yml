@@ -3,7 +3,7 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - gh-pages-temp
+      - main
   workflow_dispatch:
 
 permissions:
@@ -22,14 +22,14 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Push to gh-pages branch
+      - name: Deploy to gh-pages branch
         env:
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git remote set-url origin "https://x-access-token:${TOKEN}@github.com/harshvardhankulkarni/pages.git"
           git checkout --orphan gh-pages
           git reset --hard
-          git checkout gh-pages-temp -- .
+          git checkout main -- .
           git add -A
-          git commit -m "Deploy from gh-pages-temp: $(date -u +%Y-%m-%d-%H:%M:%S)"
+          git commit -m "Deploy from main: $(date -u +%Y-%m-%d-%H:%M:%S)"
           git push origin gh-pages --force
