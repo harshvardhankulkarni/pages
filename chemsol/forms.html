@@ -403,8 +403,51 @@
         </div>
 
         <div class="phase">
-          <span class="phase-number" style="font-size:11px;color:var(--gray-400)">(inline subtable)</span>
-          <p><strong>Bin Location</strong> — Rack/Shelf/Bin mapping is a <strong>subform within Store Master</strong>, not a separate form. Each store has N bin locations with Rack No, Shelf No, Bin No, Status.</p>
+           <span class="phase-number" style="font-size:11px;color:var(--gray-400)">(inline subtable)</span>
+           <p><strong>Bin Location</strong> — Rack/Shelf/Bin mapping is a <strong>subform within Store Master</strong>, not a separate form. Each store has N bin locations with the following fields:</p>
+           <div class="table-wrap">
+             <table>
+               <thead>
+                 <tr>
+                   <th>#</th>
+                   <th>Field</th>
+                   <th>Type</th>
+                   <th>Req</th>
+                   <th>Notes</th>
+                 </tr>
+               </thead>
+               <tbody>
+                 <tr>
+                   <td>1</td>
+                   <td>Rack No</td>
+                   <td>Text</td>
+                   <td>*</td>
+                   <td>—</td>
+                 </tr>
+                 <tr>
+                   <td>2</td>
+                   <td>Shelf No</td>
+                   <td>Text</td>
+                   <td>*</td>
+                   <td>—</td>
+                 </tr>
+                 <tr>
+                   <td>3</td>
+                   <td>Bin No</td>
+                   <td>Text</td>
+                   <td>*</td>
+                   <td>—</td>
+                 </tr>
+                 <tr>
+                   <td>4</td>
+                   <td>Status</td>
+                   <td>Dropdown</td>
+                   <td>*</td>
+                   <td>Active / Inactive</td>
+                 </tr>
+               </tbody>
+             </table>
+           </div>
         </div>
 
         <div class="phase">
@@ -981,7 +1024,7 @@
                 <tr><td>2</td><td>MR Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
                 <tr><td>3</td><td>Requisition Type</td><td>Dropdown</td><td>*</td><td>Production / R&amp;D</td></tr>
                 <tr><td>4</td><td>Batch Number</td><td>Text</td><td></td><td>—</td></tr>
-                <tr><td>5</td><td>Project ID</td><td>Lookup</td><td>*</td><td>From Project Master (Stream B root) — anchors the Material Allocation</td></tr>
+                <tr><td>5</td><td>Project ID</td><td>Lookup</td><td>*</td><td>From Project Master (Stream B root) — anchors the Material Allocation; this field links the MR to a specific project for consumption tracking</td></tr>
                 <tr><td>6</td><td>Department</td><td>AutoFetch</td><td>*</td><td>As per user login</td></tr>
                 <tr><td>7</td><td>Requested By</td><td>Text</td><td>*</td><td>Employee Name</td></tr>
                 <tr><td>8</td><td>Priority</td><td>Dropdown</td><td>*</td><td>Low / Medium / High / Urgent</td></tr>
