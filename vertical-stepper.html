@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zoho Creator Setup Wizard</title>
+<style>
+:root {
+  --bg: #0b1120;
+  --surface: #1a2435;
+  --surface2: #253040;
+  --border: #2d3a4d;
+  --text: #e8edf5;
+  --muted: #8a9bb5;
+  --accent: #22d3ee;
+  --green: #4ade80;
+  --orange: #fb923c;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.stepper-container {
+  width: 100%;
+  max-width: 860px;
+  background: var(--surface);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  padding: 32px;
+  position: relative;
+}
+
+/* ── Progress Header ── */
+.progress-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 36px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.progress-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.progress-badge {
+  background: var(--accent);
+  color: #0b1120;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 12px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+}
+
+/* ── Stepper ── */
+.stepper {
+  position: relative;
+}
+
+.stepper::before {
+  content: '';
+  position: absolute;
+  left: 19px;
+  top: 14px;
+  bottom: 14px;
+  width: 2px;
+  background: var(--border);
+  z-index: 0;
+  transition: background 0.5s ease;
+}
+
+/* ── Step Row ── */
+.step {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  position: relative;
+  min-height: 72px;
+}
+
+.step:last-child {
+  min-height: 0;
+}
+
+/* ── Track (circle + column) ── */
+.step-track {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 40px;
+  flex-shrink: 0;
+  padding-top: 2px;
+  position: relative;
+  z-index: 1;
+}
+
+.step-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 2px solid var(--border);
+  color: var(--muted);
+  background: var(--bg);
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.step-circle:hover {
+  border-color: var(--muted);
+  transform: scale(1.08);
+}
+
+/* -- state: completed -- */
+.step.completed .step-circle {
+  background: var(--green);
+  border-color: var(--green);
+  color: #0b1120;
+}
+
+.step.completed .step-circle:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 20px rgba(74, 222, 128, 0.3);
+}
+
+/* -- state: active -- */
+.step.active .step-circle {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #0b1120;
+  box-shadow: 0 0 24px rgba(34, 211, 238, 0.35);
+}
+
+.step.active .step-circle:hover {
+  transform: scale(1.08);
+}
+
+/* -- state: not-started -- */
+.step:not(.completed):not(.active) .step-circle {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--muted);
+}
+
+/* ── Panel ── */
+.step-panel {
+  flex: 1;
+  min-width: 0;
+  padding: 0 0 16px 16px;
+}
+
+.step:last-child .step-panel {
+  padding-bottom: 0;
+}
+
+.step-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  padding: 8px 12px;
+  margin: 0 -12px;
+  border-radius: 6px;
+  transition: background 0.2s;
+  letter-spacing: 0.2px;
+}
+
+.step-title:hover {
+  background: var(--surface2);
+}
+
+.step:not(.completed):not(.active) .step-title {
+  color: var(--muted);
+}
+
+.step.active .step-title {
+  color: var(--accent);
+}
+
+/* ── Body (expandable) ── */
+.step-body {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.35s ease,
+              margin 0.35s ease;
+  margin-top: 0;
+}
+
+.step.active .step-body {
+  max-height: 3000px;
+  opacity: 1;
+  margin-top: 8px;
+}
+
+.step-body-inner {
+  padding: 20px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+/* ── Content Elements ── */
+.step-body-inner p {
+  color: var(--muted);
+  font-size: 14px;
+  margin-bottom: 16px;
+  line-height: 1.7;
+}
+
+.step-body-inner h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 12px;
+  letter-spacing: 0.3px;
+}
+
+.step-body-inner h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+  margin: 16px 0 8px;
+}
+
+/* ── Tables (.tbl) ── */
+.tbl {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0 16px;
+  font-size: 13px;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.tbl thead {
+  background: var(--surface2);
+}
+
+.tbl th {
+  padding: 10px 14px;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tbl td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.tbl tbody tr:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.tbl tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ── Pre / Code Blocks ── */
+pre {
+  background: #0a0f1a;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 16px 18px;
+  margin: 12px 0 16px;
+  overflow-x: auto;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+  font-size: 13px;
+  line-height: 1.65;
+  color: #c9d1d9;
+  position: relative;
+}
+
+pre .kw { color: #ff7b72; }
+pre .fn { color: #79c0ff; }
+pre .str { color: #a5d6ff; }
+pre .cm { color: #8b949e; font-style: italic; }
+pre .num { color: #79c0ff; }
+pre .var { color: #ffa657; }
+
+code {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+  font-size: 13px;
+  background: rgba(255,255,255,0.05);
+  padding: 2px 6px;
+  border-radius: 3px;
+  color: var(--accent);
+}
+
+/* ── Next Button ── */
+.next-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  padding: 10px 24px;
+  background: var(--accent);
+  color: #0b1120;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  letter-spacing: 0.3px;
+}
+
+.next-btn:hover {
+  background: #1cc8e2;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(34, 211, 238, 0.3);
+}
+
+.next-btn:active {
+  transform: translateY(0);
+}
+
+.next-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* ── Completion State ── */
+.step .step-circle svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+
+/* ── Utility ── */
+.badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.3px;
+}
+.badge-green {
+  background: rgba(74, 222, 128, 0.15);
+  color: var(--green);
+}
+.badge-cyan {
+  background: rgba(34, 211, 238, 0.15);
+  color: var(--accent);
+}
+.badge-orange {
+  background: rgba(251, 146, 60, 0.15);
+  color: var(--orange);
+}
+.badge-gray {
+  background: rgba(138, 155, 181, 0.15);
+  color: var(--muted);
+}
+</style>
+</head>
+<body>
+
+<div class="stepper-container">
+  <div class="progress-header">
+    <h2>Zoho Creator Setup Wizard</h2>
+    <span class="progress-badge" id="progressBadge">Step 1 of 11</span>
+  </div>
+
+  <div class="stepper" id="stepper">
+
+    <!-- 1 ── App Setup -->
+    <div class="step active" data-index="0">
+      <div class="step-track">
+        <div class="step-circle" data-index="0">1</div>
+      </div>
+      <div class="step-panel">
+        <div class="step-title" data-index="0">App Setup</div>
+        <div class="step-body">
+          <div class="step-body-inner">
+            <p>Configure your Zoho Creator application settings before building forms and modules. This sets the foundation for your entire application.</p>
+            <h3>Application Configuration</h3>
+            <table class="tbl">
+              <thead><tr><th>Setting</th><th>Value</th><th>Description</th></tr></thead>
+              <tbody>
+                <tr><td>App Name</td><td><code>BudgetTracker_v2</code></td><td>Unique application identifier</td></tr>
+                <tr><td>Time Zone</td><td><code>UTC +5:30</code></td><td>Affects all date/time fields</td></tr>
+                <tr><td>Locale</td><td><code>en_US</code></td><td>Number &amp; date formatting</td></tr>
+                <tr><td>App Mode</td><td><code>Professional</code></td><td>Enables workflows &amp; blueprints</td></tr>
+              </tbody>
+            </table>
+            <pre><span class="cm">// App init parameters</span>
+<span class="kw">app</span> = <span class="fn">zoho.creator.createApp</span>({
+  <span class="kw">name</span>: <span class="str">"BudgetTracker_v2"</span>,
+  <span class="kw">timezone</span>: <span class="str">"Asia/Kolkata"</span>,
+  <span class="kw">locale</span>: <span class="str">"en_US"</span>
+});</pre>
+            <button class="next-btn" onclick="nextStep()">Next Step &rarr;</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 ── Form Creation -->
+    <div class="step" data-index="1">
+      <div class="step-track">
+        <div class="step-circle" data-index="1">2</div>
+      </div>
+      <div class="step-panel">
+        <div class="step-title" data-index="1">Form Creation</div>
+        <div class="step-body">
+          <div class="step-body-inner">
+            <p>Design the forms that collect budget data. Each form maps to a database table with custom fields and validation rules.</p>
+            <h3>Field Types Reference</h3>
+            <table class="tbl">
+              <thead><tr><th>Field Type</th><th>Use Case</th><th>Data Type</th></tr></thead>
+              <tbody>
+                <tr><td>Single Line</td><td>Vendor names, invoice IDs</td><td><code>Text (255)</code></td></tr>
+                <tr><td>Currency</td><td>Budget amount, actual cost</td><td><code>Decimal(12,2)</code></td></tr>
+                <tr><td>Date</td><td>Invoice date, due date</td><td><code>Date</code></td></tr>
+                <tr><td>Dropdown</td><td>Category, department</td><td><code>Enum</code></td></tr>
+                <tr><td>Lookup</td><td>Related module reference</td><td><code>ForeignKey</code></td></tr>
+              </tbody>
+            </table>
+            <pre><span class="cm">// Field definition syntax</span>
+<span class="kw">field</span> budgetAmount = <span class="fn">zoho.creator.addField</span>({
+  <span class="kw">type</span>: <span class="str">"CURRENCY"</span>,
+  <span class="kw">label</span>: <span class="str">"Budget Amount"</span>,
+  <span class="kw">decimalPlaces</span>: <span class="num">2</span>,
+  <span class="kw">required</span>: <span class="kw">true</span>,
+  <span class="kw">currency</span>: <span class="str">"USD"</span>
+});</pre>
+            <button class="next-btn" onclick="nextStep()">Next Step &rarr;</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 ── Module Mapping -->
+    <div class="step" data-index="2">
+      <div class="step-track">
+        <div class="step-circle" data-index="2">3</div>
+      </div>
+      <div class="step-panel">
+        <div class="step-title" data-index="2">Module Mapping</div>
+        <div class="step-body">
+          <div class="step-body-inner">
+            <p>Define relationships between modules. Proper mapping ensures data integrity across your budget tracking system.</p>
+            <h3>Module Relationships</h3>
+            <table class="tbl">
+              <thead><tr><th>Source Module</th><th>Relation</th><th>Target Module</th><th>Cardinality</th></tr></thead>
+              <tbody>
+                <tr><td>Projects</td><td>has many</td><td>Budgets</td><td>1:N</td></tr>
+                <tr><td>Budgets</td><td>has many</td><td>Line Items</td><td>1:N</td></tr>
+                <tr><td>Vendors</td><td>has many</td><td>Invoices</td><td>1:N</td></tr>
+                <tr><td>Departments</td><td>has many</td><td>Employees</td><td>1:N</td></tr>
+                <tr><td>Approvals</td><td>belongs to</td><td>Budgets</td><td>N:1</td></tr>
+              </tbody>
+            </table>
+            <pre><span class="cm">// Module relationship mapping</span>
+<span class="kw">relation</span> = <span class="fn">zoho.creator.addRelation</span>({
+  <span class="kw">from</span>: <span class="str">"Projects"</span>,
+  <span class="kw">to</span>: <span class="str">"Budgets"</span>,
+  <span class="kw">type</span>: <span class="str">"has_many"</span>,
+  <span class="kw">lookupField</span>: <span class="str">"Project_ID"</span>
+});</pre>
+            <button class="next-btn" onclick="nextStep()">Next Step &rarr;</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 ── Validation -->
+    <div class="step" data-index="3">
+      <div class="step-track">
+        <div class="step-circle" data-index="3">4</div>
+      </div>
+      <div class="step-panel">
+        <div class="step-title" data-index="3">Validation</div>
+        <div class="step-body">
+          <div class="step-body-inner">
+            <p>Add validation rules to ensure data quality. These fire on form submission and prevent invalid entries.</p>
+            <h3>Validation Rules</h3>
+            <table class="tbl">
+              <thead><tr><th>Rule</th><th>Field</th><th>Condition</th><th>Error Message</th></tr></thead>
+              <tbody>
+                <tr><td>Budget Cap</td><td>budgetAmount</td><td><code>&gt; 1,000,000</code></td><td>Exceeds department cap</td></tr>
+                <tr><td>Date Range</td><td>startDate</td><td><code>&lt; endDate</code></td><td>Start must precede end</td></tr>
+                <tr><td>Required Approver</td><td>approverEmail</td><td><code>not empty</code></td><td>Approver is mandatory</td></tr>
+                <tr><td>Unique Code</td><td>projectCode</td><td><code>is unique</code></td><td>Code already exists</td></tr>
+              </tbody>
+            </table>
+            <pre><span class="cm">// On-submit validation</span>
+<span class="kw">if</span> (input.budgetAmount &gt; <span class="num">1000000</span>) {
+  <span class="fn">throwError</span>(<span class="str">"Budget exceeds department cap of $1M"</span>);
+}
+<span class="kw">if</span> (input.startDate &gt;= input.endDate) {
+  <span class="fn">throwError</span>(<span class="str">"Start date must be before end date"</span>);
+}</pre>
+            <button class="next-btn" onclick="nextStep()">Next Step &rarr;</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5 ── Workflows -->
+    <div class="step" data-index="4">
+      <div class="step-track">
+        <div class="step-circle" data-index="4">5</div>
+      </div>
+      <div class="step-panel">
+        <div class="step-title" data-index="4">Workflows</div>
+        <div class="step-body">
+          <div class="step-body-inner">
+            <p>Automate business processes with Deluge workflows. These trigger on form submission, record update, or schedule.</p>
+            <h3>Workflow Triggers</h3>
+            <table class="tbl">
+              <thead><tr><th>Trigger</th><th>Event</th><th>Action</th></tr></thead>
+              <tbody>
+                <tr><td>On Submit</td><td>New budget created</td><td>Send approval request</td></tr>
+                <tr><td>On Update</td><td>Budget revised</td><td>Notify stakeholders</td></tr>
+                <tr><td>Scheduled</td><td>Weekly</td><td>Generate status report</td></tr>
+                <tr><td>On Delete</td><td>Budget removed</td><td>Archive to history log</td></tr>
+              </tbody>
+            </table>
+            <pre><span class="cm">// On-submit workflow</span>
+<span class="kw">try</span> {
+  <span class="kw">approval</span> = <span class="fn">zoho.creator.submitForApproval</span>({
+    <span class="kw">recordId</span>: input.ID,
+    <span class="kw">approver</span>: <span class="str">"finance-head@company.com"</span>,
+    <span class="kw">message</span>: <span class="str">"New budget requires approval"</span>
+  });
+  <span class="fn">sendEmail</span>(approval.approver, <span class="str">"Budget Approval"</span>, emailBody);
+} <span class="kw">catch</span> (e) {
+  <span class="fn">logError</span>(<span class="str">"Workflow failed: "</span> + e.message);
+}</pre>
+            <button class="next-btn" onclick="nextStep()">Next Step &rarr;</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6 ── Blueprints -->
+    <div class="step" data-index="5">
+      <div class="step-track">
+        <div class="step-circle" data-index="5">6</div>
+      </div>
+      <div class="step-panel">
+        <div class="step-title" data-index="5">Blueprints</div>
+        <div class="step-body">
+          <div class="step-body-inner">
+            <p>Blueprints enforce approval flows with state transitions. Each transition can trigger validation and notifications.</p>
+            <h3>Blueprint Stages</h3>
+            <table class="tbl">
+              <thead><tr><th>Stage</th><th>Transitions To</th><th>Required Role</th></tr></thead>
+              <tbody>
+                <tr><td><span class="badge badge-gray">Draft</span></td><td>Pending Review</td><td>Creator</td></tr>
+                <tr><td><span class="badge badge-cyan">Pending Review</span></td><td>Approved / Rejected</td><td>Finance Manager</td></tr>
+                <tr><td><span class="badge badge-green">Approved</span></td><td>In Progress</td><td>Auto</td></tr>
+                <tr><td><span class="badge badge-orange">Rejected</span></td><td>Draft (revision)</td><td>Auto</td></tr>
+                <tr><td><span class="badge badge-green">Completed</span></td><td>&mdash;</td><td>Terminal</td></tr>
+              </tbody>
+            </table>
+            <pre><span class="cm">// Blueprint transition config</span>
+<span class="kw">blueprint</span> = <span class="fn">zoho.creator.addBlueprint</span>({
+  <span class="kw">module</span>: <span class="str">"Budgets"</span>,
+  <span class="kw">stages</span>: [
+    { <span class="kw">name</span>: <span class="str">"Draft"</span>, <span class="kw">next</span>: <span class="str">"Pending Review"</span> },
+    { <span class="kw">name</span>: <span class="str">"Pending Review"</span>, <span class="kw">next</span>: [<span class="str">"Approved"</span>, <span class="str">"Rejected"</span>] },
+    { <span class="kw">name</span>: <span class="str">"Approved"</span>, <span class="kw">next</span>: <span class="str">"Completed"</span> }
+  ]
+});</pre>
+            <button class="next-btn" onclick="nextStep()">Next Step &rarr;</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7 ── Reports -->
+    <div class="step" data-index="6">
+      <div class="step-track">
+        <div class="step-circle" data-index="6">7</div>
+      </div>
+      <div class="step-panel">
+        <div class="step-title" data-index="6">Reports</div>
+        <div class="step-body">
+          <div class="step-body-inner">
+            <p>Build reports and dashboards to visualize budget data. Multiple report types serve different analytical needs.</p>
+            <h3>Report Types</h3>
+            <table class="tbl">
+              <thead><tr><th>Report Type</th><th>Best For</th><th>Visualization</th></tr></thead>
+              <tbody>
+                <tr><td>Summary</td><td>Aggregated totals by department</td><td>Bar chart, KPI cards</td></tr>
+                <tr><td>Tabular</td><td>Line-item drill-downs</td><td>Sortable table</td></tr>
+                <tr><td>Pivot</td><td>Cross-tabulation: dept vs quarter</td><td>Heatmap grid</td></tr>
+                <tr><td>Timeline</td><td>Spend trends over time</td><td>Line chart</td></tr>
+                <tr><td>Kanban</td><td>Approval pipeline tracking</td><td>Card swimlane</td></tr>
+              </tbody>
+            </table>
+            <pre><span class="cm">// Report creation via API</span>
+<span class="kw">report</span> = <span class="fn">zoho.creator.createReport</span>({
+  <span class="kw">type</span>: <span class="str">"SUMMARY"</span>,
+  <span class="kw">module</span>: <span class="str">"Budgets"</span>,
+  <span class="kw">groupBy</span>: <span class="str">"department"</span>,
+  <span class="kw">aggregate</span>: { <span class="kw">field</span>: <span class="str">"budgetAmount"</span>, <span class="kw">fn</span>: <span class="str">"SUM"</span> }
+});</pre>
+            <button class="next-btn" onclick="nextStep()">Next Step &rarr;</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8 ── Pages -->
+    <div class="step" data-index="7">
+      <div class="step-track">
+        <div class="step-circle" data-index="7">8</div>
+      </div>
+      <div class="step-panel">
+        <div class="step-title" data-index="7">Pages</div>
+        <div class="step-body">
+          <div class="step-body-inner">
+            <p>Create custom pages for a tailored user experience. Pages can embed forms, reports, and custom HTML components.</p>
+            <h3>Page Layout Configuration</h3>
+            <table class="tbl">
+              <thead><tr><th>Page</th><th>Components</th><th>Access</th></tr></thead>
+              <tbody>
+                <tr><td>Dashboard</td><td>4 KPI cards, trend chart, alerts</td><td>All users</td></tr>
+                <tr><td>Budget Entry</td><td>Form embed, quick-add toolbar</td><td>Finance team</td></tr>
+                <tr><td>Approval Hub</td><td>Kanban view, action buttons</td><td>Managers</td></tr>
+                <tr><td>Admin Panel</td><td>Settings form, audit log</td><td>Admins only</td></tr>
+              </tbody>
+            </table>
+            <pre><span class="cm">// Page builder JSON</span>
+{
+  <span class="kw">page</span>: <span class="str">"Dashboard"</span>,
+  <span class="kw">layout</span>: <span class="str">"grid"</span>,
+  <span class="kw">sections</span>: [
+    { <span class="kw">type</span>: <span class="str">"kpi_row"</span>, <span class="kw">metrics</span>: [<span class="str">"total_budget"</span>, <span class="str">"spent"</span>, <span class="str">">remaining"</span>, <span class="str">"approvals"</span>] },
+    { <span class="kw">type</span>: <span class="str">"chart"</span>, <span class="kw">reportId</span>: <span class="str">"trend_report"</span> }
+  ]
+}</pre>
+            <button class="next-btn" onclick="nextStep()">Next Step &rarr;</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 9 ── Permissions -->
+    <div class="step" data-index="8">
+      <div class="step-track">
+        <div class="step-circle" data-index="8">9</div>
+      </div>
+      <div class="step-panel">
+        <div class="step-title" data-index="8">Permissions</div>
+        <div class="step-body">
+          <div class="step-body-inner">
+            <p>Configure role-based access control. Each role defines CRUD permissions per module, field, and action.</p>
+            <h3>Permission Matrix</h3>
+            <table class="tbl">
+              <thead><tr><th>Role</th><th>Create</th><th>Read</th><th>Update</th><th>Delete</th><th>Approve</th></tr></thead>
+              <tbody>
+                <tr><td><span class="badge badge-green">Admin</span></td><td>&check;</td><td>&check;</td><td>&check;</td><td>&check;</td><td>&check;</td></tr>
+                <tr><td><span class="badge badge-cyan">Manager</span></td><td>&check;</td><td>&check;</td><td>&check;</td><td>&mdash;</td><td>&check;</td></tr>
+                <tr><td><span class="badge badge-gray">Editor</span></td><td>&check;</td><td>&check;</td><td>&check;</td><td>&mdash;</td><td>&mdash;</td></tr>
+                <tr><td><span class="badge badge-gray">Viewer</span></td><td>&mdash;</td><td>&check;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
+              </tbody>
+            </table>
+            <pre><span class="cm">// Permission rule</span>
+<span class="kw">permission</span> = <span class="fn">zoho.creator.setPermission</span>({
+  <span class="kw">role</span>: <span class="str">"Manager"</span>,
+  <span class="kw">module</span>: <span class="str">"Budgets"</span>,
+  <span class="kw">access</span>: { <span class="kw">create</span>: <span class="kw">true</span>, <span class="kw">read</span>: <span class="kw">true</span>, <span class="kw">update</span>: <span class="kw">true</span>, <span class="kw">delete</span>: <span class="kw">false</span> },
+  <span class="kw">fieldRestrictions</span>: [<span class="str">"budgetAmount"</span>]
+});</pre>
+            <button class="next-btn" onclick="nextStep()">Next Step &rarr;</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 10 ── Best Practices -->
+    <div class="step" data-index="9">
+      <div class="step-track">
+        <div class="step-circle" data-index="9">10</div>
+      </div>
+      <div class="step-panel">
+        <div class="step-title" data-index="9">Best Practices</div>
+        <div class="step-body">
+          <div class="step-body-inner">
+            <p>Follow these best practices to ensure your application is performant, maintainable, and scalable.</p>
+            <h3>Guidelines</h3>
+            <table class="tbl">
+              <thead><tr><th>Area</th><th>Recommendation</th><th>Impact</th></tr></thead>
+              <tbody>
+                <tr><td>Naming</td><td>Use <code>PascalCase</code> for modules, <code>camelCase</code> for fields</td><td>Maintainability</td></tr>
+                <tr><td>Indexes</td><td>Add indexes to lookup and filter fields</td><td>Performance</td></tr>
+                <tr><td>Workflows</td><td>Keep Deluge under 200 lines per workflow</td><td>Readability</td></tr>
+                <tr><td>Validation</td><td>Validate at form level, not just workflow</td><td>Data integrity</td></tr>
+                <tr><td>Backup</td><td>Export app structure weekly</td><td>Disaster recovery</td></tr>
+                <tr><td>Testing</td><td>Use sandbox before deploying changes</td><td>Risk mitigation</td></tr>
+              </tbody>
+            </table>
+            <pre><span class="cm">// Naming convention example</span>
+<span class="kw">module</span>: <span class="str">"BudgetLineItems"</span>     <span class="cm">// PascalCase</span>
+<span class="kw">field</span>:  <span class="str">"budgetAmount"</span>        <span class="cm">// camelCase</span>
+<span class="kw">workflow</span>: <span class="str">"onBudgetApprove"</span>   <span class="cm">// camelCase</span></pre>
+            <button class="next-btn" onclick="nextStep()">Next Step &rarr;</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 11 ── Checklist -->
+    <div class="step" data-index="10">
+      <div class="step-track">
+        <div class="step-circle" data-index="10">11</div>
+      </div>
+      <div class="step-panel">
+        <div class="step-title" data-index="10">Checklist</div>
+        <div class="step-body">
+          <div class="step-body-inner">
+            <p>Final verification before deployment. Confirm each item to ensure nothing is missed.</p>
+            <h3>Deployment Readiness</h3>
+            <table class="tbl">
+              <thead><tr><th>#</th><th>Item</th><th>Status</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>All forms have validation rules</td><td><span class="badge badge-gray">Pending</span></td><td>&mdash;</td></tr>
+                <tr><td>2</td><td>Workflow triggers configured</td><td><span class="badge badge-gray">Pending</span></td><td>&mdash;</td></tr>
+                <tr><td>3</td><td>Blueprint stages mapped</td><td><span class="badge badge-gray">Pending</span></td><td>&mdash;</td></tr>
+                <tr><td>4</td><td>Reports tested with sample data</td><td><span class="badge badge-gray">Pending</span></td><td>&mdash;</td></tr>
+                <tr><td>5</td><td>Permissions verified per role</td><td><span class="badge badge-gray">Pending</span></td><td>&mdash;</td></tr>
+                <tr><td>6</td><td>Performance tested &gt; 10k records</td><td><span class="badge badge-gray">Pending</span></td><td>&mdash;</td></tr>
+                <tr><td>7</td><td>Backup plan documented</td><td><span class="badge badge-gray">Pending</span></td><td>&mdash;</td></tr>
+                <tr><td>8</td><td>User training materials ready</td><td><span class="badge badge-gray">Pending</span></td><td>&mdash;</td></tr>
+              </tbody>
+            </table>
+            <pre><span class="cm">// Pre-deployment check</span>
+<span class="kw">const</span> checks = [
+  <span class="str">"validations_active"</span>,
+  <span class="str">"workflows_configured"</span>,
+  <span class="str">"blueprints_mapped"</span>,
+  <span class="str">"reports_tested"</span>,
+  <span class="str">"permissions_verified"</span>
+];
+<span class="kw">for</span> (<span class="kw">let</span> c <span class="kw">of</span> checks) {
+  <span class="kw">if</span> (!<span class="fn">verifyCheck</span>(c)) <span class="fn">raiseFlag</span>(c);
+}</pre>
+            <button class="next-btn" onclick="nextStep()" id="finishBtn">Finish Setup &rarr;</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function () {
+  const TOTAL = 11;
+  let currentStep = 0;
+
+  const stepper = document.getElementById('stepper');
+  const progressBadge = document.getElementById('progressBadge');
+  const steps = Array.from(document.querySelectorAll('.step'));
+  const circles = Array.from(document.querySelectorAll('.step-circle'));
+  const titles = Array.from(document.querySelectorAll('.step-title'));
+
+  function render() {
+    steps.forEach((el, i) => {
+      el.classList.toggle('completed', i < currentStep);
+      el.classList.toggle('active', i === currentStep);
+
+      const circle = circles[i];
+      circle.innerHTML = i < currentStep
+        ? '<svg viewBox="0 0 24 24"><polyline points="4 13 9 18 20 6"/></svg>'
+        : String(i + 1);
+    });
+
+    progressBadge.textContent = 'Step ' + (currentStep + 1) + ' of ' + TOTAL;
+
+    const finishBtn = document.getElementById('finishBtn');
+    if (finishBtn) {
+      finishBtn.textContent = currentStep === TOTAL - 1 ? '\u2713 Finish Setup' : 'Next Step \u2192';
+    }
+
+    requestAnimationFrame(updateLine);
+  }
+
+  function updateLine() {
+    const stepperRect = stepper.getBoundingClientRect();
+    const stepperH = stepper.offsetHeight;
+    if (stepperH < 10) return;
+
+    const centers = circles.map(c => {
+      const r = c.getBoundingClientRect();
+      return (r.top - stepperRect.top + r.height / 2) / stepperH * 100;
+    });
+
+    const lastCompleted = currentStep - 1;
+    const active = currentStep;
+    const stops = [];
+
+    if (lastCompleted >= 0) {
+      const cp = Math.min(100, centers[lastCompleted]);
+      stops.push('var(--green) 0%', 'var(--green) ' + cp + '%');
+      stops.push('var(--accent) ' + cp + '%', 'var(--accent) ' + Math.min(100, centers[active]) + '%');
+    } else {
+      stops.push('var(--accent) 0%', 'var(--accent) ' + Math.min(100, centers[active]) + '%');
+    }
+
+    stops.push('var(--border) ' + Math.min(100, centers[active]) + '%', 'var(--border) 100%');
+
+    const gradient = 'linear-gradient(to bottom, ' + stops.join(', ') + ')';
+    const style = document.getElementById('line-style') || (function(){
+      const s = document.createElement('style');
+      s.id = 'line-style';
+      document.head.appendChild(s);
+      return s;
+    })();
+    style.textContent = '#stepper::before { background: ' + gradient + ' !important; }';
+  }
+
+  function goTo(index) {
+    if (index === currentStep) return;
+    if (index < 0 || index >= TOTAL) return;
+    currentStep = index;
+    render();
+    const activePanel = steps[currentStep].querySelector('.step-body-inner');
+    if (activePanel) {
+      setTimeout(() => {
+        activePanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 100);
+    }
+  }
+
+  window.nextStep = function () {
+    if (currentStep < TOTAL - 1) {
+      goTo(currentStep + 1);
+    }
+  };
+
+  circles.forEach((c, i) => {
+    c.addEventListener('click', function (e) {
+      e.stopPropagation();
+      goTo(i);
+    });
+  });
+
+  titles.forEach((t, i) => {
+    t.addEventListener('click', function () {
+      goTo(i);
+    });
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,639 @@
+<!-- 
+  DESIGN B: Vertical Stepper / Wizard
+  Radically different from collapsible cards (Design A) and tabs.
+  
+  Layout:
+    - Sticky nav-less top: progress pill + title
+    - Vertical timeline: left-aligned line with numbered circles
+    - Each step: circle → connector line → content panel (right)
+    - Inline expansion: clicking a step header/circle reveals its content below
+    - Three states per step: not-started (dark), in-progress (accent/cyan fill), complete (green fill + checkmark)
+    - Steps flow sequentially: 1→11, no skipping allowed
+  
+  Contrast with collapsible cards:
+    - Cards: independent toggle, any order, compact. Stepper: linear forced progression, guided walkthrough, spacious.
+    - Cards: horizontal grid. Stepper: vertical timeline with visual progress commit.
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zoho Creator — Implementation Guide</title>
+<style>
+  :root {
+    --bg: #0b1120;
+    --surface: #1a2435;
+    --surface2: #253040;
+    --border: #2d3a4d;
+    --text: #e8edf5;
+    --muted: #8a9bb5;
+    --accent: #22d3ee;
+    --green: #4ade80;
+    --orange: #fb923c;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    line-height: 1.6;
+    padding: 2rem 1rem;
+    min-height: 100vh;
+  }
+
+  /* ─── wrapper ─── */
+  .stepper-wrap {
+    max-width: 820px;
+    margin: 0 auto;
+  }
+
+  /* ─── header ─── */
+  .stepper-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .stepper-header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+  }
+
+  .stepper-header h1 span { color: var(--accent); }
+
+  .stepper-header p {
+    color: var(--muted);
+    font-size: 0.9rem;
+    max-width: 520px;
+    margin: 0 auto 1.25rem;
+  }
+
+  /* ─── progress pill ─── */
+  .progress-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 9999px;
+    padding: 0.45rem 1.2rem 0.45rem 1rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  .progress-pill .count {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .progress-pill .bar-track {
+    width: 80px;
+    height: 4px;
+    background: var(--surface2);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-pill .bar-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.5s ease;
+    width: 0%;
+  }
+
+  /* ─── stepper list ─── */
+  .stepper { position: relative; }
+
+  /* vertical line */
+  .stepper::before {
+    content: '';
+    position: absolute;
+    left: 23px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--border);
+  }
+
+  /* ─── step row ─── */
+  .step {
+    position: relative;
+    display: flex;
+    gap: 1.25rem;
+    padding-bottom: 1.5rem;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .step:last-child { padding-bottom: 0; }
+
+  /* ─── circle column ─── */
+  .step-col-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    width: 48px;
+    z-index: 1;
+  }
+
+  .step-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    border: 2px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    transition: all 0.35s ease;
+    position: relative;
+  }
+
+  /* state: in-progress */
+  .step.active .step-circle {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #0b1120;
+    box-shadow: 0 0 0 4px rgba(34, 211, 238, 0.15);
+  }
+
+  /* state: complete */
+  .step.complete .step-circle {
+    background: var(--green);
+    border-color: var(--green);
+    color: #0b1120;
+  }
+
+  .step.complete .step-circle .num { display: none; }
+  .step.complete .step-circle .check { display: block; }
+  .step .step-circle .check { display: none; }
+
+  /* ─── content column ─── */
+  .step-col-right {
+    flex: 1;
+    min-width: 0;
+    padding-top: 0.5rem;
+  }
+
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+  }
+
+  .step-header h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text);
+    transition: color 0.25s;
+  }
+
+  .step.complete .step-header h3 { color: var(--green); }
+
+  .step.active .step-header h3 { color: var(--accent); }
+
+  .step-badge {
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 0.15rem 0.6rem;
+    border-radius: 9999px;
+    background: var(--surface2);
+    color: var(--muted);
+    transition: all 0.35s;
+  }
+
+  .step.active .step-badge {
+    background: rgba(34, 211, 238, 0.12);
+    color: var(--accent);
+  }
+
+  .step.complete .step-badge {
+    background: rgba(74, 222, 128, 0.12);
+    color: var(--green);
+  }
+
+  .step-desc {
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-top: 0.15rem;
+  }
+
+  /* ─── expandable panel ─── */
+  .step-panel {
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: max-height 0.45s ease, opacity 0.35s ease, margin 0.35s ease;
+    margin-top: 0;
+  }
+
+  .step-panel.open {
+    max-height: 600px;
+    opacity: 1;
+    margin-top: 0.75rem;
+  }
+
+  .step-panel-inner {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    font-size: 0.88rem;
+    color: var(--text);
+    line-height: 1.7;
+  }
+
+  .step-panel-inner h4 {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--accent);
+  }
+
+  .step-panel-inner ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .step-panel-inner ul li {
+    position: relative;
+    padding-left: 1.25rem;
+    margin-bottom: 0.35rem;
+    color: var(--muted);
+  }
+
+  .step-panel-inner ul li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.6em;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0.6;
+  }
+
+  .step-panel-inner code {
+    background: var(--surface2);
+    padding: 0.1em 0.4em;
+    border-radius: 4px;
+    font-size: 0.82em;
+    color: var(--accent);
+  }
+
+  .step-panel-inner .note {
+    margin-top: 0.75rem;
+    padding: 0.6rem 1rem;
+    background: rgba(34, 211, 238, 0.06);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 6px 6px 0;
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+
+  /* ─── nav ─── */
+  .stepper-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.6rem 1.4rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #0b1120;
+  }
+  .btn-primary:hover { opacity: 0.85; }
+  .btn-primary:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--text); }
+  .btn-ghost:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  .stepper-footer .label {
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+
+  /* ─── responsive ─── */
+  @media (max-width: 600px) {
+    .step { gap: 0.85rem; }
+    .stepper::before { left: 18px; }
+    .step-col-left { width: 38px; }
+    .step-circle { width: 38px; height: 38px; font-size: 0.75rem; }
+    .step.active .step-circle { box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.15); }
+    .step-header h3 { font-size: 1rem; }
+    .step-panel-inner { padding: 1rem; }
+    .stepper-footer { flex-wrap: wrap; gap: 0.75rem; justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stepper-wrap" id="app">
+
+  <!-- header -->
+  <div class="stepper-header">
+    <h1>Zoho Creator <span>Implementation Guide</span></h1>
+    <p>Follow the 11-step walkthrough to configure, build, and deploy your Zoho Creator application.</p>
+    <div class="progress-pill">
+      Step <span class="count" id="progressCount">1</span> of 11
+      <div class="bar-track">
+        <div class="bar-fill" id="progressBar"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- stepper -->
+  <div class="stepper" id="stepper"></div>
+
+  <!-- footer nav -->
+  <div class="stepper-footer">
+    <button class="btn btn-ghost" id="prevBtn" disabled>&larr; Previous</button>
+    <span class="label"><span id="statusLabel">Not Started</span></span>
+    <button class="btn btn-primary" id="nextBtn">Next Step &rarr;</button>
+  </div>
+
+</div>
+
+<!-- step data -->
+<script>
+const STEPS = [
+  {
+    title: 'App Setup',
+    desc: 'Create your Zoho Creator application and configure the base environment.',
+    details: [
+      'Navigate to Zoho Creator and create a new application from the dashboard.',
+      'Choose a meaningful application name and set the timezone to your region.',
+      'Configure the app theme — use <code>#0b1120</code> for dark-mode alignment.',
+      'Set up user authentication: Email + Password or SSO via Google Workspace.',
+      'Invite the initial admin team and assign workspace roles.'
+    ],
+    note: 'Enable "Developer Mode" from Settings → General to expose advanced form and field options during development.'
+  },
+  {
+    title: 'Form Creation',
+    desc: 'Design your data-entry forms with fields, validation, and UI rules.',
+    details: [
+      'Create forms for each data entity: Projects, Tasks, Expenses, Vendors.',
+      'Use <code>Text</code>, <code>Number</code>, <code>Dropdown</code>, <code>Date</code>, and <code>Lookup</code> field types appropriately.',
+      'Add field validation: required markers, regex patterns, range checks.',
+      'Configure UI rules: show/hide fields based on dropdown selections.',
+      'Set up auto-number fields for unique record IDs on each form.'
+    ],
+    note: 'Use the "Duplicate Form" feature to bootstrap similar forms, then customize fields per entity.'
+  },
+  {
+    title: 'Module Mapping',
+    desc: 'Define relationships between forms — link records across modules.',
+    details: [
+      'Add <code>Lookup</code> fields to create foreign-key relationships (e.g., Task → Project).',
+      'Configure subform fields for inline one-to-many data entry (e.g., Line Items on an Expense form).',
+      'Set up formula fields to auto-calculate totals, statuses, or concatenated display names.',
+      'Define summary fields on parent forms to aggregate child data (count, sum, average).',
+      'Test lookups with sample data to confirm correct parent-child mapping.'
+    ],
+    note: 'Summary fields update asynchronously — allow up to 5 minutes for re-calc after child-record changes.'
+  },
+  {
+    title: 'Data Validation',
+    desc: 'Implement rules to ensure data integrity at entry time.',
+    details: [
+      'Add <code>On Input</code> validation: email format, phone length, positive numbers.',
+      'Write <code>On Submit</code> validation rules using Deluge script for cross-field checks.',
+      'Prevent duplicate records with custom validation comparing existing entries.',
+      'Set up mandatory fields with conditional logic (required only when a status is "Approved").',
+      'Create custom error messages that guide users toward the correct input.'
+    ],
+    note: 'Test validation rules with both valid and invalid data in a sandbox form before deploying to production.'
+  },
+  {
+    title: 'Workflows',
+    desc: 'Automate business logic with Deluge-based workflow rules.',
+    details: [
+      'Create <code>On Form Submit</code> workflows to trigger email notifications.',
+      'Build <code>On Schedule</code> workflows for recurring tasks (weekly status digests).',
+      'Use <code>Update Records</code> actions to cascade status changes across related modules.',
+      'Integrate with external APIs via <code>invokeurl</code> — Slack, email, or custom webhooks.',
+      'Add conditional branches to handle approval/rejection paths.'
+    ],
+    note: 'Use the Workflow debugger (run test data) to step through Deluge line-by-line before activation.'
+  },
+  {
+    title: 'Blueprints',
+    desc: 'Design approval chains and record-lifecycle transitions.',
+    details: [
+      'Define blueprint states: Draft → Pending Approval → Approved / Rejected.',
+      'Assign transition permissions per role (Manager can approve, Employee can submit).',
+      'Attach <code>On Enter</code> / <code>On Exit</code> Deluge scripts for side effects (e.g., send email on approval).',
+      'Configure multi-step blueprints for expense reports requiring two managers.',
+      'Test escalation paths: auto-approve if no action within 48 hours.'
+    ],
+    note: 'Blueprints are state-machine based — each transition must be explicitly defined; implicit back-navigation is not allowed.'
+  },
+  {
+    title: 'Reports & Dashboards',
+    desc: 'Build visual summaries and filtered list views for your data.',
+    details: [
+      'Create <code>List View</code> reports with sortable columns and inline filters (date range, status).',
+      'Build <code>Summary</code> reports with group-by fields and aggregate metrics (sum, count, avg).',
+      'Design <code>Chart</code> reports — bar, pie, funnel — for executive dashboards.',
+      'Configure drill-down: clicking a chart segment opens a filtered list report.',
+      'Add <code>Pivot</code> reports for cross-tab analysis (e.g., Hours by Project by Month).'
+    ],
+    note: 'Dashboards refresh on page load. For near-real-time views, set auto-refresh to 30 seconds in report settings.'
+  },
+  {
+    title: 'Pages',
+    desc: 'Create custom web pages to embed forms, reports, and external content.',
+    details: [
+      'Build a Home page with KPI cards (total projects, pending approvals, overdue tasks).',
+      'Create an embedded <code>HTML</code> page for your company branding and navigation header.',
+      'Use <code>Page Parameters</code> to pass user context (e.g., logged-in user ID) to filtered reports.',
+      'Embed external dashboards (Google Data Studio, Tableau) via iframe.',
+      'Set mobile-responsive layout rules — stack cards vertically on small screens.'
+    ],
+    note: 'Pages support custom CSS overrides. Use <code>#app</code> scoping to avoid leaking styles into form components.'
+  },
+  {
+    title: 'Permissions',
+    desc: 'Set role-based access control for forms, reports, and pages.',
+    details: [
+      'Define roles: Admin, Manager, Employee, Viewer — each with distinct access levels.',
+      'Set form-level permissions: Create, Read, Update, Delete per role.',
+      'Configure field-level security — hide salary fields from non-HR roles.',
+      'Restrict report access: Managers see their team only; Admins see all.',
+      'Set up <code>Share</code> links for public forms (e.g., vendor registration) with reCAPTCHA.'
+    ],
+    note: 'Permissions cascade: disabling "Read" on a form also hides it from all related reports and dashboards.'
+  },
+  {
+    title: 'Best Practices',
+    desc: 'Apply naming conventions, version control, and performance patterns.',
+    details: [
+      'Name fields with <code>snake_case</code> — <code>project_budget</code>, <code>task_due_date</code>.',
+      'Use <code>Component Name</code> prefixes for forms: <code>frm_Project</code>, <code>frm_Expense</code>.',
+      'Keep Deluge scripts under 100 lines — extract reusable logic into <code>Functions</code>.',
+      'Use <code>Agile</code> mode for parallel development; merge via export/import.',
+      'Archive unused forms and workflows rather than deleting them (safe rollback).'
+    ],
+    note: 'Export your application XML weekly as a backup. Store in version control (Git) alongside your Deluge scripts.'
+  },
+  {
+    title: 'Go-Live Checklist',
+    desc: 'Final verification before pushing to production.',
+    details: [
+      'All forms created, fields validated, data types confirmed.',
+      'Module lookups and summary fields tested with sample records.',
+      'Blueprint transitions exercised end-to-end for every approval path.',
+      'Workflows triggered and confirmed — email delivery, record updates, API calls.',
+      'Report permissions verified per role — no data leakage.',
+      'Mobile responsiveness confirmed on iOS Safari and Chrome Android.',
+      'Admin and Manager accounts provisioned with correct roles.',
+      'Production application exported and stored as backup.'
+    ],
+    note: 'Run a full dry-run with anonymous test data in a sandbox org before flipping the production switch.'
+  }
+];
+
+/* ─── render ─── */
+const container = document.getElementById('stepper');
+const progressCount = document.getElementById('progressCount');
+const progressBar = document.getElementById('progressBar');
+const statusLabel = document.getElementById('statusLabel');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+
+let currentStep = 0;
+
+function render() {
+  container.innerHTML = STEPS.map((s, i) => {
+    const state = i < currentStep ? 'complete' : i === currentStep ? 'active' : '';
+    return `
+      <div class="step ${state}" data-index="${i}">
+        <div class="step-col-left">
+          <div class="step-circle">
+            <span class="num">${i + 1}</span>
+            <span class="check">&#10003;</span>
+          </div>
+        </div>
+        <div class="step-col-right">
+          <div class="step-header">
+            <h3>${s.title}</h3>
+            <span class="step-badge">${state === 'complete' ? 'Complete' : state === 'active' ? 'In Progress' : 'Not Started'}</span>
+          </div>
+          <div class="step-desc">${s.desc}</div>
+          <div class="step-panel ${state === 'active' ? 'open' : ''}">
+            <div class="step-panel-inner">
+              <h4>Implementation Steps</h4>
+              <ul>${s.details.map(d => `<li>${d}</li>`).join('')}</ul>
+              ${s.note ? `<div class="note">💡 ${s.note}</div>` : ''}
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  updateMeta();
+  bindClicks();
+}
+
+function updateMeta() {
+  progressCount.textContent = currentStep + 1;
+  const pct = ((currentStep + 1) / STEPS.length) * 100;
+  progressBar.style.width = pct + '%';
+
+  if (currentStep === STEPS.length - 1) {
+    statusLabel.textContent = 'All steps complete!';
+  } else if (STEPS[currentStep]) {
+    statusLabel.textContent = `Working on: ${STEPS[currentStep].title}`;
+  }
+
+  prevBtn.disabled = currentStep === 0;
+  nextBtn.disabled = currentStep >= STEPS.length - 1;
+  nextBtn.textContent = currentStep >= STEPS.length - 1 ? 'Finished' : 'Next Step →';
+}
+
+function bindClicks() {
+  document.querySelectorAll('.step').forEach(el => {
+    el.addEventListener('click', () => {
+      const idx = parseInt(el.dataset.index);
+      goToStep(idx);
+    });
+  });
+}
+
+function goToStep(idx) {
+  if (idx < 0 || idx >= STEPS.length) return;
+  if (idx > currentStep + 1) return;
+  currentStep = idx;
+  render();
+}
+
+prevBtn.addEventListener('click', () => goToStep(currentStep - 1));
+nextBtn.addEventListener('click', () => {
+  if (currentStep < STEPS.length - 1) goToStep(currentStep + 1);
+});
+
+render();
+</script>
+
+<!--
+  Design notes:
+
+  1. Vertical timeline line (::before on .stepper) runs the full height behind circles.
+  2. Step circles use three distinct visual states via CSS class toggling:
+     - default: dark fill (#1a2435), muted border, muted number
+     - .active: cyan fill (--accent #22d3ee), glow box-shadow, dark text
+     - .complete: green fill (--green #4ade80), checkmark replaces number
+  3. Content panels use max-height + opacity transition for smooth open/close.
+  4. Progress pill in header shows "Step X of 11" with a visual bar.
+  5. Navigation enforces linear progression: user cannot skip ahead >1 step
+     (clicking ahead beyond current+1 does nothing). Prev/Next buttons at bottom.
+  6. Each step's badge text changes (Not Started → In Progress → Complete)
+     matching the circle state.
+  7. Responsive: shrinks circles and padding on <600px viewports.
+-->
+
+</body>
+</html>

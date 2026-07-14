@@ -1,0 +1,58 @@
+Unnamed: 0,Unnamed: 1,Unnamed: 2,Unnamed: 3,Unnamed: 4,Unnamed: 5,Unnamed: 6
+,,,,,,
+,Admin>>,,,,,
+,,,,,,
+,Screen / Form,Purpose,Users,,,
+,Item Master,"All RM, PM, FG, consumables","Purchase, Stores, Production, QC, Sales (view)",,,
+,System Master,"3 mm Epoxy, 4 mm PU, Demarcation, etc.","Sales, Projects, Production",,,
+,BOM Master,Material consumption per system/product,"Production, QC, Costing",,,
+,Supplier Master,Vendor details,"Purchase, Finance",,,
+,Customer Master,Customer/site details,"Sales, Projects, Finance",,,
+,Store Master,"RM/FG/QC/Site stores. Bin Location is subform (Rack/Shelf/Bin mapping)",Stores, Production,,,
+,User Access ,"Approvers, departments, Access",All Dept,,,
+,Approval Matrix,PI/PR/PO limits and approvers,Departmental,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,,,,,,
+,Purchase Dept>>,,,,,
+,Dashboard,For Entry Purpose,For Search & review,For Changes,For Report Generation,Notification & Approvals
+,Total Purchase This Month,Purchase Item Master,Purchase Item Master,Purchase Item Master,Purchase Item Master,Pending PR Approval
+,Open PO's,Supplier Master,Supplier Master,Supplier Master,Supplier Master,PO Awaiting Release
+,Pending PR Approvals,PO,PR,GRN,PR,Pending GRN's
+,Overdue Deliveries,PO Amendment,PO,Rate Comparison,PO,Overdue Delivery Follow-up
+,Transport Overview,GRN,GRN,,PO Amendment,Overdue Supplier Payment
+,,Rate Comparison,Payment Overdue,,GRN,Rate Comparison Data Misssing 
+,,,Rate Comparison,,Open PO Register,
+,,,Transport Data,,PO vs GRN Pending,
+,,,,,Vendor Performance,
+,,,,,Purchase by Item Group,
+,,,,,Price Comparision Report,
+,,,,,Transportation Reports,
+,,,,,,
+,,,,,,
+,Store Dept>>,,,,,
+,Dashboard,For Entry Purpose,For Search & review,For Changes,For Report Generation,Notification & Approvals
+,Inventory Dashboard,Purchase Item Master,Purchase Item Master,Purchase Item Master,Purchase Item Master,MR Sheet from Costing
+,Dispatch Planning,Supplier Master,Supplier Master,Supplier Master,Supplier Master,Pending Material Req.
+,,PO,PO,PO,PO,Pending FG Receving
+,,PO Amendment,PO Amendment,Rate Comparison,PO Amendment,
+,,GRN,GRN,GRN,GRN,
+,,Rate Comparison,Rate Comparison,Material Issue Screen,Rate Comparison,
+,,Material Issue Screen,Material Issue Screen,Material Return Screen,Material Issue Screen,
+,,Material Return Screen,Material Return Screen,Material Handover,Material Return Screen,
+,,Store Master,Store Master,FG Receiving,Store Master,
+,,Material Handover,Material Handover,Vehical & Transport ,Material Handover,
+,,FG Receiving,FG Receiving,,FG Receiving,
+,,Vehicle & Transport ,Vehical & Transport ,,Vehical & Transport ,
+,,,,,,
+,Production Dept>>,For Entry Purpose,For Search & review,For Changes,For Report Generation,
+,Today's Production,Production Planning,Production Planning,Production Planning,Daily Production Report,
+,Open Production Orders,Production Order,Production Order,Production Order,Batch Manufacturing Report,
+,Planned Batches,BOM Master,BOM Master,BOM Master,Production Order Status Report,
+,Material Consumption,Batch Manufacturing Record,Batch Manufacturing Record,Batch Manufacturing Record,Material Consumption Report,
+,RM Stoke,Material Requisition,Material Requisition,Material Requisition,BOM vs Actual Consumption Report,
+,Completed Batches ,RM Consumption Entry,RM Consumption Entry,RM Consumption Entry,Production Loss Report,
+,Production Efficiency,Packing Entry,Packing Entry,Packing Entry,FG Handover Report,
+,Pending Order,FG Handover Note,FG Handover Note,FG Handover Note,Packing Report,
+,Pending FG Handover,Rework Register,Rework Register,Rework Register,Machine Utilization Report,

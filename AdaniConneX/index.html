@@ -1,0 +1,1938 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AdaniConneX — ZohoCRM Implementation Plan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --acx-primary: #1a56db;
+      --acx-primary-dark: #1243af;
+      --acx-primary-light: #e8effd;
+      --acx-secondary: #0b3b5c;
+      --acx-accent: #f59e0b;
+      --acx-accent-light: #fef3c7;
+      --acx-green: #059669;
+      --acx-green-light: #d1fae5;
+      --acx-red: #dc2626;
+      --acx-red-light: #fee2e2;
+      --acx-gray-50: #f9fafb;
+      --acx-gray-100: #f3f4f6;
+      --acx-gray-200: #e5e7eb;
+      --acx-gray-300: #d1d5db;
+      --acx-gray-400: #9ca3af;
+      --acx-gray-500: #6b7280;
+      --acx-gray-600: #4b5563;
+      --acx-gray-700: #374151;
+      --acx-gray-800: #1f2937;
+      --acx-gray-900: #111827;
+      --sidebar-width: 280px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--acx-gray-800);
+      background: var(--acx-gray-50);
+      line-height: 1.6;
+      display: flex;
+    }
+
+    /* ---- Sidebar ---- */
+    .sidebar {
+      position: fixed;
+      top: 0; left: 0;
+      width: var(--sidebar-width);
+      height: 100vh;
+      background: var(--acx-gray-900);
+      color: #fff;
+      overflow-y: auto;
+      z-index: 100;
+      padding: 0;
+    }
+
+    .sidebar-header {
+      padding: 24px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .sidebar-header h1 {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      line-height: 1.3;
+    }
+
+    .sidebar-header .client-badge {
+      display: inline-block;
+      margin-top: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--acx-accent);
+    }
+
+    .sidebar-nav {
+      padding: 12px 0;
+    }
+
+    .sidebar-nav a {
+      display: block;
+      padding: 8px 20px;
+      color: var(--acx-gray-400);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 400;
+      transition: all 0.15s;
+      border-left: 3px solid transparent;
+    }
+
+    .sidebar-nav a:hover,
+    .sidebar-nav a.active {
+      color: #fff;
+      background: rgba(255,255,255,0.05);
+      border-left-color: var(--acx-accent);
+    }
+
+    .sidebar-nav .section-label {
+      padding: 16px 20px 4px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--acx-gray-500);
+    }
+
+    /* ---- Main ---- */
+    .main {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      min-height: 100vh;
+    }
+
+    /* ---- Hero ---- */
+    .hero {
+      background: linear-gradient(135deg, var(--acx-secondary) 0%, var(--acx-gray-900) 100%);
+      color: #fff;
+      padding: 64px 48px 56px;
+    }
+
+    .hero-eyebrow {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--acx-accent);
+      margin-bottom: 12px;
+    }
+
+    .hero h1 {
+      font-size: 42px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      line-height: 1.15;
+      margin-bottom: 12px;
+    }
+
+    .hero p {
+      font-size: 18px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.75);
+      max-width: 720px;
+      line-height: 1.6;
+    }
+
+    .hero-meta {
+      display: flex;
+      gap: 32px;
+      margin-top: 28px;
+      flex-wrap: wrap;
+    }
+
+    .hero-meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .hero-meta-item .label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: rgba(255,255,255,0.4);
+    }
+
+    .hero-meta-item .value {
+      font-size: 15px;
+      font-weight: 500;
+      color: #fff;
+    }
+
+    /* ---- Content ---- */
+    .content {
+      padding: 40px 48px 80px;
+      max-width: 1100px;
+    }
+
+    h2 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: var(--acx-gray-900);
+      margin-top: 56px;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 3px solid var(--acx-primary-light);
+    }
+
+    h2:first-of-type { margin-top: 0; }
+
+    h3 {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--acx-gray-800);
+      margin-top: 32px;
+      margin-bottom: 12px;
+    }
+
+    h4 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--acx-gray-700);
+      margin-top: 24px;
+      margin-bottom: 8px;
+    }
+
+    p { margin-bottom: 16px; color: var(--acx-gray-600); }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 999px;
+    }
+
+    .badge-blue { background: var(--acx-primary-light); color: var(--acx-primary); }
+    .badge-green { background: var(--acx-green-light); color: var(--acx-green); }
+    .badge-yellow { background: var(--acx-accent-light); color: #92400e; }
+    .badge-red { background: var(--acx-red-light); color: var(--acx-red); }
+
+    /* ---- Cards ---- */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+      margin: 20px 0;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid var(--acx-gray-200);
+      border-radius: 12px;
+      padding: 20px;
+      transition: box-shadow 0.2s;
+    }
+
+    .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+
+    .card h4 {
+      margin-top: 0;
+      font-size: 15px;
+    }
+
+    .card p {
+      font-size: 13px;
+      color: var(--acx-gray-500);
+      margin-bottom: 0;
+    }
+
+    /* ---- Pipeline SVG ---- */
+    .pipeline-flow {
+      margin: 24px 0;
+      padding: 24px;
+      background: #fff;
+      border: 1px solid var(--acx-gray-200);
+      border-radius: 12px;
+      overflow-x: auto;
+    }
+
+    .pipeline-flow svg {
+      display: block;
+      width: 100%;
+      height: auto;
+      min-width: 800px;
+    }
+
+    /* ---- Tables ---- */
+    .table-wrap {
+      overflow-x: auto;
+      margin: 16px 0;
+      border: 1px solid var(--acx-gray-200);
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    thead {
+      background: var(--acx-gray-800);
+      color: #fff;
+    }
+
+    th {
+      text-align: left;
+      padding: 10px 14px;
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--acx-gray-100);
+      vertical-align: top;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    tbody tr:hover { background: var(--acx-gray-50); }
+
+    td code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      background: var(--acx-gray-100);
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+
+    /* ---- Open Decision List ---- */
+    .decision-list {
+      list-style: none;
+      margin: 16px 0;
+    }
+
+    .decision-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 16px;
+      background: var(--acx-accent-light);
+      border-left: 4px solid var(--acx-accent);
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .decision-list li .num {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      font-size: 13px;
+      color: #92400e;
+      min-width: 28px;
+    }
+
+    /* ---- Callout ---- */
+    .callout {
+      padding: 16px 20px;
+      border-radius: 10px;
+      margin: 16px 0;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .callout-info {
+      background: var(--acx-primary-light);
+      border-left: 4px solid var(--acx-primary);
+    }
+
+    .callout-warning {
+      background: var(--acx-accent-light);
+      border-left: 4px solid var(--acx-accent);
+    }
+
+    .callout-success {
+      background: var(--acx-green-light);
+      border-left: 4px solid var(--acx-green);
+    }
+
+    /* ---- Stage Pipeline Cards ---- */
+    .stage-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 16px 0;
+    }
+
+    .stage-item {
+      background: #fff;
+      border: 1px solid var(--acx-gray-200);
+      border-radius: 8px;
+      padding: 12px 16px;
+      min-width: 140px;
+      flex: 1;
+      text-align: center;
+    }
+
+    .stage-item .stage-name {
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--acx-gray-800);
+    }
+
+    .stage-item .stage-prob {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--acx-primary);
+      margin: 4px 0;
+    }
+
+    .stage-item .stage-desc {
+      font-size: 11px;
+      color: var(--acx-gray-500);
+    }
+
+    /* ---- Phase Section ---- */
+    .phase {
+      background: #fff;
+      border: 1px solid var(--acx-gray-200);
+      border-radius: 12px;
+      padding: 24px;
+      margin: 20px 0;
+    }
+
+    .phase-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .phase-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      background: var(--acx-primary);
+      color: #fff;
+      font-weight: 700;
+      font-size: 14px;
+      border-radius: 8px;
+    }
+
+    .phase-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--acx-gray-900);
+    }
+
+    .phase-effort {
+      margin-left: auto;
+      font-size: 12px;
+      color: var(--acx-gray-500);
+      background: var(--acx-gray-100);
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+
+    /* ---- Checklist ---- */
+    .checklist {
+      list-style: none;
+      margin: 12px 0;
+    }
+
+    .checklist li {
+      padding: 4px 0 4px 24px;
+      position: relative;
+      font-size: 14px;
+      color: var(--acx-gray-700);
+    }
+
+    .checklist li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 9px;
+      width: 14px;
+      height: 14px;
+      border: 2px solid var(--acx-gray-300);
+      border-radius: 3px;
+    }
+
+    /* ---- Timeline bar ---- */
+    .timeline-bar {
+      display: flex;
+      margin: 24px 0;
+      border-radius: 10px;
+      overflow: hidden;
+      height: 32px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .timeline-bar .seg {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      text-align: center;
+      padding: 0 6px;
+    }
+
+    .seg-foundation { background: #6366f1; flex: 5; }
+    .seg-config { background: #3b82f6; flex: 8; }
+    .seg-flow { background: #06b6d4; flex: 8; }
+    .seg-integrate { background: #f59e0b; flex: 12; }
+    .seg-test { background: #10b981; flex: 8; }
+    .seg-launch { background: #ef4444; flex: 6; }
+
+    /* ---- Footer ---- */
+    .footer {
+      margin-top: 48px;
+      padding-top: 24px;
+      border-top: 1px solid var(--acx-gray-200);
+      font-size: 13px;
+      color: var(--acx-gray-400);
+      text-align: center;
+    }
+
+    /* ---- Responsive ---- */
+    @media (max-width: 768px) {
+      .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+      }
+
+      .sidebar-nav { display: none; }
+
+      .main { margin-left: 0; }
+
+      .hero {
+        padding: 32px 20px;
+      }
+
+      .hero h1 { font-size: 28px; }
+
+      .content {
+        padding: 24px 16px 60px;
+      }
+
+      .card-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Print */
+    @media print {
+      .sidebar { display: none; }
+      .main { margin-left: 0; }
+      .hero { padding: 24px; }
+      .content { padding: 24px; }
+      .phase { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <h1>AdaniConneX</h1>
+      <span class="client-badge">ZohoCRM Implementation</span>
+    </div>
+    <div class="sidebar-nav">
+      <a href="#overview">Overview</a>
+      <a href="#pipeline">Sales Pipeline</a>
+          <a href="#teams">Teams</a>
+          <a href="#cpq-tax">CPQ &amp; Tax</a>
+          <a href="#scripts">Client Scripts</a>
+          <a href="#compliance">Compliance</a>
+          <a href="#build-seq">Build Sequence</a>
+
+      <div class="section-label">Implementation</div>
+      <a href="#phase-0">P0: Roles &amp; Profiles</a>
+      <a href="#phase-1">P1: Module Config &amp; Fields</a>
+      <a href="#phase-2">P2: Sales Pipeline Blueprint</a>
+      <a href="#phase-3">P3: Approval Workflow</a>
+      <a href="#phase-4">P4: Pricing Automation</a>
+      <a href="#phase-5">P5: Document Management</a>
+      <a href="#phase-6">P6: Notifications</a>
+      <a href="#phase-7">P7: System Integrations</a>
+      <a href="#phase-8">P8: Contract Management</a>
+      <a href="#phase-9">P9: Reports &amp; Dashboards</a>
+      <a href="#phase-10">P10: CSAT Dashboard</a>
+      <a href="#phase-11">P11: Data Migration &amp; Go-Live</a>
+
+      <div class="section-label">Governance</div>
+      <a href="#crm-flow">CRM Flow Changes</a>
+      <a href="#decisions">Open Decisions</a>
+      <a href="#timeline">Timeline</a>
+      <a href="#automation">Automation</a>
+      <a href="#dev-considerations">Dev Considerations</a>
+      <a href="#client-comms">Client Comms</a>
+      <a href="#module-changes">Module Changes</a>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <div class="main">
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-eyebrow">Implementation Plan v1.1</div>
+      <h1>AdaniConneX<br>ZohoCRM Sales Automation</h1>
+      <p>Data Center Opportunity lifecycle automation — from suspect through SOF Contracted, integrating EdgeOS, SAP, and cross-team approval workflows. Includes Deluge pseudo-code for integrations and CRM flow change analysis.</p>
+      <div class="hero-meta">
+        <div class="hero-meta-item">
+          <span class="label">CRM Edition</span>
+          <span class="value">ZohoCRM Enterprise</span>
+        </div>
+        <div class="hero-meta-item">
+          <span class="label">Implementation Phases</span>
+          <span class="value">11 Phases</span>
+        </div>
+        <div class="hero-meta-item">
+          <span class="label">Est. Duration</span>
+          <span class="value">55–75 Days</span>
+        </div>
+        <div class="hero-meta-item">
+          <span class="label">Teams Involved</span>
+          <span class="value">6 Teams</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="content">
+
+      <!-- Overview -->
+      <section id="overview">
+        <h2>Overview</h2>
+        <p>AdaniConneX is implementing ZohoCRM Enterprise to automate Data Center Opportunity sales workflows across lead management, sales cycle, contracting, and capacity management. This plan covers the full lifecycle from opportunity creation through <strong>SOF Contracted</strong> (100%), including cross-team approvals, pricing validation, document management, dependent system integrations, and contract renewals.</p>
+
+        <h3>Core ZohoCRM Modules</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Module</th>
+                <th>Type</th>
+                <th>Purpose</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Accounts</td><td>Standard</td><td>Customer companies; Industry Type, Site/Region, GSTIN, NDA</td></tr>
+              <tr><td>Contacts</td><td>Standard</td><td>People at each Account; Role/Designation, Decision Maker</td></tr>
+              <tr><td><strong>Data Center Opportunity</strong></td><td>Standard (renamed <code>Deals</code>)</td><td>DC product sales lifecycle; API name stays <strong>Deals</strong></td></tr>
+              <tr><td><strong>Service Delivery Request</strong></td><td>Custom</td><td>Order fulfillment swimlane (Request&rarr;Inventory&rarr;Procurement&rarr;Delivery&rarr;Ack)</td></tr>
+              <tr><td>Calls / Meetings</td><td>Standard</td><td>Engagement logging; multi-attendee internal + external</td></tr>
+              <tr><td>Documents</td><td>Standard</td><td>MSA, SOF, PO, NDA, LOA (linked to modules)</td></tr>
+              <tr><td>EDC Products</td><td>Custom</td><td>Ancillary product catalog (~50 items, maintained by Sales Ops)</td></tr>
+              <tr><td>Colocation Pricing</td><td>Custom (subform)</td><td>Colo space+power pricing (Per Rack or Per KW)</td></tr>
+              <tr><td>Additional DC Products &amp; Services</td><td>Custom (subform)</td><td>Supplementary products with recurring/one-time costs</td></tr>
+              <tr><td><strong>Yearly Commercials</strong></td><td>Custom (subform)</td><td>4 commercial models — fixed escalation YoY, year-wise, fixed, consumption-based</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Pipeline -->
+      <section id="pipeline">
+        <h2>Sales Pipeline</h2>
+        <p>The ACX Sales Stage field tracks opportunity maturity through defined stages with associated probability percentages.</p>
+
+        <div class="stage-list">
+          <div class="stage-item"><div class="stage-name">Suspect</div><div class="stage-prob">10%</div><div class="stage-desc">Potential DC need identified</div></div>
+          <div class="stage-item"><div class="stage-name">Prospect</div><div class="stage-prob">25%</div><div class="stage-desc">Budgetary proposal shared</div></div>
+          <div class="stage-item"><div class="stage-name">Funnel</div><div class="stage-prob">50%</div><div class="stage-desc">RFP received, firm proposal submitted</div></div>
+          <div class="stage-item"><div class="stage-name">Negotiation</div><div class="stage-prob">75%</div><div class="stage-desc">Commercial/SLA negotiations underway</div></div>
+          <div class="stage-item" style="border-color: var(--acx-accent);"><div class="stage-name">SOF MSA</div><div class="stage-prob">90%</div><div class="stage-desc">PO/SOF executed + approvals</div></div>
+          <div class="stage-item" style="border-color: var(--acx-green);"><div class="stage-name">SOF Contracted</div><div class="stage-prob">100%</div><div class="stage-desc">MSA signed</div></div>
+        </div>
+
+        <div class="stage-list">
+          <div class="stage-item" style="border-color: var(--acx-red); opacity: 0.7;"><div class="stage-name">Lost</div><div class="stage-prob" style="color: var(--acx-red);">0%</div><div class="stage-desc">Awarded to competitor / insourced</div></div>
+          <div class="stage-item" style="border-color: var(--acx-red); opacity: 0.7;"><div class="stage-name">Dropped</div><div class="stage-prob" style="color: var(--acx-red);">0%</div><div class="stage-desc">Customer cancelled requirement</div></div>
+          <div class="stage-item" style="border-color: var(--acx-red); opacity: 0.7;"><div class="stage-name">Did Not Participate</div><div class="stage-prob" style="color: var(--acx-red);">0%</div><div class="stage-desc">ACX chose not to bid</div></div>
+          <div class="stage-item" style="border-color: var(--acx-red); opacity: 0.7;"><div class="stage-name">Material Change</div><div class="stage-prob" style="color: var(--acx-red);">0%</div><div class="stage-desc">Requirements changed drastically</div></div>
+        </div>
+
+        <div class="stage-list">
+          <div class="stage-item" style="border-color: var(--acx-gray-400); opacity: 0.6;"><div class="stage-name">SOF Expired</div><div class="stage-prob" style="color: var(--acx-gray-500);">—</div><div class="stage-desc">Initial term ended, not renewed</div></div>
+          <div class="stage-item" style="border-color: var(--acx-gray-400); opacity: 0.6;"><div class="stage-name">SOF Cancelled</div><div class="stage-prob" style="color: var(--acx-gray-500);">—</div><div class="stage-desc">Terminated before expiry</div></div>
+        </div>
+
+        <h3>Document Requirements by Stage</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Stage Movement</th>
+                <th>Required Document</th>
+                <th>Condition</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Move to <strong>SOF MSA</strong></td><td>Purchase Order <em>or</em> Sales Order Form</td><td>Mandatory</td></tr>
+              <tr><td>Move to <strong>SOF Contracted</strong></td><td>MSA (Master Service Agreement)</td><td>Mandatory</td></tr>
+              <tr><td>Optional</td><td>NDA, LOA</td><td>On Account or Opportunity</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Teams -->
+      <section id="teams">
+        <h2>Teams &amp; Role Architecture</h2>
+
+        <h3>Role Hierarchy</h3>
+        <div class="phase" style="font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 2;">
+          Administrator (IT)<br>
+          &nbsp;&nbsp;└── CBO / Sales Head<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── Sales Operations<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── Commercials (Product)<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── Pre-Sales (Technical)<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── Sales (Account Managers)<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── Service Delivery
+        </div>
+
+        <h3>Team Responsibilities</h3>
+        <div class="card-grid">
+          <div class="card">
+            <h4>Sales</h4>
+            <p>Creates and maintains Opportunities, Accounts, Contacts, Calls, and Meetings. Drives deals up to SOF MSA.</p>
+          </div>
+          <div class="card">
+            <h4>Sales Operations</h4>
+            <p>Validates pricing, drives data accuracy, approves SOF MSA stage movement. Edits post-SOF-Contracted.</p>
+          </div>
+          <div class="card">
+            <h4>Commercials</h4>
+            <p>Validates commercial details. Approval required on SOF MSA (second in sequence).</p>
+          </div>
+          <div class="card">
+            <h4>Pre-Sales</h4>
+            <p>Validates technical feasibility. Approval required on SOF MSA (first in sequence).</p>
+          </div>
+          <div class="card">
+            <h4>IT</h4>
+            <p>Administers the system. Full access to all modules and configurations.</p>
+          </div>
+          <div class="card">
+            <h4>Service Delivery</h4>
+            <p>Receives order notifications, initiates billing in SAP, sets Deployed Date.</p>
+          </div>
+          <div class="card">
+            <h4>Billing</h4>
+            <p>Acknowledges delivery in Service Delivery blueprint (parallel acknowledgement step).</p>
+          </div>
+        </div>
+
+        <h3>Data Integrity Rules</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Phase</th>
+                <th>Can Edit</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Pre-SOF Contracted</td><td>Sales + Sales Ops</td></tr>
+              <tr><td>Post-SOF Contracted</td><td>Sales Ops + Admins only</td></tr>
+              <tr><td>Post-Deployment</td><td>Admins only</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- CPQ & Taxation -->
+      <section id="cpq-tax">
+        <h2>CPQ &amp; Taxation</h2>
+
+        <h3>Quotes &amp; CPQ</h3>
+        <ul>
+          <li><strong>Quotes</strong>: Enable standard Quotes module, relate to Account + Opportunity + Contacts</li>
+          <li><strong>Product Bundles</strong>: Rack + PDU + Cross-Connect bundles</li>
+          <li><strong>Price Rules</strong>: Volume tiers for colocation pricing</li>
+          <li><strong>Discount Rules</strong>: Cap % by profile, route over-cap to approval workflow</li>
+        </ul>
+
+        <h3>Taxation (Client Script)</h3>
+        <p><strong>IGST vs CGST+SGST</strong> determined by comparing Account Billing State vs Data Center Site State. A Client Script fires on <code>onChange</code> of either field to set tax type:</p>
+        <ul>
+          <li>Intra-state (same state) = CGST+SGST</li>
+          <li>Inter-state (different states) = IGST</li>
+        </ul>
+        <p>Taxation applied at line level in both Deals and Quotes modules.</p>
+      </section>
+
+      <!-- Client Scripts -->
+      <section id="scripts">
+        <h2>Client Scripts (JavaScript, ZDK API)</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Script</th><th>Module / Event</th><th>Purpose</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Duplicate-name guard</td><td>Accounts / onSave</td><td>Punctuation-insensitive dup warning (HDFC vs H.D.F.C.)</td></tr>
+              <tr><td>Pricing-type toggle</td><td>Deals / onChange</td><td>Show/hide racks vs KW based on Pricing Type</td></tr>
+              <tr><td>Tax determination</td><td>Deals, Quotes / onChange</td><td>Auto-set IGST vs CGST+SGST from Site/Billing state</td></tr>
+              <tr><td>Stage doc check</td><td>Deals / onSave</td><td>Warn if PO/MSA missing before critical stage move</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- India Compliance -->
+      <section id="compliance">
+        <h2>India-First Compliance</h2>
+        <ul>
+          <li><strong>DPDPA</strong>: Label every personal-data element at build stage; UAT must use masked data; sanitise hypercare logs</li>
+          <li><strong>GST 10-20 freeze</strong>: Cutover blocked inside monthly GST filing window (10th&ndash;20th)</li>
+          <li><strong>Festive freeze</strong>: No cutover during Diwali &plusmn;2d, FY-end Mar 25&ndash;Apr 5, or election days</li>
+          <li><strong>MSME 45-day payment</strong>: Project-finance EAC ties to AR ageing</li>
+          <li><strong>PoSH</strong>: Signed acknowledgement + customer IC details for any onsite team member &gt;5 contiguous days</li>
+          <li><strong>TDS 194-J / 194-Q</strong>: Vendor/subcontractor payment scheduling in project-finance</li>
+        </ul>
+      </section>
+
+      <!-- Implementation Phases -->
+      <h2>Implementation Phases</h2>
+
+      <!-- Phase 0 -->
+      <div class="phase" id="phase-0">
+        <div class="phase-header">
+          <span class="phase-number">0</span>
+          <span class="phase-title">Role Hierarchy &amp; Profiles</span>
+          <span class="phase-effort">2–3 days</span>
+        </div>
+        <p>Design ZohoCRM roles, profiles, and permissions as the foundation layer before any module configuration.</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Profile</th>
+                <th>Module Access</th>
+                <th>Key Permissions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>IT Admin</strong></td><td>Read-Write-Delete all</td><td>Full system access, manage users, customisation</td></tr>
+              <tr><td><strong>Sales Head</strong></td><td>Read-Write</td><td>View all opps, mass email, export</td></tr>
+              <tr><td><strong>Sales Ops</strong></td><td>Read-Write</td><td>Validate pricing, edit post-SOF-Contracted</td></tr>
+              <tr><td><strong>Sales (AM)</strong></td><td>Read-Write owned</td><td>Create/edit opps up to SOF MSA, upload docs</td></tr>
+              <tr><td><strong>Commercials</strong></td><td>Read-only + Approval</td><td>Validate commercial details, approve SOF MSA</td></tr>
+              <tr><td><strong>Pre-Sales</strong></td><td>Read-only + Approval</td><td>Validate technical feasibility, approve SOF MSA</td></tr>
+              <tr><td><strong>Service Delivery</strong></td><td>Read-only</td><td>View contracted opps, receive notifications</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p><strong>Record Sharing:</strong> Sales = Private (owner + hierarchy). Sales Ops = Read-Write all. Commercials/Pre-Sales = Read-only records awaiting approval.</p>
+        <div class="callout callout-warning">
+          <strong>Open:</strong> Confirm role hierarchy with reporting structure. Define whether Service Delivery needs read-only on all or only specific site opps.
+        </div>
+      </div>
+
+      <!-- Phase 1 -->
+      <div class="phase" id="phase-1">
+        <div class="phase-header">
+          <span class="phase-number">1</span>
+          <span class="phase-title">Module Configuration &amp; Custom Fields</span>
+          <span class="phase-effort">5–7 days</span>
+        </div>
+        <p>Configure 5 key modules with custom fields suited to the Data Center Opportunity lifecycle.</p>
+
+        <h4>1A. Data Center Opportunity (Core)</h4>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Type</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Opportunity Reference ID</strong></td><td>Auto-number</td><td>Built from Sequence_No (auto-number 000000) + Version_No (text, default 01). Deluge <code>build_opportunity_reference</code> concatenates on create. Pattern: <code>{SiteID}-{6DigitNo}-{Version}</code></td></tr>
+              <tr><td><strong>ACX Sales Stage</strong></td><td>Picklist</td><td>Values from Sales Pipeline</td></tr>
+              <tr><td><strong>Account Name</strong></td><td>Lookup</td><td>Required</td></tr>
+              <tr><td><strong>Contact Name</strong></td><td>Lookup</td><td>Required</td></tr>
+              <tr><td><strong>Site ID</strong></td><td>Picklist</td><td>Values to define (e.g., EDCPOR01, BLR01)</td></tr>
+              <tr><td><strong>Deal Type</strong></td><td>Picklist</td><td>Colocation / Reservation / ROFR</td></tr>
+              <tr><td><strong>Contract Term (Months)</strong></td><td>Number</td><td>Initial term</td></tr>
+              <tr><td><strong>Renewal Periods</strong></td><td>Number</td><td>Number of renewal options</td></tr>
+              <tr><td><strong>Years Per Renewal</strong></td><td>Number</td><td>Years per extension</td></tr>
+              <tr><td><strong>Contract Expiry Date</strong></td><td>Formula</td><td><code>Deployed Date + Contract Term</code></td></tr>
+              <tr><td><strong>Renewed Through Date</strong></td><td>Date</td><td>Manual entry</td></tr>
+              <tr><td><strong>Deployed Date</strong></td><td>Date</td><td>Set by Service Delivery (ownership TBD)</td></tr>
+              <tr><td><strong>Deal Value (Total)</strong></td><td>Currency</td><td>Roll-up from pricing subforms</td></tr>
+              <tr><td><strong>Probability (%)</strong></td><td>Number</td><td>Auto-set by stage</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h4>1B. Colocation Pricing (Subform)</h4>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Pricing Type</td><td>Picklist: Per Rack / Per KW</td></tr>
+              <tr><td>Product Type</td><td>Picklist: Colocation / Reservation / ROFR</td></tr>
+              <tr><td>Deal Type</td><td>Picklist: Metered Pricing (KW+PUE) / All-in-Bundled</td></tr>
+              <tr><td>Quantity (Racks)</td><td>Number</td></tr>
+              <tr><td>Power Density (KW)</td><td>Number</td></tr>
+              <tr><td>Monthly Rate (MRC)</td><td>Currency</td></tr>
+              <tr><td>One-Time Charge (OTC/NRC)</td><td>Currency</td></tr>
+              <tr><td>Line Total</td><td>Formula: Qty &times; Rate</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h4>1C. Additional DC Products &amp; Services (Subform)</h4>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Product Category</td><td>Picklist</td></tr>
+              <tr><td>Product Name</td><td>Picklist (from EDC Products)</td></tr>
+              <tr><td>Quantity</td><td>Number</td></tr>
+              <tr><td>Monthly Rate (MRC)</td><td>Currency</td></tr>
+              <tr><td>One-Time Charge (OTC)</td><td>Currency</td></tr>
+              <tr><td>Line Total</td><td>Formula</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h4>1D. EDC Products (Catalog)</h4>
+        <p>Seed ~50 products: Cross-Connects, Rack Cabinets (42U–52U), PDUs (Basic/Intelligent, 1Ph/3Ph, 16A–63A), CCTV, Biometrics, Caging, Structured Cabling, Supplementary Cooling, Remote Hands, Migration Services, and more.</p>
+
+        <div class="callout callout-warning">
+          <strong>Open Decisions:</strong> SiteID picklist values, 6-digit counter scope (global vs per-SiteID), auto-number feasibility, Deployed Date ownership, and existing module validation.
+        </div>
+      </div>
+
+      <!-- Phase 2 -->
+      <div class="phase" id="phase-2">
+        <div class="phase-header">
+          <span class="phase-number">2</span>
+          <span class="phase-title">Sales Pipeline Blueprint</span>
+          <span class="phase-effort">3–5 days</span>
+        </div>
+        <p>Enforce correct stage progression using ZohoCRM Blueprint with mandatory fields, document uploads, and approvals.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Transition</th>
+                <th>Trigger</th>
+                <th>Required Fields</th>
+                <th>Required Doc</th>
+                <th>Approval</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Suspect &rarr; Prospect</td><td>Sales action</td><td>Requirement summary, site preference</td><td>—</td><td>—</td></tr>
+              <tr><td>Prospect &rarr; Funnel</td><td>Sales action</td><td>RFP checkbox, proposal date</td><td>—</td><td>—</td></tr>
+              <tr><td>Funnel &rarr; Negotiation</td><td>Sales action</td><td>Proposal date, commercial total</td><td>—</td><td>—</td></tr>
+              <tr><td><strong>Negotiation &rarr; SOF MSA</strong></td><td>Sales action</td><td>All pricing fields filled</td><td>PO or SOF</td><td>Pre-Sales &rarr; Commercials</td></tr>
+              <tr><td><strong>SOF MSA &rarr; SOF Contracted</strong></td><td>Sales Ops</td><td>MSA signed date</td><td>MSA</td><td>—</td></tr>
+              <tr><td>Any active &rarr; Lost</td><td>Sales action</td><td>Lost reason</td><td>—</td><td>—</td></tr>
+              <tr><td>Any active &rarr; Dropped</td><td>Sales action</td><td>Dropped reason</td><td>—</td><td>—</td></tr>
+              <tr><td>Prospect &rarr; Did Not Participate</td><td>Sales action</td><td>Reason code</td><td>—</td><td>—</td></tr>
+              <tr><td>Negotiation+ &rarr; Material Change</td><td>Sales action</td><td>Change description, new opp ref ID</td><td>—</td><td>—</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout callout-warning">
+          <strong>Open:</strong> Confirm terminal transitions from each stage, Material Change stage eligibility (Funnel+ or Negotiation+), Did Not Participate stage range, and who triggers Expiry/Cancelled transitions.
+        </div>
+      </div>
+
+      <!-- Phase 3 -->
+      <div class="phase" id="phase-3">
+        <div class="phase-header">
+          <span class="phase-number">3</span>
+          <span class="phase-title">Approval Workflow — SOF MSA</span>
+          <span class="phase-effort">3–4 days</span>
+        </div>
+        <p>Sequential approval process when an opportunity moves to SOF MSA. Pre-Sales (technical feasibility) approves first, then Commercials (commercial validation).</p>
+
+        <div class="phase" style="background: var(--acx-gray-50); border: 1px solid var(--acx-gray-200); margin: 16px 0;">
+          <div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 2;">
+Sales moves to SOF MSA<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;▼<br>
+Pre-Sales Approval Request (Technical Feasibility)<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── Approved &rarr; Commercials Approval Request<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── Approved &rarr; Stage moved to SOF MSA<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rarr; Notification sent<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── Rejected &rarr; Returned to Negotiation<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── Rejected &rarr; Returned to Negotiation
+          </div>
+        </div>
+
+        <p><strong>ZohoCRM Implementation:</strong> Blueprints handle stage transitions. Two Approval Processes: <code>APPROVAL_SOFMSA_PRESALES</code> (triggered first) and <code>APPROVAL_SOFMSA_COMMERCIAL</code> (triggered only on Pre-Sales approval). 48-hour escalation to reporting manager if no response.</p>
+
+        <div class="callout callout-warning">
+          <strong>Open:</strong> Confirm 48-hour escalation SLA, fallback approvers, and whether approvals go to individuals or teams per site/region.
+        </div>
+      </div>
+
+      <!-- Phase 4 -->
+      <div class="phase" id="phase-4">
+        <div class="phase-header">
+          <span class="phase-number">4</span>
+          <span class="phase-title">Pricing Automation</span>
+          <span class="phase-effort">2–3 days</span>
+        </div>
+        <p>Sales enters pricing in Colocation Pricing and Additional DC Products subforms. Validation rule ensures at least one pricing line exists before SOF MSA. Sales Ops reviews and validates before the approval chain begins.</p>
+
+        <div class="callout callout-warning">
+          <strong>Open:</strong> Is there a standard price list (rate card) for validation, or is pricing entirely negotiated? Should pricing validation be part of the SOF MSA approval flow or a separate step?
+        </div>
+      </div>
+
+      <!-- Phase 5 -->
+      <div class="phase" id="phase-5">
+        <div class="phase-header">
+          <span class="phase-number">5</span>
+          <span class="phase-title">Document Management</span>
+          <span class="phase-effort">1–2 days</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Document Type</th>
+                <th>Mandatory For</th>
+                <th>Uploaded On</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>NDA</td><td>Optional</td><td>Any time</td></tr>
+              <tr><td>Purchase Order (PO)</td><td>SOF MSA transition</td><td>At SOF MSA</td></tr>
+              <tr><td>Sales Order Form (SOF)</td><td>SOF MSA transition</td><td>At SOF MSA</td></tr>
+              <tr><td>MSA</td><td>SOF Contracted transition</td><td>At SOF Contracted</td></tr>
+              <tr><td>LOA</td><td>Optional</td><td>Any time</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Enforced via Blueprint: SOF MSA requires PO <em>or</em> SOF document linked. SOF Contracted requires MSA document linked.</p>
+        <div class="callout callout-warning">
+          <strong>Open:</strong> Can a combined PO+MSA document serve both requirements? Should document expiry alerts be configured (e.g., NDA expiry)? Is LOA ever mandatory?
+        </div>
+      </div>
+
+      <!-- Phase 6 -->
+      <div class="phase" id="phase-6">
+        <div class="phase-header">
+          <span class="phase-number">6</span>
+          <span class="phase-title">Notifications &amp; Automation</span>
+          <span class="phase-effort">3–5 days</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Event</th>
+                <th>Recipients</th>
+                <th>Trigger</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Account created</td><td>Sales Head, Sales Ops</td><td>On create</td></tr>
+              <tr><td>Opportunity created</td><td>Sales Head, Sales Ops, CBO</td><td>On create</td></tr>
+              <tr><td>New order book</td><td>Sales Head per team</td><td>Daily scheduler</td></tr>
+              <tr><td>Stage moved to SOF MSA</td><td>Sales Leads, Heads, CBO, Pre-Sales, Service Delivery</td><td>On approval complete</td></tr>
+              <tr><td>Order delivery notification</td><td>Service Delivery</td><td>On SOF MSA approval</td></tr>
+              <tr><td>Contract expiry approaching</td><td>Sales Ops, Sales</td><td>Scheduled (interval TBD)</td></tr>
+              <tr><td>Opportunity modified post-SOF-Contracted</td><td>Sales Ops, IT Admin</td><td>On edit by unauthorized user</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p><strong>Features:</strong> Workflow Automation, Scheduler, Custom Functions (Deluge) for Opportunity Reference ID generation, EdgeOS sync, SAP data export. All emails sent from ZohoCRM Admin (Lance Devin).</p>
+        <div class="callout callout-warning">
+          <strong>Open:</strong> Contract expiry notification interval (single/staged). Order book scheduler frequency and distribution list. HTML vs plain text emails.
+        </div>
+      </div>
+
+      <!-- Phase 7 -->
+      <div class="phase" id="phase-7">
+        <div class="phase-header">
+          <span class="phase-number">7</span>
+          <span class="phase-title">Dependent System Integrations</span>
+          <span class="phase-effort">10–15 days</span>
+        </div>
+
+        <div class="callout callout-info" style="margin-bottom:16px;">
+          <strong>Integration effort: ~30–40% of total project.</strong> Can proceed independently of internal CRM work (Phases 0–6, 8–9). The Zoho-side Custom Functions and schedulers can be built once API specs are confirmed.
+        </div>
+
+        <h4>7A. EdgeOS Portal Integration</h4>
+        <p><strong>Direction:</strong> ZohoCRM &rarr; EdgeOS (push every 15 minutes)</p>
+        <p><strong>Trigger:</strong> Stage change to <code>SOF Contracted</code> + scheduler every 15 min for batch sync / retry.</p>
+
+        <h5>Data to Sync</h5>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Source in Zoho</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Opportunity Reference ID</td><td><code>Opportunity_Reference_ID</code></td></tr>
+              <tr><td>Customer Name</td><td><code>Account_Name.Account_Name</code></td></tr>
+              <tr><td>Site ID</td><td><code>Site_ID</code></td></tr>
+              <tr><td>Contracted Power (KW)</td><td>SUM(Colocation_Pricing.Power_Density_KW)</td></tr>
+              <tr><td>Contract Status</td><td><code>"Active" / "Expired" / "Cancelled"</code></td></tr>
+              <tr><td>Contract Expiry Date</td><td><code>Contract_Expiry_Date</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h5>Deluge Pseudocode (Custom Function: <code>sync_sof_to_edgeos</code>)</h5>
+        <div style="background:#1e293b;color:#e2e8f0;border-radius:8px;padding:16px;margin:12px 0;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.8;overflow-x:auto;">
+          <pre style="margin:0;white-space:pre-wrap;">
+// Step 1: Query all SOF Contracted opportunities
+criteria = "ACX_Sales_Stage == 'SOF Contracted'"
+oppRecords = zoho.crm.getRecords("Data_Center_Opportunity", criteria);
+
+// Step 2: Iterate and build payload
+for each opp in oppRecords:
+    // Join Colocation Pricing subform
+    pricingLines = opp.get("Colocation_Pricing");
+    totalPowerKW = 0;
+    for each line in pricingLines:
+        totalPowerKW += line.get("Power_Density_KW");
+    end
+
+    // Build JSON payload
+    payload = Map();
+    payload.put("opportunityRefId", opp.get("Opportunity_Reference_ID"));
+    payload.put("customerName", opp.get("Account_Name").get("Account_Name"));
+    payload.put("siteId", opp.get("Site_ID"));
+    payload.put("contractedPowerKW", totalPowerKW);
+    payload.put("contractStatus", "Active");
+    payload.put("contractExpiryDate",
+        opp.get("Contract_Expiry_Date").toString("yyyy-MM-dd"));
+
+    // POST to EdgeOS API
+    headerParams = Map();
+    headerParams.put("Authorization", "Bearer " + edgeosApiKey);
+    headerParams.put("Content-Type", "application/json");
+
+    response = invokeUrl(
+        url: "https://edgeos.adaniconnex.com/api/v1/sync-opportunity",
+        type: POST,
+        headers: headerParams,
+        body: payload.toString()
+    );
+
+    // Update sync status
+    updateRecord = Map();
+    if response.getResponseCode() == 200:
+        updateRecord.put("EdgeOS_Sync_Status", "Synced");
+    else:
+        updateRecord.put("EdgeOS_Sync_Status", "Sync Failed");
+    end
+    zoho.crm.updateRecord("Data_Center_Opportunity",
+        opp.get("id"), updateRecord);
+end
+          </pre>
+        </div>
+
+        <h5>What EdgeOS Must Provide</h5>
+        <ul style="margin:8px 0 16px 20px;color:var(--acx-gray-600);">
+          <li>REST API endpoint (e.g., <code>POST /api/v1/sync-opportunity</code>)</li>
+          <li>Authentication mechanism (API key in header, or OAuth2 client credentials)</li>
+          <li>Network accessibility: EdgeOS endpoint reachable from Zoho servers</li>
+          <li>Upsert logic: create customer+site+power limit if not exists, update if exists</li>
+          <li>Expected payload schema, response codes, error messages documentation</li>
+        </ul>
+
+        <h5>Architecture Options</h5>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Option</th>
+                <th>Pros</th>
+                <th>Cons</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>A. Custom Function &rarr; Webhook &rarr; EdgeOS API</strong></td><td>Real-time push, no middleware</td><td>EdgeOS needs public API endpoint</td></tr>
+              <tr><td><strong>B. Scheduler + Deluge &rarr; JSON export &rarr; FTP/SFTP</strong></td><td>No EdgeOS API needed, simpler</td><td>15-min delay, file management overhead</td></tr>
+              <tr><td><strong>C. Zoho &rarr; Middleware (Zapier/Workato) &rarr; EdgeOS</strong></td><td>No coding, visual connector</td><td>Monthly cost, external dependency</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-weight:600;">Recommended: Option A if EdgeOS has a REST API. Option B if EdgeOS does not.</p>
+
+        <h5>Sync Status Tracking</h5>
+        <p>Field on Opportunity: <code>EdgeOS_Sync_Status</code> — <span class="badge badge-green">Synced</span> (HTTP 200), <span class="badge badge-red">Sync Failed</span> (retry on next scheduler run), <span class="badge badge-yellow">Pending</span> (awaiting first sync).</p>
+
+        <hr style="margin:24px 0;border:none;border-top:1px solid var(--acx-gray-200);">
+
+        <h4>7B. SAP Billing Integration</h4>
+        <p><strong>Direction:</strong> ZohoCRM &rarr; SAP (triggered when Service Delivery marks deployment complete)</p>
+        <p><strong>When:</strong> Service Delivery updates <code>Deployed Date</code> on the opportunity.</p>
+
+        <h5>Data to Send</h5>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Source in Zoho</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Opportunity Reference ID</td><td>Billing reference</td></tr>
+              <tr><td>Account Name + Billing Address</td><td>Customer details (incl. GST, PAN)</td></tr>
+              <tr><td>Product Lines</td><td>Colo Pricing + Additional Products subforms</td></tr>
+              <tr><td>MRC (Monthly)</td><td>Recurring billing amount</td></tr>
+              <tr><td>OTC (One-time)</td><td>Setup/installation charges</td></tr>
+              <tr><td>Contract Start Date</td><td>Billing start (Deployed Date)</td></tr>
+              <tr><td>Contract Term</td><td>Billing duration in months</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h5>Option A — File-based (Recommended Initially)</h5>
+        <div style="background:#1e293b;color:#e2e8f0;border-radius:8px;padding:16px;margin:12px 0;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.8;overflow-x:auto;">
+          <pre style="margin:0;white-space:pre-wrap;">
+ZohoCRM Custom Function "generateSAPExport":
+1. Trigger: Workflow rule "On Deployed Date update" calls function
+2. Query: Get opportunity + all pricing subforms
+   - Colocation Pricing (space + power lines)
+   - Additional DC Products &amp; Services (ancillary items)
+3. Map to SAP structure:
+   - Customer master from Account (billing address, GST, PAN)
+   - Material codes from product-to-SAP mapping table
+   - Quantities from pricing subforms
+   - Prices from MRC/OTC fields
+4. Generate CSV with fixed-width columns per SAP spec:
+   - HEADER: Customer, Material, Qty, UoM, Price, Currency, Tax...
+   - DETAIL: one row per product line
+   - TRAILER: total amounts, record count
+5. Write file to SFTP server that SAP polls
+6. Update status: "Billing Exported"
+
+SAP Import Job (by SAP team):
+1. Polls SFTP folder periodically
+2. Validates file (checksum, record count)
+3. Creates billing documents via BAPI
+4. Writes ACK file back: opportunityRefId, status, SAP doc number
+
+Zoho Polling (scheduler every 30 min):
+1. Checks SFTP for ACK files
+2. On Confirmed &rarr; "Billing Confirmed" + SAP_Document_Number
+3. On Failed &rarr; "Billing Failed" + error reason
+          </pre>
+        </div>
+
+        <h5>Option B — Direct API (Future State)</h5>
+        <p style="margin:8px 0 16px;">Custom Function calls SAP RFC/REST API (<code>BAPI_BILLINGDOCUMENT_CREATEMULTIPLE</code> or OData service) synchronously. Immediate confirmation. Requires SAP connector, network connectivity, and API user with billing authorization.</p>
+
+        <h5>What SAP Must Provide</h5>
+        <ul style="margin:8px 0 16px 20px;color:var(--acx-gray-600);">
+          <li>BAPI/RFC or REST API for billing document creation</li>
+          <li>SFTP drop folder details (host, port, credentials, path) — for Option A</li>
+          <li>Web service endpoint details — for Option B</li>
+          <li>Product-to-material-code mapping (AdaniConneX product name &rarr; SAP material number)</li>
+          <li>SAP team POC for import job development</li>
+        </ul>
+
+        <p><strong>Status tracking:</strong> Field on Opportunity: <code>SAP_Billing_Status</code> — <span class="badge badge-yellow">Billing Pending</span> &rarr; <span class="badge badge-blue">Billing Exported</span> &rarr; <span class="badge badge-green">Billing Confirmed</span> / <span class="badge badge-red">Billing Failed</span>. Plus <code>SAP_Document_Number</code> field for the billing document reference.</p>
+
+        <div class="callout callout-warning">
+          <strong>Open:</strong> EdgeOS API availability and auth mechanism. SAP import file format (CSV/IDoc/API). Existing middleware availability. EdgeOS sync scope — only SOF Contracted or also SOF MSA with future-dated start?
+        </div>
+      </div>
+
+      <!-- Phase 8 -->
+      <div class="phase" id="phase-8">
+        <div class="phase-header">
+          <span class="phase-number">8</span>
+          <span class="phase-title">Contract Management &amp; Renewals</span>
+          <span class="phase-effort">2–3 days</span>
+        </div>
+        <p>Contract Expiry Date auto-calculated via formula: <code>Deployed Date + Contract Term (Months)</code>. Renewals captured via <code>Renewed Through Date</code> (manual entry). Expired contracts set to <code>SOF Expired</code> stage; early terminations set to <code>SOF Cancelled</code>.</p>
+        <div class="callout callout-warning">
+          <strong>Open:</strong> Expiry notification lead time. Does renewal update existing opportunity or create new? EdgeOS behaviour on contract expiry (revoke portal access?).
+        </div>
+      </div>
+
+      <!-- Phase 9 -->
+      <div class="phase" id="phase-9">
+        <div class="phase-header">
+          <span class="phase-number">9</span>
+          <span class="phase-title">Reports &amp; Dashboards</span>
+          <span class="phase-effort">3–5 days</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Report</th>
+                <th>Audience</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Pipeline by Stage (Weighted)</td><td>Sales Heads, CBO</td></tr>
+              <tr><td>Opportunities by Site ID</td><td>Sales Ops</td></tr>
+              <tr><td>Stuck Opportunities (30+ days in stage)</td><td>Sales Ops, Sales Heads</td></tr>
+              <tr><td>Aging — Contract Expiry Next 90 Days</td><td>Sales Ops</td></tr>
+              <tr><td>Deal Closure Summary</td><td>CBO, Leadership</td></tr>
+              <tr><td>Order Book (SOF MSA and above)</td><td>Service Delivery</td></tr>
+              <tr><td>Sales Team Performance</td><td>Sales Heads</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p><strong>Dashboards:</strong> Executive (pipeline, forecast, close rate), Sales Ops (data integrity, validations, expirations), Service Delivery (new orders, upcoming deployments).</p>
+        <div class="callout callout-warning">
+          <strong>Open:</strong> KPI targets? Zoho CRM dashboards or Zoho Analytics?
+        </div>
+      </div>
+
+      <!-- Phase 10 -->
+      <div class="phase" id="phase-10">
+        <div class="phase-header">
+          <span class="phase-number">10</span>
+          <span class="phase-title">CSAT Dashboard</span>
+          <span class="phase-effort">Pending Decision</span>
+        </div>
+        <p>Customer feedback collection via QR codes at data center sites and email scheduler. Aggregates ratings from Sales, Service Delivery, Service Assurance, Security, Billing, Customer Experience, and Overall Organization.</p>
+        <p><strong>Two approaches under consideration:</strong></p>
+        <ul style="margin: 8px 0 0 20px; color: var(--acx-gray-600);">
+          <li><strong>Option A (In-scope):</strong> Custom module in ZohoCRM/Zoho Creator + Zoho Analytics dashboard</li>
+          <li><strong>Option B (Separate):</strong> Standalone system with optional webhook bridge to Zoho</li>
+        </ul>
+        <div class="callout callout-warning"><strong>Decision pending from stakeholders.</strong></div>
+      </div>
+
+      <!-- Phase 11 -->
+      <div class="phase" id="phase-11">
+        <div class="phase-header">
+          <span class="phase-number">11</span>
+          <span class="phase-title">Data Migration &amp; Go-Live</span>
+          <span class="phase-effort">3–5 days + Hyper-care</span>
+        </div>
+        <h4>Pre-Migration Checklist</h4>
+        <ul class="checklist">
+          <li>All modules, fields, picklists configured and tested</li>
+          <li>EDC Products catalog populated (~50 products)</li>
+          <li>User roles, profiles, and permissions created and assigned</li>
+          <li>Blueprints and approval processes tested end-to-end</li>
+          <li>Document upload flows verified</li>
+          <li>Notifications sending to correct recipients</li>
+          <li>EdgeOS integration tested</li>
+          <li>SAP export format validated with SAP team</li>
+          <li>Reports and dashboards created</li>
+        </ul>
+
+        <h4>Go-Live Sequence</h4>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 13px; background: var(--acx-gray-100); padding: 16px; border-radius: 8px; line-height: 2;">
+          1. Cutover: Freeze legacy system input<br>
+          2. Import Accounts &amp; Contacts<br>
+          3. Import Opportunities (open pipeline)<br>
+          4. Configure EdgeOS initial sync<br>
+          5. User training sessions (all teams)<br>
+          6. Go-Live: ZohoCRM becomes system of record<br>
+          7. Hyper-care (2 weeks): IT + Sales Ops monitor<br>
+          8. Post-go-live: Configure scheduler
+        </div>
+      </div>
+
+      <!-- Build Sequence -->
+      <section id="build-seq">
+        <h2>Build Sequence (18 Steps)</h2>
+        <ol style="column-count: 2; column-gap: 32px; line-height: 2;">
+          <li>Org: edition, India DC (zoho.in), company profile</li>
+          <li>Roles &rarr; Profiles &rarr; data-sharing &rarr; field-level security</li>
+          <li>Accounts + Contacts customizations + duplicate check</li>
+          <li>EDC Products module + catalog import (~50 products)</li>
+          <li>Data Center Opportunity: fields, subform, layout</li>
+          <li>Colocation Pricing + Additional DC Products modules</li>
+          <li>Auto-number + Deluge: reference ID, TCV, escalation</li>
+          <li>Client scripts: pricing toggle, tax, duplicate guard</li>
+          <li>ACX Sales Stage Blueprint + mandatory-doc rules</li>
+          <li>Order approval process (Commercials &rarr; Pre-Sales)</li>
+          <li>Quotes + CPQ + taxes (IGST/CGST+SGST)</li>
+          <li>PO/contract fields + expiry formula + renewal automation</li>
+          <li>Service Delivery + Procurement modules + Blueprint</li>
+          <li>Workflows &amp; notifications + org email</li>
+          <li>Schedules: renewal alerts, EdgeOS sync, SAP push</li>
+          <li>Segmentation views + Account Segment picklist</li>
+          <li>CSAT survey (Zoho Survey) + dashboard + scheduler</li>
+          <li>Sample data load + end-to-end test + demo dry-run</li>
+        </ol>
+      </section>
+
+      <!-- CRM Flow Changes -->
+      <section id="crm-flow">
+        <h2>CRM Flow Changes — Before vs After</h2>
+
+        <h3>Capability Gap Analysis</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Capability</th>
+                <th>Current Status</th>
+                <th>Target</th>
+                <th>Change Needed</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Accounts &amp; Contacts creation</td><td><span class="badge badge-green">Exists</span></td><td>Enhanced</td><td>Minor field additions (Site ID, Account Manager)</td></tr>
+              <tr><td>Opportunity creation</td><td><span class="badge badge-green">Exists</span></td><td>Structured</td><td>Add Contract Term, Renewal Periods, Deal Type</td></tr>
+              <tr><td>Stage updates</td><td><span class="badge badge-yellow">Free-form</span></td><td>Blueprint-controlled</td><td>Controlled picklist + validated transitions</td></tr>
+              <tr><td>Document upload</td><td><span class="badge badge-yellow">Basic</span></td><td>Stage-gated</td><td>PO/SOF enforced before SOF MSA, MSA before SOF Contracted</td></tr>
+              <tr><td>Pricing entry</td><td><span class="badge badge-yellow">Free-text</span></td><td>Structured subforms</td><td>Colocation Pricing + Additional Products subforms</td></tr>
+              <tr><td>EDC Products catalog</td><td><span class="badge badge-red">Missing</span></td><td>Populated</td><td>Seed ~50 products from process document</td></tr>
+              <tr><td>Stage gate enforcement</td><td><span class="badge badge-red">None</span></td><td>Blueprint</td><td>Field validation, doc requirements, approval triggers</td></tr>
+              <tr><td>Approval workflows</td><td><span class="badge badge-red">None</span></td><td>Sequential</td><td>Pre-Sales &rarr; Commercials on SOF MSA</td></tr>
+              <tr><td>Notifications</td><td><span class="badge badge-red">None</span></td><td>7 auto-triggers</td><td>Account, Opp, Order book, SOF MSA, Delivery, Expiry, Edit alerts</td></tr>
+              <tr><td>EdgeOS sync</td><td><span class="badge badge-red">None</span></td><td>15-min push</td><td>Deluge Custom Function &rarr; EdgeOS API</td></tr>
+              <tr><td>SAP billing trigger</td><td><span class="badge badge-red">None</span></td><td>File-based</td><td>CSV &rarr; SFTP &rarr; SAP import with ACK polling</td></tr>
+              <tr><td>Contract expiry tracking</td><td><span class="badge badge-red">Manual</span></td><td>Auto-calculated</td><td>Formula: Deployed Date + Contract Term</td></tr>
+              <tr><td>Reports &amp; dashboards</td><td><span class="badge badge-yellow">Standard Zoho</span></td><td>Custom ACX</td><td>7 reports + 3 role-specific dashboards</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Daily Workflow Comparison</h3>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0;">
+          <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:16px;">
+            <h4 style="color:#991b1b;margin-top:0;font-size:14px;">Before (Current State)</h4>
+            <ol style="margin:8px 0 0 18px;font-size:13px;color:#7f1d1d;line-height:1.8;">
+              <li>Sales creates opportunity</li>
+              <li>Manually types the stage from memory</li>
+              <li>Uploads documents when remembered (no enforcement)</li>
+              <li>Emails Pre-Sales / Commercials asking for approval</li>
+              <li>Tracks contract dates &amp; renewals in personal Excel</li>
+              <li>No one knows if pricing is complete</li>
+              <li>No automatic handoff to Service Delivery</li>
+              <li>EdgeOS &amp; SAP teams wait for manual email</li>
+            </ol>
+          </div>
+
+          <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:16px;">
+            <h4 style="color:#166534;margin-top:0;font-size:14px;">After (Target State)</h4>
+            <ol style="margin:8px 0 0 18px;font-size:13px;color:#14532d;line-height:1.8;">
+              <li>Sales creates opportunity with all required fields</li>
+              <li>Enters pricing in structured subforms</li>
+              <li>Uploads PO/SOF, clicks "Move to SOF MSA"</li>
+              <li>Blueprint validates &rarr; Pre-Sales auto-notified</li>
+              <li>Pre-Sales approves &rarr; Commercials auto-notified</li>
+              <li>Commercials approves &rarr; stage moves automatically</li>
+              <li>Notification fires to Service Delivery + Sales Heads</li>
+              <li>EdgeOS synced, SAP export triggered automatically</li>
+            </ol>
+          </div>
+        </div>
+
+        <h3>Behavioral Changes by Team</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Team</th>
+                <th>What Changes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Sales</strong></td>
+                <td>Must fill pricing subforms (not free-text). Must upload PO/SOF before stage moves. Cannot skip stages. Gets auto-notified on approvals/rejections.</td>
+              </tr>
+              <tr>
+                <td><strong>Sales Ops</strong></td>
+                <td>Must validate pricing before SOF MSA. Receives daily order book report. Manages contract renewals. Can edit post-SOF-Contracted.</td>
+              </tr>
+              <tr>
+                <td><strong>Pre-Sales</strong></td>
+                <td>Gets approval request when Sales clicks "Move to SOF MSA". Must approve/reject with comments.</td>
+              </tr>
+              <tr>
+                <td><strong>Commercials</strong></td>
+                <td>Gets approval request only after Pre-Sales approves. Must validate commercial terms.</td>
+              </tr>
+              <tr>
+                <td><strong>Service Delivery</strong></td>
+                <td>Gets auto-notified on new orders. Sets Deployed Date to trigger billing.</td>
+              </tr>
+              <tr>
+                <td><strong>IT</strong></td>
+                <td>Manages integrations (EdgeOS, SAP). Administers roles and permissions.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Effort Breakdown</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Workstream</th>
+                <th>Est. Days</th>
+                <th>% of Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>ZohoCRM internal configuration (Phases 0–6, 8–9)</td><td>25–35</td><td>45–50%</td></tr>
+              <tr><td>EdgeOS integration (Custom Function, API, scheduler)</td><td>5–8</td><td>10–12%</td></tr>
+              <tr><td>SAP integration (Custom Function, CSV, SFTP, polling)</td><td>5–7</td><td>10–12%</td></tr>
+              <tr><td>Testing + UAT</td><td>5–7</td><td>10%</td></tr>
+              <tr><td>Training + Data Migration</td><td>3–5</td><td>6–8%</td></tr>
+              <tr><td>Go-Live + Hyper-care</td><td>10</td><td>14–16%</td></tr>
+              <tr style="background:var(--acx-gray-100);font-weight:700;">
+                <td><strong>Total</strong></td><td><strong>55–75</strong></td><td><strong>100%</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout callout-info" style="margin-top:16px;">
+          <strong>Note:</strong> Integration work (~30–40% of total) can proceed independently of internal CRM work. Phases 0–6, 8–9 do not depend on EdgeOS or SAP teams. This means CRM configuration and integration builds can happen in parallel once API specs are confirmed.
+        </div>
+      </section>
+
+      <!-- Open Decisions -->
+      <section id="decisions">
+        <h2>Open Decisions</h2>
+        <p>These 12 decisions must be resolved before the corresponding implementation phases can proceed.</p>
+
+        <ul class="decision-list">
+          <li>
+            <span class="num">#1</span>
+            <div><strong>SiteID values list</strong> — Define the picklist values (e.g., EDCPOR01, BLR01, MUM01). <em>Owner: Sales Ops / IT. Blocks: Auto-number setup.</em></div>
+          </li>
+          <li>
+            <span class="num">#2</span>
+            <div><strong>6-digit counter scope</strong> — Global sequence or per-SiteID counter? <em>Owner: Sales Ops / IT. Blocks: Auto-number setup.</em></div>
+          </li>
+          <li>
+            <span class="num">#3</span>
+            <div><strong>Deployed Date ownership</strong> — Who sets this field? Service Delivery or Sales Ops? <em>Blocks: Contract expiry auto-calculation.</em></div>
+          </li>
+          <li>
+            <span class="num">#4</span>
+            <div><strong>Expiry notification interval</strong> — Single reminder or staged (90d + 30d + 7d)? <em>Owner: Sales Ops. Blocks: Scheduler config.</em></div>
+          </li>
+          <li>
+            <span class="num">#5</span>
+            <div><strong>CSAT Dashboard</strong> — In-scope (Zoho) or separate external system? <em>Owner: Stakeholder decision.</em></div>
+          </li>
+          <li>
+            <span class="num">#6</span>
+            <div><strong>EdgeOS API</strong> — Is a REST API available? What is the auth mechanism? <em>Owner: EdgeOS Team. Blocks: Integration design.</em></div>
+          </li>
+          <li>
+            <span class="num">#7</span>
+            <div><strong>SAP import format</strong> — CSV, IDoc, or API? <em>Owner: SAP Team. Blocks: Integration design.</em></div>
+          </li>
+          <li>
+            <span class="num">#8</span>
+            <div><strong>Approval escalation SLA</strong> — 48 hours or different? Fallback approvers? <em>Owner: Sales Ops / Pre-Sales / Commercials.</em></div>
+          </li>
+          <li>
+            <span class="num">#9</span>
+            <div><strong>Standard price list</strong> — Rate card for validation, or fully negotiated per deal? <em>Owner: Sales Ops / Commercials.</em></div>
+          </li>
+          <li>
+            <span class="num">#10</span>
+            <div><strong>Combined PO+MSA document</strong> — Can a single document satisfy both requirements? <em>Owner: Sales / Legal.</em></div>
+          </li>
+          <li>
+            <span class="num">#11</span>
+            <div><strong>Terminal transitions</strong> — Which stages can go to Lost/Dropped/Material Change? <em>Owner: Sales / Sales Ops.</em></div>
+          </li>
+          <li>
+            <span class="num">#12</span>
+            <div><strong>Renewal approach</strong> — New opportunity or update existing record? <em>Owner: Sales Ops.</em></div>
+          </li>
+        </ul>
+      </section>
+
+      <!-- Timeline -->
+      <section id="timeline">
+        <h2>Timeline &amp; Phasing</h2>
+
+        <div class="timeline-bar">
+          <div class="seg seg-foundation" title="2-3 days">P0</div>
+          <div class="seg seg-config" title="5-7 days">P1</div>
+          <div class="seg seg-flow" title="3-5 days">P2</div>
+          <div class="seg seg-flow" title="3-4 days">P3</div>
+          <div class="seg seg-flow" title="2-3 days">P4</div>
+          <div class="seg seg-flow" title="1-2 days">P5</div>
+          <div class="seg seg-flow" title="3-5 days">P6</div>
+          <div class="seg seg-integrate" title="10-15 days">P7</div>
+          <div class="seg seg-flow" title="2-3 days">P8</div>
+          <div class="seg seg-flow" title="3-5 days">P9</div>
+          <div class="seg seg-test" title="5-7 days">Test</div>
+          <div class="seg seg-launch" title="5-7 days">Launch</div>
+        </div>
+
+        <div style="display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; margin: 12px 0;">
+          <span><span style="display:inline-block; width:12px; height:12px; border-radius:2px; background:#6366f1; vertical-align:middle; margin-right:4px;"></span> Foundation</span>
+          <span><span style="display:inline-block; width:12px; height:12px; border-radius:2px; background:#3b82f6; vertical-align:middle; margin-right:4px;"></span> Configuration</span>
+          <span><span style="display:inline-block; width:12px; height:12px; border-radius:2px; background:#06b6d4; vertical-align:middle; margin-right:4px;"></span> Workflows</span>
+          <span><span style="display:inline-block; width:12px; height:12px; border-radius:2px; background:#f59e0b; vertical-align:middle; margin-right:4px;"></span> Integration</span>
+          <span><span style="display:inline-block; width:12px; height:12px; border-radius:2px; background:#10b981; vertical-align:middle; margin-right:4px;"></span> Testing</span>
+          <span><span style="display:inline-block; width:12px; height:12px; border-radius:2px; background:#ef4444; vertical-align:middle; margin-right:4px;"></span> Launch</span>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Phase</th>
+                <th>Effort</th>
+                <th>Dependencies</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>P0:</strong> Roles &amp; Security</td><td>2–3 days</td><td>Org chart confirmation</td></tr>
+              <tr><td><strong>P1:</strong> Module Config &amp; Fields</td><td>5–7 days</td><td>SiteID + auto-number decisions</td></tr>
+              <tr><td><strong>P2:</strong> Blueprint (Pipeline)</td><td>3–5 days</td><td>P1 complete, stage definitions signed</td></tr>
+              <tr><td><strong>P3:</strong> Approval Workflows</td><td>3–4 days</td><td>P2 complete, approval sequence confirmed</td></tr>
+              <tr><td><strong>P4:</strong> Pricing Validation</td><td>2–3 days</td><td>P1 complete, price list decision</td></tr>
+              <tr><td><strong>P5:</strong> Document Management</td><td>1–2 days</td><td>P1 complete</td></tr>
+              <tr><td><strong>P6:</strong> Notifications</td><td>3–5 days</td><td>P2/P3 complete, interval decisions</td></tr>
+              <tr><td><strong>P7:</strong> Integrations</td><td>10–15 days</td><td>API specs from EdgeOS/SAP teams</td></tr>
+              <tr><td><strong>P8:</strong> Contract Management</td><td>2–3 days</td><td>P1 complete, Deployed Date decided</td></tr>
+              <tr><td><strong>P9:</strong> Reports &amp; Dashboards</td><td>3–5 days</td><td>P1–P6 complete, data flowing</td></tr>
+              <tr><td><strong>Testing + UAT</strong></td><td>5–7 days</td><td>All phases complete</td></tr>
+              <tr><td><strong>Training + Migration</strong></td><td>3–5 days</td><td>Before go-live</td></tr>
+              <tr><td><strong>Go-Live + Hyper-care</strong></td><td>10 days</td><td>All above</td></tr>
+              <tr style="background: var(--acx-gray-100); font-weight: 700;">
+                <td><strong>Total</strong></td>
+                <td><strong>~55–75 days</strong></td>
+                <td>Depends on open decisions</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Automation Opportunities -->
+      <section id="automation" class="section">
+        <h2 class="section-title">Automation Opportunities</h2>
+        <p class="section-intro">Beyond the core implementation, these automations add value:</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Automation</th>
+                <th>Trigger</th>
+                <th>Mechanism</th>
+                <th>Priority</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Account-Manager Assignment</strong></td><td>Account creation</td><td>ZohoCRM Assignment Rules by territory/industry</td><td>Medium</td></tr>
+              <tr><td><strong>Deal Value Roll-up</strong></td><td>Pricing subform insert/update</td><td>Custom Function sums all pricing lines</td><td>High</td></tr>
+              <tr><td><strong>Duplicate Detection</strong></td><td>Account/Contact creation</td><td>ZohoCRM native + workflow alert</td><td>High</td></tr>
+              <tr><td><strong>Order Book Auto-Generation</strong></td><td>Daily scheduler</td><td>Scheduled report + email per team</td><td>Medium</td></tr>
+              <tr><td><strong>Stage-Based Field Visibility</strong></td><td>Stage change</td><td>Layout rules per pipeline stage</td><td>Medium</td></tr>
+              <tr><td><strong>Sales Ops Pricing Reminder</strong></td><td>Pricing subform entry</td><td>Workflow notification to Sales Ops</td><td>Medium</td></tr>
+              <tr><td><strong>Expiry Date Batch Update</strong></td><td>Renewal field update</td><td>Custom Function recalculates on renewal</td><td>Low</td></tr>
+              <tr><td><strong>EdgeOS Sync Monitor</strong></td><td>Scheduler</td><td>Dashboard with sync failure filter</td><td>High</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Development Considerations -->
+      <section id="dev-considerations" class="section">
+        <h2 class="section-title">Development Considerations</h2>
+
+        <h3 class="subsection-title">Deluge Script Constraints</h3>
+        <ul class="dot-list">
+          <li>Execution: <strong>max 5 minutes</strong> per Custom Function run</li>
+          <li>API calls: limited per-day per-org (check ZohoCRM Enterprise limits)</li>
+          <li>Response size: <strong>max 1MB</strong> for API responses</li>
+          <li>No complex recursion, no external JS/library imports</li>
+        </ul>
+
+        <h3 class="subsection-title">Blueprint Limitations</h3>
+        <ul class="dot-list">
+          <li>Forward transitions only — backward needs separate rejection flow</li>
+          <li>Blueprint cannot invoke Custom Functions directly; use Workflow Rules as bridge</li>
+        </ul>
+
+        <h3 class="subsection-title">Integration Reliability</h3>
+        <ul class="dot-list">
+          <li>EdgeOS: <strong>3 retry attempts</strong> before <code>Sync Failed</code>; alert IT on failure</li>
+          <li>SAP SFTP: connection health monitoring; dead-letter alerts on failed exports</li>
+          <li>Both integrations need status tracking fields on Opportunity record</li>
+        </ul>
+
+        <h3 class="subsection-title">Data Migration Risks</h3>
+        <ul class="dot-list">
+          <li>Existing free-text pricing data cannot auto-map to structured subforms — manual cleanup</li>
+          <li>Existing Stage transitions may not match new Blueprint rules — bulk update needed</li>
+          <li>Existing Documents may not be linked to correct Opportunities — relinking effort</li>
+        </ul>
+
+        <h3 class="subsection-title">User Adoption Risks</h3>
+        <ul class="dot-list">
+          <li>Sales team may resist mandatory pricing subforms (currently free-text)</li>
+          <li>Approval workflow adds latency if approvers are slow to respond</li>
+          <li>Mitigate new mandatory fields with phased rollout + training</li>
+        </ul>
+
+        <h3 class="subsection-title">Security</h3>
+        <ul class="dot-list">
+          <li>EdgeOS API keys: store in Zoho Connections Manager, <strong>never hardcode</strong> in Deluge</li>
+          <li>SAP SFTP credentials: store in secure parameters</li>
+          <li>Role hierarchy must be fully implemented before go-live</li>
+        </ul>
+      </section>
+
+      <!-- Client Communication Points -->
+      <section id="client-comms" class="section">
+        <h2 class="section-title">Client Communication Points</h2>
+
+        <h3 class="subsection-title">Timeline Dependencies</h3>
+        <ul class="dot-list">
+          <li>"EdgeOS and SAP teams must provide API specs before integration work begins"</li>
+          <li>"Internal CRM work can start immediately and runs independently of integrations"</li>
+        </ul>
+
+        <h3 class="subsection-title">Process Changes Impact</h3>
+        <ul class="dot-list">
+          <li>"Sales team workflow changes significantly — hands-on training is essential"</li>
+          <li>"Opportunity creation takes ~30s longer initially but prevents downstream issues"</li>
+        </ul>
+
+        <h3 class="subsection-title">Data Quality Expectations</h3>
+        <ul class="dot-list">
+          <li>"Existing opportunities with free-text pricing need manual cleanup before migration"</li>
+          <li>"Recommend a data audit and deduplication pass before Phase 2"</li>
+        </ul>
+
+        <h3 class="subsection-title">Go-Live Criteria</h3>
+        <ul class="dot-list">
+          <li>All Blueprint transitions tested end-to-end</li>
+          <li>EdgeOS API endpoint confirmed operational</li>
+          <li>SAP team confirms CSV file format matches their import spec</li>
+          <li>At least one training session per team (Sales, Sales Ops, Pre-Sales, Commercials)</li>
+          <li>Role hierarchy + permissions verified with each team</li>
+        </ul>
+
+        <h3 class="subsection-title">What Client Must Decide</h3>
+        <ul class="dot-list">
+          <li>SiteID picklist values</li>
+          <li>6-digit counter scope (global vs per-SiteID)</li>
+          <li>Deployed Date ownership (Service Delivery vs Sales Ops)</li>
+          <li>Expiry notification cadence (single vs staged reminders)</li>
+          <li>EdgeOS integration approach (Option A: API webhook / Option B: SFTP)</li>
+          <li>SAP integration approach (Option A: CSV via SFTP / Option B: direct API)</li>
+          <li>Standard price list for validation (rate card vs negotiated)</li>
+          <li>Renewal approach (new Opportunity record vs update existing)</li>
+        </ul>
+      </section>
+
+      <!-- Module Changes -->
+      <section id="module-changes" class="section">
+        <h2 class="section-title">Module Changes &amp; Workflow</h2>
+        <p class="section-intro">Detailed per-module configuration workflow for all 14 connected modules. Automation numbers (#1&ndash;#35) correspond to the automation matrix.</p>
+
+        <div class="callout callout-info">
+          <strong>~55% of project buildable without any client decision.</strong> Internal CRM work (P0-6, P8-9: 25-35 days) starts Day 1. Only P7 integrations require external API specs.
+        </div>
+
+        <h3>Dependency Map</h3>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:13px;background:var(--acx-gray-100);padding:16px;border-radius:8px;line-height:2;margin:12px 0;">
+          Phase 0: Roles/Profiles/Permissions<br>
+          &nbsp;&nbsp;&nbsp;│<br>
+          &nbsp;&nbsp;&nbsp;▼<br>
+          Accounts ──┐<br>
+          Contacts ──┼──► Data Center Opportunity ──┬──► Colocation Pricing (subform)<br>
+          EDC Products ┘&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──► Additional DC Products (subform)<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──► Yearly Commercials (subform)<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──► Documents<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──► Calls / Meetings<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──► Service Delivery Request<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──► EdgeOS Integration [BLOCKED: Decision #6]<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└──► SAP Integration [BLOCKED: Decision #7]
+        </div>
+
+        <h3>Config Order</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Order</th>
+                <th>Module</th>
+                <th>Can Start</th>
+                <th>Depends On</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>1</td><td>Roles/Profiles/Permissions</td><td><span class="badge badge-green">Immediately</span></td><td>Org chart</td></tr>
+              <tr><td>2</td><td>Accounts + Contacts</td><td><span class="badge badge-green">Immediately</span></td><td>Roles</td></tr>
+              <tr><td>3</td><td>EDC Products (catalog)</td><td><span class="badge badge-green">Immediately</span></td><td>Roles</td></tr>
+              <tr><td>4</td><td>Data Center Opportunity</td><td><span class="badge badge-green">Immediately</span></td><td>Accounts, Contacts, EDC Products</td></tr>
+              <tr><td>5</td><td>Colocation Pricing (subform)</td><td><span class="badge badge-green">Immediately</span></td><td>Opp module exists</td></tr>
+              <tr><td>6</td><td>Additional DC Products (subform)</td><td><span class="badge badge-green">Immediately</span></td><td>Opp + EDC Products</td></tr>
+              <tr><td>7</td><td>Yearly Commercials (subform)</td><td><span class="badge badge-green">Immediately</span></td><td>Opp module exists</td></tr>
+              <tr><td>8</td><td>Documents</td><td><span class="badge badge-green">Immediately</span></td><td>Opp module</td></tr>
+              <tr><td>9</td><td>Calls / Meetings</td><td><span class="badge badge-green">Immediately</span></td><td>Contacts + Opp</td></tr>
+              <tr><td>10</td><td>Service Delivery Request</td><td><span class="badge badge-green">Immediately</span></td><td>Opp module exists</td></tr>
+              <tr><td>11</td><td>EdgeOS Integration</td><td><span class="badge badge-red">Blocked</span></td><td>Opp + Colo + API specs (#6)</td></tr>
+              <tr><td>12</td><td>SAP Integration</td><td><span class="badge badge-red">Blocked</span></td><td>Opp + subforms + file specs (#7)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Summary of Changes per Module</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Module</th>
+                <th>Change Type</th>
+                <th>Key Fields / Config</th>
+                <th>Automation Served</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Roles/Profiles</strong></td>
+                <td><span class="badge badge-green">New (7)</span></td>
+                <td>Admin&rarr;Sales Head&rarr;Ops&rarr;Commercials/Pre-Sales&rarr;Sales&rarr;SD</td>
+                <td>All</td>
+              </tr>
+              <tr>
+                <td><strong>Accounts</strong></td>
+                <td><span class="badge badge-blue">Enhance</span></td>
+                <td>SiteID, Account Manager, Duplicate Detection, Assignment</td>
+                <td>#11, #21, #22</td>
+              </tr>
+              <tr>
+                <td><strong>Contacts</strong></td>
+                <td><span class="badge badge-blue">Enhance</span></td>
+                <td>Primary Contact checkbox, Duplicate Detection</td>
+                <td>#22</td>
+              </tr>
+              <tr>
+                <td><strong>Data Center Opp</strong></td>
+                <td><span class="badge badge-blue">New (enhance)</span></td>
+                <td>17+ fields, Blueprint (12 states), 2 subforms, 5 CFs, 7 WFs, 5 schedulers</td>
+                <td>Core pipeline</td>
+              </tr>
+              <tr>
+                <td><strong>Colocation Pricing</strong></td>
+                <td><span class="badge badge-green">New subform</span></td>
+                <td>Pricing Type, Deal Type, Qty, KW, MRC, OTC</td>
+                <td>#5, #6, #7, #10, #17, #18</td>
+              </tr>
+              <tr>
+                <td><strong>Additional DC Products</strong></td>
+                <td><span class="badge badge-green">New subform</span></td>
+                <td>Product Category, Name (lookup&rarr;EDC), Qty, MRC, OTC</td>
+                <td>#5, #6, #7, #10, #18</td>
+              </tr>
+              <tr>
+                <td><strong>Yearly Commercials</strong></td>
+                <td><span class="badge badge-green">New subform</span></td>
+                <td>Year, MRC, OTC; 4 commercial models</td>
+                <td>#5, #6, #7, #10, #18</td>
+              </tr>
+              <tr>
+                <td><strong>EDC Products</strong></td>
+                <td><span class="badge badge-green">New catalog</span></td>
+                <td>6 fields, ~50 seed products, Sales Ops maintains</td>
+                <td>Catalog for subform</td>
+              </tr>
+              <tr>
+                <td><strong>Documents</strong></td>
+                <td><span class="badge badge-blue">Enhance</span></td>
+                <td>Doc Type picklist (NDA/PO/SOF/MSA/LOA), stage-gate enforcement</td>
+                <td>#1, #2</td>
+              </tr>
+              <tr>
+                <td><strong>Calls/Meetings</strong></td>
+                <td><span class="badge badge-yellow">Minor</span></td>
+                <td>Verify fields, add Purpose/Agenda text</td>
+                <td>#4</td>
+              </tr>
+              <tr>
+                <td><strong>Service Delivery</strong></td>
+                <td><span class="badge badge-green">New module</span></td>
+                <td>Blueprint with 5 sub-processes, push_delivery_to_sap CF</td>
+                <td>#10, #18</td>
+              </tr>
+              <tr>
+                <td><strong>EdgeOS</strong></td>
+                <td><span class="badge badge-red">New build</span></td>
+                <td>Connections Mgr, sync_sof_to_edgeos CF, 15-min scheduler, 3 statuses</td>
+                <td>#17</td>
+              </tr>
+              <tr>
+                <td><strong>SAP</strong></td>
+                <td><span class="badge badge-red">New build</span></td>
+                <td>Secure Params, generateSAPExport CF, ACK polling, 2 statuses</td>
+                <td>#18</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout callout-info" style="margin-top:16px;">
+          <strong>Full detail:</strong> See <code>AUTOMATION_MATRIX.md</code> Section 4 for complete per-module config workflows, Deluge code, field specs, validation rules, and dependency map.
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <div class="footer">
+        AdaniConneX — ZohoCRM Implementation Plan &bull; Generated from business process documentation<br>
+        Hosted on GitHub Pages &bull; <a href="https://github.com/harshvardhankulkarni/pages/tree/main/AdaniConneX" style="color: var(--acx-primary); text-decoration: none;">View source</a>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,2559 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chemsol — Forms</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="sidebar">
+    <h1>Chemsol<span class="client-badge">Zoho Creator ERP</span></h1>
+    <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="sidebar-nav" id="sidebarNav">
+
+      <!-- Zone 1: Flow Progress Bar -->
+      <div class="flow-progress">
+        <div class="fp-step" data-step="1"><span class="fp-circle">1</span></div>
+        <span class="fp-connector"></span>
+        <div class="fp-step" data-step="2"><span class="fp-circle">2</span></div>
+        <span class="fp-connector"></span>
+        <div class="fp-step" data-step="3"><span class="fp-circle">3</span></div>
+        <span class="fp-connector"></span>
+        <div class="fp-step" data-step="4"><span class="fp-circle">4</span></div>
+        <span class="fp-connector"></span>
+        <div class="fp-step" data-step="5"><span class="fp-circle">5</span></div>
+        <span class="fp-connector"></span>
+        <div class="fp-step" data-step="6"><span class="fp-circle">6</span></div>
+        <span class="fp-connector"></span>
+        <div class="fp-step" data-step="7"><span class="fp-circle">7</span></div>
+        <span class="fp-connector"></span>
+        <div class="fp-step" data-step="8"><span class="fp-circle">8</span></div>
+      </div>
+
+      <!-- Zone 2: Accordion Steps — Organization Cycle -->
+
+      <!-- STREAM A: Pre-Project / Stock Procurement (No Project ID) -->
+      <div class="accordion-stream-label">STREAM A — PRE-PROJECT</div>
+
+      <!-- Stage 1: Purchase + Stock (Pre-Project) -->
+      <div class="accordion-section">
+        <div class="accordion-header">
+          <span class="ah-num">1</span>
+          Purchase + Stock
+          <span class="ah-arrow">▶</span>
+        </div>
+        <div class="accordion-body">
+          <a class="ab-link" href="forms.html#procurement"><span class="al-type type-forms">Forms</span>PR→PO→GRN→QC</a>
+          <a class="ab-link" href="forms.html#material-handover"><span class="al-type type-forms">Forms</span>Mat Handover</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Stock Reports</a>
+          <a class="ab-link" href="flow.html#pr-pr"><span class="al-type type-flow">Flow</span>Purchase Flow</a>
+        </div>
+      </div>
+
+      <div class="accordion-stream-label">STREAM B — PROJECT-CENTRIC</div>
+
+      <!-- Stage 2: Sales → Project (Root) -->
+      <div class="accordion-section">
+        <div class="accordion-header">
+          <span class="ah-num">2</span>
+          Sales → Project
+          <span class="ah-arrow">▶</span>
+        </div>
+        <div class="accordion-body">
+          <a class="ab-link" href="forms.html#sales"><span class="al-type type-forms">Forms</span>Sales Order + Project</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Sales Register</a>
+          <a class="ab-link" href="flow.html#so-so"><span class="al-type type-flow">Flow</span>SO Flow</a>
+          <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>SO Model</a>
+        </div>
+      </div>
+
+      <!-- Stage 3: MR → MIS (Bridge) -->
+      <div class="accordion-section">
+        <div class="accordion-header">
+          <span class="ah-num">3</span>
+          MR → MIS
+          <span class="ah-arrow">▶</span>
+        </div>
+        <div class="accordion-body">
+          <a class="ab-link" href="forms.html#inventory"><span class="al-type type-forms">Forms</span>MR→MIS→FG</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Stock Reports</a>
+          <a class="ab-link" href="flow.html#inv-mr"><span class="al-type type-flow">Flow</span>Inventory Flow</a>
+          <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>Inventory Model</a>
+        </div>
+      </div>
+
+      <!-- Stage 4: Production -->
+      <div class="accordion-section">
+        <div class="accordion-header">
+          <span class="ah-num">4</span>
+          Production
+          <span class="ah-arrow">▶</span>
+        </div>
+        <div class="accordion-body">
+          <a class="ab-link" href="forms.html#production"><span class="al-type type-forms">Forms</span>Planning→BMR→Pack</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Production Reports</a>
+          <a class="ab-link" href="flow.html#org-prod"><span class="al-type type-flow">Flow</span>Production Flow</a>
+          <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>Production Model</a>
+        </div>
+      </div>
+
+      <!-- Stage 5: Costing -->
+      <div class="accordion-section">
+        <div class="accordion-header">
+          <span class="ah-num">5</span>
+          Costing
+          <span class="ah-arrow">▶</span>
+        </div>
+        <div class="accordion-body">
+          <a class="ab-link" href="forms.html#costing"><span class="al-type type-forms">Forms</span>Costing Approval</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Cost Reports</a>
+          <a class="ab-link" href="flow.html#org-costing"><span class="al-type type-flow">Flow</span>Costing Flow</a>
+          <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>Cost Model</a>
+        </div>
+      </div>
+
+      <!-- Stage 6: Service -->
+      <div class="accordion-section">
+        <div class="accordion-header">
+          <span class="ah-num">6</span>
+          Service
+          <span class="ah-arrow">▶</span>
+        </div>
+        <div class="accordion-body">
+          <a class="ab-link" href="forms.html#service-team"><span class="al-type type-forms">Forms</span>Area→Work→Invoice</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Service Reports</a>
+          <a class="ab-link" href="flow.html#org-service"><span class="al-type type-flow">Flow</span>Service Flow</a>
+          <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>Service Model</a>
+        </div>
+      </div>
+
+      <!-- Stage 7: Finance -->
+      <div class="accordion-section">
+        <div class="accordion-header">
+          <span class="ah-num">7</span>
+          Finance
+          <span class="ah-arrow">▶</span>
+        </div>
+        <div class="accordion-body">
+          <a class="ab-link" href="forms.html#finance"><span class="al-type type-forms">Forms</span>AP/AR / GL</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>P&amp;L / Reports</a>
+          <a class="ab-link" href="flow.html#org-finance"><span class="al-type type-flow">Flow</span>Finance Flow</a>
+          <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>Finance Model</a>
+        </div>
+      </div>
+
+      <!-- Stage 8: Logistics → Closure -->
+      <div class="accordion-section">
+        <div class="accordion-header">
+          <span class="ah-num">8</span>
+          Logistics → Closure
+          <span class="ah-arrow">▶</span>
+        </div>
+        <div class="accordion-body">
+          <a class="ab-link" href="forms.html#logistics"><span class="al-type type-forms">Forms</span>DC / Outward</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Logistics Reports</a>
+          <a class="ab-link" href="flow.html#org-logistics"><span class="al-type type-flow">Flow</span>Logistics Flow</a>
+          <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>Logistics Model</a>
+        </div>
+      </div>
+
+      <!-- Zone 3: System Links -->
+      <div class="nav-divider">━━━━ QUICK NAV ━━━━</div>
+      <a href="index.html" class="sidebar-flat-link">🏠 Overview</a>
+      <a href="forms.html" class="sidebar-flat-link">📝 Forms</a>
+      <a href="flow.html" class="sidebar-flat-link">🔄 Flow Demo</a>
+      <a href="reports.html" class="sidebar-flat-link">📊 Reports</a>
+      <div class="nav-divider">━━━━ SYSTEM ━━━━</div>
+      <a href="security.html" class="sidebar-flat-link">🔒 Security &amp; Roles</a>
+      <a href="data-model.html" class="sidebar-flat-link">📐 Data Model</a>
+      <a href="implementation-plan.html" class="sidebar-flat-link">📋 Implementation Plan</a>
+      <a href="BRD_PRD_RFP.md" class="sidebar-flat-link">📄 BRD / PRD / RFP</a>
+      <a href="../index.html" class="sidebar-flat-link">← Back to Hub</a>
+    </div>
+  </nav>
+  <div class="main">
+    <section class="hero">
+      <div class="hero-eyebrow">Organization Cycle · End-to-End Flow</div>
+      <h1>Forms &amp; Module Structure</h1>
+      <p>End-to-end Organization Cycle: <strong>SALES</strong> (Client PO ref) → <strong>PRODUCTION</strong> → <strong>MR → STORE → COSTING</strong> → Stock Check → <strong>PURCHASE</strong> (if needed) → <strong>Material Handover</strong> → <strong>SERVICE</strong> (Area→Work→Invoice) → <strong>Production GRN → FINANCE → LOGISTICS</strong> (DC/Invoice).</p>
+      <p style="margin-top:4px;font-size:13px;color:var(--gray-500)"><strong>3-Layer Hierarchy:</strong> SO sells <strong>Systems</strong> → composed of <strong>FGs</strong> (System Composition) → each FG formulated from <strong>RMs</strong> (BOM). MR works at <strong>RM level only</strong>.</p>
+    </section>
+
+    <div class="content">
+      <h2 id="master-data">1 · Master Data <span class="badge badge-blue">Global — Shared Across Projects</span></h2>
+      <p>Foundation for all operations. Like <strong>Zoho Books Items List</strong> and <strong>Zoho CRM Contacts</strong> — these are global lookups used by every project.</p>
+
+      <div class="phase-container">
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">1A</span>
+            <span class="phase-title">Purchase Item Muster</span>
+            <span class="phase-tag">Like Zoho Books Items</span>
+          </div>
+          <p>Central item repository for all RM, PM, FG, consumables. 6 categories: RM, Packaging Material, Tools &amp; Consumable, Maintenance &amp; Utility, Capital &amp; Assets, Administration.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>Category</td><td>Dropdown</td><td>*</td><td>1.RM, 2.Packaging, 3.Tools, 4.Maintenance, 5.Capital, 6.Admin</td></tr>
+                <tr><td>Item Code</td><td>Autogen</td><td>*</td><td>Auto-generated based on category</td></tr>
+                <tr><td>Item Name</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>UOM</td><td>Dropdown</td><td>*</td><td>Nos, Kg, Ltr, Mtr, Kit</td></tr>
+                <tr><td>HSN Code</td><td>Text</td><td>*</td><td>For GST (like Zoho Books)</td></tr>
+                <tr><td>GST %</td><td>Number</td><td></td><td>—</td></tr>
+                <tr><td>Min Stock / Max Stock</td><td>Number</td><td>*</td><td>Alert thresholds</td></tr>
+                <tr><td>Standard Rate</td><td>Currency</td><td></td><td>Hidden from non-Purchase/Admin/Store</td></tr>
+                <tr><td>Preferred Supplier</td><td>Multi-lookup</td><td></td><td>From Supplier Master</td></tr>
+                <tr><td>Lead Time</td><td>Number (Days)</td><td></td><td>—</td></tr>
+                <tr><td>Status</td><td>Dropdown</td><td>*</td><td>Active / Inactive</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>AutoFetch target:</strong> PR, PO, MR, MIS, GRN, FGHM, BOM, QC — Item Code ⇄ Item Name bidirectional (like Zoho CRM lookup behavior)</p>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">1B</span>
+            <span class="phase-title">System Master</span>
+            <span class="phase-tag">Product Catalog</span>
+          </div>
+          <p>Flooring system definitions (EP01=1mm Epoxy, PU02=2mm PU). Code auto-format from prefix + number.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>System Code</td><td>Text (autogen)</td><td>*</td><td>e.g., EP01, PU02</td></tr>
+                <tr><td>2</td><td>System Name</td><td>Text</td><td>*</td><td>e.g., "1mm Epoxy Flooring"</td></tr>
+                <tr><td>3</td><td>Description</td><td>Multi-line</td><td></td><td>—</td></tr>
+                <tr><td>4</td><td>Status</td><td>Dropdown</td><td>*</td><td>Active / Inactive</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>AutoFetch target:</strong> System Composition, Sales/Work Order (system code lookup)</p>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">1C</span>
+            <span class="phase-title">System Composition</span>
+            <span class="phase-tag">System→FG Mapping</span>
+          </div>
+          <p>Defines which FGs make up each System. <strong>3-Layer Hierarchy:</strong> SO sells <strong>Systems</strong> (EP01) → composed of multiple <strong>FGs</strong> → each FG formulated from <strong>RMs</strong> (see BOM below). MR requisitions RM only.</p>
+          <h4>Header</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Comp No</td><td>Autogen</td><td>*</td><td>SC-YYYY-XXXX</td></tr>
+                <tr><td>2</td><td>System Code</td><td>Lookup</td><td>*</td><td>From System Master</td></tr>
+                <tr><td>3</td><td>System Name</td><td>AutoFetch</td><td>*</td><td>Autofill from System Code</td></tr>
+                <tr><td>4</td><td>Revision No</td><td>Text</td><td></td><td>—</td></tr>
+                <tr><td>5</td><td>Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
+                <tr><td>6</td><td>Status</td><td>Dropdown</td><td>*</td><td>Draft / Approved / Released</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h4>Line Items (N FGs per System)</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>FG Product Code</td><td>Lookup</td><td>*</td><td>From Purchase Item Muster (FG items)</td></tr>
+                <tr><td>2</td><td>FG Product Name</td><td>AutoFetch</td><td>*</td><td>—</td></tr>
+                <tr><td>3</td><td>Qty per System Unit</td><td>Number</td><td>*</td><td>How much FG needed per 1 unit of System</td></tr>
+                <tr><td>4</td><td>UOM</td><td>AutoFetch</td><td>*</td><td>From Item Muster</td></tr>
+                <tr><td>5</td><td>Rate per FG Unit</td><td>Number</td><td></td><td>For costing</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">1D</span>
+            <span class="phase-title">BOM / FG Formulation</span>
+            <span class="phase-tag">FG→RM Mapping</span>
+          </div>
+          <p>Defines which RMs make up each FG with ratios. Used by BMR (production consumes RM to make FG), Costing, and MR calculation.</p>
+          <h4>Header</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>BOM No</td><td>Autogen</td><td>*</td><td>—</td></tr>
+                <tr><td>2</td><td>FG Product Code</td><td>Lookup</td><td>*</td><td>From Purchase Item Muster (FG)</td></tr>
+                <tr><td>3</td><td>FG Product Name</td><td>AutoFetch</td><td>*</td><td>—</td></tr>
+                <tr><td>4</td><td>Revision No</td><td>Text</td><td></td><td>—</td></tr>
+                <tr><td>5</td><td>Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
+                <tr><td>6</td><td>Status</td><td>Dropdown</td><td>*</td><td>Draft / Approved / Released</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h4>Line Items (N RMs per FG)</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>RM Item Code</td><td>Lookup</td><td>*</td><td>From Purchase Item Muster (RM items)</td></tr>
+                <tr><td>2</td><td>RM Item Name</td><td>AutoFetch</td><td>*</td><td>—</td></tr>
+                <tr><td>3</td><td>UOM</td><td>AutoFetch</td><td>*</td><td>From Item Muster</td></tr>
+                <tr><td>4</td><td>Qty per FG Unit</td><td>Number</td><td>*</td><td>RM consumption per 1 FG unit</td></tr>
+                <tr><td>5</td><td>Waste %</td><td>Number</td><td></td><td>—</td></tr>
+                <tr><td>6</td><td>Total Qty</td><td>Formula</td><td>*</td><td>Qty + Waste%</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>Hierarchy:</strong> System (SO) → FG (System Composition) → RM (BOM Formulation). MR deals with <strong>RM only</strong>.</p>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">1E</span>
+            <span class="phase-title">Supplier Master</span>
+            <span class="phase-tag">Like Zoho Books Vendor</span>
+          </div>
+          <p>Vendor management — 16 fields. AutoFetch target: PO, Rate Comparison, GRN.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Supplier Code</td><td>Autogen</td><td>*</td><td>Auto-generate on new registration</td></tr>
+                <tr><td>2</td><td>Supplier Name</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>3</td><td>Supplier Type</td><td>Dropdown</td><td></td><td>—</td></tr>
+                <tr><td>4</td><td>GSTIN</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>5</td><td>PAN No</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>6</td><td>Contact Person</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>7</td><td>Mobile No</td><td>Phone</td><td>*</td><td>Alternate number</td></tr>
+                <tr><td>8</td><td>Email ID</td><td>Email</td><td>*</td><td>—</td></tr>
+                <tr><td>9</td><td>Address</td><td>Multi-line</td><td>*</td><td>—</td></tr>
+                <tr><td>10</td><td>Pincode</td><td>Text</td><td></td><td>—</td></tr>
+                <tr><td>11</td><td>Bank Name</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>12</td><td>Account No</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>13</td><td>IFSC Code</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>14</td><td>Payment Terms</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>15</td><td>Credit Days</td><td>Number</td><td>*</td><td>—</td></tr>
+                <tr><td>16</td><td>Credit Limit</td><td>Currency</td><td></td><td>Maximum credit exposure for this supplier</td></tr>
+                <tr><td>17</td><td>Current Outstanding</td><td>AutoFetch (from 8B)</td><td></td><td>Auto-fetched from Supplier Outstanding Summary</td></tr>
+                <tr><td>18</td><td>Credit Utilization %</td><td>Formula</td><td></td><td>(Current Outstanding / Credit Limit) × 100</td></tr>
+                <tr><td>19</td><td>Status</td><td>Dropdown</td><td>*</td><td>Active / Inactive</td></tr>
+                <tr><td colspan="5" style="background:var(--accent-light);font-size:12px;color:#92400e"><strong>Validation:</strong> PO Total + Current Outstanding must not exceed Credit Limit. If exceeded, PO is blocked or routed for special approval. <strong>Notification:</strong> Outstanding &gt; 80% of Credit Limit triggers finance alert.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">1F</span>
+            <span class="phase-title">Customer/Site Master</span>
+            <span class="phase-tag">Like Zoho CRM Accounts</span>
+          </div>
+          <p>Client organization and site details — 16 fields. AutoFetch target: Sales Order, FGHM, Project.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Customer Code</td><td>Autogen</td><td>*</td><td>—</td></tr>
+                <tr><td>2</td><td>Client Org Name</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>3</td><td>Contact Person</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>4</td><td>Contact No</td><td>Phone</td><td>*</td><td>—</td></tr>
+                <tr><td>5</td><td>Alt Contact No</td><td>Phone</td><td></td><td>—</td></tr>
+                <tr><td>6</td><td>Email</td><td>Email</td><td>*</td><td>—</td></tr>
+                <tr><td>7</td><td>GST No</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>8</td><td>PAN</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>9</td><td>Regd Address</td><td>Multi-line</td><td>*</td><td>—</td></tr>
+                <tr><td>10</td><td>Billing Address</td><td>Multi-line</td><td></td><td>—</td></tr>
+                <tr><td>11</td><td>Shipping Address</td><td>Multi-line</td><td></td><td>—</td></tr>
+                <tr><td>12</td><td>Site Name</td><td>Text</td><td></td><td>—</td></tr>
+                <tr><td>13</td><td>Site Address</td><td>Multi-line</td><td></td><td>—</td></tr>
+                <tr><td>14</td><td>Site Manager Incharge</td><td>Text</td><td></td><td>—</td></tr>
+                <tr><td>15</td><td>Contact No (Site)</td><td>Phone</td><td></td><td>—</td></tr>
+                <tr><td>16</td><td>Status</td><td>Dropdown</td><td>*</td><td>Active / Inactive</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">1G</span>
+            <span class="phase-title">Store Master</span>
+            <span class="phase-tag">Like Zoho Inventory Warehouses</span>
+          </div>
+          <p>RM/FG/QC/Site store definitions.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Store Code</td><td>Autogen</td><td>*</td><td>—</td></tr>
+                <tr><td>2</td><td>Store Name</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>3</td><td>Store Type</td><td>Dropdown</td><td>*</td><td>RM Store / FG Store / QC Store / Site Store</td></tr>
+                <tr><td>4</td><td>Location</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>5</td><td>Status</td><td>Dropdown</td><td>*</td><td>Active / Inactive</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="phase">
+          <span class="phase-number" style="font-size:11px;color:var(--gray-400)">(inline subtable)</span>
+          <p><strong>Bin Location</strong> — Rack/Shelf/Bin mapping is a <strong>subform within Store Master</strong>, not a separate form. Each store has N bin locations with Rack No, Shelf No, Bin No, Status.</p>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">1H</span>
+            <span class="phase-title">User Access</span>
+            <span class="phase-tag">Department &amp; Role Mapping</span>
+          </div>
+          <p>Define approvers, departments, and access levels.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>User Name</td><td>User lookup</td><td>*</td><td>Zoho Creator user</td></tr>
+                <tr><td>2</td><td>Department</td><td>Dropdown</td><td>*</td><td>Purchase, Sales, Store &amp; Logistics, Account &amp; Finance, Admin, Project Coordinator, Project Manager 1/2/3</td></tr>
+                <tr><td>3</td><td>Role</td><td>Dropdown</td><td>*</td><td>Entry / Review / Approve / Admin</td></tr>
+                <tr><td>4</td><td>Email</td><td>Email</td><td>Auto</td><td>From user profile</td></tr>
+                <tr><td>5</td><td>Status</td><td>Dropdown</td><td>*</td><td>Active / Inactive</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">1Hb</span>
+            <span class="phase-title">Approval Matrix</span>
+            <span class="phase-tag">Tiered Approvals</span>
+          </div>
+          <p>Define PR/PO limits and approvers per department.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Department</td><td>Dropdown</td><td>*</td><td>—</td></tr>
+                <tr><td>2</td><td>Document Type</td><td>Dropdown</td><td>*</td><td>PR / PO / Rate Comparison / GRN / MR</td></tr>
+                <tr><td>3</td><td>Min Amount</td><td>Currency</td><td>*</td><td>—</td></tr>
+                <tr><td>4</td><td>Max Amount</td><td>Currency</td><td>*</td><td>—</td></tr>
+                <tr><td>5</td><td>Approver 1</td><td>User lookup</td><td>*</td><td>—</td></tr>
+                <tr><td>6</td><td>Approver 2</td><td>User lookup</td><td></td><td>If amount exceeds level 1</td></tr>
+                <tr><td>7</td><td>Approver 3</td><td>User lookup</td><td></td><td>If amount exceeds level 2</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <h2 id="sales">2 · Sales <span class="badge badge-blue">Creates Project</span></h2>
+
+      <div class="phase-container">
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">2A</span>
+            <span class="phase-title">Sales/Work Order Master (SO)</span>
+            <span class="phase-tag">N System Line Items · Auto-creates Project</span>
+          </div>
+          <p>Customer details + <strong>N system line items</strong> (System Code, Thickness, Area, UOM, Rate, Amount).<br><span class="badge badge-green">Supply+Apply &rarr; auto-creates Project</span></p>
+          <h5>Header Fields</h5>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
+                <tr><td>2</td><td>Employee Name</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>3</td><td>Customer Code</td><td>Lookup</td><td></td><td>From Customer Master</td></tr>
+                <tr><td>4</td><td>Client Org Name</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>5</td><td>Contact Person</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>6</td><td>Contact No</td><td>Phone</td><td>*</td><td>—</td></tr>
+                <tr><td>7</td><td>Alt Contact No</td><td>Phone</td><td></td><td>—</td></tr>
+                <tr><td>8</td><td>Email</td><td>Email</td><td>*</td><td>—</td></tr>
+                <tr><td>9</td><td>GST No</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>10</td><td>PAN</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>11</td><td>Regd Address</td><td>Multi-line</td><td>*</td><td>—</td></tr>
+                <tr><td>12</td><td>Sales/Work Order No</td><td>Autogen</td><td>*</td><td>—</td></tr>
+                <tr><td>13</td><td>Sales/Work Order Date</td><td>Date</td><td>*</td><td>—</td></tr>
+                <tr><td>14</td><td>Site Name</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>15</td><td>Site Address</td><td>Multi-line</td><td>*</td><td>—</td></tr>
+                <tr><td>16</td><td>Site Manager/Incharge</td><td>Text</td><td></td><td>—</td></tr>
+                <tr><td>17</td><td>Contact No (Site)</td><td>Phone</td><td></td><td>—</td></tr>
+                <tr><td>18</td><td>Project Type</td><td>Dropdown</td><td>*</td><td>1.Industrial, 2.Commercial</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="padding:8px 12px;background:#fef3c7;border-radius:6px;font-size:12px;color:#92400e;margin:12px 0;border:1px solid #fde68a">
+            <strong>Client PO Reference:</strong> <input type="text" value="PO-2026-042 — Tata Motors" style="padding:4px 8px;border:1px solid #fde68a;border-radius:4px;font-size:12px;width:300px;margin-left:8px"> <span style="color:#92400e;opacity:0.8">— just a reference record attached to SO</span>
+          </div>
+          <h5>System Subtable (N line items)</h5>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>System Code</td><td>Lookup</td><td>From System Master (autofetch name)</td></tr>
+                <tr><td>2</td><td>System Name</td><td>AutoFetch</td><td>—</td></tr>
+                <tr><td>3</td><td>Thickness</td><td>Text</td><td>—</td></tr>
+                <tr><td>4</td><td>Area</td><td>Number</td><td>—</td></tr>
+                <tr><td>5</td><td>UOM</td><td>Dropdown</td><td>Conditional</td></tr>
+                <tr><td>6</td><td>Rate</td><td>Currency</td><td>—</td></tr>
+                <tr><td>7</td><td>Amount</td><td>Formula</td><td>Area &times; Rate</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h5>Footer</h5>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>19</td><td>Total Work Order Amount</td><td>Formula</td><td>Sum of line amounts</td></tr>
+                <tr><td>20</td><td>Payment Terms</td><td>Text</td><td>—</td></tr>
+                <tr><td>21</td><td>Transportation Scope</td><td>Dropdown</td><td>—</td></tr>
+                <tr><td>22</td><td>Transportation Amount</td><td>Currency</td><td>—</td></tr>
+                <tr><td>23</td><td>Lead Time</td><td>Number (Days)</td><td>—</td></tr>
+                <tr><td>24</td><td>PO/BOQ Attachment</td><td>File upload</td><td>Multiple</td></tr>
+                <tr><td>25</td><td>Warranty</td><td>Text</td><td>—</td></tr>
+                <tr><td>26</td><td>Is proper System Required</td><td>Checkbox</td><td>—</td></tr>
+                <tr><td colspan="4"><strong>Commission (conditional)</strong></td></tr>
+                <tr><td>27</td><td>Commission</td><td>Checkbox</td><td>If checked &rarr; show below</td></tr>
+                <tr><td>28</td><td>Based On</td><td>Dropdown</td><td>1.Percentage, 2.Fix Amount</td></tr>
+                <tr><td>29</td><td>Commission Amount</td><td>Currency</td><td>—</td></tr>
+                <tr><td>30</td><td>Remark</td><td>Multi-line</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <h2 id="project-management">3 · Project Management <span class="badge badge-blue">Root Entity</span></h2>
+      <p>Like <strong>Zoho Projects</strong> — Project is the hub with a single task budget table. Auto-created from SO acceptance.</p>
+
+      <div class="phase-container">
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">3A</span>
+            <span class="phase-title">Create Project</span>
+            <span class="phase-tag">Auto from SO · Like Zoho CRM Deal</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Project ID</td><td>Autogen</td><td>*</td><td>—</td></tr>
+                <tr><td>2</td><td>Project Name</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>3</td><td>SO Reference</td><td>Lookup</td><td></td><td>Auto-filled from SO acceptance</td></tr>
+                <tr><td>4</td><td>Project Manager</td><td>User lookup</td><td>*</td><td>—</td></tr>
+                <tr><td>5</td><td>Execution Base</td><td>Dropdown</td><td>*</td><td>1.Area Basis, 2.Day Basis</td></tr>
+                <tr><td>6</td><td>Start Date</td><td>Date</td><td>*</td><td>—</td></tr>
+                <tr><td>7</td><td>End Date</td><td>Date</td><td>*</td><td>—</td></tr>
+                <tr><td>8</td><td>Project Cost</td><td>Currency</td><td>*</td><td>—</td></tr>
+                <tr><td>9</td><td>Adjustments</td><td>Currency</td><td></td><td>Cost adjustment</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h5>Systems Subform</h5>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>System Code</td><td>Lookup</td><td>From System Master</td></tr>
+                <tr><td>2</td><td>Area</td><td>Number</td><td>—</td></tr>
+                <tr><td>3</td><td>UOM</td><td>Dropdown</td><td>—</td></tr>
+                <tr><td>4</td><td>Description</td><td>Text</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">3B</span>
+            <span class="phase-title">Task Budget</span>
+            <span class="phase-tag">Single Task Table · No Conditional Sections</span>
+          </div>
+          <p>One table for all task categories. No more separate sections with conditional visibility.</p>
+          <h5>Budget</h5>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Category</td><td>Dropdown</td><td>*</td><td>Transport / Execution / Manpower / Tools / Overhead</td></tr>
+                <tr><td>2</td><td>Description</td><td>Text</td><td>*</td><td>Subtask name or work item</td></tr>
+                <tr><td>3</td><td>Qty / Area</td><td>Number</td><td></td><td>Area for Execution, count for others</td></tr>
+                <tr><td>4</td><td>Rate</td><td>Currency</td><td></td><td>Per unit rate</td></tr>
+                <tr><td>5</td><td>Amount</td><td>Formula</td><td></td><td>Qty &times; Rate</td></tr>
+                <tr><td>6</td><td>Manpower</td><td>Number</td><td></td><td>Head count (if applicable)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h5>Actuals (captured during execution)</h5>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>7</td><td>Actual Qty</td><td>Number</td><td></td><td>Actual quantity consumed / work done</td></tr>
+                <tr><td>8</td><td>Actual Rate</td><td>Currency</td><td></td><td>Actual per-unit rate paid</td></tr>
+                <tr><td>9</td><td>Actual Amount</td><td>Formula</td><td></td><td>Actual Qty &times; Actual Rate</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <h2 id="procurement">4 · Purchase <span class="badge badge-blue">Stream A — No Project ID</span></h2>
+      <p><strong>Pre-Project procurement for stock.</strong> Structured like <strong>Zoho Books Purchase Orders</strong>: header fields + N line items with GST split (CGST/SGST/IGST), HSN codes, autofetch from Item Muster. <strong>No Project ID on procurement forms.</strong></p>
+
+      <div class="phase-container">
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">4A</span>
+            <span class="phase-title">Purchase Requisition (PR)</span>
+            <span class="phase-tag">N Line Items</span>
+          </div>
+          <p>Department: Production &amp; R&amp;D. Status: Draft → Pending Approval → Approved → Rejected.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>PR Number</td><td>Autogen</td><td>*</td><td>PR-YYYY-XXXX</td></tr>
+                <tr><td>2</td><td>PR Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
+                <tr><td>3</td><td>Reference</td><td>Text</td><td></td><td>Manual reference</td></tr>
+                <tr><td>4</td><td><strong>Department</strong></td><td>Dropdown</td><td>*</td><td>Auto from login — Purchase / Store</td></tr>
+                <tr><td>5</td><td>Department</td><td>AutoFetch</td><td>*</td><td>As per user login (Production / R&amp;D)</td></tr>
+                <tr><td>6</td><td>Approved By</td><td>User lookup</td><td></td><td>Filled after approval</td></tr>
+                <tr><td>7</td><td>Status</td><td>Dropdown</td><td>*</td><td>Draft / Pending Approval / Approved / Rejected</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h4>Line Items (N items)</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Sr</td><td>Number</td><td>*</td><td>Auto</td></tr>
+                <tr><td>2</td><td>Item Code</td><td>Lookup</td><td>*</td><td>From Purchase Item Muster (autofill if Item Name filled)</td></tr>
+                <tr><td>3</td><td>Item Name</td><td>AutoFetch</td><td>*</td><td>Autofill if Item Code filled</td></tr>
+                <tr><td>4</td><td>Qty</td><td>Number</td><td>*</td><td>—</td></tr>
+                <tr><td>5</td><td>Item Description</td><td>Multi-line</td><td></td><td>—</td></tr>
+                <tr><td>6</td><td>UOM</td><td>AutoFetch</td><td>*</td><td>From Item Muster</td></tr>
+                <tr><td>7</td><td>Lead Time</td><td>AutoFetch</td><td></td><td>Days, from Item Muster</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>Automation:</strong> Item Code &lrarr; Item Name bidirectional autofill. UOM autofill. Lead Time autofill. Status: Draft &rarr; Pending Approval (on submit) &rarr; Approved (after approval). Notification to Purchase dept on approval.</p>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">4B</span>
+            <span class="phase-title">Rate Comparison</span>
+            <span class="phase-tag">5 Suppliers</span>
+          </div>
+          <p>Department: Purchase. Up to 5 supplier comparisons per PR item. Finalised supplier + rate → PO reference.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
+                <tr><td>2</td><td>PR Reference No</td><td>Lookup</td><td>*</td><td>From PR Master</td></tr>
+                <tr><td>3</td><td>Product No</td><td>AutoFetch</td><td>*</td><td>From PR items</td></tr>
+                <tr><td>4</td><td>Product Name</td><td>AutoFetch</td><td>*</td><td>From PR items</td></tr>
+                <tr><td>5</td><td>Supplier 1</td><td>Lookup</td><td>*</td><td>From Supplier Master + Price + Credit</td></tr>
+                <tr><td>6</td><td>Supplier 2</td><td>Lookup</td><td></td><td>From Supplier Master + Price + Credit</td></tr>
+                <tr><td>7</td><td>Supplier 3</td><td>Lookup</td><td></td><td>From Supplier Master + Price + Credit</td></tr>
+                <tr><td>8</td><td>Supplier 4</td><td>Lookup</td><td></td><td>From Supplier Master + Price + Credit</td></tr>
+                <tr><td>9</td><td>Supplier 5</td><td>Lookup</td><td></td><td>From Supplier Master + Price + Credit</td></tr>
+                <tr><td>10</td><td>Finalised Supplier</td><td>Lookup</td><td>*</td><td>Selected from above 5</td></tr>
+                <tr><td>11</td><td>Final Rate</td><td>Currency</td><td>*</td><td>—</td></tr>
+                <tr><td>12</td><td>PO No</td><td>Text</td><td></td><td>Linked after PO creation</td></tr>
+                <tr><td>13</td><td>PO Release Date</td><td>Date</td><td></td><td>—</td></tr>
+                <tr><td>14</td><td>Remark</td><td>Multi-line</td><td></td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>Automation:</strong> Supplier dropdown → lookup from Supplier Master. Notification "Rate Comparison Data Missing" to Purchase dept if data incomplete.</p>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">4C</span>
+            <span class="phase-title">Purchase Order (PO)</span>
+            <span class="phase-tag">N Line Items · GST Split · Like Zoho Books</span>
+          </div>
+          <p>Department: Purchase. Dual series: Coding → RMWAD, Non-Coding → RM.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>RM Type</td><td>Dropdown</td><td>*</td><td>1.Coding, 2.Non Coding</td></tr>
+                <tr><td>2</td><td>PO Number</td><td>Autogen</td><td>*</td><td><strong>Dual series:</strong> RMWAD-YYYY-XXXX (Coding), RM-YYYY-XXXX (Non-Coding)</td></tr>
+                <tr><td>3</td><td>PO Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
+                <tr><td>4</td><td>Supplier Code</td><td>Lookup</td><td>*</td><td>From Supplier Master</td></tr>
+                <tr><td>5</td><td>Supplier Name</td><td>AutoFetch</td><td>*</td><td>Autofill from Supplier Code</td></tr>
+                <tr><td>6</td><td>PR Reference</td><td>Lookup</td><td></td><td>From PR</td></tr>
+                <tr><td>7</td><td>Bill To</td><td>Dropdown</td><td>*</td><td>Address list</td></tr>
+                <tr><td>8</td><td>Ship To</td><td>Dropdown</td><td>*</td><td>Address list</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h4>Line Items</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Sr No</td><td>Number</td><td>*</td><td>Auto</td></tr>
+                <tr><td>2</td><td>Item Code</td><td>Lookup</td><td>*</td><td>From Purchase Item Muster</td></tr>
+                <tr><td>3</td><td>Item Name</td><td>AutoFetch</td><td>*</td><td>—</td></tr>
+                <tr><td>4</td><td>HSN</td><td>AutoFetch</td><td>*</td><td>From Item Muster</td></tr>
+                <tr><td>5</td><td>Quantity</td><td>Number</td><td>*</td><td>Ordered quantity</td></tr>
+                <tr><td>6</td><td>UOM</td><td>AutoFetch</td><td>*</td><td>From Item Muster</td></tr>
+                <tr><td>7</td><td>Rate</td><td>Currency</td><td>*</td><td>From Rate Comparison or manual</td></tr>
+                <tr><td>8</td><td>Basic Amount</td><td>Formula</td><td>*</td><td>Qty &times; Rate</td></tr>
+                <tr><td>9</td><td>GST %</td><td>AutoFetch</td><td>*</td><td>From Item Muster</td></tr>
+                <tr><td>10</td><td>GST Amount</td><td>Formula</td><td>*</td><td>Basic &times; GST%</td></tr>
+                <tr><td>11</td><td>Total Amount</td><td>Formula</td><td>*</td><td>Basic + GST</td></tr>
+                <tr><td style="background:#fef3c7">12</td><td style="background:#fef3c7"><strong>Received Qty</strong></td><td style="background:#fef3c7">AutoFetch (from GRN)</td><td style="background:#fef3c7"></td><td style="background:#fef3c7">Σ GRN Received Qty for this PO item — updated as GRNs are posted</td></tr>
+                <tr><td style="background:#fef3c7">13</td><td style="background:#fef3c7"><strong>Receipt Status</strong></td><td style="background:#fef3c7">Formula</td><td style="background:#fef3c7">*</td><td style="background:#fef3c7"><strong>Pending</strong> (0) / <strong>Partial</strong> (0&lt;Qty&lt;Ordered) / <strong>Complete</strong> (≥Ordered) — auto-calculated</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>Example lines with Receipt Status:</strong></p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Sr</th><th>Item</th><th>HSN</th><th>Qty</th><th>UOM</th><th>Rate</th><th>Basic</th><th>GST%</th><th>Total</th><th>Received</th><th style="background:#fef3c7">Receipt Status</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>RM001 Epoxy Resin</td><td>3907</td><td>500</td><td>Kg</td><td>₹180</td><td>₹90,000</td><td>18%</td><td>₹1,06,200</td><td>500</td><td style="background:#d1fae5;color:#059669;font-weight:600">Complete ✓</td></tr>
+                <tr><td>2</td><td>RM002 Hardener</td><td>3907</td><td>250</td><td>Kg</td><td>₹220</td><td>₹55,000</td><td>18%</td><td>₹64,900</td><td>100</td><td style="background:#fef3c7;color:#92400e;font-weight:600">Partial</td></tr>
+                <tr><td>3</td><td>RM005 Pigment</td><td>3206</td><td>100</td><td>Kg</td><td>₹450</td><td>₹45,000</td><td>18%</td><td>₹53,100</td><td>0</td><td style="background:#fee2e2;color:#dc2626;font-weight:600">Pending</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h4>Footer</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>9</td><td>Basic Total</td><td>Formula</td><td>Sum of Basic Amount</td></tr>
+                <tr><td>10</td><td>CGST</td><td>Formula</td><td>Sum of GST/2 (intra-state)</td></tr>
+                <tr><td>11</td><td>SGST</td><td>Formula</td><td>Sum of GST/2 (intra-state)</td></tr>
+                <tr><td>12</td><td>IGST</td><td>Formula</td><td>Sum of GST (inter-state)</td></tr>
+                <tr><td>13</td><td>Total Amount (Words)</td><td>Formula</td><td>In words</td></tr>
+                <tr><td>14</td><td>Delivery Date</td><td>Date</td><td>*</td></tr>
+                <tr><td>15</td><td>Payment Terms</td><td>Text</td><td>*</td></tr>
+                <tr><td>16</td><td>Scope of Transport</td><td>Dropdown</td><td>Supplier / Own</td></tr>
+                <tr><td>17</td><td>Mode of Transport</td><td>Dropdown</td><td>—</td></tr>
+                <tr><td style="background:#fef3c7">18</td><td style="background:#fef3c7"><strong>Total Received Amount</strong></td><td style="background:#fef3c7">Formula</td><td style="background:#fef3c7">Sum of (Received Qty × Rate) per line — what has actually been received in value</td></tr>
+                <tr><td style="background:#fef3c7">19</td><td style="background:#fef3c7"><strong>Total Credited Amount</strong></td><td style="background:#fef3c7">AutoFetch (from Supplier Credit)</td><td style="background:#fef3c7">Σ Supplier Credit Notes linked to this PO where Status = Credited</td></tr>
+                <tr><td style="background:#fef3c7">20</td><td style="background:#fef3c7"><strong>Net Payable</strong></td><td style="background:#fef3c7">Formula</td><td style="background:#fef3c7">Total Amount − Total Credited Amount — what is actually due to supplier</td></tr>
+                <tr><td style="background:#fef3c7">21</td><td style="background:#fef3c7"><strong>Credit Note Ref</strong></td><td style="background:#fef3c7">AutoFetch (list)</td><td style="background:#fef3c7">List of Credit Note Nos linked to this PO (for audit trail)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>Printable PO</strong> with e-way bill, COA, batch nos, quality clause. T&amp;C include batch no. requirement, COA attachment, e-way bill mandate, quality return policy.</p>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">4D</span>
+            <span class="phase-title">Goods Receipt Note (GRN)</span>
+            <span class="phase-tag">Partial via ✓ · N Items</span>
+          </div>
+          <p>Department: Purchase / Store. PO ref → autofetch items. Checkbox per line for partial GRN. Stock updates only on posting.</p>
+          <h4>Header</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>GRN Number</td><td>Autogen</td><td>*</td><td>Generated <strong>after posting</strong></td></tr>
+                <tr><td>2</td><td>GRN Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
+                <tr><td>3</td><td>PO Number</td><td>Lookup</td><td>*</td><td>From PO Master</td></tr>
+                <tr><td>4</td><td>Supplier Code</td><td>AutoFetch</td><td>*</td><td>From PO</td></tr>
+                <tr><td>5</td><td>Supplier Name</td><td>AutoFetch</td><td>*</td><td>From PO</td></tr>
+                <tr><td>6</td><td>Vehicle Number</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>7</td><td>Warehouse</td><td>Dropdown</td><td>*</td><td>1.Wadki, 2.Main, 3.Neelo, 4.Gurgaon, 5.Bangalore, 6.Client Site</td></tr>
+                <tr><td>8</td><td>Client/Site Name</td><td>Text</td><td>Cnd</td><td>Visible only if Warehouse = Client Site</td></tr>
+                <tr><td>9</td><td>Invoice Number</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>10</td><td>Invoice Date</td><td>Date</td><td>*</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h4>Line Items — with checkbox for partial GRN</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Checkbox</td><td>Checkbox</td><td></td><td>For item selection (partial GRN)</td></tr>
+                <tr><td>2</td><td>Item Code</td><td>AutoFetch</td><td>*</td><td>From PO</td></tr>
+                <tr><td>3</td><td>Item Name</td><td>AutoFetch</td><td>*</td><td>From PO</td></tr>
+                <tr><td>4</td><td>Ordered Qty</td><td>AutoFetch</td><td>*</td><td>From PO</td></tr>
+                <tr><td>5</td><td>Received Qty</td><td>Number</td><td>*</td><td>—</td></tr>
+                <tr><td style="background:#fef3c7">6</td><td style="background:#fef3c7"><strong>Short / Excess Qty</strong></td><td style="background:#fef3c7">Formula</td><td style="background:#fef3c7"></td><td style="background:#fef3c7">Received Qty − Ordered Qty. Negative = shortage, Positive = excess</td></tr>
+                <tr><td>7</td><td>QC Status</td><td>Dropdown</td><td></td><td>Pending / Pass / Fail</td></tr>
+                <tr><td>8</td><td>Packing Quality</td><td>Dropdown</td><td></td><td>Good / Damaged / Partial</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h4>Transport Subform (visible if PO Scope of Transport = Own)</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Transporter Name</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>2</td><td>Transportation Charges</td><td>Currency</td><td>*</td><td>—</td></tr>
+                <tr><td>3</td><td>Local Transport</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>4</td><td>Loading/Unloading Charges</td><td>Currency</td><td>*</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>Automation:</strong> GRN Number generated only after posting. Qty added to stock only after posting. Checkbox selects items for partial GRN.</p>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">4E</span>
+            <span class="phase-title">QC/QA</span>
+            <span class="phase-tag">Inspection</span>
+          </div>
+          <p>Department: QC. GRN ref → inspect viscosity, density, color, moisture. Pass/Fail/Hold per item.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>QC Number</td><td>Autogen</td><td>*</td><td>—</td></tr>
+                <tr><td>2</td><td>Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
+                <tr><td>3</td><td>GRN Number</td><td>Lookup</td><td>*</td><td>From GRN</td></tr>
+                <tr><td>4</td><td>Supplier Name</td><td>AutoFetch</td><td>*</td><td>From GRN</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h4>Line Items (auto-fetched from GRN)</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Item No</td><td>AutoFetch</td><td>*</td><td>From GRN</td></tr>
+                <tr><td>2</td><td>Item Name</td><td>AutoFetch</td><td>*</td><td>From GRN</td></tr>
+                <tr><td>3</td><td>Inspection Date</td><td>Date</td><td></td><td>—</td></tr>
+                <tr><td>4</td><td>Viscosity Result</td><td>Text</td><td></td><td>—</td></tr>
+                <tr><td>5</td><td>Density Result</td><td>Text</td><td></td><td>—</td></tr>
+                <tr><td>6</td><td>Color Result</td><td>Text</td><td></td><td>—</td></tr>
+                <tr><td>7</td><td>Moisture Result</td><td>Text</td><td></td><td>—</td></tr>
+                <tr><td>8</td><td>Accepted Qty</td><td>Number</td><td>*</td><td>—</td></tr>
+                <tr><td>9</td><td>Rejected Qty</td><td>Number</td><td>*</td><td>—</td></tr>
+                <tr><td>10</td><td>Packaging Quality</td><td>Dropdown</td><td></td><td>Good / Damaged</td></tr>
+                <tr><td>11</td><td>QC Status</td><td>Dropdown</td><td>*</td><td>Pass / Fail / Hold</td></tr>
+                <tr><td>12</td><td>Remarks</td><td>Multi-line</td><td>*</td><td>—</td></tr>
+                <tr><td style="background:#fef3c7">13</td><td style="background:#fef3c7"><strong>Credit Initiated</strong></td><td style="background:#fef3c7">Checkbox (readonly)</td><td style="background:#fef3c7"></td><td style="background:#fef3c7">Auto-checked if Rejected Qty &gt; 0 AND a Supplier Credit Note exists for this QC item</td></tr>
+                <tr><td style="background:#fef3c7">14</td><td style="background:#fef3c7"><strong>Credit Note Ref</strong></td><td style="background:#fef3c7">AutoFetch</td><td style="background:#fef3c7"></td><td style="background:#fef3c7">Linked Credit Note No (if Finance has raised a credit for this rejected item)</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- MATERIAL HANDOVER (Purchase → Store) -->
+      <!-- ============================================================ -->
+      <span id="material-handover" style="position:relative;top:-60px;display:block"></span>
+      <div class="module-group">
+        <h3>Material Handover <span class="mg-badge">Stage 3 — Purchase → Store (Coding RM / Non-Coding)</span></h3>
+        <p>Purchase department hands over received material to Store. Split by Coding RM and Non-Coding (RMWAD) series.</p>
+
+        <div class="form-card" id="org-mat-handover">
+          <div class="fc-header">
+            <span class="fc-num" style="background:#059669">4F</span>
+            <span class="fc-title">Material Handover Note</span>
+            <span class="fc-tag">Coding RM / Non-Coding</span>
+          </div>
+          <div class="fc-flow">
+            <span class="fc-flow-in">From: GRN (received items)</span>
+            <span class="fc-flow-key">Purchase hands over to Store with RM classification</span>
+            <span class="fc-flow-out">To: Store (Stock Update)</span>
+          </div>
+          <div class="form-demo">
+            <div class="form-row-4">
+              <div><label>Handover No</label><input type="text" value="MH-2026-001" disabled style="background:var(--gray-50)"></div>
+              <div><label>GRN Reference</label><select><option selected>GRN-2026-001</option></select></div>
+              <div><label>Handover Date</label><input type="date" value="2026-07-10"></div>
+              <div><label>Store</label><select><option selected>Wadki</option><option>Main</option><option>Neelo</option></select></div>
+            </div>
+            <div class="subtable-demo">
+              <div class="st-hint">Items (Mark RM Type)</div>
+              <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr">
+                <span style="font-size:11px;font-weight:600">Item</span>
+                <span style="font-size:11px;font-weight:600">Qty</span>
+                <span style="font-size:11px;font-weight:600">UOM</span>
+                <span style="font-size:11px;font-weight:600">RM Type</span>
+                <span style="font-size:11px;font-weight:600">Handover To</span>
+              </div>
+              <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr">
+                <input type="text" value="Epoxy Resin" style="font-size:12px">
+                <input type="number" value="425" style="font-size:12px">
+                <input type="text" value="Kg" style="font-size:12px">
+                <select style="font-size:12px"><option selected>Coding RM</option><option>Non-Coding (RMWAD)</option></select>
+                <input type="text" value="Anil (Store)" style="font-size:12px">
+              </div>
+            </div>
+            <div style="padding:8px 12px;background:#fffbeb;border-radius:6px;font-size:12px;color:#92400e;margin-top:8px">
+              <strong>&#x2139; RM Type</strong> — Coding materials use PO series RM (Purchase dept). Non-coding use RMWAD series.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h2 id="inventory">5 · MR → MIS → Costing <span class="badge badge-purple">Stream B — Project ID</span></h2>
+      <p>Like <strong>Zoho Inventory</strong>: warehouse-based tracking with stock in/out/transfer. MR <strong>consumes from Store inventory</strong> → MIS (stock deduction) → FGHM → Costing valuation. <strong>All tagged to Project.</strong></p>
+
+      <div class="phase-container">
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">5A</span>
+            <span class="phase-title">Material Requisition (MR)</span>
+            <span class="phase-tag">N Line Items</span>
+          </div>
+          <p>Department: Production &amp; R&amp;D. Project ID + items with autofetch available stock.</p>
+          <h4>Header</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>MR Number</td><td>Autogen</td><td>*</td><td>MR-YYYY-XXXX</td></tr>
+                <tr><td>2</td><td>MR Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
+                <tr><td>3</td><td>Requisition Type</td><td>Dropdown</td><td>*</td><td>Production / R&amp;D</td></tr>
+                <tr><td>4</td><td>Batch Number</td><td>Text</td><td></td><td>—</td></tr>
+                <tr><td>5</td><td>Department</td><td>AutoFetch</td><td>*</td><td>As per user login</td></tr>
+                <tr><td>6</td><td>Requested By</td><td>Text</td><td>*</td><td>Employee Name</td></tr>
+                <tr><td>7</td><td>Priority</td><td>Dropdown</td><td>*</td><td>Low / Medium / High / Urgent</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h4>Line Items</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Sr No</td><td>Number</td><td>*</td><td>Auto</td></tr>
+                <tr><td>2</td><td>Item Code</td><td>Lookup</td><td>*</td><td>From Purchase Item Muster</td></tr>
+                <tr><td>3</td><td>Item Name</td><td>AutoFetch</td><td>*</td><td>—</td></tr>
+                <tr><td>4</td><td>Category</td><td>AutoFetch</td><td>*</td><td>From Item Muster</td></tr>
+                <tr><td>5</td><td>UOM</td><td>AutoFetch</td><td>*</td><td>From Item Muster</td></tr>
+                <tr><td>6</td><td>Available Stock</td><td>AutoFetch</td><td>*</td><td>From inventory (real-time)</td></tr>
+                <tr><td>7</td><td>Required Qty</td><td>Number</td><td>*</td><td>—</td></tr>
+                <tr><td>8</td><td>Remarks</td><td>Multi-line</td><td></td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">5B</span>
+            <span class="phase-title">Material Issue Slip (MIS)</span>
+            <span class="phase-tag">N Items · Stock −</span>
+          </div>
+          <p>Department: Stores. MR ref → autofetch items. Issued Qty, Balance Qty (formula). Stock deducted on posting.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>MR No</td><td>Lookup</td><td>*</td><td>From MR</td></tr>
+                <tr><td>2</td><td>MIS Number</td><td>Autogen</td><td>*</td><td>Auto-generated against MR</td></tr>
+                <tr><td>3</td><td>Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
+                <tr><td>4</td><td>Batch Number</td><td>Text</td><td></td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h4>Line Items (auto-fetched from MR)</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Item No</td><td>AutoFetch</td><td>*</td><td>From MR</td></tr>
+                <tr><td>2</td><td>Item Name</td><td>AutoFetch</td><td>*</td><td>From MR</td></tr>
+                <tr><td>3</td><td>Category</td><td>AutoFetch</td><td>*</td><td>From MR</td></tr>
+                <tr><td>4</td><td>Required Qty</td><td>AutoFetch</td><td>*</td><td>From MR</td></tr>
+                <tr><td>5</td><td>Issued Qty</td><td>Number</td><td>*</td><td>—</td></tr>
+                <tr><td>6</td><td>Balance Qty</td><td>Formula</td><td></td><td>Required - Issued (if shortage)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>Footer:</strong> Issued By (Text), Handover To (Text), Remark (Multi-line).</p>
+          <p><strong>Automation:</strong> Items auto-fetched from MR. Balance Qty auto-calculated. Stock reduced on posting.</p>
+        </div>
+
+        <div class="phase" style="border:2px solid var(--accent)">
+          <div class="phase-header">
+            <span class="phase-number">4F</span>
+            <span class="phase-title">Cross-Form Finance References</span>
+            <span class="phase-tag">Audit Trail</span>
+          </div>
+          <p>Automatic data flow between procurement forms and the Supplier Credit Note module. These are <strong>readonly reference fields</strong> that update automatically — no manual entry needed.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Source Form</th><th>Field</th><th>Updates In</th><th>Condition</th></tr></thead>
+              <tbody>
+                <tr><td><strong>PO</strong> (Line Item)</td><td>Received Qty</td><td>Sum of GRN Received Qty per PO item</td><td>On each GRN posting</td></tr>
+                <tr><td><strong>PO</strong> (Line Item)</td><td>Receipt Status</td><td>Pending / Partial / Complete</td><td>Auto-formula based on Received Qty vs Ordered Qty</td></tr>
+                <tr><td><strong>PO</strong> (Footer)</td><td>Total Credited Amount</td><td>Sum of Supplier Credit Note totals linked to this PO</td><td>When a credit note is created with this PO reference</td></tr>
+                <tr><td><strong>PO</strong> (Footer)</td><td>Credit Note Ref</td><td>List of credit note numbers</td><td>Appended when a credit note references this PO</td></tr>
+                <tr><td><strong>PO</strong> (Footer)</td><td>Net Payable</td><td>Total Amount − Total Credited</td><td>Auto-formula</td></tr>
+                <tr><td><strong>QC</strong> (Line Item)</td><td>Credit Initiated</td><td>Checkbox — indicates credit raised</td><td>Auto-checked when Supplier Credit Note exists for this QC item with Rejected Qty &gt; 0</td></tr>
+                <tr><td><strong>QC</strong> (Line Item)</td><td>Credit Note Ref</td><td>Linked credit note number</td><td>Auto-fetched from Supplier Credit Note that references this QC</td></tr>
+                <tr><td><strong>GRN</strong> (Line Item)</td><td>Short / Excess Qty</td><td>Received − Ordered</td><td>Auto-formula — signals potential credit need</td></tr>
+                <tr><td><strong>Supplier Credit Note</strong></td><td>Project ID</td><td>Auto-fetched from PO reference</td><td>On PO selection</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout callout-warning" style="margin-top:12px">
+            <strong>Finance Rule:</strong> Credit Initiated flag on QC is <strong>readonly</strong>. It only updates AFTER Finance manually creates and saves the Supplier Credit Note. QC cannot trigger credit creation — only Finance can.
+          </div>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">5C</span>
+            <span class="phase-title">FG Handover / Production GRN (FGHM)</span>
+            <span class="phase-tag">N Items · Inline Acceptance</span>
+          </div>
+          <p>Department: Production. Project ID + client/site. FG products with inline acceptance fields — <strong>no separate FGAN form</strong>. Pop-up notification to Store/Logistics on submit.</p>
+          <p><strong>Note:</strong> This is <strong>Production GRN</strong> (FG handover from production to store) — completely separate from <strong>Procurement GRN</strong> (supplier goods receipt).</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>FGH No</td><td>Autogen</td><td>*</td><td>FGH-YYYY-XXXX</td></tr>
+                <tr><td>2</td><td>Handover Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
+                <tr><td>3</td><td>Client/Site Name</td><td>Lookup</td><td>*</td><td>From Customer/Site Master</td></tr>
+                <tr><td>4</td><td>Batch No</td><td>Text</td><td>*</td><td>Can be multiple batch numbers</td></tr>
+                <tr><td>5</td><td>Overall Acceptance Status</td><td>Dropdown</td><td>*</td><td>Pending / Accepted / Partial / Rejected</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h4>Line Items (with inline acceptance fields)</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Sr No</td><td>Number</td><td>*</td><td>Auto</td></tr>
+                <tr><td>2</td><td>FG Product Code</td><td>Lookup</td><td>*</td><td>From Purchase Item Muster (FG items)</td></tr>
+                <tr><td>3</td><td>FG Product Name</td><td>AutoFetch</td><td>*</td><td>—</td></tr>
+                <tr><td>4</td><td>FG QTY (Handover)</td><td>Number</td><td>*</td><td>—</td></tr>
+                <tr><td>5</td><td>Damaged Qty</td><td>Number</td><td>*</td><td>Inspection result</td></tr>
+                <tr><td>6</td><td>Accepted Qty</td><td>Formula</td><td>*</td><td>Handover - Damaged</td></tr>
+                <tr><td>7</td><td>UOM</td><td>AutoFetch</td><td>*</td><td>—</td></tr>
+                <tr><td>8</td><td>QC Status</td><td>Dropdown</td><td>*</td><td>Pass / Fail / Hold</td></tr>
+                <tr><td>9</td><td>Line Acceptance Status</td><td>Dropdown</td><td>*</td><td>Accepted / Partial / Rejected</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>Footer:</strong> Handed Over By (Text), Received By (Text), Remark (Multi-line), Approved By (User lookup).</p>
+          <p><strong>Automation:</strong> After submission → Pop-up notification to Store/Logistics. FG stock updated after acceptance status set to Accepted.</p>
+        </div>
+         <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">5D</span>
+            <span class="phase-title">Additional Store Forms</span>
+            <span class="phase-tag">Return · Handover · Transport</span>
+          </div>
+          <div class="card-grid">
+            <div class="card"><h4>Material Return</h4><p>Return from production/stores. Reference to MIS. Fields: Returned Qty, Reason, Condition.</p></div>
+            <div class="card"><h4>Material Handover</h4><p>Inter-store transfer. From Store, To Store. Items with quantities. Handover notes.</p></div>
+            <div class="card"><h4>Vehicle &amp; Transport</h4><p>Vehicle registration, Trip details, Delivery challans, Cost tracking.</p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- COSTING -->
+      <!-- ============================================================ -->
+      <span id="costing" style="position:relative;top:-60px;display:block"></span>
+      <div class="module-group">
+        <h3>Costing <span class="mg-badge">Stage 1 — Costing Approval Gate</span></h3>
+        <p>Costing becomes a distinct <strong>approval gate</strong> between Store and next stage. Not just a computation — it's a department handover with sign-off.</p>
+
+        <div class="form-card" id="org-costing">
+          <div class="fc-header">
+            <span class="fc-num" style="background:#7c3aed">3C</span>
+            <span class="fc-title">Costing Approval</span>
+            <span class="fc-tag">Approval Gate</span>
+          </div>
+          <div class="fc-flow">
+            <span class="fc-flow-in">From: Store (Material Check complete)</span>
+            <span class="fc-flow-key">Costing Dept reviews material valuation and approves handover</span>
+            <span class="fc-flow-out">To: Production / Purchase decision</span>
+          </div>
+          <div class="form-demo">
+            <div class="form-row-4">
+              <div><label>Costing No</label><input type="text" value="COST-2026-001" disabled style="background:var(--gray-50)"></div>
+              <div><label>Date</label><input type="date" value="2026-07-22"></div>
+              <div><label>Project ID</label><select><option selected>PRJ-2026-001 — Tata Motors</option></select></div>
+              <div><label>Prepared By</label><input type="text" value="Meera (Costing)"></div>
+            </div>
+            <div class="subtable-demo">
+              <div class="st-hint">Material Valuation</div>
+              <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr">
+                <span style="font-size:11px;font-weight:600">Item</span>
+                <span style="font-size:11px;font-weight:600">Qty</span>
+                <span style="font-size:11px;font-weight:600">Rate</span>
+                <span style="font-size:11px;font-weight:600">Amount</span>
+                <span style="font-size:11px;font-weight:600">Remark</span>
+              </div>
+              <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr">
+                <input type="text" value="Epoxy Resin" style="font-size:12px">
+                <input type="number" value="200" style="font-size:12px">
+                <input type="number" value="238" style="font-size:12px">
+                <input type="number" value="47,600" style="font-size:12px" readonly>
+                <input type="text" value="Within budget" style="font-size:12px">
+              </div>
+            </div>
+            <div class="form-row-3" style="margin-top:8px">
+              <div><label>Total Material Cost</label><input type="number" value="65,800" disabled style="background:var(--gray-50);font-weight:700"></div>
+              <div><label>Approval Status</label><select><option selected>Approved</option><option>Pending</option><option>Rejected</option></select></div>
+              <div><label>Approved By</label><input type="text" value="Sanjay (Costing Head)"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h2 id="production">6 · Production <span class="badge badge-green">Tagged to Project</span></h2>
+
+      <div class="phase-container">
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">6A</span>
+            <span class="phase-title">Production Planning</span>
+            <span class="phase-tag">Per Project</span>
+          </div>
+          <p>Department: Production. Project ID, Period (Week/Month), SO/WO autofetch, FG Stock, Net Requirement = SO − FG.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Planning No</td><td>Text</td><td>*</td><td>MR Sheet No reference</td></tr>
+                <tr><td>2</td><td>Planning Date</td><td>Date</td><td>*</td><td>—</td></tr>
+                <tr><td>3</td><td>Planning Period</td><td>Dropdown</td><td>*</td><td>Week / Month</td></tr>
+                <tr><td>4</td><td>Plant</td><td>Dropdown</td><td>*</td><td>—</td></tr>
+                <tr><td>5</td><td>Planner Name</td><td>User lookup</td><td>*</td><td>—</td></tr>
+                <tr><td>6</td><td>Status</td><td>Dropdown</td><td>*</td><td>Draft / Approved / Released</td></tr>
+                <tr><td>7</td><td>Remarks</td><td>Multi-line</td><td></td><td>—</td></tr>
+                <tr><td>8</td><td>Total SO/WO Qty</td><td>AutoFetch</td><td>*</td><td>From MR Sheet</td></tr>
+                <tr><td>9</td><td>FG Stock Available</td><td>AutoFetch</td><td>*</td><td>From current FG stock</td></tr>
+                <tr><td>10</td><td>Net Production Requirement</td><td>Formula</td><td>*</td><td>SO/WO Qty - Available FG Stock</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">6B</span>
+            <span class="phase-title">Production Order</span>
+            <span class="phase-tag">Per MR/Planning</span>
+          </div>
+          <p>Department: Production. MR/Planning reference, System Code, Planned Qty.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Production Order No</td><td>Autogen</td><td>*</td><td>—</td></tr>
+                <tr><td>2</td><td>MR/Planning Reference</td><td>Lookup</td><td>*</td><td>From Production Planning / MR</td></tr>
+                <tr><td>3</td><td>System Code</td><td>Lookup</td><td>*</td><td>From System Master</td></tr>
+                <tr><td>4</td><td>Planned Qty</td><td>Number</td><td>*</td><td>—</td></tr>
+                <tr><td>5</td><td>Start Date</td><td>Date</td><td>*</td><td>—</td></tr>
+                <tr><td>6</td><td>End Date</td><td>Date</td><td>*</td><td>—</td></tr>
+                <tr><td>7</td><td>Status</td><td>Dropdown</td><td>*</td><td>Planned / In Progress / Completed / On Hold</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">6C</span>
+            <span class="phase-title">Batch Manufacturing Record (BMR)</span>
+            <span class="phase-tag">N Subforms</span>
+          </div>
+          <p>Detailed batch record with raw materials, process parameters, and QC results.</p>
+          <h4>Header</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>BMR No</td><td>Autogen</td><td>*</td><td>—</td></tr>
+                <tr><td>2</td><td>Production Order Ref</td><td>Lookup</td><td>*</td><td>—</td></tr>
+                <tr><td>3</td><td>Batch No</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>4</td><td>Date</td><td>Date</td><td>*</td><td>—</td></tr>
+                <tr><td>5</td><td>System Code</td><td>Lookup</td><td>*</td><td>From System Master</td></tr>
+                <tr><td>6</td><td>Yield / Output</td><td>Number</td><td>*</td><td>—</td></tr>
+                <tr><td>7</td><td>Status</td><td>Dropdown</td><td>*</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h4>Raw Materials Subform</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>Item Code</td><td>Lookup</td><td>From Purchase Item Muster</td></tr>
+                <tr><td>Qty</td><td>Number</td><td>—</td></tr>
+                <tr><td>Batch No</td><td>Text</td><td>—</td></tr>
+                <tr><td>Consumption</td><td>Number</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h4>Process Parameters Subform</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>Step</td><td>Text</td><td>—</td></tr>
+                <tr><td>Time</td><td>Text</td><td>—</td></tr>
+                <tr><td>Temperature</td><td>Text</td><td>—</td></tr>
+                <tr><td>Operator</td><td>Text</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h4>QC Test Results Subform</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>Parameter</td><td>Text</td><td>—</td></tr>
+                <tr><td>Specification</td><td>Text</td><td>—</td></tr>
+                <tr><td>Result</td><td>Text</td><td>—</td></tr>
+                <tr><td>Status</td><td>Dropdown</td><td>Pass / Fail</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">6D</span>
+            <span class="phase-title">RM Consumption Entry</span>
+            <span class="phase-tag">Actual vs Standard</span>
+          </div>
+          <p>Reference to BMR. Item-wise consumption tracking. Actual vs Standard comparison.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>BMR Reference</td><td>Lookup</td><td>From BMR</td></tr>
+                <tr><td>Item Code</td><td>AutoFetch</td><td>From BMR raw materials</td></tr>
+                <tr><td>Standard Qty</td><td>AutoFetch</td><td>From BOM</td></tr>
+                <tr><td>Actual Qty</td><td>Number</td><td>—</td></tr>
+                <tr><td>Variance</td><td>Formula</td><td>Actual - Standard</td></tr>
+                <tr><td>Reason (if variance)</td><td>Text</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">6E</span>
+            <span class="phase-title">Packing Entry</span>
+            <span class="phase-tag">FG + Packing Material</span>
+          </div>
+          <p>FG product packing with material consumption tracking.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>BMR Reference</td><td>Lookup</td><td>—</td></tr>
+                <tr><td>FG Product Code</td><td>Lookup</td><td>—</td></tr>
+                <tr><td>Packed Qty</td><td>Number</td><td>—</td></tr>
+                <tr><td>Batch Numbers</td><td>Text</td><td>—</td></tr>
+                <tr><td>Packing Material</td><td>Subform</td><td>Item Code, Qty</td></tr>
+                <tr><td>Label/Printing Details</td><td>Text</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">6F</span>
+            <span class="phase-title">Rework Register</span>
+            <span class="phase-tag">QC Revalidation</span>
+          </div>
+          <p>Rework tracking with QC revalidation.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>BMR Reference</td><td>Lookup</td><td>—</td></tr>
+                <tr><td>Rework Reason</td><td>Multi-line</td><td>—</td></tr>
+                <tr><td>Rework Qty</td><td>Number</td><td>—</td></tr>
+                <tr><td>Material Consumed</td><td>Subform</td><td>Item Code, Qty</td></tr>
+                <tr><td>QC Revalidation</td><td>Dropdown</td><td>Pass / Fail</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- SERVICE TEAM -->
+      <!-- ============================================================ -->
+      <span id="service-team" style="position:relative;top:-60px;display:block"></span>
+      <div class="module-group">
+        <h3>Service Team <span class="mg-badge">Stage 4 — Site Operations: Area → Work → Final Invoice</span></h3>
+        <p>Service Team handles on-site execution from area measurement through final invoice submission. Operates in parallel with Store/Production.</p>
+
+        <div class="form-card" id="org-service">
+          <div class="fc-header">
+            <span class="fc-num" style="background:#0891b2">7A</span>
+            <span class="fc-title">Area Measurement</span>
+            <span class="fc-tag">Service Team</span>
+          </div>
+          <div class="fc-flow">
+            <span class="fc-flow-in">From: Site / Project</span>
+            <span class="fc-flow-key">Record actual area measured at site</span>
+            <span class="fc-flow-out">To: Material Custody</span>
+          </div>
+          <div class="form-demo">
+            <div class="form-row-4">
+              <div><label>Measurement No</label><input type="text" value="MEAS-2026-001" disabled style="background:var(--gray-50)"></div>
+              <div><label>Project ID</label><select><option selected>PRJ-2026-001 — Tata Motors</option></select></div>
+              <div><label>Site</label><input type="text" value="Pune Plant - Unit 2"></div>
+              <div><label>Date</label><input type="date" value="2026-07-16"></div>
+            </div>
+            <div class="subtable-demo">
+              <div class="st-hint">Area Details</div>
+              <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
+                <span style="font-size:11px;font-weight:600">System</span>
+                <span style="font-size:11px;font-weight:600">Measured Area</span>
+                <span style="font-size:11px;font-weight:600">UOM</span>
+                <span style="font-size:11px;font-weight:600">Remark</span>
+              </div>
+              <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
+                <input type="text" value="EP01 — Epoxy 1mm" style="font-size:12px">
+                <input type="number" value="520" style="font-size:12px">
+                <input type="text" value="Sqm" style="font-size:12px">
+                <input type="text" value="+20 sqm vs SO" style="font-size:12px">
+              </div>
+            </div>
+            <div class="form-row-3">
+              <div><label>Measured By</label><input type="text" value="Rahul (Service)"></div>
+              <div><label>Approved By</label><input type="text" value="Amit (PM)"></div>
+              <div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="connector-down">&#x25BC;</div>
+
+        <div class="form-card">
+          <div class="fc-header">
+            <span class="fc-num" style="background:#0891b2">7B</span>
+            <span class="fc-title">Material Custody</span>
+            <span class="fc-tag">Service Team</span>
+          </div>
+          <div class="fc-flow">
+            <span class="fc-flow-in">From: Store (MIS issued)</span>
+            <span class="fc-flow-key">Service Team takes custody of material at site</span>
+            <span class="fc-flow-out">To: Work Start</span>
+          </div>
+          <div class="form-demo">
+            <div class="form-row-4">
+              <div><label>Custody No</label><input type="text" value="CUST-2026-001" disabled style="background:var(--gray-50)"></div>
+              <div><label>Project ID</label><select><option selected>PRJ-2026-001 — Tata Motors</option></select></div>
+              <div><label>MIS Reference</label><select><option selected>MIS-2026-001</option></select></div>
+              <div><label>Date</label><input type="date" value="2026-07-18"></div>
+            </div>
+            <div class="subtable-demo">
+              <div class="st-hint">Material Under Custody</div>
+              <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
+                <span style="font-size:11px;font-weight:600">Item</span>
+                <span style="font-size:11px;font-weight:600">Qty</span>
+                <span style="font-size:11px;font-weight:600">UOM</span>
+                <span style="font-size:11px;font-weight:600">Condition</span>
+              </div>
+              <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
+                <input type="text" value="Epoxy Resin" style="font-size:12px">
+                <input type="number" value="180" style="font-size:12px">
+                <input type="text" value="Kg" style="font-size:12px">
+                <select style="font-size:12px"><option selected>Good</option><option>Damaged</option></select>
+              </div>
+            </div>
+            <div class="form-row-3">
+              <div><label>Handover By (Store)</label><input type="text" value="Anil Surve"></div>
+              <div><label>Received By (Service)</label><input type="text" value="Rahul Kumar"></div>
+              <div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="connector-down">&#x25BC;</div>
+
+        <div class="form-card">
+          <div class="fc-header">
+            <span class="fc-num" style="background:#0891b2">7C</span>
+            <span class="fc-title">Work Start / Daily Progress</span>
+            <span class="fc-tag">Service Team</span>
+          </div>
+          <div class="fc-flow">
+            <span class="fc-flow-in">From: Material Custody</span>
+            <span class="fc-flow-key">Log daily work progress and material usage</span>
+            <span class="fc-flow-out">To: Final Invoice</span>
+          </div>
+          <div class="form-demo">
+            <div class="form-row-4">
+              <div><label>Work Date</label><input type="date" value="2026-07-19"></div>
+              <div><label>Project ID</label><select><option selected>PRJ-2026-001 — Tata Motors</option></select></div>
+              <div><label>System</label><select><option selected>EP01 — Epoxy 1mm</option></select></div>
+              <div><label>Area Completed</label><input type="number" value="120"></div>
+            </div>
+            <div class="form-row-3">
+              <div><label>Material Used</label><input type="text" value="Epoxy Resin — 85 Kg"></div>
+              <div><label>Team Size</label><input type="number" value="4"></div>
+              <div><label>Hours</label><input type="number" value="8"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="connector-down">&#x25BC;</div>
+
+        <div class="form-card">
+          <div class="fc-header">
+            <span class="fc-num" style="background:#0891b2">7D</span>
+            <span class="fc-title">Final Invoice Submission</span>
+            <span class="fc-tag blue" style="background:var(--blue-light);color:var(--blue)">Triggers Finance</span>
+          </div>
+          <div class="fc-flow">
+            <span class="fc-flow-in">From: Completed Work</span>
+            <span class="fc-flow-key">Service Team submits final measurement and invoice data</span>
+            <span class="fc-flow-out">To: Finance (Invoice generation)</span>
+          </div>
+          <div class="form-demo">
+            <div class="form-row-4">
+              <div><label>Submission No</label><input type="text" value="FINV-2026-001" disabled style="background:var(--gray-50)"></div>
+              <div><label>Project ID</label><select><option selected>PRJ-2026-001 — Tata Motors</option></select></div>
+              <div><label>Total Area Completed</label><input type="number" value="520" disabled style="background:var(--gray-50)"></div>
+              <div><label>Invoice Amount</label><input type="number" value="277500" disabled style="background:var(--gray-50);font-weight:700"></div>
+            </div>
+            <div style="display:flex;gap:8px;padding:8px 12px;background:var(--blue-light);border-radius:6px;font-size:12px;color:#1e40af;margin-top:8px">
+              <strong>&#x1F4C4; Documents Attached:</strong>
+              <span class="badge badge-green">Area Measurement</span>
+              <span class="badge badge-green">Work Completion</span>
+              <span class="badge badge-green">Material Consumption</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h2>7 · Project P&amp;L Statement <span class="badge badge-blue">Computed View</span></h2>
+      <p>Project-level Profit &amp; Loss — revenue from SO minus all tracked costs. Data is pulled from transactional forms (read-only computed view, no data entry).</p>
+
+      <div class="phase-container">
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">7A</span>
+            <span class="phase-title">Revenue</span>
+            <span class="phase-tag">From Sales Order</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Component</th><th>Source</th><th>Formula</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Work Order Amount</td><td>SO System subtable</td><td>&Sigma; (Area &times; Rate) per line</td></tr>
+                <tr><td>2</td><td>Transportation Charges</td><td>SO header</td><td>Transportation Amount (if charged to client)</td></tr>
+                <tr><td>3</td><td>Total Revenue</td><td>Formula</td><td>Work Order Amount + Transportation Charges</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">7B</span>
+            <span class="phase-title">Cost of Materials</span>
+            <span class="phase-tag">From PO &times; GRN</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Component</th><th>Source</th><th>Formula</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Raw Material Cost</td><td>PO + GRN</td><td>&Sigma; (GRN Received Qty &times; PO Rate) per item</td></tr>
+                <tr><td>2</td><td>Packing Material Cost</td><td>PO + GRN</td><td>&Sigma; (GRN Received Qty &times; PO Rate) for packing items</td></tr>
+                <tr><td>3</td><td>Consumable / Tool Cost</td><td>PO + GRN</td><td>&Sigma; (GRN Received Qty &times; PO Rate) for consumable items</td></tr>
+                <tr><td>4</td><td>Total Material Cost</td><td>Formula</td><td>RM + Packing + Consumable</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">7C</span>
+            <span class="phase-title">Execution &amp; Manpower Cost</span>
+            <span class="phase-tag">From Task Budget Actuals</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Component</th><th>Source</th><th>Formula</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Execution Cost</td><td>Task Budget</td><td>SUM of Actual Amount where Category = Execution</td></tr>
+                <tr><td>2</td><td>Manpower Cost</td><td>Task Budget</td><td>SUM of Actual Amount where Category = Manpower</td></tr>
+                <tr><td>3</td><td>Subtotal</td><td>Formula</td><td>Execution + Manpower</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">7D</span>
+            <span class="phase-title">Logistics &amp; Overhead Cost</span>
+            <span class="phase-tag">From Task Budget Actuals + GRN Transport</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Component</th><th>Source</th><th>Formula</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Transport Cost</td><td>Task Budget + GRN Transport</td><td>SUM Actual Amount (Category=Transport) + &Sigma; GRN Transport subform charges</td></tr>
+                <tr><td>2</td><td>Tools Cost</td><td>Task Budget</td><td>SUM of Actual Amount where Category = Tools</td></tr>
+                <tr><td>3</td><td>Overhead Cost</td><td>Task Budget</td><td>SUM of Actual Amount where Category = Overhead</td></tr>
+                <tr><td>4</td><td>Loading / Unloading</td><td>GRN Transport subform</td><td>&Sigma; Loading/Unloading Charges from GRN</td></tr>
+                <tr><td>5</td><td>Subtotal</td><td>Formula</td><td>Transport + Tools + Overhead + Loading/Unloading</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">7E</span>
+            <span class="phase-title">Production Cost</span>
+            <span class="phase-tag">From BMR + RM Consumption + Packing</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Component</th><th>Source</th><th>Formula</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>RM Consumption (Actual)</td><td>RM Consumption Entry</td><td>&Sigma; (Actual Qty &times; Item Rate from PIM)</td></tr>
+                <tr><td>2</td><td>Packing Material (Actual)</td><td>Packing Entry</td><td>&Sigma; packing material costs</td></tr>
+                <tr><td>3</td><td>Rework Cost</td><td>Rework Register</td><td>&Sigma; rework material consumed costs</td></tr>
+                <tr><td>4</td><td>Subtotal</td><td>Formula</td><td>RM Consumption + Packing + Rework</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="phase" style="border: 2px solid var(--primary); border-radius: 12px;">
+          <div class="phase-header">
+            <span class="phase-number">7F</span>
+            <span class="phase-title">Project P&amp;L Summary</span>
+            <span class="phase-tag">Auto-computed on Project Close</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Line</th><th>Amount</th><th>Source</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td><strong>Total Revenue (7A)</strong></td><td>Formula</td><td>SO Work Order Amount + Transportation</td></tr>
+                <tr><td style="border-left: 3px solid var(--red);">2</td><td><strong>Total Material Cost (7B)</strong></td><td>Formula</td><td>RM + Packing + Consumable (PO &times; GRN)</td></tr>
+                <tr><td style="border-left: 3px solid var(--red);">3</td><td><strong>Total Execution &amp; Manpower (7C)</strong></td><td>Formula</td><td>Task Budget Actuals sum</td></tr>
+                <tr><td style="border-left: 3px solid var(--red);">4</td><td><strong>Total Logistics &amp; Overhead (7D)</strong></td><td>Formula</td><td>Task Budget Actuals + GRN Transport</td></tr>
+                <tr><td style="border-left: 3px solid var(--red);">5</td><td><strong>Total Production Cost (7E)</strong></td><td>Formula</td><td>RM Consumption + Packing + Rework</td></tr>
+                <tr><td>6</td><td><strong>Total Cost</strong></td><td>Formula</td><td>7B + 7C + 7D + 7E</td></tr>
+                <tr style="background: #f0fdf4; font-weight: 700;"><td>7</td><td><strong>Gross Margin</strong></td><td>Formula</td><td>Total Revenue − Total Cost</td></tr>
+                <tr style="background: #f0fdf4; font-weight: 700;"><td>8</td><td><strong>Margin %</strong></td><td>Formula</td><td>(Gross Margin / Total Revenue) &times; 100</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="callout callout-warning" style="margin-top:16px">
+            <strong>⛔ Accounting Policy — Material Cost Recognition:</strong>
+            <p style="margin:8px 0 0 0;font-size:13px;color:var(--gray-700)">
+              Material cost is recognized at <strong>consumption</strong> (BMR/RM Consumption Entry), <strong>NOT</strong> at GRN receipt.
+              GRN costs flow to <strong>Inventory (asset on Balance Sheet)</strong>, not P&amp;L.
+              Only MIS/BMR consumption costs flow to P&amp;L as Cost of Materials.
+            </p>
+            <div style="background:#fff;border:1px solid var(--gray-200);border-radius:8px;padding:12px;margin:8px 0;font-size:12px;font-family:var(--font-mono);text-align:center">
+              <strong>Cost Flow:</strong> PO → GRN → <span style="color:var(--primary);font-weight:700">Inventory (Asset on Balance Sheet)</span>
+              <br>↓
+              <br>MIS/BMR Consumption → <span style="color:var(--red);font-weight:700">P&amp;L (Cost of Materials)</span>
+            </div>
+            <p style="margin:4px 0 0;font-size:12px;color:var(--gray-500)">
+              <strong>Cross-Reference:</strong> The "Material in Inventory" line on the Balance Sheet shows GRN costs that are NOT yet consumed.
+            </p>
+          </div>
+          <p><strong>Automation:</strong> P&amp;L auto-calculated on Project Close. Real-time view accessible from Project dashboard. Exportable as PDF.</p>
+        </div>
+
+        <div class="phase" style="border:2px solid var(--green);border-radius:12px;">
+          <div class="phase-header">
+            <span class="phase-number">7G</span>
+            <span class="phase-title">Project P&amp;L Snapshot</span>
+            <span class="phase-tag">Created on Project Close · Read-Only</span>
+          </div>
+          <p>Frozen P&amp;L snapshot created automatically when Project is marked <strong>Closed</strong>. Read-only after creation — no edit/delete. Admin-only regenerate function.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Project ID</td><td>Lookup</td><td>From Project Master</td></tr>
+                <tr><td>2</td><td>Snapshot Date</td><td>Date</td><td>Date of Project Close</td></tr>
+                <tr><td>3</td><td>Total Revenue</td><td>Formula (readonly)</td><td>Frozen at snapshot time</td></tr>
+                <tr><td>4</td><td>Total Material Cost</td><td>Formula (readonly)</td><td>Frozen at snapshot time</td></tr>
+                <tr><td>5</td><td>Total Execution</td><td>Formula (readonly)</td><td>Frozen at snapshot time</td></tr>
+                <tr><td>6</td><td>Total Manpower</td><td>Formula (readonly)</td><td>Frozen at snapshot time</td></tr>
+                <tr><td>7</td><td>Total Logistics</td><td>Formula (readonly)</td><td>Frozen at snapshot time</td></tr>
+                <tr><td>8</td><td>Total Production</td><td>Formula (readonly)</td><td>Frozen at snapshot time</td></tr>
+                <tr><td>9</td><td>Gross Margin</td><td>Formula (readonly)</td><td>Revenue − Total Cost</td></tr>
+                <tr><td>10</td><td>Margin %</td><td>Formula (readonly)</td><td>(Gross Margin / Revenue) × 100</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>Automation:</strong> Snapshot created on Project Close. <strong>Regenerate Snapshot</strong> function available to Admin only (audit-logged). Snapshot is read-only — no edit/delete by any user.</p>
+        </div>
+      </div>
+
+      <h2 id="finance">8 · Finance <span class="badge badge-yellow">Account &amp; Finance Dept</span></h2>
+      <p>Financial tracking modules — supplier debit/credit adjustments against POs, GRN short deliveries, and QC defects. <strong>All Supplier Credit Notes are manually initiated by Account &amp; Finance.</strong></p>
+
+      <!-- ==== PROCESS FLOW OVERVIEW ==== -->
+      <div class="flow" style="margin-bottom:24px">
+        <span class="flow-node">PO Raised</span><span class="flow-arrow">→</span>
+        <span class="flow-node">GRN Received</span><span class="flow-arrow">→</span>
+        <span class="flow-node">QC Inspected</span><span class="flow-arrow">→</span>
+        <span class="flow-orange">⚠ Defect / Shortage / Discrepancy</span>
+        <span style="padding:6px 14px;border-radius:6px;font-size:0.8rem;background:#fef3c7;color:#92400e;font-weight:600">Finance manually initiates Credit Note</span>
+      </div>
+
+      <div class="phase-container">
+        <div class="phase" style="border-color:var(--accent);border-width:2px">
+          <div class="phase-header">
+            <span class="phase-number">8A</span>
+            <span class="phase-title">Supplier Credit Note</span>
+            <span class="phase-tag">Manually Initiated by Finance · Linked to PO</span>
+          </div>
+          <p>Department: <strong>Account &amp; Finance (exclusive access)</strong>. This module is <strong>never auto-generated</strong> — every credit note is manually created by the finance team based on one of three trigger scenarios below.</p>
+
+          <div class="callout callout-warning">
+            <strong>⛔ No Auto-Creation:</strong> Unlike PR→PO→GRN which flows automatically, Supplier Credit Notes are <strong>always manually initiated</strong>. QC results and GRN data are reference inputs only — Finance decides when and how much to credit.
+          </div>
+
+          <h3 style="margin-top:24px">Trigger Scenarios &amp; Entry Flows</h3>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:16px 0">
+            <div class="card" style="border-top:4px solid var(--red)">
+              <h4 style="color:var(--red)">Scenario 1 — QC Defect</h4>
+              <p><strong>Trigger:</strong> QC inspection finds defective material</p>
+              <div class="flow" style="font-size:11px;margin:8px 0">
+                <span class="flow-node">QC Fail</span><span class="flow-arrow">→</span>
+                <span class="flow-orange">Finance creates Credit Note</span>
+              </div>
+              <p style="font-size:12px;color:var(--gray-500)">QC Reference provides rejected qty. Finance reviews and manually enters/confirms credit amount.</p>
+            </div>
+            <div class="card" style="border-top:4px solid var(--accent)">
+              <h4 style="color:#92400e">Scenario 2 — Partial GRN / Short Delivery</h4>
+              <p><strong>Trigger:</strong> GRN quantity &lt; PO quantity (short receipt)</p>
+              <div class="flow" style="font-size:11px;margin:8px 0">
+                <span class="flow-node">GRN Short</span><span class="flow-arrow">→</span>
+                <span class="flow-orange">Finance creates Credit Note</span>
+              </div>
+              <p style="font-size:12px;color:var(--gray-500)">GRN Reference provides short qty. Finance creates credit for the undelivered portion after confirming with Purchase.</p>
+            </div>
+            <div class="card" style="border-top:4px solid var(--primary)">
+              <h4 style="color:var(--primary)">Scenario 3 — Rate / Invoice Discrepancy</h4>
+              <p><strong>Trigger:</strong> Supplier invoice rate ≠ PO agreed rate</p>
+              <div class="flow" style="font-size:11px;margin:8px 0">
+                <span class="flow-node">Invoice Diff</span><span class="flow-arrow">→</span>
+                <span class="flow-orange">Finance creates Credit Note</span>
+              </div>
+              <p style="font-size:12px;color:var(--gray-500)">PO Reference provides original rate. Finance manually enters the difference amount.</p>
+            </div>
+          </div>
+
+          <h4>Status Lifecycle</h4>
+          <div class="flow-visual" style="margin-bottom:20px">
+            <span class="fv-node fv-amber">Draft</span><span class="fv-arrow">→</span>
+            <span class="fv-node fv-blue">Approved</span><span class="fv-arrow">→</span>
+            <span class="fv-node fv-green">Credited ✓</span><span class="fv-arrow">→</span>
+            <span class="fv-node" style="background:var(--gray-100);color:var(--gray-500)">Supplier Balance Adjusted</span>
+            <span class="fv-arrow" style="color:var(--gray-300)">|</span>
+            <span class="fv-node fv-red">Cancelled</span>
+          </div>
+
+          <h4>Header</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Credit Note No</td><td>Autogen</td><td>*</td><td>SC-YYYY-XXXX</td></tr>
+                <tr><td>2</td><td>Credit Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
+                <tr><td>3</td><td>Supplier Code</td><td>Lookup</td><td>*</td><td>From Supplier Master</td></tr>
+                <tr><td>4</td><td>Supplier Name</td><td>AutoFetch</td><td>*</td><td>From Supplier Code</td></tr>
+                <tr><td>5</td><td>Supplier GSTIN</td><td>AutoFetch</td><td></td><td>From Supplier Master</td></tr>
+                <tr><td>6</td><td><strong>PO Reference</strong></td><td>Lookup</td><td>*</td><td>From PO Master — <strong>mandatory</strong>. Links credit to original purchase</td></tr>
+                <tr><td>7</td><td>GRN Reference</td><td>Lookup</td><td></td><td>From GRN — used for Scenario 2 (short delivery). Auto-fetches short qty</td></tr>
+                <tr><td>8</td><td>QC Reference</td><td>Lookup</td><td></td><td>From QC/QA — used for Scenario 1 (defect). Auto-fetches rejected qty</td></tr>
+                <tr><td>9</td><td>Project ID</td><td>AutoFetch</td><td>*</td><td>From PO Reference</td></tr>
+                <tr><td>10</td><td>Credit Reason</td><td>Dropdown</td><td>*</td><td>Defective Material / Damaged in Transit / Short Delivery / Quality Issue / Rate Difference / Invoice Discrepancy / Other</td></tr>
+                <tr><td>11</td><td>Trigger Source</td><td>Dropdown</td><td>*</td><td>QC Defect / Partial GRN / Invoice Discrepancy / Manual — identifies which scenario initiated the credit</td></tr>
+                <tr><td>12</td><td>Status</td><td>Dropdown</td><td>*</td><td>Draft / Approved / Credited / Cancelled</td></tr>
+                <tr><td>13</td><td>Remarks</td><td>Multi-line</td><td></td><td>Detailed reason, resolution notes, Purchase dept communication reference</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Line Items (manually entered OR auto-fetched from reference)</h4>
+          <p>Finance can either <strong>auto-fetch</strong> line items from the linked QC/GRN/PO, or <strong>manually enter</strong> items line by line. All rate fields default to PO values but are <strong>editable</strong> — Finance has full control.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Sr No</td><td>Number</td><td>*</td><td>Auto</td></tr>
+                <tr><td>2</td><td>Item Code</td><td>Lookup/AutoFetch</td><td>*</td><td>From Purchase Item Muster. Pre-filled if QC/GRN referenced</td></tr>
+                <tr><td>3</td><td>Item Name</td><td>AutoFetch</td><td>*</td><td>From Item Code</td></tr>
+                <tr><td>4</td><td>Credit Qty</td><td>Number</td><td>*</td><td>Manual entry. Pre-filled with rejected/short qty if reference provided</td></tr>
+                <tr><td>5</td><td>UOM</td><td>AutoFetch</td><td>*</td><td>From Item Muster</td></tr>
+                <tr><td>6</td><td>Rate (per unit)</td><td>AutoFetch (editable)</td><td>*</td><td>From PO line item rate. Finance can override</td></tr>
+                <tr><td>7</td><td>Basic Amount</td><td>Formula</td><td>*</td><td>Credit Qty × Rate</td></tr>
+                <tr><td>8</td><td>GST %</td><td>AutoFetch (editable)</td><td>*</td><td>From PO line item. Finance can override</td></tr>
+                <tr><td>9</td><td>GST Amount</td><td>Formula</td><td>*</td><td>Basic Amount × GST%</td></tr>
+                <tr><td>10</td><td>Total Credit</td><td>Formula</td><td>*</td><td>Basic Amount + GST Amount</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Example — Scenario 1 (QC Defect)</h4>
+          <div style="background:#fef2f2;border-radius:8px;padding:12px;margin:12px 0">
+            <p style="font-size:13px;margin:0"><strong>QC Report #QC-2025-0089</strong> — PO #RM-2025-0047 (Supplier: Polycoat India)</p>
+            <p style="font-size:12px;color:var(--gray-600);margin:4px 0">Item RM003 (Epoxy Hardener): 100 Kg rejected — viscosity out of spec. Item RM005 (Pigment Paste): 25 Kg rejected — color mismatch.</p>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Sr</th><th>Item Code</th><th>Item Name</th><th>Credit Qty</th><th>UOM</th><th>Rate</th><th>Basic Amount</th><th>GST%</th><th>GST Amount</th><th>Total Credit</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>RM003</td><td>Epoxy Hardener</td><td>100</td><td>Kg</td><td>₹180</td><td>₹18,000</td><td>18%</td><td>₹3,240</td><td>₹21,240</td></tr>
+                <tr><td>2</td><td>RM005</td><td>Pigment Paste</td><td>25</td><td>Kg</td><td>₹450</td><td>₹11,250</td><td>18%</td><td>₹2,025</td><td>₹13,275</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Example — Scenario 2 (Partial GRN / Short Delivery)</h4>
+          <div style="background:#fffbeb;border-radius:8px;padding:12px;margin:12px 0">
+            <p style="font-size:13px;margin:0"><strong>GRN #GRN-2025-0122</strong> — PO #RM-2025-0050 (Supplier: Acme Chemicals)</p>
+            <p style="font-size:12px;color:var(--gray-600);margin:4px 0">PO ordered 500 Kg Epoxy Resin. GRN received only 400 Kg. 100 Kg short — credit raised for the undelivered quantity.</p>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Sr</th><th>Item Code</th><th>Item Name</th><th>Short Qty</th><th>UOM</th><th>Rate</th><th>Basic Amount</th><th>GST%</th><th>GST Amount</th><th>Total Credit</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>RM001</td><td>Epoxy Resin</td><td>100</td><td>Kg</td><td>₹220</td><td>₹22,000</td><td>18%</td><td>₹3,960</td><td>₹25,960</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Footer</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>14</td><td>Total Basic Amount</td><td>Formula</td><td>Sum of Basic Amount</td></tr>
+                <tr><td>15</td><td>Total GST Amount</td><td>Formula</td><td>Sum of GST Amount</td></tr>
+                <tr><td>16</td><td>Total Credit Amount</td><td>Formula</td><td>Total Basic + Total GST</td></tr>
+                <tr><td>17</td><td>Total Credit (Words)</td><td>Formula</td><td>Amount in words</td></tr>
+                <tr><td>18</td><td>Approved By</td><td>User lookup</td><td>Account &amp; Finance approver</td></tr>
+                <tr><td>19</td><td>Approved Date</td><td>Date</td><td>Set on approval</td></tr>
+                <tr><td>20</td><td>Credited Date</td><td>Date</td><td>Set when status = Credited (amount adjusted)</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Automation Rules</h4>
+          <ul style="color: var(--gray-600); margin: 8px 0; padding-left: 20px;">
+            <li style="margin-bottom: 4px;"><strong>Manual initiation (always):</strong> No auto-creation triggers. Finance must manually click "New Credit Note" and fill the form.</li>
+            <li style="margin-bottom: 4px;"><strong>On PO lookup:</strong> Auto-fetch Supplier details, Project ID. <em>Line items are NOT auto-filled from PO</em> — Finance manually selects items to credit.</li>
+            <li style="margin-bottom: 4px;"><strong>On QC lookup (Scenario 1):</strong> Auto-fetch rejected items list with quantities into credit line items as draft. Finance reviews, edits if needed, and confirms.</li>
+            <li style="margin-bottom: 4px;"><strong>On GRN lookup (Scenario 2):</strong> Auto-fetch short quantity (PO Qty − GRN Received Qty) into credit line items as draft. Finance reviews and confirms.</li>
+            <li style="margin-bottom: 4px;"><strong>Status: Draft → Approved:</strong> Requires Account &amp; Finance senior approval. Records timestamp and approver.</li>
+            <li style="margin-bottom: 4px;"><strong>Status: Approved → Credited:</strong> Marks the credit as settled against supplier. Updates Supplier Outstanding summary.</li>
+            <li style="margin-bottom: 4px;"><strong>On Credit:</strong> Notification to Purchase dept and Supplier manager about the credit adjustment.</li>
+            <li style="margin-bottom: 4px;"><strong>PO Link:</strong> Credit Note number and total credited amount recorded on the linked PO for audit trail.</li>
+            <li style="margin-bottom: 4px;"><strong>Cancellation:</strong> If cancelled, no financial impact. Cancelled notes are retained for audit.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">8B</span>
+          <span class="phase-title">Supplier Outstanding Summary</span>
+          <span class="phase-tag">Computed View</span>
+        </div>
+        <p>Department: <strong>Account &amp; Finance</strong>. Computed view showing supplier-wise outstanding balance = Total PO Amount − Total Credits − Total Payments. Read-only aggregated view.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Component</th><th>Source</th><th>Formula</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>Total PO Amount</td><td>PO Approved</td><td>Σ PO Total (Status = Open/Billed)</td></tr>
+              <tr><td>2</td><td>Total Credited Amount</td><td>Supplier Credit Note</td><td>Σ Total Credit Amount (Status = Credited)</td></tr>
+              <tr><td>3</td><td>Total Payment Made</td><td>Payments Module (<strong>9B</strong>)</td><td>Σ Payments made to supplier where Type = AP Payment and Status = Completed</td></tr>
+              <tr><td>4</td><td><strong>Outstanding Balance</strong></td><td>Formula</td><td><strong>Σ(Approved PO Totals) − Σ(Credited Credit Notes) − Σ(Completed AP Payments)</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-warning" style="margin-top:8px">
+          <strong>Validation Rule:</strong> No payment can exceed the outstanding balance at supplier level. System must block AP Payment if Payment Amount > Supplier Outstanding Balance.
+        </div>
+      </div>
+
+      <h2>9 · AP/AR Sub-Ledger <span class="badge badge-green">Phase 1G</span></h2>
+    <p>Vendor Bills (AP) and unified Payments module for both vendor payments and customer receipts. Completes the procure-to-pay cycle.</p>
+
+    <div class="phase-container">
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">9A</span>
+          <span class="phase-title">Vendor Bills</span>
+          <span class="phase-tag">Accounts Payable</span>
+        </div>
+        <p>Records vendor invoices against POs. 3-way match validation (PO ↔ GRN ↔ Bill). Tracks PPV, GST input credit, and Balance Due.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Bill No</td><td>Auto Number</td><td>*</td><td>Format: BILL-{0000}</td></tr>
+              <tr><td>Vendor</td><td>Lookup → Vendors</td><td>*</td><td>Auto-fetches payment terms, currency</td></tr>
+              <tr><td>PO Reference</td><td>Lookup → Purchase Orders</td><td></td><td>Links bill to PO for 3-way match</td></tr>
+              <tr><td>Bill Date</td><td>Date</td><td>*</td><td></td></tr>
+              <tr><td>Due Date</td><td>Date</td><td>*</td><td>Auto from vendor payment terms</td></tr>
+              <tr><td>Subtotal</td><td>Currency</td><td>*</td><td>Sum of line item totals</td></tr>
+              <tr><td>Tax Total</td><td>Currency</td><td></td><td>GST split: CGST + SGST/IGST</td></tr>
+              <tr><td>Total Amount</td><td>Currency</td><td>*</td><td>Subtotal + Tax Total</td></tr>
+              <tr><td>Amount Paid</td><td>Currency</td><td></td><td>Updated by Payments module</td></tr>
+              <tr><td>Balance Due</td><td>Formula</td><td></td><td>Total − Amount Paid</td></tr>
+              <tr><td>Status</td><td>Dropdown</td><td>*</td><td>Draft, Submitted, Matched, Approved, Paid, Cancelled</td></tr>
+              <tr><td>PPV (Purchase Price Variance)</td><td>Formula</td><td></td><td>PO Rate vs Bill Rate variance</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">9B</span>
+          <span class="phase-title">Payments</span>
+          <span class="phase-tag">Unified AP/AR</span>
+        </div>
+        <p>Single module for vendor payments (AP) and customer receipts (AR). Auto-updates linked Bill/Invoice balance. Prevents overpayment.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Payment No</td><td>Auto Number</td><td>*</td><td>Format: PAY-{0000}</td></tr>
+              <tr><td>Type</td><td>Dropdown</td><td>*</td><td>AP Payment (to vendor), AR Receipt (from customer)</td></tr>
+              <tr><td>Vendor / Customer</td><td>Lookup</td><td>*</td><td>Conditional: Vendors (AP) or Accounts (AR)</td></tr>
+              <tr><td>Reference Bill/Invoice</td><td>Lookup</td><td></td><td>Bill (AP) or Invoice (AR)</td></tr>
+              <tr><td>Payment Date</td><td>Date</td><td>*</td><td></td></tr>
+              <tr><td>Amount</td><td>Currency</td><td>*</td><td>Must not exceed Balance Due</td></tr>
+              <tr><td>Payment Mode</td><td>Dropdown</td><td>*</td><td>Cash, Cheque, Bank Transfer, UPI, Credit Card</td></tr>
+              <tr><td>Reference No</td><td>Text</td><td></td><td>Cheque/Transaction number</td></tr>
+              <tr><td>Status</td><td>Dropdown</td><td>*</td><td>Draft, Completed, Cancelled</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- LOGISTICS -->
+    <!-- ============================================================ -->
+    <span id="logistics" style="position:relative;top:-60px;display:block"></span>
+    <div class="module-group">
+      <h3>Logistics <span class="mg-badge">Stage 4 — Delivery Challan → Outward → Dispatch</span></h3>
+      <p>Logistics handles FG dispatch with Delivery Challan (DC) and Outward Invoice. Completes the outward movement.</p>
+
+      <div class="form-card" id="org-logistics">
+        <div class="fc-header">
+          <span class="fc-num" style="background:#ea580c">9A</span>
+          <span class="fc-title">Delivery Challan (DC)</span>
+          <span class="fc-tag">Logistics</span>
+        </div>
+        <div class="fc-flow">
+          <span class="fc-flow-in">From: FGHM (accepted FG — inline acceptance)</span>
+          <span class="fc-flow-key">Create DC for FG dispatch to customer</span>
+          <span class="fc-flow-out">To: Outward Invoice</span>
+        </div>
+        <div class="form-demo">
+          <div class="form-row-4">
+            <div><label>DC No</label><input type="text" value="DC-2026-001" disabled style="background:var(--gray-50)"></div>
+            <div><label>Date</label><input type="date" value="2026-08-20"></div>
+            <div><label>Project ID</label><select><option selected>PRJ-2026-001 — Tata Motors</option></select></div>
+            <div><label>Customer</label><input type="text" value="Tata Motors Ltd" disabled style="background:var(--gray-50)"></div>
+          </div>
+          <div class="subtable-demo">
+            <div class="st-hint">FG Dispatch Items</div>
+            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
+              <span style="font-size:11px;font-weight:600">Item</span>
+              <span style="font-size:11px;font-weight:600">Qty</span>
+              <span style="font-size:11px;font-weight:600">UOM</span>
+              <span style="font-size:11px;font-weight:600">Batch</span>
+            </div>
+            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
+              <input type="text" value="Epoxy Flooring — 1mm" style="font-size:12px">
+              <input type="number" value="480" style="font-size:12px">
+              <input type="text" value="Sqm" style="font-size:12px">
+              <input type="text" value="BATCH-EP-001" style="font-size:12px">
+            </div>
+          </div>
+          <div class="form-row-3">
+            <div><label>Transport Mode</label><select><option selected>Truck</option><option>Mini Truck</option><option>Pickup</option></select></div>
+            <div><label>Vehicle No</label><input type="text" value="MH-12-AB-1234"></div>
+            <div><label>Driver</label><input type="text" value="Suresh (Transport)"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="connector-down">&#x25BC;</div>
+
+      <div class="form-card">
+        <div class="fc-header">
+          <span class="fc-num" style="background:#ea580c">9B</span>
+          <span class="fc-title">Outward Invoice</span>
+          <span class="fc-tag blue" style="background:var(--green-light);color:var(--green)">Dispatch Complete</span>
+        </div>
+        <div class="fc-flow">
+          <span class="fc-flow-in">From: DC</span>
+          <span class="fc-flow-key">Final dispatch record with outward qty</span>
+          <span class="fc-flow-out">Outward quantity updated</span>
+        </div>
+        <div class="form-demo">
+          <div class="form-row-4">
+            <div><label>Outward No</label><input type="text" value="OUT-2026-001" disabled style="background:var(--gray-50)"></div>
+            <div><label>DC Reference</label><select><option selected>DC-2026-001</option></select></div>
+            <div><label>Customer</label><input type="text" value="Tata Motors Ltd" disabled style="background:var(--gray-50)"></div>
+            <div><label>Dispatch Date</label><input type="date" value="2026-08-20"></div>
+          </div>
+          <div class="subtable-demo">
+            <div class="st-hint">Outward Items</div>
+            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
+              <span style="font-size:11px;font-weight:600">Item</span>
+              <span style="font-size:11px;font-weight:600">Qty</span>
+              <span style="font-size:11px;font-weight:600">UOM</span>
+              <span style="font-size:11px;font-weight:600">Status</span>
+            </div>
+            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
+              <input type="text" value="Epoxy Flooring — 1mm" style="font-size:12px">
+              <input type="number" value="480" style="font-size:12px">
+              <input type="text" value="Sqm" style="font-size:12px">
+              <span style="font-size:12px;color:var(--green);font-weight:600">Dispatched</span>
+            </div>
+          </div>
+          <div style="padding:8px 12px;background:var(--green-light);border-radius:6px;font-size:12px;color:var(--green);margin-top:8px">
+            <strong>&#x2713; Outward quantity updated.</strong> FG Stock reduced by dispatched qty.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h2>10 · Finance &amp; Compliance <span class="badge badge-green">Phase 1H</span></h2>
+    <p>Multi-currency support, accounting period management, and tax/GST classification across all financial forms.</p>
+
+    <div class="phase-container">
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">10A</span>
+          <span class="phase-title">Currency Exchange Rates</span>
+          <span class="phase-tag">Multi-Currency</span>
+        </div>
+        <p>Exchange rate table for multi-currency transactions. Auto-populates FX_Rate on Bills, Invoices, Payments. Tracks FX Gain/Loss.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Currency Code</td><td>Dropdown</td><td>*</td><td>USD, EUR, GBP, AED, INR, etc.</td></tr>
+              <tr><td>Exchange Rate</td><td>Decimal</td><td>*</td><td>Rate against base currency (INR)</td></tr>
+              <tr><td>Effective Date</td><td>Date</td><td>*</td><td>Date from which this rate applies</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h4>FX Gain/Loss Automation</h4>
+        <div class="callout callout-info" style="font-size:13px">
+          <strong>Realized FX Gain/Loss:</strong> On Payment (9B), auto-calculate:
+          <code style="display:block;margin:6px 0;padding:8px;background:#fff;border-radius:6px">
+            FX Gain/Loss = (Bill FC Amount × Payment Date Rate) − (Bill FC Amount × Bill Date Rate)
+          </code>
+          Post the difference to the <strong>FX Gain/Loss GL Account</strong> (14A).
+        </div>
+        <div class="callout callout-warning" style="font-size:13px">
+          <strong>Unrealized FX Gain/Loss:</strong> At period end (10B close), revalue outstanding FC bills at closing rate.
+          Report unrealized FX Gain/Loss separately for disclosure.
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">10B</span>
+          <span class="phase-title">Accounting Periods</span>
+          <span class="phase-tag">Period Close</span>
+        </div>
+        <p>Monthly/quarterly period management. Prevents posting to closed periods across all financial forms. Enables audit-ready financial close.</p>
+        <h4>Status Lifecycle</h4>
+        <div class="flow-visual" style="margin-bottom:16px">
+          <span class="fv-node fv-green">Open</span><span class="fv-arrow">→</span>
+          <span class="fv-node fv-amber">Closing <span style="font-size:10px;font-weight:400">(triggers validations)</span></span><span class="fv-arrow">→</span>
+          <span class="fv-node fv-red">Closed <span style="font-size:10px;font-weight:400">(only after all pass)</span></span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Period Name</td><td>Text</td><td>*</td><td>e.g., Apr 2026</td></tr>
+              <tr><td>Start Date</td><td>Date</td><td>*</td><td></td></tr>
+              <tr><td>End Date</td><td>Date</td><td>*</td><td></td></tr>
+              <tr><td>Status</td><td>Dropdown</td><td>*</td><td>Open → Closing → Closed</td></tr>
+              <tr><td>Close Date</td><td>Date/Time</td><td></td><td>Timestamp when period closed</td></tr>
+              <tr><td>Closed By</td><td>User lookup</td><td></td><td>User who performed period close</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h4>Pre-Close Validation Checklist (Auto-verify on Status = Closing)</h4>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Check</th><th>Source</th><th>Auto-Verify</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>All bills have PO/GRN match (no unmatched bills)</td><td>Vendor Bills (9A)</td><td>Σ Bills where Status ≠ Matched</td></tr>
+              <tr><td>2</td><td>All GRNs are posted (none in Draft)</td><td>GRN (4D)</td><td>Σ GRN where Status = Draft</td></tr>
+              <tr><td>3</td><td>All bank reconciliations complete</td><td>Payments (9B)</td><td>Σ Payments where Status = Draft</td></tr>
+              <tr><td>4</td><td>Supplier outstanding reconciled</td><td>Supplier Outstanding (8B)</td><td>Variance check vs supplier statements</td></tr>
+              <tr><td>5</td><td>ITC reconciled with GSTR-2A</td><td>GST Returns (10C)</td><td>Booked ITC vs Vendor GSTR-2A</td></tr>
+              <tr><td>6</td><td>No pending credit approvals older than 7 days</td><td>Supplier Credit Notes (8A)</td><td>Σ Draft credit notes with age &gt; 7 days</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p><strong>Pre-Close Exception Report:</strong> Any failures in the above checklist generate an exception report. Period cannot be closed until all checks pass.</p>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">10C</span>
+          <span class="phase-title">Tax/GST Classification</span>
+          <span class="phase-tag">Cross-Cutting</span>
+        </div>
+        <p>Input GST (ITC) tracking on Bills, Output GST liability on Invoices. Enables GSTR-1/GSTR-2 reporting. HSN/SAC code validation.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Form Type</td><td>Dropdown</td><td>*</td><td>Bill (Input), Invoice (Output)</td></tr>
+              <tr><td>GST Type</td><td>Dropdown</td><td>*</td><td>CGST+SGST (Intra-state), IGST (Inter-state)</td></tr>
+              <tr><td>Tax Rate %</td><td>Decimal</td><td>*</td><td>From HSN/SAC mapping</td></tr>
+              <tr><td>ITC Eligibility</td><td>Dropdown</td><td></td><td>Yes, No, Partially (for Input side)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h4 style="margin-top:20px">GST Return Reports</h4>
+        <div class="card-grid" style="margin:12px 0">
+          <div class="card" style="border-top:3px solid var(--primary)">
+            <h4 style="color:var(--primary);margin:0 0 6px">GSTR-1</h4>
+            <p style="font-size:12px;margin:0">Monthly outward supply summary. HSN-wise breakup of invoices issued. Auto-computed from Customer Invoices (13B).</p>
+          </div>
+          <div class="card" style="border-top:3px solid var(--green)">
+            <h4 style="color:var(--green);margin:0 0 6px">GSTR-2A/2B — ITC Reconciliation</h4>
+            <p style="font-size:12px;margin:0">Compare booked ITC (from Vendor Bills) vs vendor GSTR-2A data. Flag mismatches for resolution before return filing.</p>
+          </div>
+          <div class="card" style="border-top:3px solid var(--accent)">
+            <h4 style="color:#92400e;margin:0 0 6px">GSTR-3B Summary</h4>
+            <p style="font-size:12px;margin:0">Net GST payable calculation per period. Output GST − Input ITC = Net Payable. Auto-computed from GSTR-1 and ITC data.</p>
+          </div>
+        </div>
+
+        <h4>GST Return Status Tracker</h4>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Period</td><td>Text</td><td>*</td><td>e.g., Apr 2026</td></tr>
+              <tr><td>Return Type</td><td>Dropdown</td><td>*</td><td>GSTR-1 / GSTR-3B / GSTR-9</td></tr>
+              <tr><td>Date Filed</td><td>Date</td><td></td><td>Date return was submitted</td></tr>
+              <tr><td>Amount Paid</td><td>Currency</td><td></td><td>Tax paid with return</td></tr>
+              <tr><td>ARN</td><td>Text</td><td></td><td>Acknowledgement Reference Number from GST portal</td></tr>
+              <tr><td>Status</td><td>Dropdown</td><td>*</td><td>Pending / Filed / Filed with Errors</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <h2>11 · Governance &amp; Audit <span class="badge badge-purple">Phase 1I</span></h2>
+    <p>Immutable audit logging, expense allocation across budget components, and budget revision tracking over time.</p>
+
+    <div class="phase-container">
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">11A</span>
+          <span class="phase-title">Audit Log</span>
+          <span class="phase-tag">Immutable</span>
+        </div>
+        <p>Write-only log capturing status changes, amount edits, and creation events across all P0 forms. Append-only via Deluge — no edit/delete.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>Form Name</td><td>Text</td><td>Which form was changed</td></tr>
+              <tr><td>Record ID</td><td>Text</td><td>ID of changed record</td></tr>
+              <tr><td>Field Changed</td><td>Text</td><td>Which field was modified</td></tr>
+              <tr><td>Old Value</td><td>Text</td><td>Previous value</td></tr>
+              <tr><td>New Value</td><td>Text</td><td>New value</td></tr>
+              <tr><td>Changed By</td><td>User Picker</td><td>Who made the change</td></tr>
+              <tr><td>Changed At</td><td>Date/Time</td><td>Timestamp</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">11B</span>
+          <span class="phase-title">Expense Allocations</span>
+          <span class="phase-tag">Multi-Component Split</span>
+        </div>
+        <p>Split a single expense across multiple Budget Components. Validates sum of allocations = expense amount. Embedded subform in Expenses.</p>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">11C</span>
+          <span class="phase-title">Budget Revisions</span>
+          <span class="phase-tag">Change Tracking</span>
+        </div>
+        <p>Auto-creates revision record when Budget Approval modifies budget amount. Tracks component allocation changes over time for audit trail.</p>
+      </div>
+    </div>
+
+    <h2>12 · Approvals &amp; Segregation of Duties <span class="badge badge-red">Phase 1J</span></h2>
+    <p>Approval workflows for PO, Bill, and Payment with budget commitment checks and segregation of duties enforcement.</p>
+
+    <div class="phase-container">
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">12A</span>
+          <span class="phase-title">PO Approval Workflow</span>
+          <span class="phase-tag">Budget Check + Approval</span>
+        </div>
+        <p>Enhances Purchase Orders with approval routing (auto-approve below threshold, multi-level above). Budget check before approval commits funds.</p>
+        <ul>
+          <li>Status lifecycle: Draft → Pending Approval → Approved / Rejected → Open</li>
+          <li>Auto-approve below ₹5,000 configurable threshold</li>
+          <li>Budget check: validates PO total against remaining Budget Component</li>
+          <li>Committed Budget tracking: approved PO amount locks budget</li>
+        </ul>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">12B</span>
+          <span class="phase-title">Bill Approval Workflow</span>
+          <span class="phase-tag">3-Way Match</span>
+        </div>
+        <p>Vendor Bill approval with PO ↔ GRN ↔ Bill matching. Prevents payment without proper receipt verification.</p>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">12C</span>
+          <span class="phase-title">Payment Approval + SoD</span>
+          <span class="phase-tag">Segregation of Duties</span>
+        </div>
+        <p>Payment approval routing ensures initiator ≠ approver. Prevents conflict of interest in financial transactions.</p>
+      </div>
+    </div>
+
+      <h2 id="billing">13 · Billing &amp; Order Closure <span class="badge badge-blue">Phase 1K</span></h2>
+    <p>Customer Credit Notes, Manufacturing Orders, and Sales Orders complete the 34-module architecture. Closes the order-to-cash and production cycles.</p>
+
+    <div class="phase-container">
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">13A</span>
+          <span class="phase-title">Customer Credit Notes</span>
+          <span class="phase-tag">AR Credits</span>
+        </div>
+        <p>Handles customer returns/credits on the AR side. Reduces Invoice Balance Due on Issue. Auto-creates Stock In (Return to Customer) for goods items.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>CCN No</td><td>Auto Number</td><td>*</td><td>CCN-{0000}</td></tr>
+              <tr><td>Account</td><td>Lookup → Accounts</td><td>*</td><td>Customer receiving credit</td></tr>
+              <tr><td>Invoice Reference</td><td>Lookup → Invoices</td><td></td><td>Link to original invoice</td></tr>
+              <tr><td>Reason</td><td>Dropdown</td><td>*</td><td>Return, Defective, Service Credit, Price Adjustment</td></tr>
+              <tr><td>Total Amount</td><td>Currency (Formula)</td><td></td><td>Negative value — reduces AR</td></tr>
+              <tr><td>Status</td><td>Dropdown</td><td>*</td><td>Draft, Issued, Applied, Cancelled</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="phase" style="border:2px solid var(--primary);border-radius:12px;">
+        <div class="phase-header">
+          <span class="phase-number">13B</span>
+          <span class="phase-title">Customer Invoice</span>
+          <span class="phase-tag" style="background:var(--green-light);color:var(--green)">AR · Revenue Recognition</span>
+        </div>
+        <p>Customer invoices created against Sales Orders. On Approval → updates SO Status to "Invoiced", creates Output GST liability, triggers notification.</p>
+
+        <h4>Header</h4>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>Invoice No</td><td>Autogen</td><td>*</td><td>INV-YYYY-XXXX</td></tr>
+              <tr><td>2</td><td>Customer</td><td>Lookup → Accounts</td><td>*</td><td>From Customer/Site Master</td></tr>
+              <tr><td>3</td><td>SO Reference</td><td>Lookup → SO</td><td>*</td><td>From Sales/Work Order Master</td></tr>
+              <tr><td>4</td><td>Invoice Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
+              <tr><td>5</td><td>Due Date</td><td>Date</td><td>*</td><td>Auto from SO Payment Terms</td></tr>
+              <tr><td>6</td><td>Project ID</td><td>AutoFetch</td><td>*</td><td>Auto-fetched from SO Reference</td></tr>
+              <tr><td>7</td><td>PO Reference</td><td>Text</td><td></td><td>Customer PO number</td></tr>
+              <tr><td>8</td><td>Status</td><td>Dropdown</td><td>*</td><td>Draft / Approved / Sent / Paid / Overdue / Cancelled</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h4>Line Items (Auto-fetched from SO)</h4>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>Sr</td><td>Number</td><td>Auto</td></tr>
+              <tr><td>2</td><td>System Code</td><td>AutoFetch</td><td>From SO line items</td></tr>
+              <tr><td>3</td><td>Description</td><td>AutoFetch</td><td>From SO</td></tr>
+              <tr><td>4</td><td>Area / UOM</td><td>AutoFetch</td><td>From SO</td></tr>
+              <tr><td>5</td><td>Qty</td><td>AutoFetch</td><td>From SO</td></tr>
+              <tr><td>6</td><td>Rate</td><td>AutoFetch</td><td>From SO (editable if partial billing)</td></tr>
+              <tr><td>7</td><td>Basic Amount</td><td>Formula</td><td>Qty × Rate</td></tr>
+              <tr><td>8</td><td>GST %</td><td>AutoFetch</td><td>From System Master</td></tr>
+              <tr><td>9</td><td>CGST</td><td>Formula</td><td>Basic × GST%/2 (intra-state)</td></tr>
+              <tr><td>10</td><td>SGST / IGST</td><td>Formula</td><td>Basic × GST%/2 or Basic × GST%</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h4>Footer</h4>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>9</td><td>Total Taxable Amount</td><td>Formula</td><td>Sum of Basic Amount</td></tr>
+              <tr><td>10</td><td>CGST Total</td><td>Formula</td><td>Sum of CGST</td></tr>
+              <tr><td>11</td><td>SGST Total</td><td>Formula</td><td>Sum of SGST</td></tr>
+              <tr><td>12</td><td>IGST Total</td><td>Formula</td><td>Sum of IGST</td></tr>
+              <tr><td>13</td><td>Total Amount</td><td>Formula</td><td>Total Taxable + CGST + SGST + IGST</td></tr>
+              <tr><td>14</td><td>Amount in Words</td><td>Formula</td><td>Auto-converted</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout callout-success" style="margin-top:12px">
+          <strong>Automation on Approval:</strong><br>
+          • Update SO Status to "Invoiced"<br>
+          • Create Output GST liability record (GST payable)<br>
+          • Trigger notification to customer (Email with PDF attachment)<br>
+          • Post to GL: Debit Customer (AR Control), Credit Revenue (Sales Account)
+        </div>
+        <p><strong>Reports:</strong> Invoice Register (all invoices by date/status), Outstanding Invoices (where Status ≠ Paid and Due Date &lt; today), GST-wise Invoice Summary (CGST/SGST/IGST breakup by period).</p>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">13C</span>
+          <span class="phase-title">Manufacturing Orders</span>
+          <span class="phase-tag">Production Execution</span>
+        </div>
+        <p>Executes production from BOM. Released → reserves component stock. Completed → issues components (Stock Out) + receives FG (Stock In).</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>MO No</td><td>Auto Number</td><td>*</td><td>MO-{0000}</td></tr>
+              <tr><td>BOM Reference</td><td>Lookup → BOM</td><td>*</td><td>BOM to manufacture from</td></tr>
+              <tr><td>Project</td><td>Lookup → Projects</td><td>*</td><td></td></tr>
+              <tr><td>Quantity to Produce</td><td>Decimal</td><td>*</td><td></td></tr>
+              <tr><td>Status</td><td>Dropdown</td><td>*</td><td>Planned, Released, In Progress, Completed, Cancelled</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">13D</span>
+          <span class="phase-title">Sales Orders</span>
+          <span class="phase-tag">Order Management</span>
+        </div>
+        <p>Full sales order lifecycle with stock reservation, auto Invoice/DC creation, and status tracking from Confirmed to Shipped to Invoiced.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>SO No</td><td>Auto Number</td><td>*</td><td>SO-{0000}</td></tr>
+              <tr><td>Account</td><td>Lookup → Accounts</td><td>*</td><td></td></tr>
+              <tr><td>Project</td><td>Lookup → Projects</td><td></td><td>Auto-created from SO (Supply+Apply)</td></tr>
+              <tr><td>Order Date</td><td>Date</td><td>*</td><td></td></tr>
+              <tr><td>Status</td><td>Dropdown</td><td>*</td><td>Draft, Confirmed, Shipped, Invoiced, Cancelled</td></tr>
+              <tr><td>Total Amount</td><td>Currency</td><td>*</td><td></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p><strong>Automation:</strong> Confirmed → reserves stock. Shipped → auto Stock Out. Custom button creates Invoice/DC from uninvoiced/undelivered items.</p>
+      </div>
+    </div>
+
+    </div>
+
+    <h2>14 · General Ledger &amp; Chart of Accounts <span class="badge badge-green">CFO Audit Recommendation</span></h2>
+    <p>Complete double-entry accounting system. Chart of Accounts → Journal Vouchers → Auto-posting from sub-ledgers → Trial Balance → Financial Statements. Enables company-wide financial reporting (not just project-level).</p>
+
+    <div class="phase-container">
+      <div class="phase" style="border-color:var(--primary);border-width:2px">
+        <div class="phase-header">
+          <span class="phase-number">14A</span>
+          <span class="phase-title">Chart of Accounts (COA) Master</span>
+          <span class="phase-tag">Standard Indian Accounting</span>
+        </div>
+        <p>Central repository of all GL accounts. Categories follow standard Indian accounting classification. GST Applicable flag for tax accounts.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>Account Code</td><td>Autogen</td><td>*</td><td>Hierarchical code (e.g., 1.01.001)</td></tr>
+              <tr><td>2</td><td>Account Name</td><td>Text</td><td>*</td><td>e.g., "Bank of India — Current Account"</td></tr>
+              <tr><td>3</td><td>Category</td><td>Dropdown</td><td>*</td><td>Assets / Liabilities / Equity / Revenue / Expenses</td></tr>
+              <tr><td>4</td><td>Type</td><td>Dropdown</td><td>*</td><td>Current / Non-Current / Operating / Non-Operating</td></tr>
+              <tr><td>5</td><td>GST Applicable</td><td>Dropdown</td><td>*</td><td>Yes / No</td></tr>
+              <tr><td>6</td><td>Status</td><td>Dropdown</td><td>*</td><td>Active / Inactive</td></tr>
+              <tr><td>7</td><td>Opening Balance</td><td>Currency</td><td></td><td>As at system go-live date</td></tr>
+              <tr><td>8</td><td>Balance Type</td><td>Dropdown</td><td>*</td><td>Debit / Credit — normal balance of this account</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h4 style="margin-top:16px">Standard Indian Accounting Heads (Sample COA)</h4>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Code</th><th>Account Name</th><th>Category</th><th>Type</th></tr></thead>
+            <tbody>
+              <tr><td>1.01.001</td><td>Cash in Hand</td><td>Assets</td><td>Current</td></tr>
+              <tr><td>1.01.002</td><td>Bank of India — Current Account</td><td>Assets</td><td>Current</td></tr>
+              <tr><td>1.01.003</td><td>Fixed Deposit — HDFC Bank</td><td>Assets</td><td>Non-Current</td></tr>
+              <tr><td>1.02.001</td><td>Inventory — Raw Materials</td><td>Assets</td><td>Current</td></tr>
+              <tr><td>1.02.002</td><td>Inventory — Finished Goods</td><td>Assets</td><td>Current</td></tr>
+              <tr><td>1.03.001</td><td>Accounts Receivable (AR Control)</td><td>Assets</td><td>Current</td></tr>
+              <tr><td>1.04.001</td><td>Fixed Assets — Plant &amp; Machinery</td><td>Assets</td><td>Non-Current</td></tr>
+              <tr><td>1.04.002</td><td>Accumulated Depreciation</td><td>Assets</td><td>Non-Current (Contra)</td></tr>
+              <tr><td>2.01.001</td><td>Accounts Payable (AP Control)</td><td>Liabilities</td><td>Current</td></tr>
+              <tr><td>2.01.002</td><td>Supplier — Trade Creditors</td><td>Liabilities</td><td>Current</td></tr>
+              <tr><td>2.02.001</td><td>Output GST Payable</td><td>Liabilities</td><td>Current</td></tr>
+              <tr><td>2.02.002</td><td>Input GST Credit (ITC)</td><td>Liabilities</td><td>Current</td></tr>
+              <tr><td>2.03.001</td><td>TDS Payable</td><td>Liabilities</td><td>Current</td></tr>
+              <tr><td>2.04.001</td><td>Bank Loan — Term Loan</td><td>Liabilities</td><td>Non-Current</td></tr>
+              <tr><td>3.01.001</td><td>Share Capital</td><td>Equity</td><td>Non-Current</td></tr>
+              <tr><td>3.01.002</td><td>Retained Earnings</td><td>Equity</td><td>Non-Current</td></tr>
+              <tr><td>4.01.001</td><td>Revenue — Flooring Sales</td><td>Revenue</td><td>Operating</td></tr>
+              <tr><td>4.01.002</td><td>Revenue — Transport Charges</td><td>Revenue</td><td>Operating</td></tr>
+              <tr><td>4.02.001</td><td>Interest Income</td><td>Revenue</td><td>Non-Operating</td></tr>
+              <tr><td>5.01.001</td><td>Cost of Materials — RM</td><td>Expenses</td><td>Operating</td></tr>
+              <tr><td>5.01.002</td><td>Cost of Materials — Packing</td><td>Expenses</td><td>Operating</td></tr>
+              <tr><td>5.02.001</td><td>Labour — Execution</td><td>Expenses</td><td>Operating</td></tr>
+              <tr><td>5.02.002</td><td>Labour — Manpower</td><td>Expenses</td><td>Operating</td></tr>
+              <tr><td>5.03.001</td><td>Transportation Expense</td><td>Expenses</td><td>Operating</td></tr>
+              <tr><td>5.04.001</td><td>Tools &amp; Consumables</td><td>Expenses</td><td>Operating</td></tr>
+              <tr><td>5.05.001</td><td>Administrative Overhead</td><td>Expenses</td><td>Operating</td></tr>
+              <tr><td>5.06.001</td><td>Depreciation Expense</td><td>Expenses</td><td>Operating</td></tr>
+              <tr><td>5.07.001</td><td>FX Gain/Loss</td><td>Expenses</td><td>Non-Operating</td></tr>
+              <tr><td>5.08.001</td><td>Tax Expense — Corporate Tax</td><td>Expenses</td><td>Non-Operating</td></tr>
+              <tr><td>5.08.002</td><td>Deferred Tax</td><td>Expenses</td><td>Non-Operating</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">14B</span>
+          <span class="phase-title">Journal Voucher</span>
+          <span class="phase-tag">Manual GL Entries</span>
+        </div>
+        <p>Manual journal entries for adjustments, accruals, prepayments, and corrections. Debits must equal credits. Cannot post to closed periods.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>Voucher No</td><td>Autogen</td><td>*</td><td>JV-YYYY-XXXX</td></tr>
+              <tr><td>2</td><td>Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
+              <tr><td>3</td><td>Description</td><td>Multi-line</td><td>*</td><td>Narrative for the entry</td></tr>
+              <tr><td>4</td><td>Accounting Period</td><td>Lookup → 10B</td><td>*</td><td>Must be Open status</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h4>Line Items (2+ items — Debits = Credits)</h4>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>Account Code</td><td>Lookup → COA</td><td>*</td><td>From Chart of Accounts (14A)</td></tr>
+              <tr><td>2</td><td>Account Name</td><td>AutoFetch</td><td>*</td><td>From COA</td></tr>
+              <tr><td>3</td><td>Debit Amount</td><td>Currency</td><td></td><td>Must fill if credit is empty</td></tr>
+              <tr><td>4</td><td>Credit Amount</td><td>Currency</td><td></td><td>Must fill if debit is empty</td></tr>
+              <tr><td>5</td><td>Project ID</td><td>Lookup</td><td></td><td>Optional — for project-level tracking</td></tr>
+              <tr><td>6</td><td>Cost Center</td><td>Text</td><td></td><td>Optional cost center allocation</td></tr>
+              <tr><td>7</td><td>Narration</td><td>Text</td><td></td><td>Line-level description</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-warning" style="margin-top:12px">
+          <strong>Validation Rules:</strong><br>
+          • Σ Debit Amounts must equal Σ Credit Amounts (balanced entry)<br>
+          • Cannot post to a Period where Status = Closed (10B)<br>
+          • At least 2 line items required (double entry)<br>
+          • Each line can have either Debit OR Credit (not both)
+        </div>
+      </div>
+
+      <div class="phase" style="border-color:var(--green);border-width:2px">
+        <div class="phase-header">
+          <span class="phase-number">14C</span>
+          <span class="phase-title">Auto-Posting Rules (Sub-Ledger → GL)</span>
+          <span class="phase-tag">Double-Entry Automation</span>
+        </div>
+        <p>Automated GL postings triggered by sub-ledger transactions. Ensures every transaction has a corresponding double-entry in the General Ledger.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Transaction</th><th>Debit Account</th><th>Credit Account</th><th>Source Form</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Vendor Bill (AP)</strong></td><td>Expense / Purchase Account (5.01.x)</td><td>Supplier (AP Control — 2.01.001)</td><td>9A — Vendor Bills</td></tr>
+              <tr><td><strong>Payment — AP</strong></td><td>Supplier (AP Control — 2.01.001)</td><td>Bank Account (1.01.002)</td><td>9B — Payments (Type=AP)</td></tr>
+              <tr><td><strong>Customer Receipt — AR</strong></td><td>Bank Account (1.01.002)</td><td>Customer (AR Control — 1.03.001)</td><td>9B — Payments (Type=AR)</td></tr>
+              <tr><td><strong>Supplier Credit Note</strong></td><td>Supplier (AP Control — 2.01.001)</td><td>Purchase Returns (5.01.x contra)</td><td>8A — Supplier Credit Note</td></tr>
+              <tr><td><strong>Customer Credit Note</strong></td><td>Sales Returns (4.01.x contra)</td><td>Customer (AR Control — 1.03.001)</td><td>13A — Customer Credit Note</td></tr>
+              <tr><td><strong>Customer Invoice</strong></td><td>Customer (AR Control — 1.03.001)</td><td>Revenue (4.01.001)</td><td>13B — Customer Invoice</td></tr>
+              <tr><td><strong>GRN Receipt (to Inventory)</strong></td><td>Inventory — RM (1.02.001)</td><td>GRN Accrual (Liability — 2.01.003)</td><td>4D — GRN (on posting)</td></tr>
+              <tr><td><strong>MIS Issue (consumption)</strong></td><td>Cost of Materials — RM (5.01.001)</td><td>Inventory — RM (1.02.001)</td><td>5B — MIS (on posting)</td></tr>
+              <tr><td><strong>Depreciation Entry</strong></td><td>Depreciation Expense (5.06.001)</td><td>Accumulated Depreciation (1.04.002)</td><td>14D — Fixed Asset Register (monthly)</td></tr>
+              <tr><td><strong>FX Gain/Loss</strong></td><td>FX Gain/Loss (5.07.001)</td><td>Bank / AP / AR (as applicable)</td><td>9B — Payments (auto-calc)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">14D</span>
+          <span class="phase-title">Fixed Asset Register</span>
+          <span class="phase-tag">Depreciation Tracking</span>
+        </div>
+        <p>Complete fixed asset lifecycle management. Category linked to Item Muster (Cat 5 — Capital &amp; Assets). Monthly depreciation auto-calculation.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>Asset Code</td><td>Autogen</td><td>*</td><td>FA-YYYY-XXX</td></tr>
+              <tr><td>2</td><td>Asset Name</td><td>Text</td><td>*</td><td>—</td></tr>
+              <tr><td>3</td><td>Category</td><td>Dropdown</td><td>*</td><td>From Item Muster Cat 5 items</td></tr>
+              <tr><td>4</td><td>PO Reference</td><td>Lookup → PO</td><td></td><td>Purchase Order that acquired the asset</td></tr>
+              <tr><td>5</td><td>Purchase Date</td><td>Date</td><td>*</td><td>—</td></tr>
+              <tr><td>6</td><td>Cost (Purchase Value)</td><td>Currency</td><td>*</td><td>—</td></tr>
+              <tr><td>7</td><td>Supplier</td><td>Lookup</td><td></td><td>From Supplier Master</td></tr>
+              <tr><td>8</td><td>Useful Life (Years)</td><td>Number</td><td>*</td><td>—</td></tr>
+              <tr><td>9</td><td>Depreciation Method</td><td>Dropdown</td><td>*</td><td>SLM (Straight Line) / WDV (Written Down Value)</td></tr>
+              <tr><td>10</td><td>Salvage Value</td><td>Currency</td><td></td><td>Residual value at end of life</td></tr>
+              <tr><td>11</td><td>Accumulated Depreciation</td><td>Formula</td><td></td><td>Updated monthly — Σ monthly depreciation charges</td></tr>
+              <tr><td>12</td><td>Net Book Value</td><td>Formula</td><td></td><td>Cost − Accumulated Depreciation</td></tr>
+              <tr><td>13</td><td>Location / Department</td><td>Text</td><td></td><td>Physical location or using dept</td></tr>
+              <tr><td>14</td><td>Asset Tag / Serial No</td><td>Text</td><td></td><td>Physical asset tag</td></tr>
+              <tr><td>15</td><td>Status</td><td>Dropdown</td><td>*</td><td>In Use / Under Maintenance / Disposed / Sold</td></tr>
+              <tr><td>16</td><td>Disposal Date</td><td>Date</td><td></td><td>—</td></tr>
+              <tr><td>17</td><td>Disposal Value</td><td>Currency</td><td></td><td>—</td></tr>
+              <tr><td>18</td><td>Gain / Loss on Disposal</td><td>Formula</td><td></td><td>Disposal Value − Net Book Value at disposal date</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-info" style="margin-top:12px">
+          <strong>Monthly Depreciation Automation:</strong><br>
+          <strong>SLM:</strong> Monthly Depreciation = (Cost − Salvage Value) / (Useful Life × 12)<br>
+          <strong>WDV:</strong> Monthly Depreciation = (Opening WDV × Rate%) / 12<br>
+          • Depreciation run as scheduled Deluge task on period close (10B)<br>
+          • Posts to: Debit Depreciation Expense (5.06.001), Credit Accumulated Depreciation (1.04.002)<br>
+          • Disposal: Remove cost and accumulated depreciation, recognize gain/loss
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">14E</span>
+          <span class="phase-title">Cash Flow Forecast</span>
+          <span class="phase-tag">13-Week Rolling · Manual Override</span>
+        </div>
+        <p>Rolling 13-week cash flow forecast. Auto-populated from scheduled receipts (Invoices) and expected payments (Bills/POs). Manual override for non-system items.</p>
+        <h4>Auto-Computed Inflows</h4>
+        <ul style="color:var(--gray-600);margin:8px 0;padding-left:20px">
+          <li>Scheduled customer receipts from Invoices (13B) — based on Due Date</li>
+          <li>Milestone payments from SO (2A) — based on milestone schedule</li>
+        </ul>
+        <h4>Auto-Computed Outflows</h4>
+        <ul style="color:var(--gray-600);margin:8px 0;padding-left:20px">
+          <li>Scheduled AP payments from Vendor Bills (9A)</li>
+          <li>Expected PO payments based on PO delivery dates</li>
+          <li>Recurring overhead (rent, salary, utilities) — setup in configuration</li>
+        </ul>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>Week No</td><td>Number</td><td>*</td><td>1–13 (rolling)</td></tr>
+              <tr><td>2</td><td>Week Start Date</td><td>Date</td><td>*</td><td>—</td></tr>
+              <tr><td>3</td><td>Opening Cash</td><td>Formula</td><td>*</td><td>Previous week's closing</td></tr>
+              <tr><td>4</td><td>Auto Inflows</td><td>AutoFetch</td><td>*</td><td>Σ scheduled receipts for this week</td></tr>
+              <tr><td>5</td><td>Manual Inflows (Override)</td><td>Currency</td><td></td><td>For non-system inflows</td></tr>
+              <tr><td>6</td><td>Auto Outflows</td><td>AutoFetch</td><td>*</td><td>Σ scheduled payments for this week</td></tr>
+              <tr><td>7</td><td>Manual Outflows (Override)</td><td>Currency</td><td></td><td>For non-system outflows</td></tr>
+              <tr><td>8</td><td>Net Position</td><td>Formula</td><td>*</td><td>Opening + Inflows − Outflows</td></tr>
+              <tr><td>9</td><td>Minimum Cash Alert</td><td>Formula</td><td></td><td>If Net &lt; 3 months operating expenses → Alert</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p><strong>Report:</strong> 13-Week Cash Flow Forecast (Report L) with all computed and manual values.</p>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">14F</span>
+          <span class="phase-title">Annual Budget Master</span>
+          <span class="phase-tag">Budget vs Actual</span>
+        </div>
+        <p>Company-wide annual budget by department and category. Budget vs Actual reporting with variance analysis. Integrated with PO budget check.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>Budget Year</td><td>Dropdown</td><td>*</td><td>FY 2026-27, etc.</td></tr>
+              <tr><td>2</td><td>Department</td><td>Dropdown</td><td>*</td><td>Purchase / Sales / Production / Store / Admin / Finance / QC</td></tr>
+              <tr><td>3</td><td>Budget Category</td><td>Dropdown</td><td>*</td><td>Materials / Execution / Manpower / Logistics / Overhead / CAPEX</td></tr>
+              <tr><td>4</td><td>Budget Amount</td><td>Currency</td><td>*</td><td>Annual budget allocation</td></tr>
+              <tr><td>5</td><td>Amount Utilized</td><td>AutoFetch</td><td>*</td><td>Auto-fetched from actuals (PO + Expenses + Bills)</td></tr>
+              <tr><td>6</td><td>Budget Remaining</td><td>Formula</td><td>*</td><td>Budget Amount − Amount Utilized</td></tr>
+              <tr><td>7</td><td>Utilization %</td><td>Formula</td><td></td><td>(Amount Utilized / Budget Amount) × 100</td></tr>
+              <tr><td>8</td><td>Status</td><td>Dropdown</td><td>*</td><td>Active / Frozen / Closed</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout callout-warning" style="margin-top:12px">
+          <strong>PO Budget Check Integration:</strong> PO (4C) must not exceed remaining budget for the PO's department + category combination. If exceeded, PO is blocked and routed for special approval.<br>
+          <strong>Report:</strong> Budget vs Actual (Report M) — by department, category, month with variance analysis.
+        </div>
+      </div>
+    </div>
+
+      <div class="footer">
+        <p>Chemsol — Zoho Creator ERP &middot; ITOTCloud Systems Pvt. Ltd.</p>
+        <p>13 Phases · 34 Modules · 75+ Automations · Project-Centric Architecture · Built on Zoho Creator India (.in)</p>
+      </div>
+    </div>
+  </div>
+  <script src="nav.js"></script>
+</body>
+</html>

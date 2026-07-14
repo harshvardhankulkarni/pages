@@ -1,0 +1,302 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chemsol — Security &amp; Roles</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="sidebar">
+    <h1>Chemsol<span class="client-badge">Zoho Creator ERP</span></h1>
+    <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="sidebar-nav" id="sidebarNav">
+
+      <!-- Zone 1: Flow Progress Bar -->
+      <div class="flow-progress">
+        <div class="fp-step" data-step="1"><span class="fp-circle">1</span></div>
+        <span class="fp-connector"></span>
+        <div class="fp-step" data-step="2"><span class="fp-circle">2</span></div>
+        <span class="fp-connector"></span>
+        <div class="fp-step" data-step="3"><span class="fp-circle">3</span></div>
+        <span class="fp-connector"></span>
+        <div class="fp-step" data-step="4"><span class="fp-circle">4</span></div>
+        <span class="fp-connector"></span>
+        <div class="fp-step" data-step="5"><span class="fp-circle">5</span></div>
+        <span class="fp-connector"></span>
+        <div class="fp-step" data-step="6"><span class="fp-circle">6</span></div>
+        <span class="fp-connector"></span>
+        <div class="fp-step" data-step="7"><span class="fp-circle">7</span></div>
+        <span class="fp-connector"></span>
+        <div class="fp-step" data-step="8"><span class="fp-circle">8</span></div>
+      </div>
+
+      <!-- Zone 2: Accordion Steps — Organization Cycle -->
+
+      <!-- STREAM A: Pre-Project / Stock Procurement (No Project ID) -->
+      <div class="accordion-stream-label">STREAM A — PRE-PROJECT</div>
+
+      <!-- Stage 1: Purchase + Stock (Pre-Project) -->
+      <div class="accordion-section">
+        <div class="accordion-header">
+          <span class="ah-num">1</span>
+          Purchase + Stock
+          <span class="ah-arrow">▶</span>
+        </div>
+        <div class="accordion-body">
+          <a class="ab-link" href="forms.html#procurement"><span class="al-type type-forms">Forms</span>PR→PO→GRN→QC</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Stock Reports</a>
+          <a class="ab-link" href="flow.html#pr-pr"><span class="al-type type-flow">Flow</span>Purchase Flow</a>
+          <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>Procure Model</a>
+        </div>
+      </div>
+
+      <div class="accordion-stream-label">STREAM B — PROJECT-CENTRIC</div>
+
+      <!-- Stage 2: Sales → Project (Root) -->
+      <div class="accordion-section">
+        <div class="accordion-header">
+          <span class="ah-num">2</span>
+          Sales → Project
+          <span class="ah-arrow">▶</span>
+        </div>
+        <div class="accordion-body">
+          <a class="ab-link" href="forms.html#sales"><span class="al-type type-forms">Forms</span>Sales Order + Project</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Sales Register</a>
+          <a class="ab-link" href="flow.html#so-so"><span class="al-type type-flow">Flow</span>SO Flow</a>
+          <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>SO Model</a>
+        </div>
+      </div>
+
+      <!-- Stage 3: MR → MIS (Bridge) -->
+      <div class="accordion-section">
+        <div class="accordion-header">
+          <span class="ah-num">3</span>
+          MR → MIS
+          <span class="ah-arrow">▶</span>
+        </div>
+        <div class="accordion-body">
+          <a class="ab-link" href="forms.html#inventory"><span class="al-type type-forms">Forms</span>MR→MIS→FG</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Stock Reports</a>
+          <a class="ab-link" href="flow.html#inv-mr"><span class="al-type type-flow">Flow</span>Inventory Flow</a>
+          <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>Inventory Model</a>
+        </div>
+      </div>
+
+      <!-- Stage 4: Production -->
+      <div class="accordion-section">
+        <div class="accordion-header">
+          <span class="ah-num">4</span>
+          Production
+          <span class="ah-arrow">▶</span>
+        </div>
+        <div class="accordion-body">
+          <a class="ab-link" href="forms.html#production"><span class="al-type type-forms">Forms</span>BOM→MO→FG</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Production Reports</a>
+          <a class="ab-link" href="flow.html#prod-plan"><span class="al-type type-flow">Flow</span>Production Flow</a>
+          <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>Production Model</a>
+        </div>
+      </div>
+
+      <!-- Stage 5: Costing -->
+      <div class="accordion-section">
+        <div class="accordion-header">
+          <span class="ah-num">5</span>
+          Costing
+          <span class="ah-arrow">▶</span>
+        </div>
+        <div class="accordion-body">
+          <a class="ab-link" href="forms.html#costing"><span class="al-type type-forms">Forms</span>Costing Approval</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Cost Reports</a>
+          <a class="ab-link" href="flow.html#org-costing"><span class="al-type type-flow">Flow</span>Costing Flow</a>
+          <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>Cost Model</a>
+        </div>
+      </div>
+
+      <!-- Stage 6: Service -->
+      <div class="accordion-section">
+        <div class="accordion-header">
+          <span class="ah-num">6</span>
+          Service
+          <span class="ah-arrow">▶</span>
+        </div>
+        <div class="accordion-body">
+          <a class="ab-link" href="forms.html#service-team"><span class="al-type type-forms">Forms</span>Area→Work→Invoice</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Service Reports</a>
+          <a class="ab-link" href="flow.html#org-service"><span class="al-type type-flow">Flow</span>Service Flow</a>
+          <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>Service Model</a>
+        </div>
+      </div>
+
+      <!-- Stage 7: Finance -->
+      <div class="accordion-section">
+        <div class="accordion-header">
+          <span class="ah-num">7</span>
+          Finance
+          <span class="ah-arrow">▶</span>
+        </div>
+        <div class="accordion-body">
+          <a class="ab-link" href="forms.html#finance"><span class="al-type type-forms">Forms</span>AP/AR / GL</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>P&amp;L / Reports</a>
+          <a class="ab-link" href="flow.html#gl"><span class="al-type type-flow">Flow</span>Close Flow</a>
+          <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>Finance Model</a>
+        </div>
+      </div>
+
+      <!-- Stage 8: Logistics → Closure -->
+      <div class="accordion-section">
+        <div class="accordion-header">
+          <span class="ah-num">8</span>
+          Logistics → Closure
+          <span class="ah-arrow">▶</span>
+        </div>
+        <div class="accordion-body">
+          <a class="ab-link" href="forms.html#logistics"><span class="al-type type-forms">Forms</span>DC / Outward</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Logistics Reports</a>
+          <a class="ab-link" href="flow.html#org-logistics"><span class="al-type type-flow">Flow</span>Logistics Flow</a>
+          <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>Logistics Model</a>
+        </div>
+      </div>
+
+      <!-- Zone 3: System Links -->
+      <div class="nav-divider">━━━━ QUICK NAV ━━━━</div>
+      <a href="index.html" class="sidebar-flat-link">🏠 Overview</a>
+      <a href="forms.html" class="sidebar-flat-link">📝 Forms</a>
+      <a href="flow.html" class="sidebar-flat-link">🔄 Flow Demo</a>
+      <a href="reports.html" class="sidebar-flat-link">📊 Reports</a>
+      <div class="nav-divider">━━━━ SYSTEM ━━━━</div>
+      <a href="security.html" class="sidebar-flat-link">🔒 Security &amp; Roles</a>
+      <a href="data-model.html" class="sidebar-flat-link">📐 Data Model</a>
+      <a href="implementation-plan.html" class="sidebar-flat-link">📋 Implementation Plan</a>
+      <a href="BRD_PRD_RFP.md" class="sidebar-flat-link">📄 BRD / PRD / RFP</a>
+      <a href="../index.html" class="sidebar-flat-link">← Back to Hub</a>
+    </div>
+  </nav>
+  <div class="main">
+    <section class="hero">
+      <div class="hero-eyebrow">Roles · Permissions · Access Control</div>
+      <h1>Security &amp; User Roles</h1>
+      <p>Roles are scoped by <strong>Project</strong> — Project Managers/Coordinators see only their assigned projects. Like Zoho CRM role hierarchy with record-level access.</p>
+    </section>
+
+    <div class="content">
+      <h2>Role Architecture</h2>
+      <div class="tree role-tree">
+        <ul class="tree-list">
+          <li class="tree-item root"><span class="tree-label">Administrator (IT)</span>
+            <ul class="tree-children">
+              <li class="tree-item"><span class="tree-label">Admin <span class="tree-tag red">Full system access</span></span>
+                <ul class="tree-children">
+                  <li class="tree-item"><span class="tree-label">Purchase <span class="tree-tag blue">Entry / Review / Approve</span></span></li>
+                  <li class="tree-item"><span class="tree-label">Store &amp; Logistics <span class="tree-tag green">Entry / Review</span></span></li>
+                  <li class="tree-item"><span class="tree-label">Production &amp; R&amp;D <span class="tree-tag purple">Entry / Review</span></span></li>
+                  <li class="tree-item"><span class="tree-label">Project <span class="tree-tag amber">Manager 1/2/3 / Coordinator</span></span></li>
+                  <li class="tree-item"><span class="tree-label">Sales <span class="tree-tag blue">Entry / Review</span></span></li>
+                  <li class="tree-item"><span class="tree-label">QC <span class="tree-tag blue">Entry / Review</span></span></li>
+                  <li class="tree-item"><span class="tree-label">Account &amp; Finance <span class="tree-tag amber">View only</span></span></li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+
+      <h2>Role Definitions</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Role</th><th>Dept</th><th>Access Scope</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Admin</strong></td><td>IT</td><td>Full access — all forms, reports, settings, user management</td></tr>
+            <tr><td><strong>Purchase - Entry</strong></td><td>Purchase</td><td>Create/Edit: PR, PO, Rate Comparison, GRN (per project)</td></tr>
+            <tr><td><strong>Purchase - Review</strong></td><td>Purchase</td><td>View only: all purchase forms + reports</td></tr>
+            <tr><td><strong>Purchase - Approve</strong></td><td>Purchase</td><td>Approve: PR, PO within limits (Approval Matrix)</td></tr>
+            <tr><td><strong>Store - Entry</strong></td><td>Store &amp; Logistics</td><td>Create/Edit: GRN, MIS, Return, FG Receiving, Vehicle (per project)</td></tr>
+            <tr><td><strong>Store - Review</strong></td><td>Store &amp; Logistics</td><td>View: Inventory, GRN, PO, Reports (per project)</td></tr>
+            <tr><td><strong>Production - Entry</strong></td><td>Production</td><td>Create/Edit: MR, BMR, Planning, Consumption, Packing, FGHM (per project)</td></tr>
+            <tr><td><strong>Production - Review</strong></td><td>Production</td><td>View: BOM, Stock, Production Reports (per project)</td></tr>
+            <tr><td><strong>Project Manager 1/2/3</strong></td><td>Project</td><td>Full CRUD on assigned projects/tasks. View procurement/inventory for their projects.</td></tr>
+            <tr><td><strong>Project Coordinator</strong></td><td>Project</td><td>Create MR for assigned projects. View production + project status.</td></tr>
+            <tr><td><strong>Sales - Entry</strong></td><td>Sales</td><td>Create/Edit: SO, Customer Master. SO → auto-creates Project.</td></tr>
+            <tr><td><strong>Sales - Review</strong></td><td>Sales</td><td>View: SO reports, project status</td></tr>
+            <tr><td><strong>QC - Entry</strong></td><td>QC</td><td>Create/Edit: QC/QA forms</td></tr>
+            <tr><td><strong>QC - Review</strong></td><td>QC</td><td>View: GRN, Item Muster, BOM</td></tr>
+            <tr><td><strong>Account &amp; Finance</strong></td><td>Finance</td><td>Create/Edit/Approve: Supplier Credit Note, Journal Voucher, Customer Invoice, Chart of Accounts. View: PO, GRN, Supplier reports (per project). Full access: Fixed Asset Register, Cash Flow Forecast, Annual Budget</td></tr>
+            <tr><td><strong>Finance - Manager</strong></td><td>Finance</td><td>Approve: Journal Vouchers above threshold, Period Close. Full access: Budget Master, Financial Reports (Trial Balance, Balance Sheet, P&amp;L)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Permission by Form</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Form</th><th>Create/Edit</th><th>View Only</th><th>No Access</th></tr></thead>
+          <tbody>
+            <tr><td>Purchase Item Muster</td><td>Admin, Purchase-Entry</td><td>All depts</td><td>—</td></tr>
+            <tr><td>Supplier Master</td><td>Admin, Purchase-Entry</td><td>Purchase, Finance</td><td>Others</td></tr>
+            <tr><td>Customer Master</td><td>Admin, Sales-Entry</td><td>Sales, Projects, Finance</td><td>Others</td></tr>
+            <tr><td>System Composition</td><td>Admin, Production-Entry</td><td>Production, QC, Costing</td><td>Others</td></tr>
+<tr><td>BOM Formulation</td><td>Admin, Production-Entry</td><td>Production, QC, Costing</td><td>Others</td></tr>
+            <tr><td>Sales/Work Order</td><td>Sales-Entry</td><td>Sales, Projects, Finance</td><td>Others</td></tr>
+            <tr><td>Project</td><td>Project Manager, Coordinator</td><td>All (scoped to assigned)</td><td>—</td></tr>
+            <tr><td>Tasks</td><td>Project Manager</td><td>All (scoped to project)</td><td>—</td></tr>
+            <tr><td>PR</td><td>Production, R&amp;D</td><td>Purchase (Review)</td><td>Others</td></tr>
+            <tr><td>Rate Comparison</td><td>Purchase-Entry</td><td>Purchase (Review)</td><td>Others</td></tr>
+            <tr><td>PO</td><td>Purchase-Entry</td><td>Purchase, Finance, Store</td><td>Others</td></tr>
+            <tr><td>GRN</td><td>Purchase-Entry, Store-Entry</td><td>Purchase, Store</td><td>Others</td></tr>
+            <tr><td>QC/QA</td><td>QC-Entry</td><td>Purchase, Production</td><td>Others</td></tr>
+            <tr><td>Supplier Credit Note</td><td>Account &amp; Finance</td><td>Purchase (View), Admin (Full)</td><td>Others</td></tr>
+            <tr><td>MR</td><td>Production, R&amp;D</td><td>Store</td><td>Others</td></tr>
+            <tr><td>MIS</td><td>Store-Entry</td><td>Store, Production</td><td>Others</td></tr>
+            <tr><td>FGHM</td><td>Production-Entry, Store-Entry</td><td>Store, Logistics, Production</td><td>Others</td></tr>
+            <tr><td>Production Planning</td><td>Production-Entry</td><td>Production, Store</td><td>Others</td></tr>
+            <tr><td>User Access</td><td>Admin only</td><td>—</td><td>All others</td></tr>
+            <tr><td>Approval Matrix</td><td>Admin only</td><td>Departmental</td><td>Others</td></tr>
+            <tr><td><strong>Chart of Accounts</strong></td><td>Account &amp; Finance, Admin</td><td>Finance (View)</td><td>Others</td></tr>
+            <tr><td><strong>Journal Voucher</strong></td><td>Account &amp; Finance</td><td>Finance (View), Admin (Full)</td><td>Others</td></tr>
+            <tr><td><strong>Customer Invoice</strong></td><td>Sales-Entry, Account &amp; Finance</td><td>Sales, Finance, Projects</td><td>Others</td></tr>
+            <tr><td><strong>Fixed Asset Register</strong></td><td>Account &amp; Finance, Admin</td><td>Finance, Store</td><td>Others</td></tr>
+            <tr><td><strong>Cash Flow Forecast</strong></td><td>Account &amp; Finance, Admin</td><td>Finance (View)</td><td>Others</td></tr>
+            <tr><td><strong>Annual Budget Master</strong></td><td>Admin, Finance-Manager</td><td>Departmental (View their own)</td><td>Others</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Project-Level Access Control</h2>
+      <p>Like Zoho CRM record-level sharing — users see only data tagged to their assigned projects.</p>
+      <ul style="color: var(--gray-600); margin: 12px 0; padding-left: 20px;">
+        <li style="margin-bottom: 8px;"><strong>Project Manager 1/2/3</strong> — Full CRUD on assigned projects/tasks. View-only on procurement/inventory for their projects.</li>
+        <li style="margin-bottom: 8px;"><strong>Project Coordinator</strong> — Create MR for assigned projects, view production and project status.</li>
+        <li style="margin-bottom: 8px;"><strong>Sales</strong> — Create SO (auto-creates project). View all projects.</li>
+        <li style="margin-bottom: 8px;"><strong>Purchase</strong> — See all projects' procurement data. No task management access.</li>
+        <li style="margin-bottom: 8px;"><strong>Store</strong> — See all projects' inventory movements. No project finance access.</li>
+      </ul>
+
+      <h2>Approval Matrix</h2>
+      <p>Defines PR/PO limits and approvers per department. Multi-level escalation.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Document</th><th>Threshold</th><th>Escalation</th></tr></thead>
+          <tbody>
+            <tr><td>PR</td><td>Per matrix</td><td>Level 1 → Level 2 → Level 3</td></tr>
+            <tr><td>PO</td><td>Per matrix</td><td>Level 1 → Level 2 → Level 3</td></tr>
+            <tr><td>GRN</td><td>Per matrix</td><td>As defined</td></tr>
+            <tr><td>Rate Comparison</td><td>Per matrix</td><td>As defined</td></tr>
+            <tr><td>MR</td><td>Per matrix</td><td>Department-specific</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="footer">
+        <p>Chemsol — Zoho Creator ERP &middot; ITOTCloud Systems Pvt. Ltd.</p>
+        <p>13 Phases · 34 Modules · 75+ Automations · Project-Centric Architecture · Built on Zoho Creator India (.in)</p>
+      </div>
+    </div>
+  </div>
+  <script src="nav.js"></script>
+</body>
+</html>
