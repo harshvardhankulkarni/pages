@@ -16,7 +16,7 @@ The system has two independent streams:
 
 ### Stream B: Project-Triggered (Project ID is root)
 - **SO (Supply+Apply)** → auto-creates **Project**. The SO **System Lines** subform (EP01…) defines the **System → FG → RM composition** (via System Composition + BOM) that drives backend consumption. **SO (Supply Only)** → sells **FG directly** (FG Lines subform); **NO Project** created — direct stock sale, no consumption tracking.
-- **Project → MR → MIS** (project consumes materials from Store inventory). **The MR carries a per-project Material Allocation subform** — each RM line records its **Assigned Qty** (allocation baseline), **Allocation Ratio %** (share of total project RM allocation), and an **80% Threshold Alert Flag**.
+          - **Project → MR → MIS** (project consumes materials from Store inventory). **The MR carries a per-project Material Allocation subform** — each RM line records its **Assigned Qty** (allocation baseline), **Allocation Ratio %** (share of total project RM allocation, always sums to 100%), and an **80% Threshold Alert Flag**. Applies to **Supply+Apply** projects only (SO auto-creates the Project); Supply Only FG sales skip MR allocation and the 80% alert entirely.
 - **Project → Production Planning → BMR → Packing → FGHM** (consume RM → produce FG with inline acceptance).
 - **Project → Costing Approval** (material cost valuation gate).
 - **Project → Service Team** (Area Measurement → Material Custody → Work Start → Final Invoice).

@@ -298,11 +298,11 @@
         <h4>1. Project &rarr; Procurement Flow</h4>
         <div class="impl-flow-row">
           <div class="impl-flow-step"><div class="impl-flow-box impl-fb-teal">Project Accepted</div></div><span class="impl-flow-arr">&rarr;</span>
-          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-purple">PR Created<br><small>N items, tagged to Project</small></div></div><span class="impl-flow-arr">&rarr;</span>
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-purple">PR Created<br><small>N items, no Project ID (Stream A)</small></div></div><span class="impl-flow-arr">&rarr;</span>
           <div class="impl-flow-step"><div class="impl-flow-box impl-fb-purple">PR Approved</div></div><span class="impl-flow-arr">&rarr;</span>
           <div class="impl-flow-step"><div class="impl-flow-box impl-fb-blue">Rate Comparison</div></div><span class="impl-flow-arr">&rarr;</span>
-          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-blue">PO Issued<br><small>N items, tagged to Project</small></div></div><span class="impl-flow-arr">&rarr;</span>
-          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-green">GRN<br><small>Partial/full, tagged to PO+Project</small></div></div><span class="impl-flow-arr">&rarr;</span>
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-blue">PO Issued<br><small>N items, no Project ID (Stream A)</small></div></div><span class="impl-flow-arr">&rarr;</span>
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-green">GRN<br><small>Partial/full, tagged to PO (Stream A, no Project ID)</small></div></div><span class="impl-flow-arr">&rarr;</span>
           <div class="impl-flow-step"><div class="impl-flow-box impl-fb-orange">QC / QA<br><small>Tagged to GRN</small></div></div><span class="impl-flow-arr">&rarr;</span>
           <div class="impl-flow-step"><div class="impl-flow-box impl-fb-green">Stock Updated</div></div>
         </div>
@@ -925,7 +925,7 @@
       <h2>Implementation Timeline</h2>
       <div class="impl-card">
         <h3>Implementation Timeline <span class="badge badge-blue">Planning</span></h3>
-        <p>Estimated <strong>16+ weeks</strong> including CFO audit expansion — each phase builds on the previous. All modules tagged to Project.</p>
+        <p>Estimated <strong>16+ weeks</strong> including CFO audit expansion — each phase builds on the previous. <strong>Stream B</strong> modules (SO&rarr;Project&rarr;MR&rarr;&hellip;&rarr;Logistics) carry Project ID; <strong>Stream A</strong> procurement (PR/PO/GRN/QC) has <strong>no Project ID</strong>.</p>
         <div class="impl-flow-row" style="justify-content:center">
           <div class="impl-flow-step"><div class="impl-flow-box impl-fb-purple">Wk 1-2<br>Master Data</div></div><span class="impl-flow-arr">&rarr;</span>
           <div class="impl-flow-step"><div class="impl-flow-box impl-fb-blue">Wk 3-4<br>Project + Sales</div></div><span class="impl-flow-arr">&rarr;</span>
@@ -940,7 +940,7 @@
         <ol style="margin-top:16px">
           <li><strong>Week 1-2 (Master Data):</strong> Item Muster, Supplier, Customer, System Master, Store/Bin, User Access, Approval Matrix</li>
           <li><strong>Week 3-4 (Project Hub + Sales):</strong> Project form with 5 task categories, Sales Order, SO&rarr;Project auto-creation workflow</li>
-          <li><strong>Week 5-6 (Procurement):</strong> PR (N items), Rate Comparison, PO (N items, dual numbering, GST split), GRN (partial), QC. All tagged to Project.</li>
+          <li><strong>Week 5-6 (Procurement &mdash; Stream A, no Project ID):</strong> PR (N items), Rate Comparison, PO (N items, dual numbering, GST split), GRN (partial), QC.</li>
           <li><strong>Week 7-8 (Inventory):</strong> MR (N items, stock check), MIS, FGHM (inline acceptance), Material Return, Handover, Vehicle &amp; Transport</li>
           <li><strong>Week 9 (Production):</strong> Production Planning, BOM, Production Order, BMR, RM Consumption, Packing, Rework</li>
           <li><strong>Week 10-11 (Dashboards):</strong> Purchase, Store, Production, Project dashboards + 30+ reports</li>

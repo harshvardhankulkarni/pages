@@ -971,7 +971,7 @@
             <span class="phase-title">Material Requisition (MR)</span>
             <span class="phase-tag">N Line Items + Allocation</span>
           </div>
-          <p>Department: Production &amp; R&amp;D. Project ID lookup + RM line items with autofetch available stock. <strong>Now also carries a <a href="#mr-allocation">Material Allocation</a> subform</strong> — the per-project consumption budget with per-RM allocation ratios and 80% alert flags.</p>
+          <p>Department: Production &amp; R&amp;D. Project ID lookup + RM line items with autofetch available stock. <strong>Now also carries a <a href="#mr-allocation">Material Allocation</a> subform</strong> — the per-project consumption budget with per-RM allocation ratios and 80% alert flags. <em>(Supply+Apply projects only — the Project is auto-created from the SO; Supply Only FG sales create no Project and therefore no Material Allocation and no 80% alert.)</em></p>
             <h4>Header</h4>
           <div class="table-wrap">
             <table>
@@ -1016,7 +1016,7 @@
                 <tr><td>2</td><td>Item Name</td><td>AutoFetch</td><td>*</td><td>—</td></tr>
                 <tr><td>3</td><td>UOM</td><td>AutoFetch</td><td>*</td><td>From Item Muster</td></tr>
                 <tr><td>4</td><td>Assigned Qty</td><td>Number</td><td>*</td><td><strong>Allocation baseline for this Project</strong> (e.g., X=10, Y=20, Z=30). Defaults from Required Qty</td></tr>
-                <tr><td>5</td><td>Allocation Ratio %</td><td>Formula</td><td>*</td><td>= Assigned Qty ÷ Σ Assigned Qty × 100. Example 10:20:30 → 20% : 40% : 60%</td></tr>
+                <tr><td>5</td><td>Allocation Ratio %</td><td>Formula</td><td>*</td><td>= Assigned Qty ÷ Σ Assigned Qty × 100 (always sums to 100% across all allocated lines). Example Assigned Qty X=10, Y=20, Z=30 (e.g. Kg) → ratio 16.67% : 33.33% : 50%</td></tr>
                 <tr><td>6</td><td>80% Threshold Alert Flag</td><td>Checkbox</td><td></td><td>Default ON. Raises alert when consumption ≥ 80% of Assigned Qty</td></tr>
                 <tr><td>7</td><td>Consumed Qty</td><td>Number (auto-cumulative)</td><td></td><td>Running total; incremented by FG production + Site consumption entries (backend rule)</td></tr>
                 <tr><td>8</td><td>Consumption %</td><td>Formula</td><td></td><td>= Consumed Qty ÷ Assigned Qty × 100</td></tr>
@@ -1493,6 +1493,9 @@
               <div><label>Material Used</label><input type="text" value="Epoxy Resin — 85 Kg"></div>
               <div><label>Team Size</label><input type="number" value="4"></div>
               <div><label>Hours</label><input type="number" value="8"></div>
+            </div>
+            <div style="padding:8px 12px;background:#eff6ff;border-radius:6px;font-size:12px;color:#1e3a8a;margin-top:8px">
+              <strong>&#x1F517; Site Consumption Entry (backend rule):</strong> This entry is logged against the SO <strong>System/FG</strong> (e.g., EP01). The system expands the FG into its RMs using <strong>BOM ratios</strong>, then increments <strong>Consumed Qty</strong> on the matching line of the Project's <strong>MR Material Allocation</strong> (matched by <code>Project ID + Item Code</code>) — never a generic stock pool. Same rule as FG production (BMR / RM Consumption). See <a href="flow.html#consumption-rule">Consumption Rule (flow.html)</a>.
             </div>
           </div>
         </div>
