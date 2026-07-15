@@ -141,9 +141,8 @@
           <span class="ah-arrow">▶</span>
         </div>
         <div class="accordion-body">
-          <a class="ab-link" href="forms.html#finance"><span class="al-type type-forms">Forms</span>AP/AR / GL</a>
+          <a class="ab-link" href="forms.html#finance"><span class="al-type type-forms">Forms</span>Finance (SCN)</a>
           <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>P&amp;L / Reports</a>
-          <a class="ab-link" href="flow.html#gl"><span class="al-type type-flow">Flow</span>Close Flow</a>
           <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>Finance Model</a>
         </div>
       </div>
@@ -181,7 +180,7 @@
   <section class="hero">
     <div class="hero-eyebrow">Project-Centric ERP &middot; Phases 1A&rarr;1L</div>
     <h1>Implementation Plan</h1>
-    <p>34-module architecture across 13 build phases (1A&rarr;1L). <strong>Two streams:</strong> Stream A (Pre-Project) — procurement for stock, no Project ID. Stream B (Project-Centric) — Project is root entity for all downstream modules. <span class="badge badge-green">+7 GL/Finance modules added per CFO audit</span></p>
+    <p>Two-Stream Architecture across build phases. <strong>Stream A (Pre-Project):</strong> procurement for stock, no Project ID. <strong>Stream B (Project-Centric):</strong> Project is root entity for all downstream modules.</p>
   </section>
 
   <div class="content">
@@ -190,11 +189,11 @@
       <h2>System Overview</h2>
       <div class="impl-card">
         <h3>Chemsol — Project-Centric ERP on Zoho Creator</h3>
-        <p class="impl-subtitle">Flooring &amp; Construction Materials — 34-module architecture across 13 phases (1A&rarr;1L)</p>
-        <p style="margin-bottom:16px"><strong>Two streams:</strong> <strong>Stream A (Pre-Project):</strong> Procurement runs independently for stock — PR→PO→GRN→QC→Material Handover→Store. <strong>No Project ID</strong> on procurement forms. <strong>Stream B (Project-Centric):</strong> Sales Order creates a Project. All 34 modules — procurement, inventory, production, budget, billing, financials, and governance — are tagged to that Project. Nothing exists outside a project context in Stream B.</p>
+        <p class="impl-subtitle">Flooring &amp; Construction Materials — Two-Stream Architecture</p>
+        <p style="margin-bottom:16px"><strong>Two streams:</strong> <strong>Stream A (Pre-Project):</strong> Procurement runs independently for stock — PR→PO→GRN→QC→Material Handover→Store. <strong>No Project ID</strong> on procurement forms. <strong>Stream B (Project-Centric):</strong> Sales Order creates a Project. All modules — procurement, inventory, production, budget, billing — are tagged to that Project. Nothing exists outside a project context in Stream B.</p>
         <div class="impl-two-col">
           <div>
-            <h5 style="margin-top:0">34 Modules (1A&rarr;1L)</h5>
+            <h5 style="margin-top:0">Modules</h5>
             <table class="impl-field-table">
               <tr><td>Foundation (1A)</td><td>Project, Vendors, Accounts, Warehouses, Inventory</td></tr>
               <tr><td>Budget (1B)</td><td>Budget Plans, Components, Inventory Transactions</td></tr>
@@ -202,12 +201,8 @@
               <tr><td>Procurement (1D)</td><td>Budget Approvals, POs, GRN, SCN, Transfers</td></tr>
               <tr><td>Revenue (1E)</td><td>BOM, Delivery Challan, Invoicing</td></tr>
               <tr><td>Reports (1F)</td><td>Project P&amp;L, KPIs, Budget Alerts</td></tr>
-              <tr><td>AP/AR (1G)</td><td>Vendor Bills, Payments</td></tr>
-              <tr><td>Finance (1H)</td><td>FX Rates, Accounting Periods, Tax/GST</td></tr>
-              <tr><td>Governance (1I)</td><td>Audit Log, Allocations, Budget Revisions</td></tr>
-              <tr><td>Approvals (1J)</td><td>PO/Bill/Payment Approval, SoD</td></tr>
+              <tr><td>Approvals (1J)</td><td>PO Approval, SoD</td></tr>
               <tr><td>Closure (1K)</td><td>Customer Credit Notes, Mfg Orders, Sales Orders, Customer Invoice</td></tr>
-              <tr style="background:var(--green-light)"><td>CFO Audit (1L)</td><td>Chart of Accounts, JV, Auto-Posting, Fixed Assets, Cash Flow, Annual Budget</td></tr>
             </table>
           </div>
           <div>
@@ -219,7 +214,7 @@
               <tr><td>Production</td><td>Manufacturing, BMR, FG handover</td></tr>
               <tr><td>QC</td><td>Quality inspection</td></tr>
               <tr><td>Project Manager</td><td>Project oversight, tasks</td></tr>
-              <tr><td>Account &amp; Finance</td><td>Payments, costing, GL, Fixed Assets</td></tr>
+              <tr><td>Account &amp; Finance</td><td>Supplier Credit Notes, costing, Customer Invoicing</td></tr>
             </table>
           </div>
         </div>
@@ -230,7 +225,7 @@
       <h2>Project-Centric Hub Architecture</h2>
       <div class="impl-card">
         <h3>Hub Architecture</h3>
-        <p>All modules radiate from the <strong>Project</strong>. Every form has a <code>Project ID</code> lookup field.</p>
+        <p><strong>Two-Stream Architecture:</strong> <strong>Stream A (Pre-Project)</strong> — PR, PO, GRN, QC carry <strong>no</strong> Project ID (stock procurement). <strong>Stream B (Project-Centric)</strong> — MR, MIS, Production, FGHM, Service, Finance, Logistics all carry <code>Project ID</code> lookup. Master Data (Item Muster, Suppliers, Customers, Store Master) is global.</p>
         <div class="hub-arch">
           <div class="hub-arch-inner">
             <div class="hub-center">
@@ -245,21 +240,6 @@
                 <span class="hm-icon">📋</span>
                 <span class="hm-name">Sales / SO</span>
                 <span class="hm-desc">Creates Project</span>
-              </div>
-              <div class="hub-module blue">
-                <span class="hm-icon">📝</span>
-                <span class="hm-name">PR</span>
-                <span class="hm-desc">N items per PR</span>
-              </div>
-              <div class="hub-module blue">
-                <span class="hm-icon">📄</span>
-                <span class="hm-name">PO</span>
-                <span class="hm-desc">N items per PO</span>
-              </div>
-              <div class="hub-module green">
-                <span class="hm-icon">📥</span>
-                <span class="hm-name">GRN</span>
-                <span class="hm-desc">Partial GRN</span>
               </div>
               <div class="hub-module green">
                 <span class="hm-icon">📦</span>
@@ -276,16 +256,26 @@
                 <span class="hm-name">FG Handover</span>
                 <span class="hm-desc">N FG items</span>
               </div>
-              <div class="hub-module" style="border-color:#ef4444">
-                <span class="hm-icon">🔬</span>
-                <span class="hm-name">QC / QA</span>
-                <span class="hm-desc">N items per QC</span>
+              <div class="hub-module" style="border-color:#8b5cf6">
+                <span class="hm-icon">🔧</span>
+                <span class="hm-name">Service</span>
+                <span class="hm-desc">Site Ops</span>
+              </div>
+              <div class="hub-module" style="border-color:#059669">
+                <span class="hm-icon">💰</span>
+                <span class="hm-name">Finance</span>
+                <span class="hm-desc">Invoice / SCN</span>
+              </div>
+              <div class="hub-module" style="border-color:#0891b2">
+                <span class="hm-icon">🚛</span>
+                <span class="hm-name">Logistics</span>
+                <span class="hm-desc">DC / Outward</span>
               </div>
             </div>
           </div>
         </div>
         <div class="impl-info-box">
-          <strong>Key rule:</strong> Every PR, PO, GRN, MR, MIS, FGHM, Production Order carries a <code>Project ID (Lookup)</code>. Procurement is never orphaned — it always belongs to a project.
+          <strong>Key rule:</strong> <strong>Stream A (Pre-Project):</strong> PR, PO, GRN, QC carry <strong>no</strong> <code>Project ID</code> — independent stock procurement. <strong>Stream B (Project-Centric):</strong> MR, MIS, Production, FGHM, Service, Finance, Logistics carry <code>Project ID (Lookup)</code>. The Project is the anchor for consumption tracking.
         </div>
       </div>
     </section>
@@ -857,11 +847,10 @@
 
         <h4>Project-Centric Data Flow</h4>
         <div class="impl-info-box">
-          <p><strong>Project is the root key</strong> on every transactional form:</p>
-          <p>SO &rarr; <strong>Project</strong> &rarr; PR &rarr; Rate Comparison &rarr; PO &rarr; GRN &rarr; QC</p>
-          <p>SO &rarr; <strong>Project</strong> &rarr; MR &rarr; MIS</p>
-          <p>SO &rarr; <strong>Project</strong> &rarr; Production Planning &rarr; BMR &rarr; FGHM (inline acceptance)</p>
-          <p>Every downstream form inherits <code>Project ID</code> from its parent.</p>
+          <p><strong>Two-Stream Data Flow:</strong> Stream A (Pre-Project, no Project ID) runs independently. Stream B (Project-Centric) carries Project ID downstream.</p>
+          <p><strong>Stream A:</strong> PR &rarr; Rate Comparison &rarr; PO &rarr; GRN &rarr; QC &rarr; Material Handover &rarr; Store</p>
+          <p><strong>Stream B:</strong> SO (Supply+Apply) &rarr; <strong>Project</strong> &rarr; MR &rarr; MIS &rarr; Production (Plan &rarr; BMR &rarr; Pack &rarr; FGHM) &rarr; Costing &rarr; Service &rarr; Finance &rarr; Logistics</p>
+          <p>Every Stream B form inherits <code>Project ID</code>. Stream A forms carry <strong>no</strong> Project ID.</p>
         </div>
 
         <h4>Numbering Series</h4>
@@ -934,8 +923,6 @@
           <div class="impl-flow-step"><div class="impl-flow-box impl-fb-orange">Wk 9<br>Production</div></div><span class="impl-flow-arr">&rarr;</span>
           <div class="impl-flow-step"><div class="impl-flow-box impl-fb-teal">Wk 10-11<br>Dashboards</div></div><span class="impl-flow-arr">&rarr;</span>
           <div class="impl-flow-step"><div class="impl-flow-box impl-fb-gray">Wk 12<br>UAT + Go-Live</div></div>
-          <span class="impl-flow-arr">&rarr;</span>
-          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-purple">Wk 13-16+<br>CFO Audit (1L)</div></div>
         </div>
         <ol style="margin-top:16px">
           <li><strong>Week 1-2 (Master Data):</strong> Item Muster, Supplier, Customer, System Master, Store/Bin, User Access, Approval Matrix</li>
@@ -945,14 +932,13 @@
           <li><strong>Week 9 (Production):</strong> Production Planning, BOM, Production Order, BMR, RM Consumption, Packing, Rework</li>
           <li><strong>Week 10-11 (Dashboards):</strong> Purchase, Store, Production, Project dashboards + 30+ reports</li>
           <li><strong>Week 12 (UAT + Go-Live):</strong> End-to-end testing, user training, data migration, go-live</li>
-          <li><strong>Week 13-16+ (CFO Audit — Phase 1L):</strong> Chart of Accounts, Journal Voucher, Auto-Posting Rules, Fixed Asset Register, Cash Flow Forecast, Annual Budget Master</li>
         </ol>
       </div>
     </section>
 
     <div class="footer">
       <p>Chemsol — Zoho Creator ERP &middot; ITOTCloud Systems Pvt. Ltd.</p>
-      <p>13 Phases · 34 Modules · 75+ Automations · Project-Centric Architecture · Built on Zoho Creator India (.in)</p>
+      <p>Two-Stream Architecture · Project-Centric · Built on Zoho Creator India (.in)</p>
     </div>
   </div>
 </div>

@@ -181,7 +181,7 @@
     <section class="hero">
       <div class="hero-eyebrow">Dashboards · Reports · Automation</div>
       <h1>Reports &amp; Business Rules</h1>
-      <p><strong>Stream A (Pre-Project):</strong> Procurement reports — no Project ID filter. <strong>Stream B (Project-Centric):</strong> All project reports filterable by <strong>Project ID</strong>. Department dashboards show procurement, inventory, and production data. <strong>New:</strong> Company-wide financial statements (Trial Balance, Balance Sheet, Company P&amp;L) plus Fixed Asset, Cash Flow, and Budget reports added per CFO audit recommendations.</p>
+      <p><strong>Stream A (Pre-Project):</strong> Procurement reports — no Project ID filter. <strong>Stream B (Project-Centric):</strong> All project reports filterable by <strong>Project ID</strong>. Department dashboards show procurement, inventory, and production data.</p>
     </section>
 
     <div class="content">
@@ -262,7 +262,7 @@
             <tbody>
               <tr><td><strong>Pending Credit Approvals</strong></td><td>Supplier Credit Note</td><td>Credit Notes with Status = Draft, awaiting approval</td></tr>
               <tr><td><strong>Total Credited This Month</strong></td><td>Supplier Credit Note</td><td>Sum of Total Credit Amount where Credited Date is current month</td></tr>
-              <tr><td><strong>Supplier Outstanding Summary</strong></td><td>PO − Credits − Payments</td><td>Aggregated view per supplier — computed</td></tr>
+              <tr><td><strong>Supplier Outstanding Summary</strong></td><td>PO − Credits</td><td>Aggregated view per supplier — computed</td></tr>
               <tr><td><strong>Recent Credits (7 Days)</strong></td><td>Supplier Credit Note</td><td>Recently credited notes for quick review</td></tr>
               <tr><td><strong>Top Defective Items</strong></td><td>Supplier Credit Note line items</td><td>Items with highest credit amounts (quality insights)</td></tr>
             </tbody>
@@ -442,194 +442,7 @@
         <p><strong>Filters:</strong> By Project ID, Date Range (SO Date), Project Status. <strong>Export:</strong> PDF / CSV.</p>
       </div>
 
-      <h2>Financial Statements (GL-Based)</h2>
-      <p>Company-wide financial reports computed from the General Ledger (14A–14C). These are NOT project-level — they represent the entire company's financial position.</p>
 
-      <div class="phase">
-        <div class="phase-header">
-          <span class="phase-number">G</span>
-          <span class="phase-title">Trial Balance</span>
-          <span class="phase-tag">GL Account Summary</span>
-        </div>
-        <p>Complete Trial Balance for any accounting period. Shows all GL accounts with opening balance, period activity, and closing balance.</p>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Field</th><th>Source</th><th>Computation</th></tr></thead>
-            <tbody>
-              <tr><td>Account Code</td><td>Chart of Accounts (14A)</td><td>—</td></tr>
-              <tr><td>Account Name</td><td>Chart of Accounts (14A)</td><td>—</td></tr>
-              <tr><td>Opening Balance</td><td>COA Opening Balance + prior period closing</td><td>As at period start</td></tr>
-              <tr><td>Debit Total</td><td>Σ Journal Voucher line items (14B) + Auto-posts (14C)</td><td>Sum of all debits in period</td></tr>
-              <tr><td>Credit Total</td><td>Σ Journal Voucher line items (14B) + Auto-posts (14C)</td><td>Sum of all credits in period</td></tr>
-              <tr><td>Closing Balance</td><td>Formula</td><td>Opening + Debits − Credits (for debit-balance accounts)<br>Opening + Credits − Debits (for credit-balance accounts)</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p><strong>Filters:</strong> Accounting Period (from 10B), Account Category. <strong>Validation:</strong> Σ Debits = Σ Credits (balanced). <strong>Export:</strong> PDF / CSV.</p>
-      </div>
-
-      <div class="phase">
-        <div class="phase-header">
-          <span class="phase-number">H</span>
-          <span class="phase-title">Balance Sheet</span>
-          <span class="phase-tag">Standard Format</span>
-        </div>
-        <p>Company-wide Balance Sheet as at any period end. Standard Indian format: Assets = Liabilities + Equity.</p>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Section</th><th>Line Items</th><th>Source (GL Accounts)</th></tr></thead>
-            <tbody>
-              <tr><th colspan="3" style="background:var(--gray-100);color:var(--gray-700)">ASSETS</th></tr>
-              <tr><td><strong>Current Assets</strong></td><td>Cash &amp; Bank, Accounts Receivable, Inventory (RM + FG), Prepaid Expenses, TDS Receivable</td><td>GL Category = Assets, Type = Current</td></tr>
-              <tr><td><strong>Fixed Assets</strong></td><td>Plant &amp; Machinery, Vehicles, Equipment, Furniture, Computers</td><td>GL Category = Assets, Type = Non-Current</td></tr>
-              <tr><td></td><td>Less: Accumulated Depreciation</td><td>GL Account 1.04.002 (Contra Asset)</td></tr>
-              <tr><td></td><td><strong>Net Fixed Assets</strong></td><td>Fixed Assets − Accumulated Depreciation</td></tr>
-              <tr><th colspan="3" style="background:var(--gray-100);color:var(--gray-700)">LIABILITIES</th></tr>
-              <tr><td><strong>Current Liabilities</strong></td><td>Accounts Payable, Supplier Credits, GST Payable, TDS Payable, Accrued Expenses</td><td>GL Category = Liabilities, Type = Current</td></tr>
-              <tr><td><strong>Long-Term Liabilities</strong></td><td>Bank Loans, Deferred Tax Liability</td><td>GL Category = Liabilities, Type = Non-Current</td></tr>
-              <tr><th colspan="3" style="background:var(--gray-100);color:var(--gray-700)">EQUITY</th></tr>
-              <tr><td><strong>Shareholders' Equity</strong></td><td>Share Capital, Retained Earnings, Reserves &amp; Surplus</td><td>GL Category = Equity</td></tr>
-              <tr><td></td><td>Add: Current Period Profit (from P&amp;L)</td><td>From Company P&amp;L (Report I)</td></tr>
-              <tr style="background:#f0fdf4;font-weight:700"><td></td><td>Total Liabilities + Equity</td><td>Must equal Total Assets</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p><strong>Filters:</strong> As at Date / Period. <strong>Validation:</strong> Total Assets = Total Liabilities + Equity. <strong>Export:</strong> PDF with company letterhead.</p>
-      </div>
-
-      <div class="phase">
-        <div class="phase-header">
-          <span class="phase-number">I</span>
-          <span class="phase-title">Company P&amp;L Statement</span>
-          <span class="phase-tag">Company-Wide · Not Project-Level</span>
-        </div>
-        <p>Company-wide Profit &amp; Loss statement (different from Project P&amp;L — this aggregates ALL projects plus non-project income/expenses). Computed from GL revenue and expense accounts.</p>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Line</th><th>Component</th><th>GL Source</th><th>Computation</th></tr></thead>
-            <tbody>
-              <tr><td style="font-weight:600;border-left:3px solid var(--green);">Revenue</td><td>Revenue from Operations</td><td>GL Account 4.01.001 — Flooring Sales</td><td>Σ all invoiced revenue in period</td></tr>
-              <tr><td style="font-weight:600;border-left:3px solid var(--green);"></td><td>Transport Revenue</td><td>GL Account 4.01.002 — Transport Charges</td><td>Σ transport billed to customers</td></tr>
-              <tr><th colspan="4" style="background:var(--gray-50);">Direct Costs</th></tr>
-              <tr><td style="border-left:3px solid var(--red);">Cost</td><td>Cost of Materials</td><td>GL Account 5.01.001 + 5.01.002</td><td>RM + Packing materials consumed (MIS/BMR)</td></tr>
-              <tr><td style="border-left:3px solid var(--red);">Cost</td><td>Labour — Execution</td><td>GL Account 5.02.001</td><td>Σ execution labour costs</td></tr>
-              <tr><td style="border-left:3px solid var(--red);">Cost</td><td>Labour — Manpower</td><td>GL Account 5.02.002</td><td>Σ manpower costs</td></tr>
-              <tr><td style="border-left:3px solid var(--red);">Cost</td><td>Transportation Expense</td><td>GL Account 5.03.001</td><td>Σ logistics costs</td></tr>
-              <tr><td style="border-left:3px solid var(--red);">Cost</td><td>Tools &amp; Consumables</td><td>GL Account 5.04.001</td><td>Σ tool costs</td></tr>
-              <tr style="background:#f0fdf4;font-weight:700;"><th colspan="4">GROSS PROFIT</th></tr>
-              <tr><td></td><td>Gross Profit</td><td colspan="2">Revenue − Total Direct Costs</td></tr>
-              <tr><td></td><td>Gross Margin %</td><td colspan="2">(Gross Profit / Revenue) × 100</td></tr>
-              <tr><th colspan="4" style="background:var(--gray-50);">Operating Expenses</th></tr>
-              <tr><td style="border-left:3px solid var(--red);">Cost</td><td>Administrative Overhead</td><td>GL Account 5.05.001</td><td>Σ admin expenses</td></tr>
-              <tr><td style="border-left:3px solid var(--red);">Cost</td><td>Depreciation</td><td>GL Account 5.06.001</td><td>Σ depreciation charge</td></tr>
-              <tr><td style="border-left:3px solid var(--red);">Cost</td><td>Other Operating Expenses</td><td>GL 5.x — other operating accounts</td><td>Σ misc operating expenses</td></tr>
-              <tr style="background:#f0fdf4;font-weight:700;"><th colspan="4">OPERATING PROFIT (EBIT)</th></tr>
-              <tr><td></td><td>Operating Profit</td><td colspan="2">Gross Profit − Operating Expenses</td></tr>
-              <tr><th colspan="4" style="background:var(--gray-50);">Other Income / Expenses</th></tr>
-              <tr><td style="border-left:3px solid var(--green);">Income</td><td>Other Income</td><td>GL Account 4.02.001 — Interest Income, etc.</td><td>Σ non-operating income</td></tr>
-              <tr><td style="border-left:3px solid var(--red);">Cost</td><td>FX Gain / Loss</td><td>GL Account 5.07.001</td><td>Net FX position</td></tr>
-              <tr><th colspan="4" style="background:var(--gray-50);">Tax</th></tr>
-              <tr><td style="border-left:3px solid var(--red);">Cost</td><td>Tax Expense</td><td>GL Account 5.08.001</td><td>Corporate tax provision</td></tr>
-              <tr style="background:#f0fdf4;font-weight:700;border-top:3px solid var(--primary);"><th colspan="4">NET PROFIT</th></tr>
-              <tr><td></td><td>Net Profit / (Loss)</td><td colspan="2">Operating Profit + Other Income − FX Loss − Tax</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p><strong>Filters:</strong> Accounting Period (Monthly / Quarterly / Yearly), Date Range. <strong>Export:</strong> PDF / CSV.</p>
-      </div>
-
-      <h2>Financial Reports (Sub-Ledger Based)</h2>
-
-      <div class="phase">
-        <div class="phase-header">
-          <span class="phase-number">J</span>
-          <span class="phase-title">Fixed Asset Schedule</span>
-          <span class="phase-tag">Full Asset Listing</span>
-        </div>
-        <p>Complete register of all fixed assets with current Net Book Value, accumulated depreciation, additions, and disposals during the period.</p>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Field</th><th>Source</th></tr></thead>
-            <tbody>
-              <tr><td>Asset Code, Asset Name, Category</td><td>Fixed Asset Register (14D)</td></tr>
-              <tr><td>Purchase Date, Cost</td><td>Fixed Asset Register (14D)</td></tr>
-              <tr><td>Depreciation Method, Useful Life</td><td>Fixed Asset Register (14D)</td></tr>
-              <tr><td>Accumulated Depreciation</td><td>Fixed Asset Register — Formula (updated monthly)</td></tr>
-              <tr><td>Net Book Value</td><td>Cost − Accumulated Depreciation</td></tr>
-              <tr><td>Additions During Period</td><td>Assets with Purchase Date in current period</td></tr>
-              <tr><td>Disposals During Period</td><td>Assets where Status = Disposed/Sold in current period</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p><strong>Filters:</strong> Category, Department, Status, Period. <strong>Export:</strong> PDF / CSV.</p>
-      </div>
-
-      <div class="phase">
-        <div class="phase-header">
-          <span class="phase-number">K</span>
-          <span class="phase-title">Depreciation Schedule</span>
-          <span class="phase-tag">Monthly Charge by Asset</span>
-        </div>
-        <p>Monthly depreciation charge broken down by asset and category. Used for P&amp;L disclosure and tax filing.</p>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Field</th><th>Source</th></tr></thead>
-            <tbody>
-              <tr><td>Asset Code, Asset Name</td><td>Fixed Asset Register (14D)</td></tr>
-              <tr><td>Category</td><td>Fixed Asset Register (14D)</td></tr>
-              <tr><td>Opening WDV / Book Value</td><td>NBV at start of period</td></tr>
-              <tr><td>Monthly Depreciation Amount</td><td>Formula: (Cost − Salvage) / (Life × 12) [SLM] or WDV × Rate / 12 [WDV]</td></tr>
-              <tr><td>Accumulated Depreciation</td><td>Running total</td></tr>
-              <tr><td>Closing WDV / Book Value</td><td>Opening − Monthly Depreciation</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p><strong>Filters:</strong> Period, Category, Asset. <strong>Export:</strong> PDF / CSV (schedule for tax audit).</p>
-      </div>
-
-      <div class="phase">
-        <div class="phase-header">
-          <span class="phase-number">L</span>
-          <span class="phase-title">13-Week Cash Flow Forecast</span>
-          <span class="phase-tag">Rolling Forecast</span>
-        </div>
-        <p>Rolling 13-week cash flow forecast. Inflows from scheduled customer receipts and milestone payments. Outflows from scheduled AP payments, PO payments, and overhead.</p>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Week</th><th>Opening Cash</th><th>Inflows</th><th>Outflows</th><th>Net Position</th><th>Alert</th></tr></thead>
-            <tbody>
-              <tr><td>Week 1</td><td>₹XX,XXX</td><td>₹XX,XXX</td><td>₹XX,XXX</td><td style="font-weight:700">₹XX,XXX</td><td style="color:var(--green)">✓ OK</td></tr>
-              <tr><td>Week 2</td><td>Carry fwd</td><td>₹XX,XXX</td><td>₹XX,XXX</td><td style="font-weight:700">₹XX,XXX</td><td style="color:var(--green)">✓ OK</td></tr>
-              <tr><td style="background:#fef2f2">Week 3</td><td>Carry fwd</td><td>₹XX,XXX</td><td>₹XX,XXX</td><td style="font-weight:700;color:var(--red)">₹XX,XXX</td><td style="color:var(--red);font-weight:600">⚠ Below Minimum</td></tr>
-              <tr><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td></tr>
-              <tr><td>Week 13</td><td>Carry fwd</td><td>₹XX,XXX</td><td>₹XX,XXX</td><td style="font-weight:700">₹XX,XXX</td><td style="color:var(--green)">✓ OK</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p><strong>Alert:</strong> When Net Position &lt; 3 months operating expenses, send notification to Finance and Management.</p>
-        <p><strong>Source Data:</strong> Invoices Due (13B) + Milestone SOs (2A) + Bills Due (9A) + Overhead configuration.</p>
-        <p><strong>Manual Override:</strong> See Form 14E — manual inflows/outflows for non-system items.</p>
-      </div>
-
-      <div class="phase">
-        <div class="phase-header">
-          <span class="phase-number">M</span>
-          <span class="phase-title">Budget vs Actual</span>
-          <span class="phase-tag">Variance Analysis</span>
-        </div>
-        <p>Annual budget vs actual expenditure by department and category. Variance analysis with percentage and absolute differences.</p>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Dept</th><th>Category</th><th>Budget</th><th>Actual</th><th>Variance</th><th>Variance %</th><th>Status</th></tr></thead>
-            <tbody>
-              <tr><td>Purchase</td><td>Materials</td><td>₹50,00,000</td><td>₹42,00,000</td><td style="color:var(--green)">₹8,00,000</td><td style="color:var(--green)">16%</td><td><span class="badge badge-green">Under Budget ✓</span></td></tr>
-              <tr><td>Production</td><td>Manpower</td><td>₹15,00,000</td><td>₹16,50,000</td><td style="color:var(--red)">−₹1,50,000</td><td style="color:var(--red)">−10%</td><td><span class="badge badge-red">Over Budget ⚠</span></td></tr>
-              <tr><td>Admin</td><td>Overhead</td><td>₹8,00,000</td><td>₹7,20,000</td><td style="color:var(--green)">₹80,000</td><td style="color:var(--green)">10%</td><td><span class="badge badge-green">Under Budget ✓</span></td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p><strong>Filters:</strong> Budget Year, Department, Category, Month. <strong>Drill-down:</strong> Click any row to see monthly trend. <strong>Export:</strong> PDF / CSV.</p>
-      </div>
 
       <div class="phase">
         <div class="phase-header">
@@ -637,7 +450,7 @@
           <span class="phase-title">Supplier Ledger</span>
           <span class="phase-tag">Per Supplier — Running Balance</span>
         </div>
-        <p>Complete transaction history per supplier. Shows all POs, Credit Notes, and Payments with running balance. Replaces manual supplier statement reconciliation.</p>
+        <p>Complete transaction history per supplier. Shows all POs and Credit Notes with running balance. Replaces manual supplier statement reconciliation.</p>
         <div class="table-wrap">
           <table>
             <thead><tr><th>Date</th><th>Document Type</th><th>Reference No</th><th>Debit</th><th>Credit</th><th>Running Balance</th></tr></thead>
@@ -645,7 +458,6 @@
               <tr><td>01-Jun-2026</td><td>Opening Balance</td><td>—</td><td></td><td></td><td>₹25,000</td></tr>
               <tr><td>05-Jun-2026</td><td>PO</td><td>RM-2026-0012</td><td>₹1,13,288</td><td></td><td>₹1,38,288</td></tr>
               <tr><td>10-Jun-2026</td><td>Credit Note</td><td>SC-2026-0008</td><td></td><td>₹34,515</td><td>₹1,03,773</td></tr>
-              <tr><td>15-Jun-2026</td><td>Payment (AP)</td><td>PAY-2026-0045</td><td></td><td>₹1,03,773</td><td>₹0</td></tr>
             </tbody>
           </table>
         </div>
@@ -803,9 +615,7 @@
               <tr><td><strong>Customer Invoice Approved</strong></td><td>Customer (Email)</td><td>Email with PDF</td></tr>
               <tr><td><strong>Supplier Credit Limit &gt; 80%</strong></td><td>Account &amp; Finance</td><td>Alert</td></tr>
               <tr><td><strong>PO exceeds Budget / Credit</strong></td><td>Purchase + Finance</td><td>Alert / Approval routing</td></tr>
-              <tr><td><strong>Period Close validation failure</strong></td><td>Account &amp; Finance</td><td>Exception report</td></tr>
-              <tr><td><strong>Cash Flow &lt; Minimum Threshold</strong></td><td>Finance + Management</td><td>Alert</td></tr>
-              <tr><td><strong>Fixed Asset Depreciation Run</strong></td><td>Account &amp; Finance</td><td>Auto-scheduled task</td></tr>
+
             </tbody>
           </table>
         </div>
@@ -831,8 +641,6 @@
               <tr><td>Project ID</td><td>PR, PO, GRN, MR, MIS, Production, FGHM</td><td>Project Name, Manager</td></tr>
               <tr><td>System Code</td><td>SO, BOM, Project</td><td>System Name</td></tr>
               <tr><td>SO Reference</td><td>Customer Invoice (13B)</td><td>Customer, Project ID, Line Items</td></tr>
-              <tr><td>Account Code</td><td>Journal Voucher (14B)</td><td>Account Name, Category, Type</td></tr>
-              <tr><td>Accounting Period</td><td>Journal Voucher (14B), Trial Balance</td><td>Period Status (block if closed)</td></tr>
               <tr><td>Supplier Code</td><td>Supplier Ledger Report</td><td>All transactions, running balance</td></tr>
             </tbody>
           </table>
@@ -858,8 +666,6 @@
               <tr><td>QC</td><td>QC-YYYY-XXXX</td></tr>
               <tr><td>Supplier Credit Note</td><td>SC-YYYY-XXXX</td></tr>
               <tr><td>Customer Invoice</td><td>INV-YYYY-XXXX</td></tr>
-              <tr><td>Journal Voucher</td><td>JV-YYYY-XXXX</td></tr>
-              <tr><td>Fixed Asset Code</td><td>FA-YYYY-XXX</td></tr>
               <tr><td>Delivery Challan</td><td>DC-YYYY-XXXX</td></tr>
             </tbody>
           </table>
@@ -898,7 +704,7 @@
 
       <div class="footer">
         <p>Chemsol — Zoho Creator ERP &middot; ITOTCloud Systems Pvt. Ltd.</p>
-        <p>13 Phases · 34 Modules · 75+ Automations · Project-Centric Architecture · Built on Zoho Creator India (.in)</p>
+        <p>Two-Stream Architecture · Project-Centric · Built on Zoho Creator India (.in)</p>
       </div>
     </div>
   </div>

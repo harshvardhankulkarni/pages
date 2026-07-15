@@ -376,7 +376,7 @@ Every form uses a **single field table** with a **Section** column. The Section 
 | 1 | PR Number | Text (Autogen) | Header | * | PR-YYYY-XXXX |
 | 2 | PR Date | Date | Header | * | Today's Date |
 | 3 | Reference | Text | Header | | Manual reference |
-| 4 | Project ID / Name | Lookup | Header | * | From Project Master |
+| 4 | RM Type | Dropdown | Header | * | Coding / Non-Coding |
 | 5 | Department | AutoFetch | Header | * | As per user login |
 | 6 | Approved By | User lookup | Header | | Filled after approval |
 | 7 | Status | Dropdown | Header | * | Draft / Pending Approval / Approved / Rejected |
@@ -942,7 +942,7 @@ The Project ID is passed from parent to child in Stream B only:
 | Item Code | PR, PO, MR, MIS, GRN, FGHM, BOM, QC | Name, UOM, Category, HSN, GST%, Lead Time |
 | Supplier Code | PO, GRN, Rate Comparison | Name, GSTIN, Address, Contact |
 | PR No | Rate Comparison, PO | Items, Product Details |
-| PO No | GRN | Supplier, Items, Ordered Qty, Project |
+| PO No | GRN | Supplier, Items, Ordered Qty |
 | MR No | MIS | Items, Required Qty, Project |
 | Project ID | MR, MIS, Production, FGHM, Service, Finance, Logistics (Stream B only) | Project Name, Manager |
 | System Code | SO, BOM, Project | System Name |

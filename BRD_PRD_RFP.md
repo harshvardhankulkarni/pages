@@ -292,29 +292,7 @@ A unified, low-code project budget tracking and inventory management system that
 | FR-BOM-02 | P1 | Auto-calculate: Total Component Cost, Total Manufacturing Cost (incl. labor + overhead) |
 | FR-BOM-03 | P1 | Version tracking, revision management |
 
-### Module 18: Vendor Bills — AP Sub-ledger (`Vendor_Bills`)
-
-| Requirement | Priority | Description |
-|-------------|----------|-------------|
-| FR-VBILL-01 | P0 | Record vendor invoices against Purchase Orders with embedded Bill_Line_Items subform |
-| FR-VBILL-02 | P0 | 3-way match validation: PO Ordered Qty ≥ Bill Qty, GRN Accepted Qty ≥ Bill Qty |
-| FR-VBILL-03 | P0 | Auto-numbered bills (BILL-{0000}), Status lifecycle: Draft → Received → Matched → Approved → Partially Paid → Paid → Cancelled |
-| FR-VBILL-04 | P0 | Balance Due formula tracking, auto-updated by Payments |
-| FR-VBILL-05 | P1 | Purchase Price Variance (PPV) tracking — compare GRN Actual Cost vs PO Rate per line item |
-| FR-VBILL-06 | P1 | AP Aging report — Bills grouped by Due Date (Current, 1-30, 31-60, 61-90, 90+) |
-
-### Module 19: Payments — Unified AP/AR (`Payments`)
-
-| Requirement | Priority | Description |
-|-------------|----------|-------------|
-| FR-PMT-01 | P0 | Record both outgoing vendor payments (AP) and incoming customer receipts (AR) |
-| FR-PMT-02 | P0 | Auto-update linked Bill/Invoice Amount_Paid, Balance_Due, and Status on completion |
-| FR-PMT-03 | P0 | Payment methods: Bank Transfer, Cheque, Cash, Credit Card, UPI |
-| FR-PMT-04 | P0 | Overpayment prevention — validate Amount ≤ Balance Due of linked document |
-| FR-PMT-05 | P1 | Payment reversal with automatic rollback of Amount_Paid on linked document |
-| FR-PMT-06 | P1 | Payment Register report — filterable by Type, Vendor, Customer, date range |
-
-### Module 20: Reports & Dashboards
+### Module 18: Reports & Dashboards
 
 | Requirement | Priority | Description |
 |-------------|----------|-------------|
@@ -328,35 +306,7 @@ A unified, low-code project budget tracking and inventory management system that
 | FR-RPT-08 | P0 | Budget alerts at 80%, 90%, 100% consumption (email notification) |
 | FR-RPT-09 | P0 | Low stock alerts (email notification) |
 
-### Module 21: Currency Exchange Rates (`Currency_Rates`)
-
-| Requirement | Priority | Description |
-|-------------|----------|-------------|
-| FR-FX-01 | P0 | Define exchange rates: Base Currency, Target Currency, Rate, Effective Date |
-| FR-FX-02 | P0 | Auto-populate FX_Rate on Bills, Invoices, Payments from nearest prior rate |
-| FR-FX-03 | P1 | FX Gain/Loss calculation when payment rate differs from bill/invoice rate |
-| FR-FX-04 | P1 | FX Gain/Loss Register and Currency Exposure reports |
-
-### Module 22: Accounting Periods (`Accounting_Periods`)
-
-| Requirement | Priority | Description |
-|-------------|----------|-------------|
-| FR-AP-01 | P0 | Define accounting periods (Monthly/Quarterly/Yearly) with Open/Closing/Closed status |
-| FR-AP-02 | P0 | Reject financial transactions posted to closed periods |
-| FR-AP-03 | P0 | GRNI accrual reporting — goods received but not invoiced at month-end |
-| FR-AP-04 | P1 | Trial Balance by Period report |
-| FR-AP-05 | P1 | Period Close Checklist dashboard |
-
-### Module 23: Audit Log (`Audit_Log`)
-
-| Requirement | Priority | Description |
-|-------------|----------|-------------|
-| FR-AUD-01 | P0 | Immutable audit log for all P0 financial forms |
-| FR-AUD-02 | P0 | Auto-capture: status changes, amount edits, record creation |
-| FR-AUD-03 | P0 | Write-only via Deluge — users cannot modify audit records |
-| FR-AUD-04 | P1 | Audit reports: by date, by module, by user, by record ID |
-
-### Module 24: Expense Allocations (Enhanced Expenses)
+### Module 19: Expense Allocations (Enhanced Expenses)
 
 | Requirement | Priority | Description |
 |-------------|----------|-------------|
@@ -365,7 +315,7 @@ A unified, low-code project budget tracking and inventory management system that
 | FR-ALLOC-03 | P0 | Each allocation updates its respective Budget Component's Spent Amount |
 | FR-ALLOC-04 | P1 | Legacy single-component mode preserved when no allocations exist |
 
-### Module 25: Budget Revisions (Enhanced Budget_Plans)
+### Module 20: Budget Revisions (Enhanced Budget_Plans)
 
 | Requirement | Priority | Description |
 |-------------|----------|-------------|
@@ -373,7 +323,7 @@ A unified, low-code project budget tracking and inventory management system that
 | FR-REV-02 | P0 | Track: Previous Amount, New Amount, Change Amount, Reason, Approved By |
 | FR-REV-03 | P1 | Budget Revision History and Component Change Log reports |
 
-### Module 26: Customer Credit Notes (`Customer_Credit_Notes`)
+### Module 21: Customer Credit Notes (`Customer_Credit_Notes`)
 
 | Requirement | Priority | Description |
 |-------------|----------|-------------|
@@ -383,7 +333,7 @@ A unified, low-code project budget tracking and inventory management system that
 | FR-CCN-04 | P1 | Status: Draft → Issued → Applied → Cancelled |
 | FR-CCN-05 | P1 | CCN cancellation reverses Invoice Balance Due adjustment |
 
-### Module 27: Manufacturing Orders (`Manufacturing_Orders`)
+### Module 22: Manufacturing Orders (`Manufacturing_Orders`)
 
 | Requirement | Priority | Description |
 |-------------|----------|-------------|
@@ -393,7 +343,7 @@ A unified, low-code project budget tracking and inventory management system that
 | FR-MO-04 | P1 | On Complete: issue components via Stock Out, receive finished goods via Stock In |
 | FR-MO-05 | P1 | On Cancel: release all reserved component stock |
 
-### Module 28: Sales Orders (`Sales_Orders`)
+### Module 23: Sales Orders (`Sales_Orders`)
 
 | Requirement | Priority | Description |
 |-------------|----------|-------------|
@@ -433,32 +383,20 @@ A unified, low-code project budget tracking and inventory management system that
 | 22 | Validate No Linked GRN Before PO Cancellation | PO Status = Cancelled | P1 |
 | 23 | Validate No Open Items Before Project Completion | Project Status = Completed | P1 |
 | 24 | Flag Aged POs for Manual Close Review | Scheduled workflow | P2 |
-| 25 | 3-Way Match Validation | Bill Status = Matched | P0 |
-| 26 | Update Bill Payment Status | Payment Completed (AP) | P0 |
-| 27 | Update Invoice Payment Status | Payment Completed (AR) | P0 |
-| 28 | Reverse Payment on linked document | Payment Reversed | P1 |
-| 29 | Calculate Weighted Average Cost | Inventory Transaction (Stock In) | P1 |
-| 30 | FX Rate Auto-Population | Bill/Invoice/Payment Create (On Load) | P1 |
-| 31 | FX Gain/Loss Calculation | Payment Submit | P1 |
-| 32 | Period Lock Validation | All Financial Forms Submit | P0 |
-| 33 | Audit Log — Status Change | All P0 Forms Submit | P0 |
-| 34 | Audit Log — Financial Edit | All P0 Forms Submit | P1 |
-| 35 | Expense Allocation Validation | Expense Submit | P0 |
-| 36 | Budget Revision Auto-Create | Budget Approval Submit | P1 |
-| 37 | GRNI Accrual Check | Scheduled (Month-end) | P1 |
-| 38 | PO Budget Check — validate available budget before Open | PO Status = Pending Approval | P0 |
-| 39 | PO Budget Commit — increment Committed_Amount | PO Status = Open | P0 |
-| 40 | PO Budget Release — decrement Committed_Amount | PO Status = Cancelled | P0 |
-| 41 | Bill Pending Approval — route to Finance Manager after 3-way match | Bill Status = Matched | P0 |
-| 42 | Payment Approval Routing — threshold-based auto-approve | Payment Submit | P0 |
-| 43 | PR Budget Check — validate before PO auto-creation | PR Final Approval | P0 |
-| 44 | CCN Issued — reduce Invoice Balance Due, create return inventory | CCN Status = Issued | P1 |
-| 45 | CCN Cancelled — reverse Invoice adjustments | CCN Status = Cancelled | P1 |
-| 46 | MO Released — reserve component stock | MO Status = Released | P1 |
-| 47 | MO Completed — issue components, receive finished goods | MO Status = Completed | P1 |
-| 48 | MO Cancelled — release reserved stock | MO Status = Cancelled | P1 |
-| 49 | SO → Create Invoice — custom button | Button click | P1 |
-| 50 | SO → Create DC — custom button | Button click | P1 |
+| 25 | Calculate Weighted Average Cost | Inventory Transaction (Stock In) | P1 |
+| 26 | Expense Allocation Validation | Expense Submit | P0 |
+| 27 | Budget Revision Auto-Create | Budget Approval Submit | P1 |
+| 28 | PO Budget Check — validate available budget before Open | PO Status = Pending Approval | P0 |
+| 29 | PO Budget Commit — increment Committed_Amount | PO Status = Open | P0 |
+| 30 | PO Budget Release — decrement Committed_Amount | PO Status = Cancelled | P0 |
+| 31 | PR Budget Check — validate before PO auto-creation | PR Final Approval | P0 |
+| 32 | CCN Issued — reduce Invoice Balance Due, create return inventory | CCN Status = Issued | P1 |
+| 33 | CCN Cancelled — reverse Invoice adjustments | CCN Status = Cancelled | P1 |
+| 34 | MO Released — reserve component stock | MO Status = Released | P1 |
+| 35 | MO Completed — issue components, receive finished goods | MO Status = Completed | P1 |
+| 36 | MO Cancelled — release reserved stock | MO Status = Cancelled | P1 |
+| 37 | SO → Create Invoice — custom button | Button click | P1 |
+| 38 | SO → Create DC — custom button | Button click | P1 |
 
 ## 5. Non-Functional Requirements
 
@@ -479,7 +417,7 @@ A unified, low-code project budget tracking and inventory management system that
 
 All Phase 1 modules must be verified against:
 1. Each form creates/saves records correctly with field-level validation
-2. All 50 Deluge workflows execute without errors for expected inputs
+2. All Deluge workflows execute without errors for expected inputs
 3. Lookup relationships return correct data
 4. Role-based access restricts unauthorized actions
 5. Reports and dashboards display correct aggregate values
@@ -488,13 +426,8 @@ All Phase 1 modules must be verified against:
 8. PR → PO auto-creation copies all line items correctly
 9. Goods Receipt → Stock In chain executes end-to-end
 10. Transfer Order → paired transactions complete correctly
-11. Vendor Bill 3-way match validation works correctly (PO × GRN × Bill)
-12. Payment updates linked Bill/Invoice Amount_Paid and Balance_Due correctly
-13. PPV (Purchase Price Variance) calculated correctly per line item
-14. Audit Log captures all status changes correctly across financial forms
-15. Period lock prevents posting to closed periods
-16. Expense allocation validation prevents misallocation (sum != amount)
-17. Budget revisions are created automatically on overrun approval
+11. Expense allocation validation prevents misallocation (sum != amount)
+12. Budget revisions are created automatically on overrun approval
 
 ## 7. Future Scope (Phase 2 — AI Integration)
 
@@ -525,7 +458,7 @@ All Phase 1 modules must be verified against:
 
 ## 2. Organization Background
 
-ITOTCloud Systems Pvt. Ltd. is a Zoho implementation services company. This RFP seeks proposals from qualified vendors/partners to implement a 18-module Project Budget Tracking & Inventory Management system on Zoho Creator, as specified in this document.
+ITOTCloud Systems Pvt. Ltd. is a Zoho implementation services company. This RFP seeks proposals from qualified vendors/partners to implement a 22-module Project Budget Tracking & Inventory Management system on Zoho Creator, as specified in this document.
 
 ## 3. Scope of Work
 
@@ -539,12 +472,9 @@ ITOTCloud Systems Pvt. Ltd. is a Zoho implementation services company. This RFP 
 | Phase 1D — Procurement Cycle | Budget Approvals, Purchase Orders (enhanced), Goods Receipt (enhanced), Supplier Credit Notes, Transfers | 8–12 days |
 | Phase 1E — Revenue & Manufacturing | BOM, Delivery Challans, Invoicing | 5–7 days |
 | Phase 1F — Reports & Dashboards | KPI dashboards, 17+ reports, scheduled alerts | 5–7 days |
-| Phase 1G — AP/AR Sub-ledger | Vendor Bills, Payments, AP Aging, PPV Register | 4–6 days |
-| Phase 1H — Financial Controls | FX Rates, Accounting Periods, Tax/GST enhancements | 5–7 days |
-| Phase 1I — Governance | Audit Log, Expense Allocations, Budget Revisions | 4–6 days |
-| Phase 1J — Approvals & Controls | PO/Bill/Payment approval workflows, committed budget, SoD | 5–7 days |
-| Phase 1K — Gaps Closure | Customer Credit Notes, Manufacturing Orders, Sales Orders | 5–7 days |
-| **Phase 1 Total** | **27 modules, 58+ Deluge workflows** | **56–82 days** |
+| Phase 1G — Approvals & Controls | PO approval workflows, committed budget, SoD | 5–7 days |
+| Phase 1H — Gaps Closure | Customer Credit Notes, Manufacturing Orders, Sales Orders | 5–7 days |
+| **Phase 1 Total** | **22 modules, 38+ Deluge workflows** | **42–59 days** |
 | Phase 2 — AI Integration (Optional) | AI forecasting, anomaly detection, NLP reporting | TBD (separate SOW) |
 
 ### 3.2 What is Out of Scope
@@ -559,8 +489,8 @@ ITOTCloud Systems Pvt. Ltd. is a Zoho implementation services company. This RFP 
 
 | Deliverable | Description | Acceptance Criteria |
 |-------------|-------------|-------------------|
-| D1 | Zoho Creator application with all 27 modules configured | All forms, fields, lookups per IMPLEMENTATION_PLAN.md specs |
-| D2 | Deluge automation workflows (58+) | Each workflow passes test scenarios without errors |
+| D1 | Zoho Creator application with all 22 modules configured | All forms, fields, lookups per IMPLEMENTATION_PLAN.md specs |
+| D2 | Deluge automation workflows (38+) | Each workflow passes test scenarios without errors |
 | D3 | Role-based access configuration | 10 user roles with correct form-level permissions |
 | D4 | Reports & Dashboards | 20+ reports + Executive Dashboard with KPI cards |
 | D5 | Budget alert system | Alerts trigger at 80%/90%/100% consumption thresholds |
@@ -642,12 +572,9 @@ All proposals must be submitted as **fixed-price per phase** with the following 
 | Phase 1D | Procurement Cycle (5 modules incl. Supplier Credit Notes) | $4,500 – $7,000 |
 | Phase 1E | Revenue & Manufacturing (3 modules) | $3,000 – $5,000 |
 | Phase 1F | Reports & Dashboards | $3,000 – $5,000 |
-| Phase 1G | AP/AR Sub-ledger | $2,500 – $4,000 |
-| Phase 1H | Financial Controls | $3,000 – $5,000 |
-| Phase 1I | Governance & Audit | $2,500 – $4,000 |
-| Phase 1J | Approvals & Controls (SoD) | $3,000 – $5,000 |
-| Phase 1K | Customer Credit Notes, MO, SO | $3,000 – $5,000 |
-| **Phase 1 Total** | **27 modules** | **$34,000 – $55,000** |
+| Phase 1G | Approvals & Controls (SoD) | $3,000 – $5,000 |
+| Phase 1H | Customer Credit Notes, MO, SO | $3,000 – $5,000 |
+| **Phase 1 Total** | **22 modules** | **$25,000 – $41,000** |
 | Phase 2 | AI Integration (Optional) | TBD |
 
 ### 6.2 Payment Milestones
@@ -661,12 +588,9 @@ All proposals must be submitted as **fixed-price per phase** with the following 
 | Phase 1D Completion | 15% | Procurement cycle verified |
 | Phase 1E Completion | 10% | Revenue & manufacturing verified |
 | Phase 1F Completion | 15% | Reports & dashboards verified |
-| Phase 1G Completion | 10% | AP/AR sub-ledger verified |
-| Phase 1H Completion | 5% | Financial controls verified |
-| Phase 1I Completion | 5% | Governance & audit verified |
-| Phase 1J Completion | 5% | Approvals & controls verified |
-| Phase 1K Completion | 5% | Gaps closure verified |
-| Final Acceptance & UAT Sign-off | 10% | All 27 modules accepted, training completed |
+| Phase 1G Completion | 10% | Approvals & controls verified |
+| Phase 1H Completion | 5% | Gaps closure verified |
+| Final Acceptance & UAT Sign-off | 10% | All 22 modules accepted, training completed |
 
 ## 7. Timeline & Milestones
 
@@ -745,14 +669,9 @@ Aston Plaza, Ambegaon BK, Pune — 411046, India
 | 17 | Delivery Challan | `Delivery_Challans` | `DC_Line_Items` | Auto Stock Out |
 | 18 | BOM | `BOM` | `BOM_Line_Items` | Cost calculation |
 | 19 | Reports & Dashboards | — | — | KPIs, alerts, 20+ reports |
-| 20 | Vendor Bills (AP) | `Vendor_Bills` | `Bill_Line_Items` | 3-way match, PPV calculation, AP Aging |
-| 21 | Payments | `Payments` | — | AP/AR unified, auto-update Bill/Invoice, overpayment prevention |
-| 22 | Currency Exchange Rates | `Currency_Rates` | — | FX rate management, auto-population |
-| 23 | Accounting Periods | `Accounting_Periods` | — | Period close, locking, GRNI |
-| 24 | Audit Log | `Audit_Log` | — | Immutable audit trail for financial forms |
-| 25 | Customer Credit Notes | `Customer_Credit_Notes` | `CCN_Line_Items` | Reduce Invoice Balance Due, auto Stock In for goods returns |
-| 26 | Manufacturing Orders | `Manufacturing_Orders` | `MO_Components` | Reserve/issue/receive stock, production lifecycle |
-| 27 | Sales Orders | `Sales_Orders` | `SO_Line_Items` | Order management, custom Invoice/DC buttons |
+| 20 | Customer Credit Notes | `Customer_Credit_Notes` | `CCN_Line_Items` | Reduce Invoice Balance Due, auto Stock In for goods returns |
+| 21 | Manufacturing Orders | `Manufacturing_Orders` | `MO_Components` | Reserve/issue/receive stock, production lifecycle |
+| 22 | Sales Orders | `Sales_Orders` | `SO_Line_Items` | Order management, custom Invoice/DC buttons |
 
 ## Appendix B: Deluge Automation Catalog
 
@@ -786,32 +705,20 @@ Aston Plaza, Ambegaon BK, Pune — 411046, India
 | D-26 | SCN Settled — Clear PO credit flag | SCN Status = Settled | Form Workflow | P1 |
 | D-27 | SCN Cancelled — Reverse credits | SCN Status = Cancelled | Form Workflow | P1 |
 | D-28 | PO Receipt Status recalculation per line item | GRN Submit (Status = Open) | Form Workflow | P0 |
-| D-29 | 3-Way Match Validation | Bill Status = Matched | Form Workflow | P0 |
-| D-30 | Update Bill on Payment | Payment Completed (AP) | Form Workflow | P0 |
-| D-31 | Update Invoice on Receipt | Payment Completed (AR) | Form Workflow | P0 |
-| D-32 | Reverse Payment | Payment Reversed | Form Workflow | P1 |
-| D-33 | Weighted Average Cost Calculation | Inventory Transaction (Stock In) | Form Workflow | P1 |
-| D-34 | FX Rate Auto-Population | Bill/Invoice/Payment Create | Form Workflow | P1 |
-| D-35 | FX Gain/Loss Calculation | Payment Submit | Form Workflow | P1 |
-| D-36 | Period Lock Validation | All Financial Forms | Form Workflow | P0 |
-| D-37 | Audit Log — Status Change | All P0 Forms | Form Workflow | P0 |
-| D-38 | Audit Log — Financial Edit | All P0 Forms | Form Workflow | P1 |
-| D-39 | Expense Allocation Validation | Expense Submit | Form Workflow | P0 |
-| D-40 | Budget Revision Auto-Create | Budget Approval Submit | Form Workflow | P1 |
-| D-41 | GRNI Accrual | Scheduled (Month-end) | Scheduled | P1 |
-| D-42 | PO Budget Check — validate available budget | PO Pending Approval | Form Workflow | P0 |
-| D-43 | PO Budget Commit — increment Committed_Amount | PO Open | Form Workflow | P0 |
-| D-44 | PO Budget Release — decrement Committed_Amount | PO Cancelled | Form Workflow | P0 |
-| D-45 | Bill Pending Approval — route to Finance Manager | Bill Matched | Form Workflow | P0 |
-| D-46 | Payment Approval Routing — threshold-based | Payment Pending Approval | Form Workflow | P0 |
-| D-47 | PR Budget Check — validate before auto-PO | PR Final Approval | Form Workflow | P0 |
-| D-48 | CCN Issued — reduce Invoice Balance Due, return inventory | CCN Issued | Form Workflow | P1 |
-| D-49 | CCN Cancelled — reverse Invoice adjustments | CCN Cancelled | Form Workflow | P1 |
-| D-50 | MO Released — reserve component stock | MO Released | Form Workflow | P1 |
-| D-51 | MO Completed — issue components, receive goods | MO Completed | Form Workflow | P1 |
-| D-52 | MO Cancelled — release reserved stock | MO Cancelled | Form Workflow | P1 |
-| D-53 | SO → Create Invoice (custom button) | Button click | Custom Action | P1 |
-| D-54 | SO → Create DC (custom button) | Button click | Custom Action | P1 |
+| D-29 | Weighted Average Cost Calculation | Inventory Transaction (Stock In) | Form Workflow | P1 |
+| D-30 | Expense Allocation Validation | Expense Submit | Form Workflow | P0 |
+| D-31 | Budget Revision Auto-Create | Budget Approval Submit | Form Workflow | P1 |
+| D-32 | PO Budget Check — validate available budget | PO Pending Approval | Form Workflow | P0 |
+| D-33 | PO Budget Commit — increment Committed_Amount | PO Open | Form Workflow | P0 |
+| D-34 | PO Budget Release — decrement Committed_Amount | PO Cancelled | Form Workflow | P0 |
+| D-35 | PR Budget Check — validate before auto-PO | PR Final Approval | Form Workflow | P0 |
+| D-36 | CCN Issued — reduce Invoice Balance Due, return inventory | CCN Issued | Form Workflow | P1 |
+| D-37 | CCN Cancelled — reverse Invoice adjustments | CCN Cancelled | Form Workflow | P1 |
+| D-38 | MO Released — reserve component stock | MO Released | Form Workflow | P1 |
+| D-39 | MO Completed — issue components, receive goods | MO Completed | Form Workflow | P1 |
+| D-40 | MO Cancelled — release reserved stock | MO Cancelled | Form Workflow | P1 |
+| D-41 | SO → Create Invoice (custom button) | Button click | Custom Action | P1 |
+| D-42 | SO → Create DC (custom button) | Button click | Custom Action | P1 |
 
 ## Appendix C: Key Lookup Relationships
 
@@ -831,12 +738,6 @@ Invoices → Projects, Accounts
 Delivery_Challans → Projects, Accounts
 BOM → Inventory_Items (Finished Item)
 Item_Warehouse_Stock → Inventory_Items, Warehouses
-Vendor_Bills → Vendors, Purchase_Orders, Goods_Receipts
-Payments → Vendor_Bills (AP), Invoices (AR), Vendors, Accounts
-Supplier_Credit_Notes → Vendor_Bills (via Bill_Reference)
-Currency_Rates (standalone — no inbound lookups)
-Accounting_Periods (lookup target from all financial forms)
-Audit_Log (standalone — write-only via Deluge)
 Expenses (enhanced) → Expense_Allocations → Budget_Components
 Budget_Plans (enhanced) → Budget_Revisions → Budget_Components
 Customer_Credit_Notes → Accounts, Invoices

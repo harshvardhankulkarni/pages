@@ -29,14 +29,9 @@ Subforms are **embedded** inside the parent form — they are NOT separate forms
 17. Invoicing — `Invoices` (embedded subform: `Invoice_Line_Items`)
 18. Delivery Challan — `Delivery_Challans` (embedded subform: `DC_Line_Items`)
 19. BOM (Bill of Materials) — `BOM` (embedded subform: `BOM_Line_Items`)
-20. Vendor Bills (AP Sub-ledger) — `Vendor_Bills` (embedded subform: `Bill_Line_Items`)
-21. Payments (AP/AR) — `Payments`
-22. Currency Exchange Rates — `Currency_Rates`
-23. Accounting Periods — `Accounting_Periods`
-24. Audit Log — `Audit_Log`
-25. Customer Credit Notes — `Customer_Credit_Notes` (embedded subform: `CCN_Line_Items`)
-26. Manufacturing Orders — `Manufacturing_Orders` (embedded subform: `MO_Components`)
-27. Sales Orders — `Sales_Orders` (embedded subform: `SO_Line_Items`)
+20. Customer Credit Notes — `Customer_Credit_Notes` (embedded subform: `CCN_Line_Items`)
+21. Manufacturing Orders — `Manufacturing_Orders` (embedded subform: `MO_Components`)
+22. Sales Orders — `Sales_Orders` (embedded subform: `SO_Line_Items`)
 
 ## Deluge Scripting Conventions
 - **User-facing validation**: Use `alert "message";` NOT `throw "message"` — `throw` throws a system exception, `alert` shows a popup and stops submission
@@ -67,17 +62,9 @@ Subforms are **embedded** inside the parent form — they are NOT separate forms
 - **Supplier Credit Notes (finance-initiated)**: Manual finance entry against defective items post-QA/QC; updates PO_Line_Items.Credited_Qty; sets PO.Has_Outstanding_Credit = true
 - **SCN → Return to Vendor**: When Stock Disposition = "Returned to Supplier", Deluge auto-creates Return to Vendor inventory transaction
 - **GRN_Line_Items credit tracking**: When SCN references a GRN, Is_Credited flag + Credit_Note_Ref are set automatically
-- **Vendor Bills (AP sub-ledger)**: Records vendor invoices against POs. 3-way match validation (PO ↔ GRN ↔ Bill) on Status = "Matched". Auto-calculates PPV (Purchase Price Variance) on approval. Balance Due tracked via Payment updates
-- **Payments (unified AP/AR)**: Single module for both vendor payments (AP) and customer receipts (AR). On completion, auto-updates linked Bill/Invoice Amount_Paid + Balance_Due + Status. Prevents overpayment
 - **Weighted Average Cost**: On every Stock In transaction, Deluge recalculates Average_Cost: ((Old_Stock × Old_Avg) + (Qty × Rate)) / (Old_Stock + Qty). Updates Item_Warehouse_Stock.Unit_Cost
-
-- **Multi-currency**: Auto-populates FX_Rate from Currency_Rates table on Bills, Invoices, Payments. Calculates FX Gain/Loss when payment rate differs from bill/invoice rate
-- **Period close**: Accounting_Periods with Open/Closing/Closed status. Deluge prevents posting to closed periods across all financial forms
-- **Tax/GST classification**: Input GST (ITC) tracking on Bills; Output GST liability tracking on Invoices. Enables GSTR-1/GSTR-2 reporting
-- **Audit Log**: Immutable log on every P0 form — captures status changes, amount edits, and creation events. Write-only via Deluge
 - **Expense Allocations**: Split a single expense across multiple Budget Components via embedded Expense_Allocations subform; validates sum = expense amount
 - **Budget Revisions**: Auto-creates revision record when Budget_Approval modifies budget amount; tracks component allocation changes over time
-- **GRNI Accrual**: Scheduled workflow identifies GRN line items without matched Bills for month-end accrual reporting
 - **CCN Issued (AR)**: On Issue, reduces Invoice Balance Due; for goods items, auto-creates Stock In (Return to Customer) inventory transaction
 - **CCN Applied**: Marks Invoice Has_Credit_Note = true when CCN fully utilized
 - **CCN Cancelled**: Reverses Invoice Balance Due adjustment
@@ -121,9 +108,6 @@ Phase 1C: Expenses → Purchase_Requisitions
 Phase 1D: Budget_Approvals → Purchase_Orders (enhanced) → Goods_Receipts (enhanced) → Supplier_Credit_Notes (NEW) → Transfer_Orders
 Phase 1E: BOM → Delivery_Challans → Invoices
 Phase 1F: Reports & Dashboards (incl. Project P&L)
-Phase 1G: Vendor_Bills → Payments (AP/AR sub-ledger)
-Phase 1H: FX_Rates → Accounting_Periods → Tax/GST enhancements (cross-cutting)
-Phase 1I: Audit_Log → Expense_Allocations → Budget_Revisions (governance)
-Phase 1J: PO/Bill/Payment approval workflows + committed budget tracking + Segregation of Duties
-Phase 1K: Customer_Credit_Notes → Manufacturing_Orders → Sales_Orders (gaps closure)
+Phase 1G: PO approval workflows + committed budget tracking + Segregation of Duties
+Phase 1H: Customer_Credit_Notes → Manufacturing_Orders → Sales_Orders (gaps closure)
 ```

@@ -20,7 +20,7 @@ The system has two independent streams:
 - **Project → Production Planning → BMR → Packing → FGHM** (consume RM → produce FG with inline acceptance).
 - **Project → Costing Approval** (material cost valuation gate).
 - **Project → Service Team** (Area Measurement → Material Custody → Work Start → Final Invoice).
-- **Project → Finance** (Customer Invoice / AR / Supplier CN / GL).
+- **Project → Finance** (Customer Invoice / AR / Supplier CN).
 - **Project → Logistics** (Delivery Challan → Outward Invoice).
 
 **Consumption Tracking (KEY):** The **Project is the anchor** for material consumption.
@@ -51,19 +51,20 @@ Master Data (Item Muster, Suppliers, Customers, Store Master) is global — used
 - **Project** — Project ID, name, SO ref, address, manager, execution base (Area/Day), start/end date, cost. Systems subform.
 - **Task Budget** — Single table with Category dropdown (Transport / Execution / Manpower / Tools / Overhead), Description, Qty/Area, Rate, Amount, Manpower. Plus Actual Qty, Actual Rate, Actual Amount columns for P&amp;L.
 
-### Procurement (PR→PO→GRN→QC) — Stream A (No Project ID)
-1. **PR** (Purchase Requisition) — PR# autogen, Project ID lookup, dept auto from login, items with autofill code/name/UOM/lead time.
+### Procurement (PR→Rate Comparison→PO→GRN→QC→Material Handover) — Stream A (No Project ID)
+1. **PR** (Purchase Requisition) — PR# autogen, department auto from login, items with autofill code/name/UOM/lead time. **No Project ID.**
 2. **Rate Comparison** — PR ref, 5 supplier comparisons (dropdown, price, credit), finalised supplier/rate, PO ref.
-3. **PO** (Purchase Order) — RM type (Coding/Non-Coding → different PO series: RM vs RMWAD), Project ID (autofetch from PR), supplier autofetch, items table with HSN, qty, rate, GST split (CGST/SGST/IGST), delivery/payment terms, transport scope.
-4. **GRN** (Goods Receipt Note) — PO ref, Project ID (autofetch), warehouse dropdown (Wadki/Main/Neelo/Gurgaon/Bangalore/Client Site), item checkbox for partial GRN, ordered vs received qty, QC status, packing quality, transport subform.
+3. **PO** (Purchase Order) — RM type (Coding/Non-Coding → different PO series: RM vs RMWAD), PR reference, supplier autofetch, items table with HSN, qty, rate, GST split (CGST/SGST/IGST), delivery/payment terms, transport scope. **No Project ID.**
+4. **GRN** (Goods Receipt Note) — PO ref, warehouse dropdown (Wadki/Main/Neelo/Gurgaon/Bangalore/Client Site), item checkbox for partial GRN, ordered vs received qty, QC status, packing quality, transport subform. **No Project ID.**
 5. **QC/QA** — GRN ref, inspection results (viscosity, density, color, moisture), accepted/rejected qty, packaging quality.
+6. **Material Handover** — Coding/Non-Coding RM split from Purchase → Store (with Bin Location subform in Store Master).
 
-### Inventory/Stores — Tagged to Project
+### Inventory/Stores — Tagged to Project (Stream B)
 - **MR** (Material Requisition) — Project ID lookup, priority dropdown, batch no, RM line items (autofetch available stock), AND a **Material Allocation subform** (Assigned Qty per RM, Allocation Ratio %, 80% Alert Flag) that is the per-project consumption budget.
-- **Consumption resolution** — FG production and Site Manager entries deduct from the **project-assigned RM** (MR Allocation), not a generic pool; `Consumed Qty` is tracked per allocated line and compared to `Assigned Qty` for the 80% alert.
-- **MIS** (Material Issue Slip) — linked to MR, items with required/issued/balance qty, issued by/handover to.
-- **FGHM** (FG Handover) — Project ID lookup, client/site, batch no, FG products with qty/QC, handed over/received by. Inline acceptance on handover.
-- **Material Return, Material Handover, Vehicle & Transport** — additional store forms, tagged to project.
+- **Consumption resolution** — FG production (BMR / RM Consumption) and Site Manager consumption entries resolve to the **project-assigned RM** (MR Allocation), not a generic pool; `Consumed Qty` is tracked per allocated line and compared to `Assigned Qty` for the 80% alert.
+- **MIS** (Material Issue Slip) — linked to MR, items with required/issued/balance qty, issued by/handover to. Stock deducted on MIS posting.
+- **FGHM** (FG Handover) — Project ID lookup, client/site, batch no, FG products with qty/QC, handed over/received by. Inline acceptance on handover (no separate FGAN).
+- **Store** — RM/FG inventory with Bin Location subform within Store Master.
 
 ### Production — Tagged to Project
 - **Production Planning** — Project ID lookup, MR Sheet ref, week/month period, SO/WO qty autofetch, FG stock, net requirement.
@@ -82,11 +83,11 @@ Master Data (Item Muster, Suppliers, Customers, Store Master) is global — used
 - **Logistics Reports** — Dispatch tracking, delivery performance, transport cost analysis.
 
 ### Departmental Groups
-- **Purchase Dept** — dashboards: total purchase, open POs, pending approvals, overdue deliveries, transport. Filterable by project.
-- **Store Dept** — inventory dashboard, dispatch planning, FG receiving. Filterable by project.
-- **Production Dept** — today's production, open orders, material consumption, efficiency, pending handover. Filterable by project.
-- **Service Team** — service work allocation, completion tracking, invoicing. Filterable by project.
-- **Logistics** — dispatch planning, delivery challans, transport tracking. Filterable by project.
+- **Purchase Dept** — dashboards: total purchase, open POs, pending approvals, overdue deliveries, transport. Stream A procurement — not filterable by project (no Project ID).
+- **Store Dept** — inventory dashboard, dispatch planning, FG receiving. Filterable by Project ID (Stream B) and global (Stream A stock).
+- **Production Dept** — today's production, open orders, material consumption, efficiency, pending handover. Filterable by Project ID.
+- **Service Team** — service work allocation, completion tracking, invoicing. Filterable by Project ID.
+- **Logistics** — dispatch planning, delivery challans, transport tracking. Filterable by Project ID.
 
 ## System Code Conventions
 

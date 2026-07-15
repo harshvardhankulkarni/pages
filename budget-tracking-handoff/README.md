@@ -39,14 +39,9 @@ Subforms are **embedded** inside the parent form — they are NOT separate forms
 | 17 | Invoicing | `Invoices` (embedded subform: `Invoice_Line_Items`) | Revenue tracking per project |
 | 18 | Delivery Challan | `Delivery_Challans` (embedded subform: `DC_Line_Items`) | Goods dispatch tracking |
 | 19 | BOM | `BOM` (embedded subform: `BOM_Line_Items`) | Bill of Materials for manufacturing |
-| 20 | Vendor Bills (AP) | `Vendor_Bills` (embedded subform: `Bill_Line_Items`) | Record vendor invoices against POs, 3-way match, AP aging |
-| 21 | Payments | `Payments` | Unified AP vendor payments and AR customer receipts |
-| 22 | Currency Exchange Rates | `Currency_Rates` | FX rate management for multi-currency support |
-| 23 | Accounting Periods | `Accounting_Periods` | Month-end close, period locking, GRNI accrual |
-| 24 | Audit Log | `Audit_Log` | Immutable audit trail for all P0 financial forms |
-| 25 | Customer Credit Notes | `Customer_Credit_Notes` (embedded subform: `CCN_Line_Items`) | Customer returns/credit — reduces Invoice Balance Due |
-| 26 | Manufacturing Orders | `Manufacturing_Orders` (embedded subform: `MO_Components`) | Production lifecycle — reserve, issue, receive finished goods |
-| 27 | Sales Orders | `Sales_Orders` (embedded subform: `SO_Line_Items`) | Customer order management — invoice/DC creation buttons |
+| 20 | Customer Credit Notes | `Customer_Credit_Notes` (embedded subform: `CCN_Line_Items`) | Customer returns/credit — reduces Invoice Balance Due |
+| 21 | Manufacturing Orders | `Manufacturing_Orders` (embedded subform: `MO_Components`) | Production lifecycle — reserve, issue, receive finished goods |
+| 22 | Sales Orders | `Sales_Orders` (embedded subform: `SO_Line_Items`) | Customer order management — invoice/DC creation buttons |
 
 ## Build Phases
 
@@ -58,13 +53,10 @@ Subforms are **embedded** inside the parent form — they are NOT separate forms
 | 1D | Budget Approval → Purchase Orders (enhanced) → Goods Receipt (enhanced) → **Supplier Credit Notes** → Transfer Orders | Procurement + supplier credits | After 1C |
 | 1E | BOM → Delivery Challan → Invoicing | Revenue & manufacturing | After 1D |
 | 1F | Reports & Dashboards (all modules incl. Project P&L) | Intelligence | After 1E |
-| 1G | Vendor Bills → Payments | AP/AR sub-ledger | After 1F |
-| 1H | FX Rates → Accounting Periods → Tax/GST | Cross-cutting financial | After 1G |
-| 1I | Audit Log → Expense Allocations → Budget Revisions | Governance & controls | After 1H |
-| 1J | PO/Bill/Payment approval + Committed Budget + SoD | Approval workflows & controls | After 1I |
-| 1K | Customer Credit Notes → Manufacturing Orders → Sales Orders | Gaps closure | After 1J |
+| 1G | PO approval + Committed Budget + SoD | Approval workflows & controls | After 1F |
+| 1H | Customer Credit Notes → Manufacturing Orders → Sales Orders | Gaps closure | After 1G |
 
-## Key Deluge Automations (58+ total)
+## Key Deluge Automations (42+ total)
 
 Subforms are embedded — Deluge accesses them via `input.<subform_name>` during On Submit workflows. There is no standalone CRUD on subform records.
 
@@ -98,35 +90,20 @@ Subforms are embedded — Deluge accesses them via `input.<subform_name>` during
 | 26 | SCN Issued — update PO credits, auto Return to Vendor | SCN Status = Issued | §C.15 |
 | 27 | SCN Settled — clear PO credit flag | SCN Status = Settled | §C.15 |
 | 28 | PO Receipt Status per line item — recalculate from GRN | GRN Submit (Open) | §C.13 |
-| 29 | Bill Received — record vendor bill, notify finance | Bill Status = "Received" | §C.20 |
-| 30 | Bill Matched — 3-way match validation (PO × GRN × Bill), calculate PPV | Bill Status = "Matched" | §C.20 |
-| 31 | Bill Approved — finalize PPV, update AP metrics | Bill Status = "Approved" | §C.20 |
-| 32 | Bill Cancelled — validate no linked Payments or SCNs | Bill Status = "Cancelled" | §C.20 |
-| 33 | Payment Completed (AP) — update Bill Amount_Paid + Balance_Due + Status | Payment Submit | §C.21 |
-| 34 | Payment Completed (AR) — update Invoice Amount_Paid + Balance_Due + Status | Payment Submit | §C.21 |
-| 35 | Payment Reversed — reverse Amount_Paid update on linked document | Payment Reversed | §C.21 |
-| 36 | Weighted Average Cost — recalc Average_Cost on Stock In | Inventory Transaction (Stock In) | §C.5 |
-| 37 | FX Rate Lookup — auto-populate rate from Currency_Rates | Bill/Invoice/Payment Create | §H.1 |
-| 38 | FX Gain/Loss — calculate difference on Payment | Payment Submit | §H.1 |
-| 39 | Period Lock — reject posting to closed periods | All financial forms | §H.2 |
-| 40 | Audit Log Status Change — log every status change | All P0 forms submit | §I.1 |
-| 41 | Audit Log Financial Edit — log field-level changes | All P0 forms submit | §I.1 |
-| 42 | Expense Allocation — validate sum = expense, update multiple components | Expense Submit | §I.2 |
-| 43 | Budget Revision — auto-create on budget amount change | Budget Approval Submit | §I.3 |
-| 44 | GRNI Accrual — identify unbilled GRN lines | Scheduled (month-end) | §H.2 |
-| 45 | Period Close Validation — verify no late transactions | Period Status = Closed | §H.2 |
-| 46 | PO Budget Check — validate budget before Open | PO Status = Pending Approval | §C.12 |
-| 47 | PO Budget Commit — increment Committed_Amount on Open | PO Status = Open | §C.12 |
-| 48 | PO Budget Release — decrement Committed_Amount on Cancel | PO Status = Cancelled | §C.12 |
-| 49 | Bill Pending Approval — route to Finance Manager after match | Bill Status = Matched | §C.20 |
-| 50 | Payment Approval Routing — threshold-based auto-approve | Payment Status = Pending Approval | §C.21 |
-| 51 | PR Budget Check — validate available budget before PO creation | PR final approval | §C.11 |
-| 52 | CCN Issued — reduce Invoice Balance Due, create return inventory | CCN Status = Issued | §K.1 |
-| 53 | CCN Cancelled — reverse Invoice adjustments | CCN Status = Cancelled | §K.1 |
-| 54 | MO Released — reserve component stock | MO Status = Released | §K.2 |
-| 55 | MO Completed — issue components, receive finished goods | MO Status = Completed | §K.2 |
-| 56 | MO Cancelled — release reserved stock | MO Status = Cancelled | §K.2 |
-| 57 | SO → Create Invoice — custom button for uninvoiced items | Button click | §K.3 |
+| 29 | Weighted Average Cost — recalc Average_Cost on Stock In | Inventory Transaction (Stock In) | §C.5 |
+| 30 | Expense Allocation — validate sum = expense, update multiple components | Expense Submit | §I.2 |
+| 31 | Budget Revision — auto-create on budget amount change | Budget Approval Submit | §I.3 |
+| 32 | PO Budget Check — validate budget before Open | PO Status = Pending Approval | §C.12 |
+| 33 | PO Budget Commit — increment Committed_Amount on Open | PO Status = Open | §C.12 |
+| 34 | PO Budget Release — decrement Committed_Amount on Cancel | PO Status = Cancelled | §C.12 |
+| 35 | PR Budget Check — validate available budget before PO creation | PR final approval | §C.11 |
+| 36 | CCN Issued — reduce Invoice Balance Due, create return inventory | CCN Status = Issued | §K.1 |
+| 37 | CCN Cancelled — reverse Invoice adjustments | CCN Status = Cancelled | §K.1 |
+| 38 | MO Released — reserve component stock | MO Status = Released | §K.2 |
+| 39 | MO Completed — issue components, receive finished goods | MO Status = Completed | §K.2 |
+| 40 | MO Cancelled — release reserved stock | MO Status = Cancelled | §K.2 |
+| 41 | SO → Create Invoice — custom button for uninvoiced items | Button click | §K.3 |
+| 42 | SO → Create DC — custom button for undelivered items | Button click | §K.3 |
 | 58 | SO → Create DC — custom button for undelivered items | Button click | §K.3 |
 
 ## Team Access

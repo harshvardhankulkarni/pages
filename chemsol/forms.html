@@ -181,7 +181,7 @@
     <section class="hero">
       <div class="hero-eyebrow">Organization Cycle · End-to-End Flow</div>
       <h1>Forms &amp; Module Structure</h1>
-      <p>End-to-end Organization Cycle: <strong>SALES</strong> (Client PO ref) → <strong>PRODUCTION</strong> → <strong>MR → STORE → COSTING</strong> → Stock Check → <strong>PURCHASE</strong> (if needed) → <strong>Material Handover</strong> → <strong>SERVICE</strong> (Area→Work→Invoice) → <strong>Production GRN → FINANCE → LOGISTICS</strong> (DC/Invoice).</p>
+      <p>Two-Stream Architecture: <strong>Stream A (Pre-Project)</strong> — <strong>PR → PO → GRN → QC → Material Handover → Store</strong> (stock procurement, <strong>no Project ID</strong>). <strong>Stream B (Project-Centric)</strong> — <strong>SO → Project → MR/MIS → Production → Costing → Service → Finance → Logistics</strong> (everything tagged to Project ID).</p>
       <p style="margin-top:4px;font-size:13px;color:var(--gray-500)"><strong>3-Layer Hierarchy:</strong> SO sells <strong>Systems</strong> → composed of <strong>FGs</strong> (System Composition) → each FG formulated from <strong>RMs</strong> (BOM). MR works at <strong>RM level only</strong>.</p>
     </section>
 
@@ -1001,7 +1001,7 @@
         </div>
       </div>
 
-      <h2 id="inventory">5 · MR → MIS → Costing <span class="badge badge-purple">Stream B — Project ID</span></h2>
+      <h2 id="inventory">5 · MR → MIS → FG Handover <span class="badge badge-purple">Stream B — Project ID</span></h2>
       <p>Like <strong>Zoho Inventory</strong>: warehouse-based tracking with stock in/out/transfer. MR <strong>consumes from Store inventory</strong> → MIS (stock deduction) → FGHM → Costing valuation. <strong>Tagged to Project via Project ID (Stream B).</strong></p>
       <div style="padding:10px 14px;background:#ecfdf5;border-left:4px solid var(--green);border-radius:6px;font-size:13px;color:#065f46;margin:10px 0">
         <strong>&#x1F4CC; Per-Project Material Allocation Model (NEW):</strong> The <strong>Project</strong> is the anchor for consumption tracking. Each MR against a Project carries a <strong>Material Allocation</strong> subform that records, per RM, the <strong>Assigned Qty</strong> (allocation baseline), its <strong>Allocation Ratio</strong> (share of total project RM allocation), and an <strong>80% Threshold Alert Flag</strong>. Consumption (FG production + Site Manager entries) is measured against this <em>assigned</em> quantity — not global stock. When any allocated RM reaches <strong>80% of its Assigned Qty</strong>, the system raises a pop-up + dashboard banner + email to the Project Manager. See <a href="#mr-allocation">Section 5A Material Allocation</a> and the <a href="#alert-80">80% Alert rule</a>.
@@ -1023,11 +1023,11 @@
                 <tr><td>1</td><td>MR Number</td><td>Autogen</td><td>*</td><td>MR-YYYY-XXXX</td></tr>
                 <tr><td>2</td><td>MR Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
                 <tr><td>3</td><td>Requisition Type</td><td>Dropdown</td><td>*</td><td>Production / R&amp;D</td></tr>
-                <tr><td>4</td><td>Batch Number</td><td>Text</td><td></td><td>—</td></tr>
-                <tr><td>5</td><td>Project ID</td><td>Lookup</td><td>*</td><td>From Project Master (Stream B root) — anchors the Material Allocation; this field links the MR to a specific project for consumption tracking</td></tr>
+                <tr><td>4</td><td>Project ID</td><td>Lookup</td><td>*</td><td>From Project Master (Stream B root) — anchors the Material Allocation</td></tr>
+                <tr><td>5</td><td>Batch Number</td><td>Text</td><td></td><td>—</td></tr>
                 <tr><td>6</td><td>Department</td><td>AutoFetch</td><td>*</td><td>As per user login</td></tr>
                 <tr><td>7</td><td>Requested By</td><td>Text</td><td>*</td><td>Employee Name</td></tr>
-                <tr><td>8</td><td>Priority</td><td>Dropdown</td><td>*</td><td>Low / Medium / High / Urgent</td></tr>
+                <tr><td>8</td><td>Priority</td><td>Dropdown</td><td>*</td><td>Low / Medium / High / Urgent</tr>
               </tbody>
             </table>
           </div>
@@ -1115,7 +1115,7 @@
 
         <div class="phase" style="border:2px solid var(--accent)">
           <div class="phase-header">
-            <span class="phase-number">4F</span>
+            <span class="phase-number">5E</span>
             <span class="phase-title">Cross-Form Finance References</span>
             <span class="phase-tag">Audit Trail</span>
           </div>
@@ -1200,8 +1200,8 @@
       <!-- ============================================================ -->
       <span id="costing" style="position:relative;top:-60px;display:block"></span>
       <div class="module-group">
-        <h3>Costing <span class="mg-badge">Stage 1 — Costing Approval Gate</span></h3>
-        <p>Costing becomes a distinct <strong>approval gate</strong> between Store and next stage. Not just a computation — it's a department handover with sign-off.</p>
+        <h3>Costing <span class="mg-badge">Stage 5 — Costing Approval Gate</span></h3>
+        <p>Costing is a distinct <strong>approval gate</strong> between Store/Production and Service/Finance. Not just a computation — it's a department handover with sign-off.</p>
 
         <div class="form-card" id="org-costing">
           <div class="fc-header">
@@ -1303,19 +1303,20 @@
             <span class="phase-title">Batch Manufacturing Record (BMR)</span>
             <span class="phase-tag">N Subforms</span>
           </div>
-          <p>Detailed batch record with raw materials, process parameters, and QC results.</p>
-          <h4>Header</h4>
+          <p>Detailed batch record with raw materials, process parameters, and QC results. <strong>Tagged to Project (Stream B).</strong></p>
+            <h4>Header</h4>
           <div class="table-wrap">
             <table>
               <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
               <tbody>
-                <tr><td>1</td><td>BMR No</td><td>Autogen</td><td>*</td><td>—</td></tr>
-                <tr><td>2</td><td>Production Order Ref</td><td>Lookup</td><td>*</td><td>—</td></tr>
-                <tr><td>3</td><td>Batch No</td><td>Text</td><td>*</td><td>—</td></tr>
-                <tr><td>4</td><td>Date</td><td>Date</td><td>*</td><td>—</td></tr>
-                <tr><td>5</td><td>System Code</td><td>Lookup</td><td>*</td><td>From System Master</td></tr>
-                <tr><td>6</td><td>Yield / Output</td><td>Number</td><td>*</td><td>—</td></tr>
-                <tr><td>7</td><td>Status</td><td>Dropdown</td><td>*</td><td>—</td></tr>
+                <tr><td>1</td><td>BMR Number</td><td>Autogen</td><td>*</td><td>BMR-YYYY-XXXX</td></tr>
+                <tr><td>2</td><td>BMR Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
+                <tr><td>3</td><td>System / FG Product</td><td>Lookup</td><td>*</td><td>From System Master or Item Muster (FG items)</td></tr>
+                <tr><td>4</td><td>Batch Number</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>5</td><td>Project ID</td><td>Lookup</td><td>*</td><td>From Project Master (Stream B root)</td></tr>
+                <tr><td>6</td><td>Department</td><td>AutoFetch</td><td>*</td><td>As per user login</td></tr>
+                <tr><td>7</td><td>Production Order Ref</td><td>Lookup</td><td></td><td>From Production Order (6B)</td></tr>
+                <tr><td>8</td><td>Status</td><td>Dropdown</td><td>*</td><td>Draft / In Progress / Completed / On Hold</td></tr>
               </tbody>
             </table>
           </div>
@@ -1425,7 +1426,7 @@
       <!-- ============================================================ -->
       <span id="service-team" style="position:relative;top:-60px;display:block"></span>
       <div class="module-group">
-        <h3>Service Team <span class="mg-badge">Stage 4 — Site Operations: Area → Work → Final Invoice</span></h3>
+        <h3>Service Team <span class="mg-badge">Stage 6 — Site Operations: Area → Work → Final Invoice</span></h3>
         <p>Service Team handles on-site execution from area measurement through final invoice submission. Operates in parallel with Store/Production.</p>
 
         <div class="form-card" id="org-service">
@@ -1819,8 +1820,7 @@
                 <tr><td>6</td><td><strong>PO Reference</strong></td><td>Lookup</td><td>*</td><td>From PO Master — <strong>mandatory</strong>. Links credit to original purchase</td></tr>
                 <tr><td>7</td><td>GRN Reference</td><td>Lookup</td><td></td><td>From GRN — used for Scenario 2 (short delivery). Auto-fetches short qty</td></tr>
                 <tr><td>8</td><td>QC Reference</td><td>Lookup</td><td></td><td>From QC/QA — used for Scenario 1 (defect). Auto-fetches rejected qty</td></tr>
-                <tr><td>9</td><td>Project ID</td><td>AutoFetch</td><td>*</td><td>From PO Reference</td></tr>
-                <tr><td>10</td><td>Credit Reason</td><td>Dropdown</td><td>*</td><td>Defective Material / Damaged in Transit / Short Delivery / Quality Issue / Rate Difference / Invoice Discrepancy / Other</td></tr>
+                <tr><td>9</td><td>Credit Reason</td><td>Dropdown</td><td>*</td><td>Defective Material / Damaged in Transit / Short Delivery / Quality Issue / Rate Difference / Invoice Discrepancy / Other</td></tr>
                 <tr><td>11</td><td>Trigger Source</td><td>Dropdown</td><td>*</td><td>QC Defect / Partial GRN / Invoice Discrepancy / Manual — identifies which scenario initiated the credit</td></tr>
                 <tr><td>12</td><td>Status</td><td>Dropdown</td><td>*</td><td>Draft / Approved / Credited / Cancelled</td></tr>
                 <tr><td>13</td><td>Remarks</td><td>Multi-line</td><td></td><td>Detailed reason, resolution notes, Purchase dept communication reference</td></tr>
@@ -1914,93 +1914,30 @@
           <span class="phase-title">Supplier Outstanding Summary</span>
           <span class="phase-tag">Computed View</span>
         </div>
-        <p>Department: <strong>Account &amp; Finance</strong>. Computed view showing supplier-wise outstanding balance = Total PO Amount − Total Credits − Total Payments. Read-only aggregated view.</p>
+        <p>Department: <strong>Account &amp; Finance</strong>. Computed view showing supplier-wise outstanding balance = Total PO Amount − Total Credits. Read-only aggregated view.</p>
         <div class="table-wrap">
           <table>
             <thead><tr><th>#</th><th>Component</th><th>Source</th><th>Formula</th></tr></thead>
             <tbody>
               <tr><td>1</td><td>Total PO Amount</td><td>PO Approved</td><td>Σ PO Total (Status = Open/Billed)</td></tr>
               <tr><td>2</td><td>Total Credited Amount</td><td>Supplier Credit Note</td><td>Σ Total Credit Amount (Status = Credited)</td></tr>
-              <tr><td>3</td><td>Total Payment Made</td><td>Payments Module (<strong>9B</strong>)</td><td>Σ Payments made to supplier where Type = AP Payment and Status = Completed</td></tr>
-              <tr><td>4</td><td><strong>Outstanding Balance</strong></td><td>Formula</td><td><strong>Σ(Approved PO Totals) − Σ(Credited Credit Notes) − Σ(Completed AP Payments)</strong></td></tr>
+              <tr><td>3</td><td><strong>Outstanding Balance</strong></td><td>Formula</td><td><strong>Σ(Approved PO Totals) − Σ(Credited Credit Notes)</strong></td></tr>
             </tbody>
           </table>
         </div>
-        <div class="callout callout-warning" style="margin-top:8px">
-          <strong>Validation Rule:</strong> No payment can exceed the outstanding balance at supplier level. System must block AP Payment if Payment Amount > Supplier Outstanding Balance.
-        </div>
-      </div>
-
-      <h2>9 · AP/AR Sub-Ledger <span class="badge badge-green">Phase 1G</span></h2>
-    <p>Vendor Bills (AP) and unified Payments module for both vendor payments and customer receipts. Completes the procure-to-pay cycle.</p>
-
-    <div class="phase-container">
-      <div class="phase">
-        <div class="phase-header">
-          <span class="phase-number">9A</span>
-          <span class="phase-title">Vendor Bills</span>
-          <span class="phase-tag">Accounts Payable</span>
-        </div>
-        <p>Records vendor invoices against POs. 3-way match validation (PO ↔ GRN ↔ Bill). Tracks PPV, GST input credit, and Balance Due.</p>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
-            <tbody>
-              <tr><td>Bill No</td><td>Auto Number</td><td>*</td><td>Format: BILL-{0000}</td></tr>
-              <tr><td>Vendor</td><td>Lookup → Vendors</td><td>*</td><td>Auto-fetches payment terms, currency</td></tr>
-              <tr><td>PO Reference</td><td>Lookup → Purchase Orders</td><td></td><td>Links bill to PO for 3-way match</td></tr>
-              <tr><td>Bill Date</td><td>Date</td><td>*</td><td></td></tr>
-              <tr><td>Due Date</td><td>Date</td><td>*</td><td>Auto from vendor payment terms</td></tr>
-              <tr><td>Subtotal</td><td>Currency</td><td>*</td><td>Sum of line item totals</td></tr>
-              <tr><td>Tax Total</td><td>Currency</td><td></td><td>GST split: CGST + SGST/IGST</td></tr>
-              <tr><td>Total Amount</td><td>Currency</td><td>*</td><td>Subtotal + Tax Total</td></tr>
-              <tr><td>Amount Paid</td><td>Currency</td><td></td><td>Updated by Payments module</td></tr>
-              <tr><td>Balance Due</td><td>Formula</td><td></td><td>Total − Amount Paid</td></tr>
-              <tr><td>Status</td><td>Dropdown</td><td>*</td><td>Draft, Submitted, Matched, Approved, Paid, Cancelled</td></tr>
-              <tr><td>PPV (Purchase Price Variance)</td><td>Formula</td><td></td><td>PO Rate vs Bill Rate variance</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="phase">
-        <div class="phase-header">
-          <span class="phase-number">9B</span>
-          <span class="phase-title">Payments</span>
-          <span class="phase-tag">Unified AP/AR</span>
-        </div>
-        <p>Single module for vendor payments (AP) and customer receipts (AR). Auto-updates linked Bill/Invoice balance. Prevents overpayment.</p>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
-            <tbody>
-              <tr><td>Payment No</td><td>Auto Number</td><td>*</td><td>Format: PAY-{0000}</td></tr>
-              <tr><td>Type</td><td>Dropdown</td><td>*</td><td>AP Payment (to vendor), AR Receipt (from customer)</td></tr>
-              <tr><td>Vendor / Customer</td><td>Lookup</td><td>*</td><td>Conditional: Vendors (AP) or Accounts (AR)</td></tr>
-              <tr><td>Reference Bill/Invoice</td><td>Lookup</td><td></td><td>Bill (AP) or Invoice (AR)</td></tr>
-              <tr><td>Payment Date</td><td>Date</td><td>*</td><td></td></tr>
-              <tr><td>Amount</td><td>Currency</td><td>*</td><td>Must not exceed Balance Due</td></tr>
-              <tr><td>Payment Mode</td><td>Dropdown</td><td>*</td><td>Cash, Cheque, Bank Transfer, UPI, Credit Card</td></tr>
-              <tr><td>Reference No</td><td>Text</td><td></td><td>Cheque/Transaction number</td></tr>
-              <tr><td>Status</td><td>Dropdown</td><td>*</td><td>Draft, Completed, Cancelled</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
 
     <!-- ============================================================ -->
     <!-- LOGISTICS -->
     <!-- ============================================================ -->
     <span id="logistics" style="position:relative;top:-60px;display:block"></span>
     <div class="module-group">
-      <h3>Logistics <span class="mg-badge">Stage 4 — Delivery Challan → Outward → Dispatch</span></h3>
+      <h3>Logistics <span class="mg-badge">Stage 8 — Delivery Challan → Outward → Dispatch</span></h3>
       <p>Logistics handles FG dispatch with Delivery Challan (DC) and Outward Invoice. Completes the outward movement.</p>
 
       <div class="form-card" id="org-logistics">
         <div class="fc-header">
-          <span class="fc-num" style="background:#ea580c">9A</span>
-          <span class="fc-title">Delivery Challan (DC)</span>
+            <span class="fc-num" style="background:#ea580c">9C</span>
+            <span class="fc-title">Delivery Challan (DC)</span>
           <span class="fc-tag">Logistics</span>
         </div>
         <div class="fc-flow">
@@ -2042,8 +1979,8 @@
 
       <div class="form-card">
         <div class="fc-header">
-          <span class="fc-num" style="background:#ea580c">9B</span>
-          <span class="fc-title">Outward Invoice</span>
+            <span class="fc-num" style="background:#ea580c">9D</span>
+            <span class="fc-title">Outward Invoice</span>
           <span class="fc-tag blue" style="background:var(--green-light);color:var(--green)">Dispatch Complete</span>
         </div>
         <div class="fc-flow">
@@ -2080,184 +2017,12 @@
       </div>
     </div>
 
-    <h2>10 · Finance &amp; Compliance <span class="badge badge-green">Phase 1H</span></h2>
-    <p>Multi-currency support, accounting period management, and tax/GST classification across all financial forms.</p>
 
-    <div class="phase-container">
-      <div class="phase">
-        <div class="phase-header">
-          <span class="phase-number">10A</span>
-          <span class="phase-title">Currency Exchange Rates</span>
-          <span class="phase-tag">Multi-Currency</span>
-        </div>
-        <p>Exchange rate table for multi-currency transactions. Auto-populates FX_Rate on Bills, Invoices, Payments. Tracks FX Gain/Loss.</p>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
-            <tbody>
-              <tr><td>Currency Code</td><td>Dropdown</td><td>*</td><td>USD, EUR, GBP, AED, INR, etc.</td></tr>
-              <tr><td>Exchange Rate</td><td>Decimal</td><td>*</td><td>Rate against base currency (INR)</td></tr>
-              <tr><td>Effective Date</td><td>Date</td><td>*</td><td>Date from which this rate applies</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <h4>FX Gain/Loss Automation</h4>
-        <div class="callout callout-info" style="font-size:13px">
-          <strong>Realized FX Gain/Loss:</strong> On Payment (9B), auto-calculate:
-          <code style="display:block;margin:6px 0;padding:8px;background:#fff;border-radius:6px">
-            FX Gain/Loss = (Bill FC Amount × Payment Date Rate) − (Bill FC Amount × Bill Date Rate)
-          </code>
-          Post the difference to the <strong>FX Gain/Loss GL Account</strong> (14A).
-        </div>
-        <div class="callout callout-warning" style="font-size:13px">
-          <strong>Unrealized FX Gain/Loss:</strong> At period end (10B close), revalue outstanding FC bills at closing rate.
-          Report unrealized FX Gain/Loss separately for disclosure.
-        </div>
-      </div>
 
-      <div class="phase">
-        <div class="phase-header">
-          <span class="phase-number">10B</span>
-          <span class="phase-title">Accounting Periods</span>
-          <span class="phase-tag">Period Close</span>
-        </div>
-        <p>Monthly/quarterly period management. Prevents posting to closed periods across all financial forms. Enables audit-ready financial close.</p>
-        <h4>Status Lifecycle</h4>
-        <div class="flow-visual" style="margin-bottom:16px">
-          <span class="fv-node fv-green">Open</span><span class="fv-arrow">→</span>
-          <span class="fv-node fv-amber">Closing <span style="font-size:10px;font-weight:400">(triggers validations)</span></span><span class="fv-arrow">→</span>
-          <span class="fv-node fv-red">Closed <span style="font-size:10px;font-weight:400">(only after all pass)</span></span>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
-            <tbody>
-              <tr><td>Period Name</td><td>Text</td><td>*</td><td>e.g., Apr 2026</td></tr>
-              <tr><td>Start Date</td><td>Date</td><td>*</td><td></td></tr>
-              <tr><td>End Date</td><td>Date</td><td>*</td><td></td></tr>
-              <tr><td>Status</td><td>Dropdown</td><td>*</td><td>Open → Closing → Closed</td></tr>
-              <tr><td>Close Date</td><td>Date/Time</td><td></td><td>Timestamp when period closed</td></tr>
-              <tr><td>Closed By</td><td>User lookup</td><td></td><td>User who performed period close</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <h4>Pre-Close Validation Checklist (Auto-verify on Status = Closing)</h4>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>#</th><th>Check</th><th>Source</th><th>Auto-Verify</th></tr></thead>
-            <tbody>
-              <tr><td>1</td><td>All bills have PO/GRN match (no unmatched bills)</td><td>Vendor Bills (9A)</td><td>Σ Bills where Status ≠ Matched</td></tr>
-              <tr><td>2</td><td>All GRNs are posted (none in Draft)</td><td>GRN (4D)</td><td>Σ GRN where Status = Draft</td></tr>
-              <tr><td>3</td><td>All bank reconciliations complete</td><td>Payments (9B)</td><td>Σ Payments where Status = Draft</td></tr>
-              <tr><td>4</td><td>Supplier outstanding reconciled</td><td>Supplier Outstanding (8B)</td><td>Variance check vs supplier statements</td></tr>
-              <tr><td>5</td><td>ITC reconciled with GSTR-2A</td><td>GST Returns (10C)</td><td>Booked ITC vs Vendor GSTR-2A</td></tr>
-              <tr><td>6</td><td>No pending credit approvals older than 7 days</td><td>Supplier Credit Notes (8A)</td><td>Σ Draft credit notes with age &gt; 7 days</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p><strong>Pre-Close Exception Report:</strong> Any failures in the above checklist generate an exception report. Period cannot be closed until all checks pass.</p>
-      </div>
 
-      <div class="phase">
-        <div class="phase-header">
-          <span class="phase-number">10C</span>
-          <span class="phase-title">Tax/GST Classification</span>
-          <span class="phase-tag">Cross-Cutting</span>
-        </div>
-        <p>Input GST (ITC) tracking on Bills, Output GST liability on Invoices. Enables GSTR-1/GSTR-2 reporting. HSN/SAC code validation.</p>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
-            <tbody>
-              <tr><td>Form Type</td><td>Dropdown</td><td>*</td><td>Bill (Input), Invoice (Output)</td></tr>
-              <tr><td>GST Type</td><td>Dropdown</td><td>*</td><td>CGST+SGST (Intra-state), IGST (Inter-state)</td></tr>
-              <tr><td>Tax Rate %</td><td>Decimal</td><td>*</td><td>From HSN/SAC mapping</td></tr>
-              <tr><td>ITC Eligibility</td><td>Dropdown</td><td></td><td>Yes, No, Partially (for Input side)</td></tr>
-            </tbody>
-          </table>
-        </div>
 
-        <h4 style="margin-top:20px">GST Return Reports</h4>
-        <div class="card-grid" style="margin:12px 0">
-          <div class="card" style="border-top:3px solid var(--primary)">
-            <h4 style="color:var(--primary);margin:0 0 6px">GSTR-1</h4>
-            <p style="font-size:12px;margin:0">Monthly outward supply summary. HSN-wise breakup of invoices issued. Auto-computed from Customer Invoices (13B).</p>
-          </div>
-          <div class="card" style="border-top:3px solid var(--green)">
-            <h4 style="color:var(--green);margin:0 0 6px">GSTR-2A/2B — ITC Reconciliation</h4>
-            <p style="font-size:12px;margin:0">Compare booked ITC (from Vendor Bills) vs vendor GSTR-2A data. Flag mismatches for resolution before return filing.</p>
-          </div>
-          <div class="card" style="border-top:3px solid var(--accent)">
-            <h4 style="color:#92400e;margin:0 0 6px">GSTR-3B Summary</h4>
-            <p style="font-size:12px;margin:0">Net GST payable calculation per period. Output GST − Input ITC = Net Payable. Auto-computed from GSTR-1 and ITC data.</p>
-          </div>
-        </div>
-
-        <h4>GST Return Status Tracker</h4>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
-            <tbody>
-              <tr><td>Period</td><td>Text</td><td>*</td><td>e.g., Apr 2026</td></tr>
-              <tr><td>Return Type</td><td>Dropdown</td><td>*</td><td>GSTR-1 / GSTR-3B / GSTR-9</td></tr>
-              <tr><td>Date Filed</td><td>Date</td><td></td><td>Date return was submitted</td></tr>
-              <tr><td>Amount Paid</td><td>Currency</td><td></td><td>Tax paid with return</td></tr>
-              <tr><td>ARN</td><td>Text</td><td></td><td>Acknowledgement Reference Number from GST portal</td></tr>
-              <tr><td>Status</td><td>Dropdown</td><td>*</td><td>Pending / Filed / Filed with Errors</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <h2>11 · Governance &amp; Audit <span class="badge badge-purple">Phase 1I</span></h2>
-    <p>Immutable audit logging, expense allocation across budget components, and budget revision tracking over time.</p>
-
-    <div class="phase-container">
-      <div class="phase">
-        <div class="phase-header">
-          <span class="phase-number">11A</span>
-          <span class="phase-title">Audit Log</span>
-          <span class="phase-tag">Immutable</span>
-        </div>
-        <p>Write-only log capturing status changes, amount edits, and creation events across all P0 forms. Append-only via Deluge — no edit/delete.</p>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
-            <tbody>
-              <tr><td>Form Name</td><td>Text</td><td>Which form was changed</td></tr>
-              <tr><td>Record ID</td><td>Text</td><td>ID of changed record</td></tr>
-              <tr><td>Field Changed</td><td>Text</td><td>Which field was modified</td></tr>
-              <tr><td>Old Value</td><td>Text</td><td>Previous value</td></tr>
-              <tr><td>New Value</td><td>Text</td><td>New value</td></tr>
-              <tr><td>Changed By</td><td>User Picker</td><td>Who made the change</td></tr>
-              <tr><td>Changed At</td><td>Date/Time</td><td>Timestamp</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="phase">
-        <div class="phase-header">
-          <span class="phase-number">11B</span>
-          <span class="phase-title">Expense Allocations</span>
-          <span class="phase-tag">Multi-Component Split</span>
-        </div>
-        <p>Split a single expense across multiple Budget Components. Validates sum of allocations = expense amount. Embedded subform in Expenses.</p>
-      </div>
-
-      <div class="phase">
-        <div class="phase-header">
-          <span class="phase-number">11C</span>
-          <span class="phase-title">Budget Revisions</span>
-          <span class="phase-tag">Change Tracking</span>
-        </div>
-        <p>Auto-creates revision record when Budget Approval modifies budget amount. Tracks component allocation changes over time for audit trail.</p>
-      </div>
-    </div>
-
-    <h2>12 · Approvals &amp; Segregation of Duties <span class="badge badge-red">Phase 1J</span></h2>
-    <p>Approval workflows for PO, Bill, and Payment with budget commitment checks and segregation of duties enforcement.</p>
+    <h2>12 · PO Approval Workflow <span class="badge badge-red">Stream A — Procurement</span></h2>
+    <p>Approval workflow for Purchase Orders with budget commitment checks and routing rules.</p>
 
     <div class="phase-container">
       <div class="phase">
@@ -2274,28 +2039,10 @@
           <li>Committed Budget tracking: approved PO amount locks budget</li>
         </ul>
       </div>
-
-      <div class="phase">
-        <div class="phase-header">
-          <span class="phase-number">12B</span>
-          <span class="phase-title">Bill Approval Workflow</span>
-          <span class="phase-tag">3-Way Match</span>
-        </div>
-        <p>Vendor Bill approval with PO ↔ GRN ↔ Bill matching. Prevents payment without proper receipt verification.</p>
-      </div>
-
-      <div class="phase">
-        <div class="phase-header">
-          <span class="phase-number">12C</span>
-          <span class="phase-title">Payment Approval + SoD</span>
-          <span class="phase-tag">Segregation of Duties</span>
-        </div>
-        <p>Payment approval routing ensures initiator ≠ approver. Prevents conflict of interest in financial transactions.</p>
-      </div>
     </div>
 
-      <h2 id="billing">13 · Billing &amp; Order Closure <span class="badge badge-blue">Phase 1K</span></h2>
-    <p>Customer Credit Notes, Manufacturing Orders, and Sales Orders complete the 34-module architecture. Closes the order-to-cash and production cycles.</p>
+      <h2 id="billing">13 · Billing &amp; Order Closure <span class="badge badge-blue">Customer Credit · Invoice · MO</span></h2>
+    <p>Customer Credit Notes, Customer Invoices, Manufacturing Orders, and Sales Orders close the order-to-cash and production cycles.</p>
 
     <div class="phase-container">
       <div class="phase">
@@ -2383,8 +2130,7 @@
           <strong>Automation on Approval:</strong><br>
           • Update SO Status to "Invoiced"<br>
           • Create Output GST liability record (GST payable)<br>
-          • Trigger notification to customer (Email with PDF attachment)<br>
-          • Post to GL: Debit Customer (AR Control), Credit Revenue (Sales Account)
+          • Trigger notification to customer (Email with PDF attachment)
         </div>
         <p><strong>Reports:</strong> Invoice Register (all invoices by date/status), Outstanding Invoices (where Status ≠ Paid and Due Date &lt; today), GST-wise Invoice Summary (CGST/SGST/IGST breakup by period).</p>
       </div>
@@ -2436,252 +2182,9 @@
 
     </div>
 
-    <h2>14 · General Ledger &amp; Chart of Accounts <span class="badge badge-green">CFO Audit Recommendation</span></h2>
-    <p>Complete double-entry accounting system. Chart of Accounts → Journal Vouchers → Auto-posting from sub-ledgers → Trial Balance → Financial Statements. Enables company-wide financial reporting (not just project-level).</p>
-
-    <div class="phase-container">
-      <div class="phase" style="border-color:var(--primary);border-width:2px">
-        <div class="phase-header">
-          <span class="phase-number">14A</span>
-          <span class="phase-title">Chart of Accounts (COA) Master</span>
-          <span class="phase-tag">Standard Indian Accounting</span>
-        </div>
-        <p>Central repository of all GL accounts. Categories follow standard Indian accounting classification. GST Applicable flag for tax accounts.</p>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
-            <tbody>
-              <tr><td>1</td><td>Account Code</td><td>Autogen</td><td>*</td><td>Hierarchical code (e.g., 1.01.001)</td></tr>
-              <tr><td>2</td><td>Account Name</td><td>Text</td><td>*</td><td>e.g., "Bank of India — Current Account"</td></tr>
-              <tr><td>3</td><td>Category</td><td>Dropdown</td><td>*</td><td>Assets / Liabilities / Equity / Revenue / Expenses</td></tr>
-              <tr><td>4</td><td>Type</td><td>Dropdown</td><td>*</td><td>Current / Non-Current / Operating / Non-Operating</td></tr>
-              <tr><td>5</td><td>GST Applicable</td><td>Dropdown</td><td>*</td><td>Yes / No</td></tr>
-              <tr><td>6</td><td>Status</td><td>Dropdown</td><td>*</td><td>Active / Inactive</td></tr>
-              <tr><td>7</td><td>Opening Balance</td><td>Currency</td><td></td><td>As at system go-live date</td></tr>
-              <tr><td>8</td><td>Balance Type</td><td>Dropdown</td><td>*</td><td>Debit / Credit — normal balance of this account</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h4 style="margin-top:16px">Standard Indian Accounting Heads (Sample COA)</h4>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Code</th><th>Account Name</th><th>Category</th><th>Type</th></tr></thead>
-            <tbody>
-              <tr><td>1.01.001</td><td>Cash in Hand</td><td>Assets</td><td>Current</td></tr>
-              <tr><td>1.01.002</td><td>Bank of India — Current Account</td><td>Assets</td><td>Current</td></tr>
-              <tr><td>1.01.003</td><td>Fixed Deposit — HDFC Bank</td><td>Assets</td><td>Non-Current</td></tr>
-              <tr><td>1.02.001</td><td>Inventory — Raw Materials</td><td>Assets</td><td>Current</td></tr>
-              <tr><td>1.02.002</td><td>Inventory — Finished Goods</td><td>Assets</td><td>Current</td></tr>
-              <tr><td>1.03.001</td><td>Accounts Receivable (AR Control)</td><td>Assets</td><td>Current</td></tr>
-              <tr><td>1.04.001</td><td>Fixed Assets — Plant &amp; Machinery</td><td>Assets</td><td>Non-Current</td></tr>
-              <tr><td>1.04.002</td><td>Accumulated Depreciation</td><td>Assets</td><td>Non-Current (Contra)</td></tr>
-              <tr><td>2.01.001</td><td>Accounts Payable (AP Control)</td><td>Liabilities</td><td>Current</td></tr>
-              <tr><td>2.01.002</td><td>Supplier — Trade Creditors</td><td>Liabilities</td><td>Current</td></tr>
-              <tr><td>2.02.001</td><td>Output GST Payable</td><td>Liabilities</td><td>Current</td></tr>
-              <tr><td>2.02.002</td><td>Input GST Credit (ITC)</td><td>Liabilities</td><td>Current</td></tr>
-              <tr><td>2.03.001</td><td>TDS Payable</td><td>Liabilities</td><td>Current</td></tr>
-              <tr><td>2.04.001</td><td>Bank Loan — Term Loan</td><td>Liabilities</td><td>Non-Current</td></tr>
-              <tr><td>3.01.001</td><td>Share Capital</td><td>Equity</td><td>Non-Current</td></tr>
-              <tr><td>3.01.002</td><td>Retained Earnings</td><td>Equity</td><td>Non-Current</td></tr>
-              <tr><td>4.01.001</td><td>Revenue — Flooring Sales</td><td>Revenue</td><td>Operating</td></tr>
-              <tr><td>4.01.002</td><td>Revenue — Transport Charges</td><td>Revenue</td><td>Operating</td></tr>
-              <tr><td>4.02.001</td><td>Interest Income</td><td>Revenue</td><td>Non-Operating</td></tr>
-              <tr><td>5.01.001</td><td>Cost of Materials — RM</td><td>Expenses</td><td>Operating</td></tr>
-              <tr><td>5.01.002</td><td>Cost of Materials — Packing</td><td>Expenses</td><td>Operating</td></tr>
-              <tr><td>5.02.001</td><td>Labour — Execution</td><td>Expenses</td><td>Operating</td></tr>
-              <tr><td>5.02.002</td><td>Labour — Manpower</td><td>Expenses</td><td>Operating</td></tr>
-              <tr><td>5.03.001</td><td>Transportation Expense</td><td>Expenses</td><td>Operating</td></tr>
-              <tr><td>5.04.001</td><td>Tools &amp; Consumables</td><td>Expenses</td><td>Operating</td></tr>
-              <tr><td>5.05.001</td><td>Administrative Overhead</td><td>Expenses</td><td>Operating</td></tr>
-              <tr><td>5.06.001</td><td>Depreciation Expense</td><td>Expenses</td><td>Operating</td></tr>
-              <tr><td>5.07.001</td><td>FX Gain/Loss</td><td>Expenses</td><td>Non-Operating</td></tr>
-              <tr><td>5.08.001</td><td>Tax Expense — Corporate Tax</td><td>Expenses</td><td>Non-Operating</td></tr>
-              <tr><td>5.08.002</td><td>Deferred Tax</td><td>Expenses</td><td>Non-Operating</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="phase">
-        <div class="phase-header">
-          <span class="phase-number">14B</span>
-          <span class="phase-title">Journal Voucher</span>
-          <span class="phase-tag">Manual GL Entries</span>
-        </div>
-        <p>Manual journal entries for adjustments, accruals, prepayments, and corrections. Debits must equal credits. Cannot post to closed periods.</p>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
-            <tbody>
-              <tr><td>1</td><td>Voucher No</td><td>Autogen</td><td>*</td><td>JV-YYYY-XXXX</td></tr>
-              <tr><td>2</td><td>Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
-              <tr><td>3</td><td>Description</td><td>Multi-line</td><td>*</td><td>Narrative for the entry</td></tr>
-              <tr><td>4</td><td>Accounting Period</td><td>Lookup → 10B</td><td>*</td><td>Must be Open status</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <h4>Line Items (2+ items — Debits = Credits)</h4>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
-            <tbody>
-              <tr><td>1</td><td>Account Code</td><td>Lookup → COA</td><td>*</td><td>From Chart of Accounts (14A)</td></tr>
-              <tr><td>2</td><td>Account Name</td><td>AutoFetch</td><td>*</td><td>From COA</td></tr>
-              <tr><td>3</td><td>Debit Amount</td><td>Currency</td><td></td><td>Must fill if credit is empty</td></tr>
-              <tr><td>4</td><td>Credit Amount</td><td>Currency</td><td></td><td>Must fill if debit is empty</td></tr>
-              <tr><td>5</td><td>Project ID</td><td>Lookup</td><td></td><td>Optional — for project-level tracking</td></tr>
-              <tr><td>6</td><td>Cost Center</td><td>Text</td><td></td><td>Optional cost center allocation</td></tr>
-              <tr><td>7</td><td>Narration</td><td>Text</td><td></td><td>Line-level description</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="callout callout-warning" style="margin-top:12px">
-          <strong>Validation Rules:</strong><br>
-          • Σ Debit Amounts must equal Σ Credit Amounts (balanced entry)<br>
-          • Cannot post to a Period where Status = Closed (10B)<br>
-          • At least 2 line items required (double entry)<br>
-          • Each line can have either Debit OR Credit (not both)
-        </div>
-      </div>
-
-      <div class="phase" style="border-color:var(--green);border-width:2px">
-        <div class="phase-header">
-          <span class="phase-number">14C</span>
-          <span class="phase-title">Auto-Posting Rules (Sub-Ledger → GL)</span>
-          <span class="phase-tag">Double-Entry Automation</span>
-        </div>
-        <p>Automated GL postings triggered by sub-ledger transactions. Ensures every transaction has a corresponding double-entry in the General Ledger.</p>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Transaction</th><th>Debit Account</th><th>Credit Account</th><th>Source Form</th></tr></thead>
-            <tbody>
-              <tr><td><strong>Vendor Bill (AP)</strong></td><td>Expense / Purchase Account (5.01.x)</td><td>Supplier (AP Control — 2.01.001)</td><td>9A — Vendor Bills</td></tr>
-              <tr><td><strong>Payment — AP</strong></td><td>Supplier (AP Control — 2.01.001)</td><td>Bank Account (1.01.002)</td><td>9B — Payments (Type=AP)</td></tr>
-              <tr><td><strong>Customer Receipt — AR</strong></td><td>Bank Account (1.01.002)</td><td>Customer (AR Control — 1.03.001)</td><td>9B — Payments (Type=AR)</td></tr>
-              <tr><td><strong>Supplier Credit Note</strong></td><td>Supplier (AP Control — 2.01.001)</td><td>Purchase Returns (5.01.x contra)</td><td>8A — Supplier Credit Note</td></tr>
-              <tr><td><strong>Customer Credit Note</strong></td><td>Sales Returns (4.01.x contra)</td><td>Customer (AR Control — 1.03.001)</td><td>13A — Customer Credit Note</td></tr>
-              <tr><td><strong>Customer Invoice</strong></td><td>Customer (AR Control — 1.03.001)</td><td>Revenue (4.01.001)</td><td>13B — Customer Invoice</td></tr>
-              <tr><td><strong>GRN Receipt (to Inventory)</strong></td><td>Inventory — RM (1.02.001)</td><td>GRN Accrual (Liability — 2.01.003)</td><td>4D — GRN (on posting)</td></tr>
-              <tr><td><strong>MIS Issue (consumption)</strong></td><td>Cost of Materials — RM (5.01.001)</td><td>Inventory — RM (1.02.001)</td><td>5B — MIS (on posting)</td></tr>
-              <tr><td><strong>Depreciation Entry</strong></td><td>Depreciation Expense (5.06.001)</td><td>Accumulated Depreciation (1.04.002)</td><td>14D — Fixed Asset Register (monthly)</td></tr>
-              <tr><td><strong>FX Gain/Loss</strong></td><td>FX Gain/Loss (5.07.001)</td><td>Bank / AP / AR (as applicable)</td><td>9B — Payments (auto-calc)</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="phase">
-        <div class="phase-header">
-          <span class="phase-number">14D</span>
-          <span class="phase-title">Fixed Asset Register</span>
-          <span class="phase-tag">Depreciation Tracking</span>
-        </div>
-        <p>Complete fixed asset lifecycle management. Category linked to Item Muster (Cat 5 — Capital &amp; Assets). Monthly depreciation auto-calculation.</p>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
-            <tbody>
-              <tr><td>1</td><td>Asset Code</td><td>Autogen</td><td>*</td><td>FA-YYYY-XXX</td></tr>
-              <tr><td>2</td><td>Asset Name</td><td>Text</td><td>*</td><td>—</td></tr>
-              <tr><td>3</td><td>Category</td><td>Dropdown</td><td>*</td><td>From Item Muster Cat 5 items</td></tr>
-              <tr><td>4</td><td>PO Reference</td><td>Lookup → PO</td><td></td><td>Purchase Order that acquired the asset</td></tr>
-              <tr><td>5</td><td>Purchase Date</td><td>Date</td><td>*</td><td>—</td></tr>
-              <tr><td>6</td><td>Cost (Purchase Value)</td><td>Currency</td><td>*</td><td>—</td></tr>
-              <tr><td>7</td><td>Supplier</td><td>Lookup</td><td></td><td>From Supplier Master</td></tr>
-              <tr><td>8</td><td>Useful Life (Years)</td><td>Number</td><td>*</td><td>—</td></tr>
-              <tr><td>9</td><td>Depreciation Method</td><td>Dropdown</td><td>*</td><td>SLM (Straight Line) / WDV (Written Down Value)</td></tr>
-              <tr><td>10</td><td>Salvage Value</td><td>Currency</td><td></td><td>Residual value at end of life</td></tr>
-              <tr><td>11</td><td>Accumulated Depreciation</td><td>Formula</td><td></td><td>Updated monthly — Σ monthly depreciation charges</td></tr>
-              <tr><td>12</td><td>Net Book Value</td><td>Formula</td><td></td><td>Cost − Accumulated Depreciation</td></tr>
-              <tr><td>13</td><td>Location / Department</td><td>Text</td><td></td><td>Physical location or using dept</td></tr>
-              <tr><td>14</td><td>Asset Tag / Serial No</td><td>Text</td><td></td><td>Physical asset tag</td></tr>
-              <tr><td>15</td><td>Status</td><td>Dropdown</td><td>*</td><td>In Use / Under Maintenance / Disposed / Sold</td></tr>
-              <tr><td>16</td><td>Disposal Date</td><td>Date</td><td></td><td>—</td></tr>
-              <tr><td>17</td><td>Disposal Value</td><td>Currency</td><td></td><td>—</td></tr>
-              <tr><td>18</td><td>Gain / Loss on Disposal</td><td>Formula</td><td></td><td>Disposal Value − Net Book Value at disposal date</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="callout callout-info" style="margin-top:12px">
-          <strong>Monthly Depreciation Automation:</strong><br>
-          <strong>SLM:</strong> Monthly Depreciation = (Cost − Salvage Value) / (Useful Life × 12)<br>
-          <strong>WDV:</strong> Monthly Depreciation = (Opening WDV × Rate%) / 12<br>
-          • Depreciation run as scheduled Deluge task on period close (10B)<br>
-          • Posts to: Debit Depreciation Expense (5.06.001), Credit Accumulated Depreciation (1.04.002)<br>
-          • Disposal: Remove cost and accumulated depreciation, recognize gain/loss
-        </div>
-      </div>
-
-      <div class="phase">
-        <div class="phase-header">
-          <span class="phase-number">14E</span>
-          <span class="phase-title">Cash Flow Forecast</span>
-          <span class="phase-tag">13-Week Rolling · Manual Override</span>
-        </div>
-        <p>Rolling 13-week cash flow forecast. Auto-populated from scheduled receipts (Invoices) and expected payments (Bills/POs). Manual override for non-system items.</p>
-        <h4>Auto-Computed Inflows</h4>
-        <ul style="color:var(--gray-600);margin:8px 0;padding-left:20px">
-          <li>Scheduled customer receipts from Invoices (13B) — based on Due Date</li>
-          <li>Milestone payments from SO (2A) — based on milestone schedule</li>
-        </ul>
-        <h4>Auto-Computed Outflows</h4>
-        <ul style="color:var(--gray-600);margin:8px 0;padding-left:20px">
-          <li>Scheduled AP payments from Vendor Bills (9A)</li>
-          <li>Expected PO payments based on PO delivery dates</li>
-          <li>Recurring overhead (rent, salary, utilities) — setup in configuration</li>
-        </ul>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
-            <tbody>
-              <tr><td>1</td><td>Week No</td><td>Number</td><td>*</td><td>1–13 (rolling)</td></tr>
-              <tr><td>2</td><td>Week Start Date</td><td>Date</td><td>*</td><td>—</td></tr>
-              <tr><td>3</td><td>Opening Cash</td><td>Formula</td><td>*</td><td>Previous week's closing</td></tr>
-              <tr><td>4</td><td>Auto Inflows</td><td>AutoFetch</td><td>*</td><td>Σ scheduled receipts for this week</td></tr>
-              <tr><td>5</td><td>Manual Inflows (Override)</td><td>Currency</td><td></td><td>For non-system inflows</td></tr>
-              <tr><td>6</td><td>Auto Outflows</td><td>AutoFetch</td><td>*</td><td>Σ scheduled payments for this week</td></tr>
-              <tr><td>7</td><td>Manual Outflows (Override)</td><td>Currency</td><td></td><td>For non-system outflows</td></tr>
-              <tr><td>8</td><td>Net Position</td><td>Formula</td><td>*</td><td>Opening + Inflows − Outflows</td></tr>
-              <tr><td>9</td><td>Minimum Cash Alert</td><td>Formula</td><td></td><td>If Net &lt; 3 months operating expenses → Alert</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p><strong>Report:</strong> 13-Week Cash Flow Forecast (Report L) with all computed and manual values.</p>
-      </div>
-
-      <div class="phase">
-        <div class="phase-header">
-          <span class="phase-number">14F</span>
-          <span class="phase-title">Annual Budget Master</span>
-          <span class="phase-tag">Budget vs Actual</span>
-        </div>
-        <p>Company-wide annual budget by department and category. Budget vs Actual reporting with variance analysis. Integrated with PO budget check.</p>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
-            <tbody>
-              <tr><td>1</td><td>Budget Year</td><td>Dropdown</td><td>*</td><td>FY 2026-27, etc.</td></tr>
-              <tr><td>2</td><td>Department</td><td>Dropdown</td><td>*</td><td>Purchase / Sales / Production / Store / Admin / Finance / QC</td></tr>
-              <tr><td>3</td><td>Budget Category</td><td>Dropdown</td><td>*</td><td>Materials / Execution / Manpower / Logistics / Overhead / CAPEX</td></tr>
-              <tr><td>4</td><td>Budget Amount</td><td>Currency</td><td>*</td><td>Annual budget allocation</td></tr>
-              <tr><td>5</td><td>Amount Utilized</td><td>AutoFetch</td><td>*</td><td>Auto-fetched from actuals (PO + Expenses + Bills)</td></tr>
-              <tr><td>6</td><td>Budget Remaining</td><td>Formula</td><td>*</td><td>Budget Amount − Amount Utilized</td></tr>
-              <tr><td>7</td><td>Utilization %</td><td>Formula</td><td></td><td>(Amount Utilized / Budget Amount) × 100</td></tr>
-              <tr><td>8</td><td>Status</td><td>Dropdown</td><td>*</td><td>Active / Frozen / Closed</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="callout callout-warning" style="margin-top:12px">
-          <strong>PO Budget Check Integration:</strong> PO (4C) must not exceed remaining budget for the PO's department + category combination. If exceeded, PO is blocked and routed for special approval.<br>
-          <strong>Report:</strong> Budget vs Actual (Report M) — by department, category, month with variance analysis.
-        </div>
-      </div>
-    </div>
-
       <div class="footer">
         <p>Chemsol — Zoho Creator ERP &middot; ITOTCloud Systems Pvt. Ltd.</p>
-        <p>13 Phases · 34 Modules · 75+ Automations · Project-Centric Architecture · Built on Zoho Creator India (.in)</p>
+        <p>Two-Stream Architecture · Project-Centric · Built on Zoho Creator India (.in)</p>
       </div>
     </div>
   </div>

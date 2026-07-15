@@ -424,104 +424,8 @@
 
       <h3>Flow 7 · Sales → Project (Phases 5–6)</h3>
 
-      <h3>Flow 8 · General Ledger — Sub-Ledger → GL → Financial Statements</h3>
-      <p>Double-entry accounting integration across all financial sub-ledgers. Every transaction in procurement, AP/AR, and billing auto-posts to the General Ledger.</p>
-      <div class="tree">
-        <ul class="tree-list">
-          <li class="tree-item root"><span class="tree-label">Sub-Ledger Events <span class="tree-tag amber">7 Triggers</span></span>
-            <ul class="tree-children">
-              <li class="tree-item"><span class="tree-label">Vendor Bill (9A) <span class="tree-tag blue">AP</span></span>
-                <ul class="tree-children">
-                  <li class="tree-item"><span class="tree-label">Auto-Post: Debit Expense (5.01.x), Credit AP Control (2.01.001) <span class="tree-tag green">14C Rule</span></span></li>
-                </ul>
-              </li>
-              <li class="tree-item"><span class="tree-label">AP Payment (9B) <span class="tree-tag blue">AP</span></span>
-                <ul class="tree-children">
-                  <li class="tree-item"><span class="tree-label">Auto-Post: Debit AP Control (2.01.001), Credit Bank (1.01.002) <span class="tree-tag green">14C Rule</span></span></li>
-                </ul>
-              </li>
-              <li class="tree-item"><span class="tree-label">Customer Invoice (13B) <span class="tree-tag blue">AR</span></span>
-                <ul class="tree-children">
-                  <li class="tree-item"><span class="tree-label">Auto-Post: Debit AR Control (1.03.001), Credit Revenue (4.01.001) <span class="tree-tag green">14C Rule</span></span></li>
-                </ul>
-              </li>
-              <li class="tree-item"><span class="tree-label">AR Receipt (9B) <span class="tree-tag blue">AR</span></span>
-                <ul class="tree-children">
-                  <li class="tree-item"><span class="tree-label">Auto-Post: Debit Bank (1.01.002), Credit AR Control (1.03.001) <span class="tree-tag green">14C Rule</span></span></li>
-                </ul>
-              </li>
-              <li class="tree-item"><span class="tree-label">Supplier Credit Note (8A) <span class="tree-tag amber">AP</span></span>
-                <ul class="tree-children">
-                  <li class="tree-item"><span class="tree-label">Auto-Post: Debit AP Control (2.01.001), Credit Purchase Returns (5.01.x) <span class="tree-tag green">14C Rule</span></span></li>
-                </ul>
-              </li>
-              <li class="tree-item"><span class="tree-label">Customer Credit Note (13A) <span class="tree-tag amber">AR</span></span>
-                <ul class="tree-children">
-                  <li class="tree-item"><span class="tree-label">Auto-Post: Debit Sales Returns (4.01.x), Credit AR Control (1.03.001) <span class="tree-tag green">14C Rule</span></span></li>
-                </ul>
-              </li>
-              <li class="tree-item"><span class="tree-label">GRN + MIS Posting <span class="tree-tag purple">Inventory</span></span>
-                <ul class="tree-children">
-                  <li class="tree-item"><span class="tree-label">GRN: Debit Inventory (1.02.001), Credit GRN Accrual (2.01.003) <span class="tree-tag green">14C Rule</span></span></li>
-                  <li class="tree-item"><span class="tree-label">MIS: Debit Cost of Materials (5.01.001), Credit Inventory (1.02.001) <span class="tree-tag green">14C Rule</span></span></li>
-                </ul>
-              </li>
-            </ul>
-          </li>
-          <li class="tree-item root" style="margin-top:12px"><span class="tree-label">Journal Voucher (14B) <span class="tree-tag blue">Manual</span></span>
-            <ul class="tree-children">
-              <li class="tree-item"><span class="tree-label">Period Adjustments, Accruals, Prepayments <span class="tree-tag amber">Debits = Credits</span></span>
-                <ul class="tree-children">
-                  <li class="tree-item"><span class="tree-label">Closed Period Block <span class="tree-tag red">Cannot post</span></span></li>
-                </ul>
-              </li>
-            </ul>
-          </li>
-          <li class="tree-item root" style="margin-top:12px"><span class="tree-label">GL Reports <span class="tree-tag green">Output</span></span>
-            <ul class="tree-children">
-              <li class="tree-item"><span class="tree-label">Trial Balance <span class="tree-tag blue">Report G</span> — All accounts with opening/activity/closing</span>
-                <ul class="tree-children">
-                  <li class="tree-item"><span class="tree-label">Balance Sheet <span class="tree-tag blue">Report H</span> — Assets = Liabilities + Equity</span>
-                    <ul class="tree-children">
-                      <li class="tree-item"><span class="tree-label">Company P&amp;L <span class="tree-tag blue">Report I</span> — Revenue − Costs = Net Profit</span></li>
-                    </ul>
-                  </li>
-                </ul>
-              </li>
-            </ul>
-          </li>
-        </ul>
-      </div>
 
-      <h3>Flow 9 · Fixed Assets Lifecycle</h3>
-      <div class="tree">
-        <ul class="tree-list">
-          <li class="tree-item root"><span class="tree-label">Asset Acquisition <span class="tree-tag amber">PO → GRN</span></span>
-            <ul class="tree-children">
-              <li class="tree-item"><span class="tree-label">Fixed Asset Register (14D) <span class="tree-tag blue">Recorded</span></span>
-                <ul class="tree-children">
-                  <li class="tree-item"><span class="tree-label">Depreciation Run <span class="tree-tag purple">Monthly scheduled task</span></span>
-                    <ul class="tree-children">
-                      <li class="tree-item"><span class="tree-label">Post to GL: Debit Depreciation Exp (5.06.001), Credit Accum. Depn (1.04.002) <span class="tree-tag green">14C Rule</span></span></li>
-                    </ul>
-                  </li>
-                  <li class="tree-item"><span class="tree-label">Disposal / Sale <span class="tree-tag red">Remove from register</span></span>
-                    <ul class="tree-children">
-                      <li class="tree-item"><span class="tree-label">Post to GL: Remove Cost &amp; Accum. Depn, Recognize Gain/Loss <span class="tree-tag green">14C Rule</span></span></li>
-                    </ul>
-                  </li>
-                  <li class="tree-item"><span class="tree-label">Reports <span class="tree-tag blue">Output</span></span>
-                    <ul class="tree-children">
-                      <li class="tree-item"><span class="tree-label">Fixed Asset Schedule (Report J) — Full listing with NBV</span></li>
-                      <li class="tree-item"><span class="tree-label">Depreciation Schedule (Report K) — Monthly charge</span></li>
-                    </ul>
-                  </li>
-                </ul>
-              </li>
-            </ul>
-          </li>
-        </ul>
-      </div>
+
 
       <h3 id="cost-flow">Cost Flow Diagram — Material Cost Recognition</h3>
       <div class="callout callout-warning" style="font-size:13px;margin-bottom:16px">
@@ -623,7 +527,7 @@
 
       <div class="footer">
         <p>Chemsol — Zoho Creator ERP &middot; ITOTCloud Systems Pvt. Ltd.</p>
-        <p>13 Phases · 34 Modules · 75+ Automations · Project-Centric Architecture · Built on Zoho Creator India (.in)</p>
+        <p>Two-Stream Architecture · Project-Centric · Built on Zoho Creator India (.in)</p>
       </div>
     </div>
   </div>

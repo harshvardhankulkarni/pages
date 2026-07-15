@@ -141,7 +141,7 @@
           <span class="ah-arrow">▶</span>
         </div>
         <div class="accordion-body">
-          <a class="ab-link" href="forms.html#finance"><span class="al-type type-forms">Forms</span>AP/AR / GL</a>
+          <a class="ab-link" href="forms.html#finance"><span class="al-type type-forms">Forms</span>Finance (SCN)</a>
           <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>P&amp;L / Reports</a>
           <a class="ab-link" href="flow.html#org-finance"><span class="al-type type-flow">Flow</span>Finance Flow</a>
           <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>Finance Model</a>
@@ -186,12 +186,12 @@
       <div class="hero-meta">
         <div class="hero-meta-item"><span class="label">Stream A</span><span class="value">Pre-Project Procurement</span></div>
         <div class="hero-meta-item"><span class="label">Stream B</span><span class="value">Project-Centric</span></div>
-        <div class="hero-meta-item"><span class="label">Modules</span><span class="value">34</span></div>
-        <div class="hero-meta-item"><span class="label">Forms</span><span class="value">34+</span></div>
+        <div class="hero-meta-item"><span class="label">Modules</span><span class="value">29</span></div>
+        <div class="hero-meta-item"><span class="label">Forms</span><span class="value">29+</span></div>
         <div class="hero-meta-item"><span class="label">Reports</span><span class="value">50+</span></div>
-        <div class="hero-meta-item"><span class="label">Automations</span><span class="value">75+</span></div>
+        <div class="hero-meta-item"><span class="label">Automations</span><span class="value">63+</span></div>
         <div class="hero-meta-item"><span class="label">Depts</span><span class="value">8</span></div>
-        <div class="hero-meta-item"><span class="label">Impl. Phases</span><span class="value">13</span></div>
+        <div class="hero-meta-item"><span class="label">Impl. Phases</span><span class="value">11</span></div>
       </div>
     </section>
 
@@ -276,9 +276,9 @@
             <div class="dash-card-icon">💰</div>
             <div class="dash-card-title">Finance</div>
           </div>
-          <div class="dash-card-subtitle">GL, AP/AR, Budget, FA</div>
+          <div class="dash-card-subtitle">SCN, AR</div>
           <div class="dash-card-stats">
-            <span class="dash-card-stat"><strong>7</strong> modules</span>
+            <span class="dash-card-stat"><strong>2</strong> modules</span>
           </div>
           <div class="dash-card-progress">
             <div class="dash-progress-bar"><div class="dash-progress-fill" style="width:40%"></div></div>
@@ -484,7 +484,7 @@
             <div class="hub-module" style="border-color:#8b5cf6">
               <span class="hm-icon">💰</span>
               <span class="hm-name">Finance</span>
-              <span class="hm-desc">AP/AR / GL<br>Project ID</span>
+              <span class="hm-desc">SCN / AR<br>Project ID</span>
             </div>
             <div class="hub-module slate">
               <span class="hm-icon">🚚</span>
@@ -633,13 +633,9 @@
             <tr><td>31</td><td>Project (Root Entity)</td><td>6B</td><td>Form</td><td>Systems subform, dates</td></tr>
             <tr><td>32</td><td>Task Budget</td><td>6C</td><td>Form</td><td>5 categories, Actual columns</td></tr>
             <tr><td rowspan="2"><strong>Finance</strong></td><td>33</td><td>Supplier Credit Note</td><td>8A</td><td>Form</td><td>Supplier credit for QC rejects</td></tr>
-            <tr><td>34</td><td>Customer Invoice / AR</td><td>8B</td><td>Form</td><td>AR posting + GL</td></tr>
-            <tr><td rowspan="2"><strong>Logistics</strong></td><td>35</td><td>Delivery Challan (DC)</td><td>9A</td><td>Form</td><td>FG dispatch to customer</td></tr>
-            <tr><td>36</td><td>Outward Invoice</td><td>9B</td><td>Form</td><td>Outward qty updated</td></tr>
-            <tr><td rowspan="4"><strong>Governance</strong></td><td>37</td><td>Chart of Accounts</td><td>10A</td><td>Form</td><td>GL account heads</td></tr>
-            <tr><td>38</td><td>Journal Voucher</td><td>10B</td><td>Form</td><td>Manual GL adjustments</td></tr>
-            <tr><td>39</td><td>Fixed Asset Register</td><td>10C</td><td>Form</td><td>Depreciation schedule</td></tr>
-            <tr><td>40</td><td>Reports &amp; Dashboards</td><td>10D</td><td>Report</td><td>50+ reports &amp; KPIs</td></tr>
+            <tr><td>34</td><td>Customer Invoice / AR</td><td>8B</td><td>Form</td><td>AR posting</td></tr>
+            <tr><td rowspan="2"><strong>Logistics</strong></td><td>35</td><td>Delivery Challan (DC)</td><td>9C</td><td>Form</td><td>FG dispatch to customer</td></tr>
+            <tr><td>36</td><td>Outward Invoice</td><td>9D</td><td>Form</td><td>Outward qty updated</td></tr>
           </tbody>
         </table>
       </div>
@@ -690,16 +686,7 @@
         <span class="fv-node fv-green">Accept <span class="fv-icon">✅</span></span>
       </div>
 
-      <h3>Financial Close Flow (Phase 8)</h3>
-      <div class="flow-visual">
-        <span class="fv-node fv-blue">Vendor Bill <span class="fv-icon">🧾</span></span>
-        <span class="fv-arrow">→</span>
-        <span class="fv-node fv-amber">AP Payment <span class="fv-icon">💳</span></span>
-        <span class="fv-arrow">→</span>
-        <span class="fv-node fv-purple">GL Post <span class="fv-icon">📊</span></span>
-        <span class="fv-arrow">→</span>
-        <span class="fv-node fv-green">P&amp;L <span class="fv-icon">📈</span></span>
-      </div>
+
 
       <!-- ── Key Metrics Dashboard ── -->
       <h2>Key Metrics</h2>
@@ -860,29 +847,29 @@
             <span class="phase-title">Billing &amp; Revenue</span>
             <span class="phase-tag">Budget · Invoice · CCN · AR</span>
           </div>
-          <p>Task Budget with 5 categories (Transport/Execution/Manpower/Tools/Overhead) + Actual columns for P&amp;L. Customer Invoice, Credit Note, AR Receipt with GL auto-posting.</p>
+          <p>Task Budget with 5 categories (Transport/Execution/Manpower/Tools/Overhead) + Actual columns for P&amp;L. Customer Invoice, Credit Note, AR posting.</p>
         </div>
         <div class="phase">
           <div class="phase-header">
-            <span class="phase-number">8A–8C</span>
-            <span class="phase-title">Financial Close &amp; GL</span>
-            <span class="phase-tag">Vendor Bill · AP · Journal</span>
+            <span class="phase-number">8A</span>
+            <span class="phase-title">Supplier Credit Note</span>
+            <span class="phase-tag">QC Defect · Short Delivery · Rate Diff</span>
           </div>
-          <p>Vendor Bill/AP Payment, Supplier Credit Note (3 trigger scenarios), General Ledger with Journal Voucher. All transactions auto-post via 14C Rule. P&amp;L auto-computed on Project Close.</p>
+          <p>Supplier Credit Note manually initiated by Account &amp; Finance for QC defects, GRN short deliveries, and rate/invoice discrepancies. P&amp;L auto-computed on Project Close.</p>
         </div>
         <div class="phase">
           <div class="phase-header">
-            <span class="phase-number">9A–9D</span>
-            <span class="phase-title">Governance &amp; Reports</span>
-            <span class="phase-tag">Approval · Roles · Audit · Dashboards</span>
+            <span class="phase-number">8B</span>
+            <span class="phase-title">Customer Invoice / AR</span>
+            <span class="phase-tag">Revenue Recognition</span>
           </div>
-          <p>Approval Matrix defining PR/PO limits per dept, User Roles &amp; Permissions (Purchase/Sales/Store/Production/Finance/Admin/PM), Audit Log, 50+ reports and KPIs across all departments.</p>
+          <p>Customer invoices created against Sales Orders with auto-fetched line items, GST split, and AR posting. Credit Notes for returns/adjustments.</p>
         </div>
       </div>
 
       <div class="footer">
         <p>Chemsol — Zoho Creator ERP &middot; ITOTCloud Systems Pvt. Ltd.</p>
-        <p>13 Phases · 34 Modules · 75+ Automations · Project-Centric Architecture · Built on Zoho Creator India (.in)</p>
+        <p>Two-Stream Architecture · Project-Centric · Built on Zoho Creator India (.in)</p>
       </div>
     </div>
   </div>
