@@ -49,7 +49,7 @@
           <span class="ah-arrow">▶</span>
         </div>
         <div class="accordion-body">
-          <a class="ab-link" href="forms.html#procurement"><span class="al-type type-forms">Forms</span>PR→PO→GRN→QC</a>
+          <a class="ab-link" href="forms.html#procurement"><span class="al-type type-forms">Forms</span>PO→GRN→QC</a>
           <a class="ab-link" href="forms.html#material-handover"><span class="al-type type-forms">Forms</span>Mat Handover</a>
           <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Stock Reports</a>
           <a class="ab-link" href="flow.html#pr-pr"><span class="al-type type-flow">Flow</span>Purchase Flow</a>
@@ -96,7 +96,7 @@
           <span class="ah-arrow">▶</span>
         </div>
         <div class="accordion-body">
-          <a class="ab-link" href="forms.html#production"><span class="al-type type-forms">Forms</span>Planning→BMR→Pack</a>
+          <a class="ab-link" href="forms.html#production"><span class="al-type type-forms">Forms</span>PR→Planning→BMR→Pack</a>
           <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Production Reports</a>
           <a class="ab-link" href="flow.html#org-prod"><span class="al-type type-flow">Flow</span>Production Flow</a>
           <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>Production Model</a>
@@ -181,7 +181,7 @@
     <section class="hero">
       <div class="hero-eyebrow">Organization Cycle · End-to-End Flow</div>
       <h1>Forms &amp; Module Structure</h1>
-      <p>Two-Stream Architecture: <strong>Stream A (Pre-Project)</strong> — <strong>PR → PO → GRN → QC → Material Handover → Store</strong> (stock procurement, <strong>no Project ID</strong>). <strong>Stream B (Project-Centric)</strong> — <strong>SO → Project → MR/MIS → Production → Costing → Service → Finance → Logistics</strong> (everything tagged to Project ID).</p>
+      <p>Two-Stream Architecture: <strong>Stream A (Pre-Project)</strong> — <strong>PO → GRN → QC → Material Handover → Store</strong> (stock procurement, <strong>no Project ID</strong>). <strong>Stream B (Project-Centric)</strong> — <strong>SO → Project → MR/MIS → Production → Costing → Service → Finance → Logistics</strong> (everything tagged to Project ID).</p>
       <p style="margin-top:4px;font-size:13px;color:var(--gray-500)"><strong>3-Layer Hierarchy:</strong> SO sells <strong>Systems</strong> → composed of <strong>FGs</strong> (System Composition) → each FG formulated from <strong>RMs</strong> (BOM). MR works at <strong>RM level only</strong>.</p>
     </section>
 
@@ -447,8 +447,42 @@
                  </tr>
                </tbody>
              </table>
-           </div>
+            </div>
+         </div>
+
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">1I</span>
+            <span class="phase-title">Rate Comparison</span>
+            <span class="phase-tag">5 Suppliers</span>
+          </div>
+          <p>Department: Purchase. Standalone record form — maintained manually for rate record-keeping purposes, like a master form. Not linked to PR workflow.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
+                <tr><td>2</td><td>PR Reference No</td><td>Lookup</td><td></td><td>From PR Master (optional — used independently without PR)</td></tr>
+                <tr><td>3</td><td>Product No</td><td>AutoFetch</td><td>*</td><td>From PR items</td></tr>
+                <tr><td>4</td><td>Product Name</td><td>AutoFetch</td><td>*</td><td>From PR items</td></tr>
+                <tr><td>5</td><td>Supplier 1</td><td>Lookup</td><td>*</td><td>From Supplier Master + Price + Credit</td></tr>
+                <tr><td>6</td><td>Supplier 2</td><td>Lookup</td><td></td><td>From Supplier Master + Price + Credit</td></tr>
+                <tr><td>7</td><td>Supplier 3</td><td>Lookup</td><td></td><td>From Supplier Master + Price + Credit</td></tr>
+                <tr><td>8</td><td>Supplier 4</td><td>Lookup</td><td></td><td>From Supplier Master + Price + Credit</td></tr>
+                <tr><td>9</td><td>Supplier 5</td><td>Lookup</td><td></td><td>From Supplier Master + Price + Credit</td></tr>
+                <tr><td>10</td><td>Finalised Supplier</td><td>Lookup</td><td>*</td><td>Selected from above 5</td></tr>
+                <tr><td>11</td><td>Final Rate</td><td>Currency</td><td>*</td><td>—</td></tr>
+                <tr><td>12</td><td>PO No</td><td>Text</td><td></td><td>Linked after PO creation</td></tr>
+                <tr><td>13</td><td>PO Release Date</td><td>Date</td><td></td><td>—</td></tr>
+                <tr><td>14</td><td>Remark</td><td>Multi-line</td><td></td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>Automation:</strong> Supplier dropdown → lookup from Supplier Master. Notification "Rate Comparison Data Missing" to Purchase dept if data incomplete.</p>
+          <p><strong>Note:</strong> Used independently without PR — serves as a reference rate register.</p>
         </div>
+
+         </div>
 
         <div class="phase">
           <div class="phase-header">
@@ -701,82 +735,12 @@
       </div>
 
       <h2 id="procurement">4 · Purchase <span class="badge badge-blue">Stream A — No Project ID</span></h2>
-      <p><strong>Pre-Project procurement for stock.</strong> Structured like <strong>Zoho Books Purchase Orders</strong>: header fields + N line items with GST split (CGST/SGST/IGST), HSN codes, autofetch from Item Muster. <strong>No Project ID on procurement forms.</strong></p>
+      <p><strong>Stream A: PO → GRN → QC → Material Handover → Store. No Project ID.</strong> Structured like <strong>Zoho Books Purchase Orders</strong>: header fields + N line items with GST split (CGST/SGST/IGST), HSN codes, autofetch from Item Muster. <strong>No Project ID on procurement forms.</strong></p>
 
       <div class="phase-container">
         <div class="phase">
           <div class="phase-header">
             <span class="phase-number">4A</span>
-            <span class="phase-title">Purchase Requisition (PR)</span>
-            <span class="phase-tag">N Line Items</span>
-          </div>
-          <p>Department: Production &amp; R&amp;D. Status: Draft → Pending Approval → Approved → Rejected.</p>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
-              <tbody>
-                <tr><td>1</td><td>PR Number</td><td>Autogen</td><td>*</td><td>PR-YYYY-XXXX</td></tr>
-                <tr><td>2</td><td>PR Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
-                <tr><td>3</td><td>Reference</td><td>Text</td><td></td><td>Manual reference</td></tr>
-                <tr><td>4</td><td><strong>Department</strong></td><td>Dropdown</td><td>*</td><td>Auto from login — Purchase / Store</td></tr>
-                <tr><td>5</td><td>Department</td><td>AutoFetch</td><td>*</td><td>As per user login (Production / R&amp;D)</td></tr>
-                <tr><td>6</td><td>Approved By</td><td>User lookup</td><td></td><td>Filled after approval</td></tr>
-                <tr><td>7</td><td>Status</td><td>Dropdown</td><td>*</td><td>Draft / Pending Approval / Approved / Rejected</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <h4>Line Items (N items)</h4>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
-              <tbody>
-                <tr><td>1</td><td>Sr</td><td>Number</td><td>*</td><td>Auto</td></tr>
-                <tr><td>2</td><td>Item Code</td><td>Lookup</td><td>*</td><td>From Purchase Item Muster (autofill if Item Name filled)</td></tr>
-                <tr><td>3</td><td>Item Name</td><td>AutoFetch</td><td>*</td><td>Autofill if Item Code filled</td></tr>
-                <tr><td>4</td><td>Qty</td><td>Number</td><td>*</td><td>—</td></tr>
-                <tr><td>5</td><td>Item Description</td><td>Multi-line</td><td></td><td>—</td></tr>
-                <tr><td>6</td><td>UOM</td><td>AutoFetch</td><td>*</td><td>From Item Muster</td></tr>
-                <tr><td>7</td><td>Lead Time</td><td>AutoFetch</td><td></td><td>Days, from Item Muster</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <p><strong>Automation:</strong> Item Code &lrarr; Item Name bidirectional autofill. UOM autofill. Lead Time autofill. Status: Draft &rarr; Pending Approval (on submit) &rarr; Approved (after approval). Notification to Purchase dept on approval.</p>
-        </div>
-
-        <div class="phase">
-          <div class="phase-header">
-            <span class="phase-number">4B</span>
-            <span class="phase-title">Rate Comparison</span>
-            <span class="phase-tag">5 Suppliers</span>
-          </div>
-          <p>Department: Purchase. Up to 5 supplier comparisons per PR item. Finalised supplier + rate → PO reference.</p>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
-              <tbody>
-                <tr><td>1</td><td>Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
-                <tr><td>2</td><td>PR Reference No</td><td>Lookup</td><td>*</td><td>From PR Master</td></tr>
-                <tr><td>3</td><td>Product No</td><td>AutoFetch</td><td>*</td><td>From PR items</td></tr>
-                <tr><td>4</td><td>Product Name</td><td>AutoFetch</td><td>*</td><td>From PR items</td></tr>
-                <tr><td>5</td><td>Supplier 1</td><td>Lookup</td><td>*</td><td>From Supplier Master + Price + Credit</td></tr>
-                <tr><td>6</td><td>Supplier 2</td><td>Lookup</td><td></td><td>From Supplier Master + Price + Credit</td></tr>
-                <tr><td>7</td><td>Supplier 3</td><td>Lookup</td><td></td><td>From Supplier Master + Price + Credit</td></tr>
-                <tr><td>8</td><td>Supplier 4</td><td>Lookup</td><td></td><td>From Supplier Master + Price + Credit</td></tr>
-                <tr><td>9</td><td>Supplier 5</td><td>Lookup</td><td></td><td>From Supplier Master + Price + Credit</td></tr>
-                <tr><td>10</td><td>Finalised Supplier</td><td>Lookup</td><td>*</td><td>Selected from above 5</td></tr>
-                <tr><td>11</td><td>Final Rate</td><td>Currency</td><td>*</td><td>—</td></tr>
-                <tr><td>12</td><td>PO No</td><td>Text</td><td></td><td>Linked after PO creation</td></tr>
-                <tr><td>13</td><td>PO Release Date</td><td>Date</td><td></td><td>—</td></tr>
-                <tr><td>14</td><td>Remark</td><td>Multi-line</td><td></td><td>—</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <p><strong>Automation:</strong> Supplier dropdown → lookup from Supplier Master. Notification "Rate Comparison Data Missing" to Purchase dept if data incomplete.</p>
-        </div>
-
-        <div class="phase">
-          <div class="phase-header">
-            <span class="phase-number">4C</span>
             <span class="phase-title">Purchase Order (PO)</span>
             <span class="phase-tag">N Line Items · GST Split · Like Zoho Books</span>
           </div>
@@ -854,7 +818,7 @@
 
         <div class="phase">
           <div class="phase-header">
-            <span class="phase-number">4D</span>
+            <span class="phase-number">4B</span>
             <span class="phase-title">Goods Receipt Note (GRN)</span>
             <span class="phase-tag">Partial via ✓ · N Items</span>
           </div>
@@ -910,7 +874,7 @@
 
         <div class="phase">
           <div class="phase-header">
-            <span class="phase-number">4E</span>
+            <span class="phase-number">4C</span>
             <span class="phase-title">QC/QA</span>
             <span class="phase-tag">Inspection</span>
           </div>
@@ -961,7 +925,7 @@
 
         <div class="form-card" id="org-mat-handover">
           <div class="fc-header">
-            <span class="fc-num" style="background:#059669">4F</span>
+            <span class="fc-num" style="background:#059669">4D</span>
             <span class="fc-title">Material Handover Note</span>
             <span class="fc-tag">Coding RM / Non-Coding</span>
           </div>
@@ -979,20 +943,26 @@
             </div>
             <div class="subtable-demo">
               <div class="st-hint">Items (Mark RM Type)</div>
-              <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr">
-                <span style="font-size:11px;font-weight:600">Item</span>
-                <span style="font-size:11px;font-weight:600">Qty</span>
-                <span style="font-size:11px;font-weight:600">UOM</span>
-                <span style="font-size:11px;font-weight:600">RM Type</span>
-                <span style="font-size:11px;font-weight:600">Handover To</span>
-              </div>
-              <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr">
-                <input type="text" value="Epoxy Resin" style="font-size:12px">
-                <input type="number" value="425" style="font-size:12px">
-                <input type="text" value="Kg" style="font-size:12px">
-                <select style="font-size:12px"><option selected>Coding RM</option><option>Non-Coding (RMWAD)</option></select>
-                <input type="text" value="Anil (Store)" style="font-size:12px">
-              </div>
+              <table style="width:100%;border-collapse:collapse">
+                <thead>
+                  <tr style="border-bottom:2px solid #ddd">
+                    <th style="padding:6px 8px;text-align:left;font-weight:600;width:2fr">Item</th>
+                    <th style="padding:6px 8px;text-align:left;font-weight:600;width:1fr">Qty</th>
+                    <th style="padding:6px 8px;text-align:left;font-weight:600;width:1fr">UOM</th>
+                    <th style="padding:6px 8px;text-align:left;font-weight:600;width:1fr">RM Type</th>
+                    <th style="padding:6px 8px;text-align:left;font-weight:600;width:1fr">Handover To</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr style="border-bottom:1px solid #eee">
+                    <td style="padding:4px 8px"><input type="text" value="Epoxy Resin" style="font-size:12px;width:100%;box-sizing:border-box"></td>
+                    <td style="padding:4px 8px"><input type="number" value="425" style="font-size:12px;width:100%;box-sizing:border-box"></td>
+                    <td style="padding:4px 8px"><input type="text" value="Kg" style="font-size:12px;width:100%;box-sizing:border-box"></td>
+                    <td style="padding:4px 8px"><select style="font-size:12px;width:100%;box-sizing:border-box"><option selected>Coding RM</option><option>Non-Coding (RMWAD)</option></select></td>
+                    <td style="padding:4px 8px"><input type="text" value="Anil (Store)" style="font-size:12px;width:100%;box-sizing:border-box"></td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
             <div style="padding:8px 12px;background:#fffbeb;border-radius:6px;font-size:12px;color:#92400e;margin-top:8px">
               <strong>&#x2139; RM Type</strong> — Coding materials use PO series RM (Purchase dept). Non-coding use RMWAD series.
@@ -1002,7 +972,7 @@
       </div>
 
       <h2 id="inventory">5 · MR → MIS → FG Handover <span class="badge badge-purple">Stream B — Project ID</span></h2>
-      <p>Like <strong>Zoho Inventory</strong>: warehouse-based tracking with stock in/out/transfer. MR <strong>consumes from Store inventory</strong> → MIS (stock deduction) → FGHM → Costing valuation. <strong>Tagged to Project via Project ID (Stream B).</strong></p>
+      <p><strong>Project baseline = SO + MR.</strong> The SO defines System/FG scope (revenue). The MR defines the RM allocation (cost baseline). Both anchor the project. MR → verified by <strong>Production</strong> → approved by <strong>Costing</strong> → MIS (stock deduction) → Production (BMR→Packing→FGHM) → Logistics (DC→Outward) → then <strong>Project Site Execution begins</strong> (Service Team).</p>
       <div style="padding:10px 14px;background:#ecfdf5;border-left:4px solid var(--green);border-radius:6px;font-size:13px;color:#065f46;margin:10px 0">
         <strong>&#x1F4CC; Per-Project Material Allocation Model (NEW):</strong> The <strong>Project</strong> is the anchor for consumption tracking. Each MR against a Project carries a <strong>Material Allocation</strong> subform that records, per RM, the <strong>Assigned Qty</strong> (allocation baseline), its <strong>Allocation Ratio</strong> (share of total project RM allocation), and an <strong>80% Threshold Alert Flag</strong>. Consumption (FG production + Site Manager entries) is measured against this <em>assigned</em> quantity — not global stock. When any allocated RM reaches <strong>80% of its Assigned Qty</strong>, the system raises a pop-up + dashboard banner + email to the Project Manager. See <a href="#mr-allocation">Section 5A Material Allocation</a> and the <a href="#alert-80">80% Alert rule</a>.
       </div>
@@ -1014,7 +984,7 @@
             <span class="phase-title">Material Requisition (MR)</span>
             <span class="phase-tag">N Line Items + Allocation</span>
           </div>
-          <p>Department: Production &amp; R&amp;D. Project ID lookup + RM line items with autofetch available stock. <strong>Now also carries a <a href="#mr-allocation">Material Allocation</a> subform</strong> — the per-project consumption budget with per-RM allocation ratios and 80% alert flags. <em>(Supply+Apply projects only — the Project is auto-created from the SO; Supply Only FG sales create no Project and therefore no Material Allocation and no 80% alert.)</em></p>
+           <p>Department: Production &amp; R&amp;D. <strong>MR is the complete project implementation cost baseline</strong> — it estimates the total cost to deliver the project: <strong>Material Cost</strong> (per-project RM Allocation), <strong>Application Cost</strong> (labour/execution), <strong>Transportation Cost</strong>, and <strong>Tools &amp; Tackles</strong>. Created against the SO/Project. Then: <strong>Production verifies</strong> the MR quantities against SO system requirements → <strong>Costing approves</strong> the total project cost. Only after MR approval does MIS → Production → FGHM → Logistics proceed. Project ID lookup + RM line items with autofetch available stock. Carries a <a href="#mr-allocation-sub">Material Allocation</a> subform — the per-project consumption budget with per-RM allocation ratios and 80% alert flags. <em>(Supply+Apply projects only.)</em></p>
             <h4>Header</h4>
           <div class="table-wrap">
             <table>
@@ -1028,6 +998,7 @@
                 <tr><td>6</td><td>Department</td><td>AutoFetch</td><td>*</td><td>As per user login</td></tr>
                 <tr><td>7</td><td>Requested By</td><td>Text</td><td>*</td><td>Employee Name</td></tr>
                 <tr><td>8</td><td>Priority</td><td>Dropdown</td><td>*</td><td>Low / Medium / High / Urgent</tr>
+                <tr><td>9</td><td>MR Status</td><td>Dropdown</td><td>*</td><td>Draft / Production Verified / Costing Approved / Released. Only Released MR can proceed to MIS.</td></tr>
               </tbody>
             </table>
           </div>
@@ -1067,7 +1038,56 @@
               </tbody>
             </table>
           </div>
+          <h4>Project Cost Components <span style="font-size:11px;font-weight:400;color:var(--gray-500)">— MR = total project implementation cost baseline</span></h4>
+          <div style="padding:8px 12px;background:#eff6ff;border-radius:6px;font-size:12px;color:#1e40af;margin-bottom:8px">
+            <strong>Costing view:</strong> The MR is not just material — it is the <strong>complete project cost estimate</strong>. Four components sum to the project implementation cost: <strong>(1) Material Cost</strong> = Σ(Material Allocation Assigned Qty × Rate), <strong>(2) Application Cost</strong>, <strong>(3) Transportation Cost</strong>, <strong>(4) Tools &amp; Tackles</strong>. <strong>Total MR Cost</strong> = sum of all four; this is what Costing approves before Release.
+          </div>
+          <h4 id="mr-application">Application Cost (Labour / Execution)</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Sr No</td><td>Number</td><td>*</td><td>Auto</td></tr>
+                <tr><td>2</td><td>Activity / Work</td><td>Text</td><td>*</td><td>e.g. Epoxy application, Screeding</td></tr>
+                <tr><td>3</td><td>UOM</td><td>Dropdown</td><td>*</td><td>Sqm / Sqft / Nos / Lump sum</td></tr>
+                <tr><td>4</td><td>Qty / Area</td><td>Number</td><td>*</td><td>From SO System area</td></tr>
+                <tr><td>5</td><td>Rate</td><td>Number</td><td>*</td><td>Per UOM</td></tr>
+                <tr><td>6</td><td>Amount</td><td>Formula</td><td>*</td><td>= Qty × Rate</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h4 id="mr-transport">Transportation Cost</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Sr No</td><td>Number</td><td>*</td><td>Auto</td></tr>
+                <tr><td>2</td><td>From</td><td>Text</td><td>*</td><td>Source (Store / Supplier)</td></tr>
+                <tr><td>3</td><td>To (Site)</td><td>AutoFetch</td><td>*</td><td>From Project address</td></tr>
+                <tr><td>4</td><td>Vehicle / Mode</td><td>Text</td><td></td><td>—</td></tr>
+                <tr><td>5</td><td>Qty / Trips</td><td>Number</td><td>*</td><td>—</td></tr>
+                <tr><td>6</td><td>Rate</td><td>Number</td><td>*</td><td>Per trip / per unit</td></tr>
+                <tr><td>7</td><td>Amount</td><td>Formula</td><td>*</td><td>= Qty × Rate</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h4 id="mr-tools">Tools &amp; Tackles</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Sr No</td><td>Number</td><td>*</td><td>Auto</td></tr>
+                <tr><td>2</td><td>Item / Tool</td><td>Text</td><td>*</td><td>e.g. Mixer, Trowel, Grinder</td></tr>
+                <tr><td>3</td><td>Qty</td><td>Number</td><td>*</td><td>—</td></tr>
+                <tr><td>4</td><td>Rate</td><td>Number</td><td>*</td><td>Per unit / hire rate</td></tr>
+                <tr><td>5</td><td>Amount</td><td>Formula</td><td>*</td><td>= Qty × Rate</td></tr>
+                <tr><td>6</td><td>Remarks</td><td>Multi-line</td><td></td><td>Owned / Hired</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>Total MR Cost</strong> = Material Cost (Σ Allocation × Rate) + Application Cost + Transportation Cost + Tools &amp; Tackles. This total is the <strong>project implementation cost baseline</strong> that Costing approves at the MR gate.</p>
           <p><strong>Backend rule (consumption resolution):</strong> Every consumption of this RM against the Project — whether from <em>FG production (BMR / RM Consumption)</em> or a <em>Site Manager consumption entry</em> — increments <strong>Consumed Qty</strong> on the matching MR Allocation line (matched by Project ID + Item Code). The system <strong>never</strong> deducts from a generic pool for project-tagged material. See <a href="flow.html#consumption-rule">Consumption Flow (flow.html)</a>.</p>
+          <p><strong>MR Approval workflow:</strong> Draft → <strong>Production verifies</strong> MR qty against SO system requirements → <strong>Costing approves</strong> material budget → <strong>Released</strong> (available for MIS). Notification to Project Manager on each change. Only Released MR can create MIS.</p>
           <p><strong>80% Alert:</strong> When Consumption % crosses 80% for any line with the Alert Flag ON, the system fires a pop-up + dashboard banner + email to the Project Manager. See <a href="#alert-80">80% Consumption Alert</a>.</p>
         </div>
         <!-- 80% CONSUMPTION ALERT -->
@@ -1083,7 +1103,7 @@
             <span class="phase-title">Material Issue Slip (MIS)</span>
             <span class="phase-tag">N Items · Stock −</span>
           </div>
-          <p>Department: Stores. MR ref → autofetch items. Issued Qty, Balance Qty (formula). Stock deducted on posting.</p>
+          <p>Department: Stores. MR ref → autofetch items. <strong>Only MR with "Released" status can create MIS.</strong> Issued Qty, Balance Qty (formula). Stock deducted on posting.</p>
           <div class="table-wrap">
             <table>
               <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
@@ -1223,20 +1243,26 @@
             </div>
             <div class="subtable-demo">
               <div class="st-hint">Material Valuation</div>
-              <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr">
-                <span style="font-size:11px;font-weight:600">Item</span>
-                <span style="font-size:11px;font-weight:600">Qty</span>
-                <span style="font-size:11px;font-weight:600">Rate</span>
-                <span style="font-size:11px;font-weight:600">Amount</span>
-                <span style="font-size:11px;font-weight:600">Remark</span>
-              </div>
-              <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr">
-                <input type="text" value="Epoxy Resin" style="font-size:12px">
-                <input type="number" value="200" style="font-size:12px">
-                <input type="number" value="238" style="font-size:12px">
-                <input type="number" value="47,600" style="font-size:12px" readonly>
-                <input type="text" value="Within budget" style="font-size:12px">
-              </div>
+              <table style="width:100%;border-collapse:collapse">
+                <thead>
+                  <tr style="border-bottom:2px solid #ddd">
+                    <th style="padding:6px 8px;text-align:left;font-weight:600;width:2fr">Item</th>
+                    <th style="padding:6px 8px;text-align:left;font-weight:600;width:1fr">Qty</th>
+                    <th style="padding:6px 8px;text-align:left;font-weight:600;width:1fr">Rate</th>
+                    <th style="padding:6px 8px;text-align:left;font-weight:600;width:1fr">Amount</th>
+                    <th style="padding:6px 8px;text-align:left;font-weight:600;width:1fr">Remark</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr style="border-bottom:1px solid #eee">
+                    <td style="padding:4px 8px"><input type="text" value="Epoxy Resin" style="font-size:12px;width:100%;box-sizing:border-box"></td>
+                    <td style="padding:4px 8px"><input type="number" value="200" style="font-size:12px;width:100%;box-sizing:border-box"></td>
+                    <td style="padding:4px 8px"><input type="number" value="238" style="font-size:12px;width:100%;box-sizing:border-box"></td>
+                    <td style="padding:4px 8px"><input type="number" value="47,600" style="font-size:12px;width:100%;box-sizing:border-box" readonly></td>
+                    <td style="padding:4px 8px"><input type="text" value="Within budget" style="font-size:12px;width:100%;box-sizing:border-box"></td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
             <div class="form-row-3" style="margin-top:8px">
               <div><label>Total Material Cost</label><input type="number" value="65,800" disabled style="background:var(--gray-50);font-weight:700"></div>
@@ -1247,12 +1273,52 @@
         </div>
       </div>
 
-      <h2 id="production">6 · Production <span class="badge badge-green">Tagged to Project</span></h2>
+      <h2 id="production">6 · Production <span class="badge badge-green">Costing Arm for SO · Tagged to Project</span></h2>
+      <p>The Production module is the costing arm for the Sales Order (SO). It handles material requisition (PR), production planning, batch manufacturing, RM consumption, and FG handover — all driving SO cost calculation.</p>
 
       <div class="phase-container">
         <div class="phase">
           <div class="phase-header">
             <span class="phase-number">6A</span>
+            <span class="phase-title">Purchase Requisition (PR)</span>
+            <span class="phase-tag">N Line Items</span>
+          </div>
+          <p>Department: Production (Costing arm for SO). Status: Draft → Pending Approval → Approved → Rejected.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>PR Number</td><td>Autogen</td><td>*</td><td>PR-YYYY-XXXX</td></tr>
+                <tr><td>2</td><td>PR Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
+                <tr><td>3</td><td>Reference</td><td>Text</td><td></td><td>Manual reference</td></tr>
+                <tr><td>4</td><td><strong>Department</strong></td><td>Dropdown</td><td>*</td><td>Auto from login — Production</td></tr>
+                <tr><td>5</td><td>Department</td><td>AutoFetch</td><td>*</td><td>As per user login (Production)</td></tr>
+                <tr><td>6</td><td>Approved By</td><td>User lookup</td><td></td><td>Filled after approval</td></tr>
+                <tr><td>7</td><td>Status</td><td>Dropdown</td><td>*</td><td>Draft / Pending Approval / Approved / Rejected</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h4>Line Items (N items)</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Sr</td><td>Number</td><td>*</td><td>Auto</td></tr>
+                <tr><td>2</td><td>Item Code</td><td>Lookup</td><td>*</td><td>From Purchase Item Muster (autofill if Item Name filled)</td></tr>
+                <tr><td>3</td><td>Item Name</td><td>AutoFetch</td><td>*</td><td>Autofill if Item Code filled</td></tr>
+                <tr><td>4</td><td>Qty</td><td>Number</td><td>*</td><td>—</td></tr>
+                <tr><td>5</td><td>Item Description</td><td>Multi-line</td><td></td><td>—</td></tr>
+                <tr><td>6</td><td>UOM</td><td>AutoFetch</td><td>*</td><td>From Item Muster</td></tr>
+                <tr><td>7</td><td>Lead Time</td><td>AutoFetch</td><td></td><td>Days, from Item Muster</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>Automation:</strong> Item Code &lrarr; Item Name bidirectional autofill. UOM autofill. Lead Time autofill. Status: Draft &rarr; Pending Approval (on submit) &rarr; Approved (after approval). Notification to Purchase dept on approval.</p>
+        </div>
+
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">6B</span>
             <span class="phase-title">Production Planning</span>
             <span class="phase-tag">Per Project</span>
           </div>
@@ -1277,7 +1343,7 @@
         </div>
         <div class="phase">
           <div class="phase-header">
-            <span class="phase-number">6B</span>
+            <span class="phase-number">6C</span>
             <span class="phase-title">Production Order</span>
             <span class="phase-tag">Per MR/Planning</span>
           </div>
@@ -1299,7 +1365,7 @@
         </div>
         <div class="phase">
           <div class="phase-header">
-            <span class="phase-number">6C</span>
+            <span class="phase-number">6D</span>
             <span class="phase-title">Batch Manufacturing Record (BMR)</span>
             <span class="phase-tag">N Subforms</span>
           </div>
@@ -1359,7 +1425,7 @@
         </div>
         <div class="phase">
           <div class="phase-header">
-            <span class="phase-number">6D</span>
+            <span class="phase-number">6E</span>
             <span class="phase-title">RM Consumption Entry</span>
             <span class="phase-tag">Actual vs Standard</span>
           </div>
@@ -1380,7 +1446,7 @@
         </div>
         <div class="phase">
           <div class="phase-header">
-            <span class="phase-number">6E</span>
+            <span class="phase-number">6F</span>
             <span class="phase-title">Packing Entry</span>
             <span class="phase-tag">FG + Packing Material</span>
           </div>
@@ -1401,7 +1467,7 @@
         </div>
         <div class="phase">
           <div class="phase-header">
-            <span class="phase-number">6F</span>
+            <span class="phase-number">6G</span>
             <span class="phase-title">Rework Register</span>
             <span class="phase-tag">QC Revalidation</span>
           </div>
@@ -1449,18 +1515,24 @@
             </div>
             <div class="subtable-demo">
               <div class="st-hint">Area Details</div>
-              <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
-                <span style="font-size:11px;font-weight:600">System</span>
-                <span style="font-size:11px;font-weight:600">Measured Area</span>
-                <span style="font-size:11px;font-weight:600">UOM</span>
-                <span style="font-size:11px;font-weight:600">Remark</span>
-              </div>
-              <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
-                <input type="text" value="EP01 — Epoxy 1mm" style="font-size:12px">
-                <input type="number" value="520" style="font-size:12px">
-                <input type="text" value="Sqm" style="font-size:12px">
-                <input type="text" value="+20 sqm vs SO" style="font-size:12px">
-              </div>
+              <table style="width:100%;border-collapse:collapse">
+                <thead>
+                  <tr style="border-bottom:2px solid #ddd">
+                    <th style="padding:6px 8px;text-align:left;font-weight:600;width:2fr">System</th>
+                    <th style="padding:6px 8px;text-align:left;font-weight:600;width:1fr">Measured Area</th>
+                    <th style="padding:6px 8px;text-align:left;font-weight:600;width:1fr">UOM</th>
+                    <th style="padding:6px 8px;text-align:left;font-weight:600;width:1fr">Remark</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr style="border-bottom:1px solid #eee">
+                    <td style="padding:4px 8px"><input type="text" value="EP01 — Epoxy 1mm" style="font-size:12px;width:100%;box-sizing:border-box"></td>
+                    <td style="padding:4px 8px"><input type="number" value="520" style="font-size:12px;width:100%;box-sizing:border-box"></td>
+                    <td style="padding:4px 8px"><input type="text" value="Sqm" style="font-size:12px;width:100%;box-sizing:border-box"></td>
+                    <td style="padding:4px 8px"><input type="text" value="+20 sqm vs SO" style="font-size:12px;width:100%;box-sizing:border-box"></td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
             <div class="form-row-3">
               <div><label>Measured By</label><input type="text" value="Rahul (Service)"></div>
@@ -1492,18 +1564,24 @@
             </div>
             <div class="subtable-demo">
               <div class="st-hint">Material Under Custody</div>
-              <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
-                <span style="font-size:11px;font-weight:600">Item</span>
-                <span style="font-size:11px;font-weight:600">Qty</span>
-                <span style="font-size:11px;font-weight:600">UOM</span>
-                <span style="font-size:11px;font-weight:600">Condition</span>
-              </div>
-              <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
-                <input type="text" value="Epoxy Resin" style="font-size:12px">
-                <input type="number" value="180" style="font-size:12px">
-                <input type="text" value="Kg" style="font-size:12px">
-                <select style="font-size:12px"><option selected>Good</option><option>Damaged</option></select>
-              </div>
+              <table style="width:100%;border-collapse:collapse">
+                <thead>
+                  <tr style="border-bottom:2px solid #ddd">
+                    <th style="padding:6px 8px;text-align:left;font-weight:600;width:2fr">Item</th>
+                    <th style="padding:6px 8px;text-align:left;font-weight:600;width:1fr">Qty</th>
+                    <th style="padding:6px 8px;text-align:left;font-weight:600;width:1fr">UOM</th>
+                    <th style="padding:6px 8px;text-align:left;font-weight:600;width:1fr">Condition</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr style="border-bottom:1px solid #eee">
+                    <td style="padding:4px 8px"><input type="text" value="Epoxy Resin" style="font-size:12px;width:100%;box-sizing:border-box"></td>
+                    <td style="padding:4px 8px"><input type="number" value="180" style="font-size:12px;width:100%;box-sizing:border-box"></td>
+                    <td style="padding:4px 8px"><input type="text" value="Kg" style="font-size:12px;width:100%;box-sizing:border-box"></td>
+                    <td style="padding:4px 8px"><select style="font-size:12px;width:100%;box-sizing:border-box"><option selected>Good</option><option>Damaged</option></select></td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
             <div class="form-row-3">
               <div><label>Handover By (Store)</label><input type="text" value="Anil Surve"></div>
@@ -1954,18 +2032,24 @@
           </div>
           <div class="subtable-demo">
             <div class="st-hint">FG Dispatch Items</div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
-              <span style="font-size:11px;font-weight:600">Item</span>
-              <span style="font-size:11px;font-weight:600">Qty</span>
-              <span style="font-size:11px;font-weight:600">UOM</span>
-              <span style="font-size:11px;font-weight:600">Batch</span>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
-              <input type="text" value="Epoxy Flooring — 1mm" style="font-size:12px">
-              <input type="number" value="480" style="font-size:12px">
-              <input type="text" value="Sqm" style="font-size:12px">
-              <input type="text" value="BATCH-EP-001" style="font-size:12px">
-            </div>
+            <table style="width:100%;border-collapse:collapse">
+              <thead>
+                <tr style="border-bottom:2px solid #ddd">
+                  <th style="padding:6px 8px;text-align:left;font-weight:600;width:2fr">Item</th>
+                  <th style="padding:6px 8px;text-align:left;font-weight:600;width:1fr">Qty</th>
+                  <th style="padding:6px 8px;text-align:left;font-weight:600;width:1fr">UOM</th>
+                  <th style="padding:6px 8px;text-align:left;font-weight:600;width:1fr">Batch</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-bottom:1px solid #eee">
+                  <td style="padding:4px 8px"><input type="text" value="Epoxy Flooring — 1mm" style="font-size:12px;width:100%;box-sizing:border-box"></td>
+                  <td style="padding:4px 8px"><input type="number" value="480" style="font-size:12px;width:100%;box-sizing:border-box"></td>
+                  <td style="padding:4px 8px"><input type="text" value="Sqm" style="font-size:12px;width:100%;box-sizing:border-box"></td>
+                  <td style="padding:4px 8px"><input type="text" value="BATCH-EP-001" style="font-size:12px;width:100%;box-sizing:border-box"></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
           <div class="form-row-3">
             <div><label>Transport Mode</label><select><option selected>Truck</option><option>Mini Truck</option><option>Pickup</option></select></div>
@@ -1997,18 +2081,24 @@
           </div>
           <div class="subtable-demo">
             <div class="st-hint">Outward Items</div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
-              <span style="font-size:11px;font-weight:600">Item</span>
-              <span style="font-size:11px;font-weight:600">Qty</span>
-              <span style="font-size:11px;font-weight:600">UOM</span>
-              <span style="font-size:11px;font-weight:600">Status</span>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
-              <input type="text" value="Epoxy Flooring — 1mm" style="font-size:12px">
-              <input type="number" value="480" style="font-size:12px">
-              <input type="text" value="Sqm" style="font-size:12px">
-              <span style="font-size:12px;color:var(--green);font-weight:600">Dispatched</span>
-            </div>
+            <table style="width:100%;border-collapse:collapse">
+              <thead>
+                <tr style="border-bottom:2px solid #ddd">
+                  <th style="padding:6px 8px;text-align:left;font-weight:600;width:2fr">Item</th>
+                  <th style="padding:6px 8px;text-align:left;font-weight:600;width:1fr">Qty</th>
+                  <th style="padding:6px 8px;text-align:left;font-weight:600;width:1fr">UOM</th>
+                  <th style="padding:6px 8px;text-align:left;font-weight:600;width:1fr">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-bottom:1px solid #eee">
+                  <td style="padding:4px 8px"><input type="text" value="Epoxy Flooring — 1mm" style="font-size:12px;width:100%;box-sizing:border-box"></td>
+                  <td style="padding:4px 8px"><input type="number" value="480" style="font-size:12px;width:100%;box-sizing:border-box"></td>
+                  <td style="padding:4px 8px"><input type="text" value="Sqm" style="font-size:12px;width:100%;box-sizing:border-box"></td>
+                  <td style="padding:4px 8px"><span style="font-size:12px;color:var(--green);font-weight:600">Dispatched</span></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
           <div style="padding:8px 12px;background:var(--green-light);border-radius:6px;font-size:12px;color:var(--green);margin-top:8px">
             <strong>&#x2713; Outward quantity updated.</strong> FG Stock reduced by dispatched qty.

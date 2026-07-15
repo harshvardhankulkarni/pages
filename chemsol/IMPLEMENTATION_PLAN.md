@@ -19,9 +19,16 @@ Two streams — Stream A (Pre-Project) no Project ID, Stream B (Project-Centric)
 Purchase Dept → PR → PO → GRN → QC → Material Handover → Store Inventory
 
 === STREAM B (Project-Centric — Project ID on all forms) ===
-Sales Order → Project → MR → MIS (consumes from Store)
+Sales Order → Project
+  │  Project baseline = SO + MR (SO = revenue, MR = complete project implementation cost baseline — total cost: Material + Application + Transportation + Tools & Tackles — that Costing approves)
+  ▼
+MR [Project Cost Baseline: Material + Application + Transportation + Tools & Tackles] → Draft → Production Verified → Costing Approved (TOTAL cost) → Released
+  │  ⛔ Without Released MR → STOP (no MIS, no Production, no Logistics)
+  ▼
+MIS (consumes from Store)
 Project → Production Planning → BMR → Packing → FGHM
-Project → Costing Approval → Service Team → Finance → Logistics → Close
+Project → Logistics (DC → Outward)
+Project → Service Team → Finance → Close
 
 === GLOBAL MASTER DATA ===
 Item Master ← → Supplier Master
@@ -441,7 +448,21 @@ Bill will not be accepted without e-way bill. If the material is not approved by
 ## 5. Phase 3 — Inventory / Stores Module
 
 ### 5.1 Material Requisition (MR)
-**Department**: Production & R&D
+**Department**: Production & R&D  
+**Role**: MR is the **complete project implementation cost baseline** — four cost components (Material, Application, Transportation, Tools & Tackles) summing to Total MR Cost, which Costing approves. SO is the revenue baseline (System/FG scope). **Project baseline = SO + MR.** MR is NOT just RM allocation.
+
+**MR Status Workflow (Critical Gate):**
+```
+Draft → Production Verified → Costing Approved → Released
+  │         │                       │                │
+  │    Production checks MR     Costing approves    ⛔ Gate
+  │    qty vs SO system req     TOTAL project cost  passed →
+  │    (via BOM × SO qty)                            MIS can proceed
+  ▼         ▼                       ▼                ▼
+Initial   Verified by             Approved by     Released —
+            Production              Costing        downstream
+                                                    actions allowed
+```
 
 **Header:**
 | # | Field | Type | Mandatory | Notes |
@@ -453,6 +474,7 @@ Bill will not be accepted without e-way bill. If the material is not approved by
 | 5 | Department | AutoFetch | Yes | As per user login |
 | 6 | Requested By | Text | Yes | Employee Name |
 | 7 | Priority | Dropdown | Yes | Low / Medium / High / Urgent |
+| 8 | **MR Status** | **Dropdown** | **Yes** | **Draft / Production Verified / Costing Approved / Released** |
 
 **Line items:**
 | # | Field | Type | Mandatory | Notes |
@@ -464,13 +486,70 @@ Bill will not be accepted without e-way bill. If the material is not approved by
 | 5 | UOM | AutoFetch | Yes | From Item Muster |
 | 6 | Available Stock | AutoFetch | Yes | From inventory (real-time) |
 | 7 | Required Qty | Number | Yes | — |
-
 | 8 | Remarks | Multi-line | No | — |
+
+**MR = Complete Project Implementation Cost Baseline (four cost components):**
+
+MR is NOT just RM allocation. It carries four cost components that sum to the **Total MR Cost** — the project implementation cost baseline that **Costing approves**:
+
+1. **Material Cost** — from the per-project Material Allocation subform below (Σ Assigned Qty × Rate)
+2. **Application Cost** — labour/execution cost to apply material on site (Activity, UOM, Qty/Area, Rate, Amount)
+3. **Transportation Cost** — transport of material to site (From, To, Vehicle/Trips, Rate, Amount)
+4. **Tools & Tackles** — tools/equipment needed (Item, Qty, Rate, Amount)
+
+**Total MR Cost = Material Cost + Application Cost + Transportation Cost + Tools & Tackles.**
+
+**Material Allocation subform (feeds Material Cost):**
+Each MR line allocates RM to the Project. This subform is the **Material Cost component** of the cost baseline — every consumption entry (BMR/RM Consumption or Site Manager) resolves here by `Project ID + Item Code`.
+
+| # | Field | Type | Mandatory | Notes |
+|---|-------|------|-----------|-------|
+| 1 | Item Code | Lookup | * | From Purchase Item Muster (RM) — auto-populated from MR line items |
+| 2 | Item Name | AutoFetch | * | — |
+| 3 | UOM | AutoFetch | * | From Item Muster |
+| 4 | Assigned Qty | Number | * | Allocation baseline for this Project. Defaults from Required Qty |
+| 5 | Rate | Currency | * | Per-unit RM rate |
+| 6 | Material Cost | Formula | * | = Assigned Qty × Rate |
+| 7 | Allocation Ratio % | Formula | * | = `Assigned Qty ÷ Σ All Assigned Qty × 100` — share of total project RM |
+| 8 | 80% Threshold Alert Flag | Checkbox | | Default ON — fires alert when consumption reaches 80% of Assigned Qty |
+| 9 | Consumed Qty | Number (auto) | | Running total; incremented by FG production (BMR/RM Consumption) + Site Manager entries |
+| 10 | Consumption % | Formula | | = `Consumed Qty ÷ Assigned Qty × 100` |
+| 11 | Alert Triggered | Checkbox (readonly) | | Auto-set TRUE once Consumption % ≥ 80% |
+
+**Application Cost subform (labour/execution on site):**
+| # | Field | Type | Mandatory | Notes |
+|---|-------|------|-----------|-------|
+| 1 | Activity | Text | | e.g., surface prep, laying, finishing |
+| 2 | UOM | Dropdown | | — |
+| 3 | Qty / Area | Number | | — |
+| 4 | Rate | Currency | | Per unit |
+| 5 | Amount | Formula | | = Qty/Area × Rate |
+
+**Transportation Cost subform (material to site):**
+| # | Field | Type | Mandatory | Notes |
+|---|-------|------|-----------|-------|
+| 1 | From | Text/Lookup | | Source (warehouse) |
+| 2 | To | Text/Lookup | | Destination (site) |
+| 3 | Vehicle / Trips | Text / Number | | — |
+| 4 | Rate | Currency | | Per trip |
+| 5 | Amount | Formula | | = Trips × Rate |
+
+**Tools & Tackles subform (equipment needed):**
+| # | Field | Type | Mandatory | Notes |
+|---|-------|------|-----------|-------|
+| 1 | Item | Text/Lookup | | From Item Muster |
+| 2 | Qty | Number | | — |
+| 3 | Rate | Currency | | Per unit |
+| 4 | Amount | Formula | | = Qty × Rate |
 
 **Automation rules:**
 - Item lookup with autofetch of name, category, UOM, available stock
 - Priority dropdown for urgency classification
-- After approval, available for MIS creation
+- **MR Status workflow:** Draft (on create) → Production Verified (after Production checks qty vs SO system req via BOM) → Costing Approved (after Costing approves the TOTAL project cost — all four components) → Released (MR actionable)
+- **Without Released MR, there is no MIS, no Production, no Logistics, no project execution**
+- **Every consumption entry** (BMR/RM Consumption or Site Manager) increments `Consumed Qty` on the matching MR Allocation line matched by `Project ID + Item Code` — never a generic pool
+- Site Manager entries made against SO System/FG are expanded into RMs at BOM ratios before incrementing Consumed Qty
+- **80% Alert:** When `Consumption % ≥ 80%` and `80% Threshold Alert Flag` is ON → pop-up + dashboard banner + email to Project Manager
 
 ### 5.2 Material Issue Slip (MIS)
 **Department**: Stores
@@ -527,9 +606,10 @@ Additional store forms listed in Screens.csv but without field-level detail in C
 | # | Field | Type | Mandatory | Notes |
 |---|-------|------|-----------|-------|
 | 1 | FGH No | Autogen | Yes | — |
-| 2 | Handover Date | Date | Yes | Today's Date |
-| 3 | Client/Site Name | Lookup | Yes | From Customer/Site Master |
-| 4 | Batch No | Text | Yes | Can be multiple batch numbers |
+| 2 | Project ID | Lookup | * | From Project Master — links FG handover back to project RM consumption |
+| 3 | Handover Date | Date | Yes | Today's Date |
+| 4 | Client/Site Name | Lookup | Yes | From Customer/Site Master |
+| 5 | Batch No | Text | Yes | Can be multiple batch numbers |
 
 **Line items:**
 | # | Field | Type | Mandatory | Notes |
@@ -697,26 +777,37 @@ Single table with Category dropdown — no separate sections or conditional visi
 
 | # | Field | Type | Mandatory | Notes |
 |---|-------|------|-----------|-------|
-| 1 | Date | Date | Yes | Today's Date |
-| 2 | Employee Name | Text | Yes | — |
-| 3 | Customer Code | Lookup | No | From Customer Master |
-| 4 | Client Org Name | Text | Yes | — |
-| 5 | Contact Person | Text | Yes | — |
-| 6 | Contact No | Phone | Yes | — |
-| 7 | Alt Contact No | Phone | Yes | — |
-| 8 | Email | Email | Yes | — |
-| 9 | GST No | Text | Yes | — |
-| 10 | PAN | Text | Yes | — |
-| 11 | Regd Address | Multi-line | Yes | — |
-| 12 | Sales/Work Order No | Autogen | Yes | — |
-| 13 | Sales/Work Order Date | Date | Yes | — |
-| 14 | Site Name | Text | Yes | — |
-| 15 | Site Address | Multi-line | Yes | — |
-| 16 | Site Manager/Incharge | Text | No | — |
-| 17 | Contact No (Site) | Phone | No | — |
-| 18 | Project Type | Dropdown | Yes | 1.Industrial, 2.Commercial |
+| 1 | Sales Type | Dropdown | * | Supply+Apply / Supply Only — controlling field; determines subform shown & Project creation |
+| 2 | Date | Date | Yes | Today's Date |
+| 3 | Employee Name | Text | Yes | — |
+| 4 | Customer Code | Lookup | No | From Customer Master |
+| 5 | Client Org Name | Text | Yes | — |
+| 6 | Contact Person | Text | Yes | — |
+| 7 | Contact No | Phone | Yes | — |
+| 8 | Alt Contact No | Phone | Yes | — |
+| 9 | Email | Email | Yes | — |
+| 10 | GST No | Text | Yes | — |
+| 11 | PAN | Text | Yes | — |
+| 12 | Regd Address | Multi-line | Yes | — |
+| 13 | Sales/Work Order No | Autogen | Yes | — |
+| 14 | Sales/Work Order Date | Date | Yes | — |
+| 15 | Site Name | Text | Yes | — |
+| 16 | Site Address | Multi-line | Yes | — |
+| 17 | Site Manager/Incharge | Text | No | — |
+| 18 | Contact No (Site) | Phone | No | — |
+| 19 | Project Type | Dropdown | Yes | 1.Industrial, 2.Commercial |
+| 20 | Total Work Order Amount | Formula | | Sum of all line Amounts (auto-calculated) |
+| 21 | Payment Terms | Text | | — |
+| 22 | Transportation Scope | Dropdown | Yes | — |
+| 23 | Transportation Amount | Currency | | — |
+| 24 | Lead Time | Number (Days) | | — |
+| 25 | PO/BOQ Attachment | File upload (Multiple) | | — |
+| 26 | Warranty | Text | | — |
+| 27 | Is proper System Required | Checkbox | | — |
+| 28 | Remark | Multi-line | | — |
+| 29 | Commission | Checkbox | | If checked → Based On (Dropdown: 1.Percentage, 2.Fix Amount) + Amount |
 
-**System subtable:**
+**Subform A — System Lines** (visible when Sales Type = Supply+Apply):
 | # | Field | Type | Notes |
 |---|-------|------|-------|
 | 1 | System Code | Lookup | From System Master (autofetch) |
@@ -727,27 +818,26 @@ Single table with Category dropdown — no separate sections or conditional visi
 | 6 | Rate | Currency | — |
 | 7 | Amount | Formula | Area × Rate |
 
-| 15 | Total Work Order Amount | Formula | — |
-| 16 | Payment Terms | Text | — |
-| 17 | Transportation Scope | Dropdown | Yes |
-| 18 | Transportation Amount | Currency | — |
-| 19 | Lead Time | Number (Days) | — |
-| 20 | PO/BOQ Attachment | File upload (Multiple) | — |
-| 21 | Warranty | Text | — |
-| 22 | Is proper System Required | Checkbox | — |
-| 23 | Remark | Multi-line | — |
-| 24 | Commission | Checkbox | If checked → Based On (Dropdown: 1.Percentage, 2.Fix Amount) + Amount |
+**Subform B — FG Lines** (visible when Sales Type = Supply Only):
+| # | Field | Type | Notes |
+|---|-------|------|-------|
+| 1 | FG Code | Lookup | From Purchase Item Muster (FG items) |
+| 2 | FG Name | AutoFetch | — |
+| 3 | Qty | Number | — |
+| 4 | UOM | AutoFetch | — |
+| 5 | Rate | Currency | — |
+| 6 | Amount | Formula | Qty × Rate |
 
 #### Automation
-| 4 | Rate | Currency |
-| 5 | Amount | Formula |
-
-| 20 | Total Sales Order Amount | Formula |
-| 21 | Payment Terms | Text |
-| 22 | Transportation Scope | Dropdown |
-| 23 | Amount | Currency |
-| 24 | Lead Time | Number (Days) |
-| 25 | Remark | Multi-line |
+- **Sales Type controlling dropdown**: Selecting "Supply+Apply" shows Subform A (System Lines); "Supply Only" shows Subform B (FG Lines) — conditional visibility
+- **Subform A fields** (Supply+Apply): System Code, System Name, Thickness, Area, UOM, Rate, Amount (Area × Rate formula)
+- **Subform B fields** (Supply Only): FG Code, FG Name, Qty, UOM, Rate, Amount
+- **Auto-create Project**: On SO Acceptance (Supply+Apply mode only) → create Project record with Project ID, systems subtab, SO reference
+- **Autofetch**: Customer Code → Customer Name, GST, PAN, Address; System Code → System Name; FG Code → FG Name, UOM
+- **Amount formula**: Area × Rate (System Lines) or Qty × Rate (FG Lines)
+- **Total Work Order Amount**: Sum of all line Amounts
+- **Commission logic**: If Commission checkbox ON → show conditional dropdown (Percentage / Fixed Amount) + Amount field
+- **Warranty, Transport, Lead Time**: Captured as text/number fields per line
 
 ---
 
@@ -954,18 +1044,29 @@ PR (Created by Production/R&D)
             → Stock Updated (after GRN posting)
 ```
 
-### 13.2 Material Issue Flow
+### 13.2 Material Issue Flow (MR-Gated)
 ```
 MR (Created by Production/R&D) 
-  → MIS (Store dept issues material)
-    → Stock Updated
+  → MR Status = Draft
+    → Production Verifies (checks MR qty vs SO system requirements via BOM)
+      → MR Status = Production Verified
+        → Costing Approves (validates material budget)
+          → MR Status = Costing Approved → Released
+            → ⛔ Gate passed: MIS can now proceed
+              → MIS (Store dept issues material)
+                → Stock Updated
 ```
+**Critical rule:** Without a **Released MR**, there is no MIS, no Production, no Logistics, no project execution.
 
-### 13.3 FG Flow
+### 13.3 FG Flow (Post-MR Release)
 ```
-Production → FGHM (Production hands over FG, inline acceptance) 
-  → Notification to Store/Logistics
-    → FG Stock Updated
+[MR Released] → MIS (Stock issued to Production)
+  → Production Planning → BMR → Packing
+    → FGHM (Production hands over FG, inline acceptance)
+      → Notification to Store/Logistics
+        → FG Stock Updated
+          → Logistics (DC → Outward)
+            → Project Site Execution (Service Team)
 ```
 
 ### 13.4 Notification Triggers
@@ -977,6 +1078,9 @@ Production → FGHM (Production hands over FG, inline acceptance)
 | Rate Comparison Data Missing | Purchase dept | In-app alert |
 | PO Ready for Release | Purchase dept | In-app |
 | GRN Overdue | Purchase + Store dept | In-app |
+| **MR Submitted (Draft → Pending Verification)** | **Production dept** | **In-app** |
+| **MR Production Verified (→ Pending Costing Approval)** | **Costing dept** | **In-app** |
+| **MR Released** | **Store + Production + Logistics** | **In-app + Email** |
 | FGHM Submitted | Store & Logistics dept | Pop-up |
 
 ### 13.5 Autofetch Rules Summary
@@ -1012,7 +1116,22 @@ Production → FGHM (Production hands over FG, inline acceptance)
 - **Material Return**: Qty added back to stock
 - **Min/Max stock**: Alert when stock level crosses thresholds (from Item Muster)
 
-### 13.8 P&amp;L Calculation Rules (New)
+### 13.8 Consumption → Project-Assigned RM Rules (New)
+- **Resolution rule**: Every consumption entry — whether from **FG production (BMR / RM Consumption)** or a **Site Manager consumption entry** — resolves to the **project-assigned RM** recorded in the MR Material Allocation (matched by `Project ID + Item Code`)
+- **No generic pool deduction**: Project-tagged consumption never deducts from a generic stock pool
+- **Site Manager expansion rule**: A Site Manager entry made against the SO System/FG is expanded into its constituent RMs at BOM ratios (via System Composition → BOM), then each RM's `Consumed Qty` on the matching MR Allocation line is incremented by `entry_qty × ratio`
+- **FG Handover linkage**: FGHM submission updates FG stock AND the Project ID field links the handover back to the project's RM consumption tracking
+
+### 13.9 80% Consumption Alert (New)
+- **Trigger condition**: When any allocated RM reaches **80% of its Assigned Qty** (i.e., `Consumption % ≥ 80%`) AND the `80% Threshold Alert Flag` is ON
+- **Three notification channels**:
+  - **Pop-up** to user saving the consumption entry that triggered the threshold
+  - **Dashboard banner** on Project dashboard showing which RM(s) have breached 80%
+  - **Email** to Project Manager + Coordinator with RM details, current Consumption %, and remaining buffer
+- **Escalation at 100%**: When `Consumption % ≥ 100%`, the label changes to **"Allocation Exhausted"** and a second alert fires to Project Manager + Purchase dept for re-stock planning
+- **Reporting**: Project Material Allocation & 80% Utilization Report shows per-RM Assigned vs Consumed vs Alert status
+
+### 13.10 P&amp;L Calculation Rules (New)
 - **On Project Close**: P&amp;L auto-calculated from all linked forms; snapshot stored
 - **Real-time view**: Live P&amp;L accessible from Project dashboard at any time
 - **Data completeness check**: Before calculation, verify all GRNs posted, all Task Budget Actuals filled, all BMRs closed
@@ -1035,8 +1154,10 @@ Production → FGHM (Production hands over FG, inline acceptance)
 | Purchase - Approve | Approve: PR, PO within limits (Approval Matrix) |
 | Store - Entry | Create/Edit: GRN, MIS, Material Return, FG Receiving, Vehicle & Transport |
 | Store - Review | View: Inventory stock, GRN, PO, Reports |
-| Production - Entry | Create/Edit: MR, BMR, Production Planning, RM Consumption, Packing, FGH |
+| Production - Entry | Create/Edit: MR (Draft), BMR, Production Planning, RM Consumption, Packing, FGH |
+| Production - Verify MR | Verify MR: checks MR qty vs SO system req (via BOM). Sets MR Status = Production Verified |
 | Production - Review | View: BOM, Stock, Production Reports |
+| Costing - Approve MR | Approve MR: validates material budget. Sets MR Status = Costing Approved → Released |
 | Sales - Entry | Create/Edit: Sales/Work Order, Customer Master |
 | Sales - Review | View: SO reports, project status |
 | QC - Entry | Create/Edit: QC/QA forms |
@@ -1059,7 +1180,9 @@ Production → FGHM (Production hands over FG, inline acceptance)
 | PO | Purchase-Entry | Purchase, Finance, Store | Others |
 | GRN | Purchase-Entry, Store-Entry | Purchase, Store | Others |
 | QC/QA | QC-Entry | Purchase, Production | Others |
-| MR | Production, R&D | Store | Others |
+| MR (Create Draft) | Production, R&D | Store | Others |
+| MR (Verify) | Production - Verify MR | Production, Store | Others |
+| MR (Costing Approve) | Costing - Approve MR | Production, Store, Finance | Others |
 | MIS | Store-Entry | Store, Production | Others |
 | FGHM | Production-Entry, Store-Entry | Store, Logistics, Production | Others |
 | Project | Project Manager, Coordinator | All (view) | — |
@@ -1088,7 +1211,12 @@ Production → FGHM (Production hands over FG, inline acceptance)
 
 ### Phase 3: Inventory & Stores (Week 5-6)
 - Build MR with stock availability lookup
-- Build MIS linked to MR with balance tracking
+- Add **MR Status field**: Draft / Production Verified / Costing Approved / Released
+- Add **Production Verify** action: checks MR quantities against SO system requirements (via BOM)
+- Add **Costing Approve** action: validates material budget against project allocation
+- Add **MR Release** gate: only Released MR triggers MIS eligibility
+- Build MIS linked to MR with balance tracking (only creatable after MR Released)
+- Build notifications: MR Submitted, MR Verified, MR Released
 - Build FGHM with pop-up notification and inline acceptance
 - Build Material Return, Material Handover, Vehicle & Transport
 

@@ -217,7 +217,8 @@
             <tr><td><strong>Purchase - Approve</strong></td><td>Purchase</td><td>Approve: PR, PO within limits (Approval Matrix)</td></tr>
             <tr><td><strong>Store - Entry</strong></td><td>Store &amp; Logistics</td><td>Create/Edit: GRN, MIS, Return, FG Receiving, Vehicle (per project)</td></tr>
             <tr><td><strong>Store - Review</strong></td><td>Store &amp; Logistics</td><td>View: Inventory, GRN, PO, Reports (per project)</td></tr>
-            <tr><td><strong>Production - Entry</strong></td><td>Production</td><td>Create/Edit: MR, BMR, Planning, Consumption, Packing, FGHM (per project)</td></tr>
+            <tr><td><strong>Production - Entry</strong></td><td>Production</td><td>Create/Edit: MR (Draft), BMR, Planning, Consumption, Packing, FGHM (per project)</td></tr>
+            <tr><td><strong>Production - Verify MR</strong></td><td>Production</td><td><strong>Verify MR:</strong> checks MR quantities against SO system requirements (via BOM) and reviews all four cost components (Material, Application, Transportation, Tools &amp; Tackles). Sets MR Status = Production Verified.</td></tr>
             <tr><td><strong>Production - Review</strong></td><td>Production</td><td>View: BOM, Stock, Production Reports (per project)</td></tr>
             <tr><td><strong>Project Manager 1/2/3</strong></td><td>Project</td><td>Full CRUD on assigned projects/tasks. View procurement/inventory for their projects.</td></tr>
             <tr><td><strong>Project Coordinator</strong></td><td>Project</td><td>Create MR for assigned projects. View production + project status.</td></tr>
@@ -225,6 +226,7 @@
             <tr><td><strong>Sales - Review</strong></td><td>Sales</td><td>View: SO reports, project status</td></tr>
             <tr><td><strong>QC - Entry</strong></td><td>QC</td><td>Create/Edit: QC/QA forms</td></tr>
             <tr><td><strong>QC - Review</strong></td><td>QC</td><td>View: GRN, Item Muster, BOM</td></tr>
+            <tr><td><strong>Costing - Approve MR</strong></td><td>Costing</td><td><strong>Approve MR:</strong> Approves the <strong>TOTAL project cost</strong> — all four MR cost components (Material + Application + Transportation + Tools &amp; Tackles) = Total MR Cost. Sets MR Status = Costing Approved → Released. View: Project budgets, cost reports.</td></tr>
             <tr><td><strong>Account &amp; Finance</strong></td><td>Finance</td><td>Create/Edit/Approve: Supplier Credit Note, Customer Invoice. View: PO, GRN, Supplier reports (per project).</td></tr>
             <tr><td><strong>Finance - Manager</strong></td><td>Finance</td><td>Approve: Customer Invoices above threshold. Full access: Budget Master, Project P&amp;L reports.</td></tr>
           </tbody>
@@ -250,7 +252,9 @@
             <tr><td>GRN</td><td>Purchase-Entry, Store-Entry</td><td>Purchase, Store</td><td>Others</td></tr>
             <tr><td>QC/QA</td><td>QC-Entry</td><td>Purchase, Production</td><td>Others</td></tr>
             <tr><td>Supplier Credit Note</td><td>Account &amp; Finance</td><td>Purchase (View), Admin (Full)</td><td>Others</td></tr>
-            <tr><td>MR</td><td>Production, R&amp;D</td><td>Store</td><td>Others</td></tr>
+            <tr><td>MR (Create Draft)</td><td>Production, R&amp;D</td><td>Store</td><td>Others</td></tr>
+            <tr><td>MR (Verify)</td><td>Production - Verify MR</td><td>Production, Store</td><td>Others</td></tr>
+            <tr><td>MR (Costing Approve)</td><td>Costing - Approve MR</td><td>Production, Store, Finance</td><td>Others</td></tr>
             <tr><td>MIS</td><td>Store-Entry</td><td>Store, Production</td><td>Others</td></tr>
             <tr><td>FGHM</td><td>Production-Entry, Store-Entry</td><td>Store, Logistics, Production</td><td>Others</td></tr>
             <tr><td>Production Planning</td><td>Production-Entry</td><td>Production, Store</td><td>Others</td></tr>
@@ -281,7 +285,7 @@
             <tr><td>PO</td><td>Per matrix</td><td>Level 1 → Level 2 → Level 3</td></tr>
             <tr><td>GRN</td><td>Per matrix</td><td>As defined</td></tr>
             <tr><td>Rate Comparison</td><td>Per matrix</td><td>As defined</td></tr>
-            <tr><td>MR</td><td>Per matrix</td><td>Department-specific</td></tr>
+            <tr><td>MR</td><td>Per matrix</td><td><strong>Production verifies</strong> (checks qty vs SO + reviews all 4 cost components) → <strong>Costing approves</strong> (TOTAL project cost = Material + Application + Transportation + Tools &amp; Tackles) → <strong>Released</strong></td></tr>
           </tbody>
         </table>
       </div>

@@ -501,14 +501,14 @@
 
       <!-- ── Step-by-Step Process Flow ── -->
       <h2>Process Flow — Two-Stream Lifecycle</h2>
-      <p><strong>Stream A (Pre-Project):</strong> Procurement runs independently — no Project ID. <strong>Stream B (Project-Centric):</strong> SO triggers Project, then MR→MIS→Production→Service→Finance→Logistics. Project ID flows downstream through Stream B only.</p>
+      <p><strong>Stream A (Pre-Project):</strong> Procurement runs independently — no Project ID. <strong>Stream B (Project-Centric):</strong> SO triggers Project → MR (verified by Production + Costing) → MIS → Production/FG → Logistics → Project Execution. Project ID flows downstream through Stream B only.</p>
 
       <div class="step-flow">
         <div class="step-flow-row" style="border:2px dashed #3b82f6;border-radius:8px;padding:16px;margin-bottom:16px;background:rgba(59,130,246,0.04)">
           <div class="step-flow-step" style="flex:1">
             <span class="sfs-num" style="background:#3b82f6">A</span>
             <span class="sfs-title">Stream A: Purchase + Stock</span>
-            <span class="sfs-desc">PR → Rate Comparison → PO → GRN → QC → Material Handover → Store. <strong>No Project ID.</strong> Materials bought for stock.</span>
+            <span class="sfs-desc">PO → GRN → QC → Material Handover → Store. <strong>No Project ID.</strong> Materials bought for stock.</span>
           </div>
         </div>
 
@@ -535,34 +535,34 @@
         <div class="step-flow-row">
           <div class="step-flow-step">
             <span class="sfs-num">4</span>
-            <span class="sfs-title">MR → MIS</span>
-            <span class="sfs-desc">Consumes from Store inventory. Material issue with balance tracking.</span>
+            <span class="sfs-title">MR — Project Baseline</span>
+            <span class="sfs-desc">RM allocation per project (Assigned Qty, Ratio %, 80% Alert). Verified by Production.</span>
           </div>
           <div class="step-flow-arrow">→</div>
           <div class="step-flow-step">
             <span class="sfs-num">5</span>
-            <span class="sfs-title">Production</span>
-            <span class="sfs-desc">Planning → BMR → RM Consumption → Packing → FGHM (inline acceptance).</span>
+            <span class="sfs-title">Costing Approval Gate</span>
+            <span class="sfs-desc">Costing approves the verified MR → status changes to Released. Project baseline locked.</span>
           </div>
           <div class="step-flow-arrow">→</div>
           <div class="step-flow-step">
             <span class="sfs-num">6</span>
-            <span class="sfs-title">Costing → Service</span>
-            <span class="sfs-desc">Material cost valuation gate. Area Measurement → Work → Final Invoice.</span>
+            <span class="sfs-title">MIS → Production/FG</span>
+            <span class="sfs-desc">Material issued (MIS). Production: Planning → BMR → RM Consumption → Packing → FGHM.</span>
           </div>
         </div>
 
         <div class="step-flow-row">
           <div class="step-flow-step">
             <span class="sfs-num">7</span>
-            <span class="sfs-title">Finance</span>
-            <span class="sfs-desc">Customer Invoice, AR, Supplier CN, GL posting.</span>
+            <span class="sfs-title">Logistics → Project Execution</span>
+            <span class="sfs-desc">Delivery Challan → Outward Invoice. Site work: Area → Custody → Final Invoice.</span>
           </div>
           <div class="step-flow-arrow">→</div>
           <div class="step-flow-step">
             <span class="sfs-num">8</span>
-            <span class="sfs-title">Logistics → Closure</span>
-            <span class="sfs-desc">Delivery Challan → Outward Invoice. P&amp;L auto-computed on Project Close.</span>
+            <span class="sfs-title">Finance → Closure</span>
+            <span class="sfs-desc">Customer Invoice / AR / Supplier CN. P&amp;L auto-computed on Project Close.</span>
           </div>
         </div>
       </div>
@@ -592,7 +592,7 @@
 
       <!-- ── Department Modules Table ── -->
       <h2>All 40 Modules — By Department</h2>
-      <p>Every form listed below is a Zoho Creator form (or Report/Dashboard). <strong>Stream A (Procurement) forms do NOT carry Project ID.</strong> Stream B (Project onward) forms carry <strong>Project ID lookup</strong>.</p>
+      <p>Every form listed below is a Zoho Creator form (or Report/Dashboard). <strong>Stream A (Procurement) forms do NOT carry Project ID.</strong> Stream B (Project onward) forms carry <strong>Project ID lookup</strong>. Production acts as the direct costing arm for SO — materials consumed against project-assigned RM allocations, enabling real-time P&amp;L tracking without manual cost re-entry.</p>
 
       <div class="table-wrap">
         <table>
@@ -600,7 +600,7 @@
             <tr><th>Dept</th><th>#</th><th>Module</th><th>Phase</th><th>Type</th><th>Key Flow</th></tr>
           </thead>
           <tbody>
-            <tr><td rowspan="8"><strong>Master Data</strong></td><td>1</td><td>Purchase Item Muster</td><td>1A</td><td>Form</td><td>Global item repository (6 categories)</td></tr>
+            <tr><td rowspan="9"><strong>Master Data</strong></td><td>1</td><td>Purchase Item Muster</td><td>1A</td><td>Form</td><td>Global item repository (6 categories)</td></tr>
             <tr><td>2</td><td>System Master</td><td>1B</td><td>Form</td><td>System codes (EP/PU/DEM)</td></tr>
             <tr><td>3</td><td>System Composition</td><td>1C</td><td>Form</td><td>System→FG mapping</td></tr>
             <tr><td>4</td><td>BOM / FG Formulation</td><td>1D</td><td>Form</td><td>FG→RM formulation</td></tr>
@@ -608,16 +608,16 @@
             <tr><td>6</td><td>Customer/Site Master</td><td>1F</td><td>Form</td><td>Client &amp; site data</td></tr>
             <tr><td>7</td><td>Store Master</td><td>1G</td><td>Form</td><td>Warehouse configuration</td></tr>
             <tr><td>8</td><td>User Access / Approval Matrix</td><td>1H</td><td>Form</td><td>Roles &amp; approval tiers</td></tr>
-            <tr><td rowspan="6"><strong>Procurement (Stream A — No Project ID)</strong></td><td>9</td><td>PR — Purchase Requisition</td><td>2A</td><td>Form</td><td>PR→PO→GRN→QC (no Project ID)</td></tr>
-            <tr><td>10</td><td>Rate Comparison</td><td>2B</td><td>Form</td><td>5 supplier comparisons</td></tr>
-            <tr><td>11</td><td>PO — Purchase Order</td><td>2C</td><td>Form</td><td>RM vs Non-coding series</td></tr>
-            <tr><td>12</td><td>GRN — Goods Receipt</td><td>2D</td><td>Form</td><td>Partial GRN via checkbox</td></tr>
-            <tr><td>13</td><td>QC/QA — Quality Check</td><td>2E</td><td>Form</td><td>Inspection results</td></tr>
-            <tr><td>14</td><td>Material Handover</td><td>2F</td><td>Form</td><td>Purchase→Store (Coding/Non)</td></tr>
-            <tr><td rowspan="3"><strong>Inventory</strong></td><td>15</td><td>MR — Material Requisition (RM only)</td><td>3A</td><td>Form</td><td>RM from BOM × FG qty</td></tr>
-            <tr><td>16</td><td>MIS — Material Issue Slip</td><td>3B</td><td>Form</td><td>Stock deduction on posting</td></tr>
-            <tr><td>17</td><td>Material Return</td><td>3C</td><td>Form</td><td>Return to supplier</td></tr>
-            <tr><td rowspan="5"><strong>Production</strong></td><td>18</td><td>Production Planning</td><td>4A</td><td>Form</td><td>FG breakdown from System Comp</td></tr>
+            <tr><td>9</td><td>Rate Comparison</td><td>1I</td><td>Form</td><td>Standalone record form (like master data)</td></tr>
+            <tr><td rowspan="4"><strong>Procurement (Stream A — No Project ID)</strong></td><td>10</td><td>PO — Purchase Order</td><td>2C</td><td>Form</td><td>RM vs Non-coding series</td></tr>
+            <tr><td>11</td><td>GRN — Goods Receipt</td><td>2D</td><td>Form</td><td>Partial GRN via checkbox</td></tr>
+            <tr><td>12</td><td>QC/QA — Quality Check</td><td>2E</td><td>Form</td><td>Inspection results</td></tr>
+            <tr><td>13</td><td>Material Handover</td><td>2F</td><td>Form</td><td>Purchase→Store (Coding/Non)</td></tr>
+            <tr><td rowspan="3"><strong>Inventory</strong></td><td>14</td><td>MR — Material Requisition (RM only)</td><td>3A</td><td>Form</td><td>MR (Project baseline = SO + MR) — verified by Production → Costing approves → Released</td></tr>
+            <tr><td>15</td><td>MIS — Material Issue Slip</td><td>3B</td><td>Form</td><td>Stock deduction on posting</td></tr>
+            <tr><td>16</td><td>Material Return</td><td>3C</td><td>Form</td><td>Return to supplier</td></tr>
+            <tr><td rowspan="6"><strong>Production</strong></td><td>17</td><td>PR — Purchase Requisition</td><td>6A</td><td>Form</td><td>Production material requisition (costing arm for SO)</td></tr>
+            <tr><td>18</td><td>Production Planning</td><td>4A</td><td>Form</td><td>FG breakdown from System Comp</td></tr>
             <tr><td>19</td><td>Production Order</td><td>4B</td><td>Form</td><td>Per FG to produce</td></tr>
             <tr><td>20</td><td>BMR — Batch MR</td><td>4C</td><td>Form</td><td>Consume RM → Produce FG</td></tr>
             <tr><td>21</td><td>RM Consumption / Packing</td><td>4D</td><td>Form</td><td>Variance + FG packing</td></tr>
@@ -645,12 +645,6 @@
 
       <h3>Procurement Flow (Stream A — Pre-Project)</h3>
       <div class="flow-visual">
-        <span class="fv-node fv-blue">PR <span class="fv-icon">📋</span></span>
-        <span class="fv-arrow">→</span>
-        <span class="fv-node fv-amber">Approval <span class="fv-icon">✅</span></span>
-        <span class="fv-arrow">→</span>
-        <span class="fv-node fv-blue">Rate Comp <span class="fv-icon">📊</span></span>
-        <span class="fv-arrow">→</span>
         <span class="fv-node fv-amber">PO <span class="fv-icon">📄</span></span>
         <span class="fv-arrow">→</span>
         <span class="fv-node fv-green">GRN <span class="fv-icon">📦</span></span>
@@ -659,6 +653,7 @@
         <span class="fv-arrow">→</span>
         <span class="fv-node fv-green">Stock + <span class="fv-icon">📈</span></span>
       </div>
+      <p class="flow-note" style="font-size:13px;color:var(--gray-500);margin-top:4px">Note: Rate Comparison is maintained as standalone master data (no longer part of flow).</p>
 
       <h3>MR → MIS Flow (Stream B — Project ID)</h3>
       <div class="flow-visual">
@@ -677,13 +672,15 @@
         <span class="fv-arrow">→</span>
         <span class="fv-node fv-purple">BMR <span class="fv-icon">⚙️</span></span>
         <span class="fv-arrow">→</span>
-        <span class="fv-node fv-amber">RM Consume <span class="fv-icon">📦</span></span>
+        <span class="fv-node fv-amber">MR Baseline <span class="fv-icon">📋</span></span>
         <span class="fv-arrow">→</span>
-        <span class="fv-node fv-green">Packing <span class="fv-icon">📤</span></span>
+        <span class="fv-node fv-blue">Production Verify <span class="fv-icon">🔍</span></span>
         <span class="fv-arrow">→</span>
-        <span class="fv-node fv-purple">FGHM <span class="fv-icon">🤝</span></span>
+        <span class="fv-node fv-green">Costing Approve <span class="fv-icon">✅</span></span>
         <span class="fv-arrow">→</span>
-        <span class="fv-node fv-green">Accept <span class="fv-icon">✅</span></span>
+        <span class="fv-node fv-purple">MIS → FG <span class="fv-icon">📦</span></span>
+        <span class="fv-arrow">→</span>
+        <span class="fv-node fv-green">Logistics <span class="fv-icon">🚚</span></span>
       </div>
 
 

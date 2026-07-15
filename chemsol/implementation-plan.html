@@ -49,7 +49,7 @@
           <span class="ah-arrow">▶</span>
         </div>
         <div class="accordion-body">
-          <a class="ab-link" href="forms.html#procurement"><span class="al-type type-forms">Forms</span>PR→PO→GRN→QC</a>
+          <a class="ab-link" href="forms.html#procurement"><span class="al-type type-forms">Forms</span>PO→GRN→QC</a>
           <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Stock Reports</a>
           <a class="ab-link" href="flow.html#pr-pr"><span class="al-type type-flow">Flow</span>Purchase Flow</a>
           <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>Procure Model</a>
@@ -180,7 +180,7 @@
   <section class="hero">
     <div class="hero-eyebrow">Project-Centric ERP &middot; Phases 1A&rarr;1L</div>
     <h1>Implementation Plan</h1>
-    <p>Two-Stream Architecture across build phases. <strong>Stream A (Pre-Project):</strong> procurement for stock, no Project ID. <strong>Stream B (Project-Centric):</strong> Project is root entity for all downstream modules.</p>
+      <p>Two-Stream Architecture across build phases. <strong>Stream A (Pre-Project):</strong> procurement for stock, no Project ID. <strong>Stream B (Project-Centric):</strong> <strong>Project baseline = SO + MR.</strong> The SO defines the System/FG scope (revenue side). The MR defines the complete project implementation cost baseline — the total project cost (Material + Application + Transportation + Tools &amp; Tackles) that Costing approves. Both anchor the project.</p>
   </section>
 
   <div class="content">
@@ -190,15 +190,16 @@
       <div class="impl-card">
         <h3>Chemsol — Project-Centric ERP on Zoho Creator</h3>
         <p class="impl-subtitle">Flooring &amp; Construction Materials — Two-Stream Architecture</p>
-        <p style="margin-bottom:16px"><strong>Two streams:</strong> <strong>Stream A (Pre-Project):</strong> Procurement runs independently for stock — PR→PO→GRN→QC→Material Handover→Store. <strong>No Project ID</strong> on procurement forms. <strong>Stream B (Project-Centric):</strong> Sales Order creates a Project. All modules — procurement, inventory, production, budget, billing — are tagged to that Project. Nothing exists outside a project context in Stream B.</p>
+        <p style="margin-bottom:16px"><strong>Two streams:</strong> <strong>Stream A (Pre-Project):</strong> Procurement runs independently for stock — PO→GRN→QC→Material Handover→Store. <strong>No Project ID</strong> on procurement forms. <strong>Stream B (Project-Centric):</strong> Sales Order creates a Project. <strong>Project baseline = SO + MR:</strong> The SO defines the System/FG scope (revenue side). The MR defines the complete project implementation cost baseline — the total project cost (Material + Application + Transportation + Tools &amp; Tackles) that Costing approves. Both anchor the project. All modules — procurement, inventory, production, budget, billing — are tagged to that Project. Nothing exists outside a project context in Stream B.</p>
         <div class="impl-two-col">
           <div>
             <h5 style="margin-top:0">Modules</h5>
             <table class="impl-field-table">
-              <tr><td>Foundation (1A)</td><td>Project, Vendors, Accounts, Warehouses, Inventory</td></tr>
+              <tr><td>Foundation (1A)</td><td>Project, Vendors, Accounts, Warehouses, Inventory, Rate Comparison</td></tr>
               <tr><td>Budget (1B)</td><td>Budget Plans, Components, Inventory Transactions</td></tr>
-              <tr><td>Spend (1C)</td><td>Expenses, Purchase Requisitions</td></tr>
+              <tr><td>Spend (1C)</td><td>Expenses</td></tr>
               <tr><td>Procurement (1D)</td><td>Budget Approvals, POs, GRN, SCN, Transfers</td></tr>
+              <tr><td>Production (1G)</td><td>Production Requisition (PR), Production Planning, BMR</td></tr>
               <tr><td>Revenue (1E)</td><td>BOM, Delivery Challan, Invoicing</td></tr>
               <tr><td>Reports (1F)</td><td>Project P&amp;L, KPIs, Budget Alerts</td></tr>
               <tr><td>Approvals (1J)</td><td>PO Approval, SoD</td></tr>
@@ -225,7 +226,7 @@
       <h2>Project-Centric Hub Architecture</h2>
       <div class="impl-card">
         <h3>Hub Architecture</h3>
-        <p><strong>Two-Stream Architecture:</strong> <strong>Stream A (Pre-Project)</strong> — PR, PO, GRN, QC carry <strong>no</strong> Project ID (stock procurement). <strong>Stream B (Project-Centric)</strong> — MR, MIS, Production, FGHM, Service, Finance, Logistics all carry <code>Project ID</code> lookup. Master Data (Item Muster, Suppliers, Customers, Store Master) is global.</p>
+        <p><strong>Two-Stream Architecture:</strong> <strong>Stream A (Pre-Project)</strong> — PR, PO, GRN, QC carry <strong>no</strong> Project ID (stock procurement). <strong>Stream B (Project-Centric)</strong> — MR, MIS, Production, FGHM, Service, Finance, Logistics all carry <code>Project ID</code> lookup. <strong>Project baseline = SO + MR:</strong> SO defines System/FG scope (revenue). MR defines the complete project implementation cost baseline — total project cost (Material + Application + Transportation + Tools &amp; Tackles) that Costing approves. Both anchor the project. Master Data (Item Muster, Suppliers, Customers, Store Master) is global.</p>
         <div class="hub-arch">
           <div class="hub-arch-inner">
             <div class="hub-center">
@@ -244,7 +245,7 @@
               <div class="hub-module green">
                 <span class="hm-icon">📦</span>
                 <span class="hm-name">MR</span>
-                <span class="hm-desc">N items per MR</span>
+                <span class="hm-desc">Project cost baseline · Material + Application + Transport + Tools · Verification gates</span>
               </div>
               <div class="hub-module amber">
                 <span class="hm-icon">🏭</span>
@@ -275,7 +276,7 @@
           </div>
         </div>
         <div class="impl-info-box">
-          <strong>Key rule:</strong> <strong>Stream A (Pre-Project):</strong> PR, PO, GRN, QC carry <strong>no</strong> <code>Project ID</code> — independent stock procurement. <strong>Stream B (Project-Centric):</strong> MR, MIS, Production, FGHM, Service, Finance, Logistics carry <code>Project ID (Lookup)</code>. The Project is the anchor for consumption tracking.
+          <strong>Key rule:</strong> <strong>Stream A (Pre-Project):</strong> PR, PO, GRN, QC carry <strong>no</strong> <code>Project ID</code> — independent stock procurement. <strong>Stream B (Project-Centric):</strong> MR, MIS, Production, FGHM, Service, Finance, Logistics carry <code>Project ID (Lookup)</code>. <strong>Project baseline = SO + MR:</strong> SO is the revenue baseline; MR is the complete project implementation cost baseline (Material + Application + Transportation + Tools &amp; Tackles) that Costing approves. Without a <strong>Released MR</strong>, there is no MIS, no Production, no Logistics, no project execution. The Project is the anchor for consumption tracking.
         </div>
       </div>
     </section>
@@ -285,35 +286,37 @@
       <div class="impl-card">
         <h3>Process Flows</h3>
 
-        <h4>1. Project &rarr; Procurement Flow</h4>
+        <h4>1. Procurement Flow (Stream A — no Project ID)</h4>
         <div class="impl-flow-row">
-          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-teal">Project Accepted</div></div><span class="impl-flow-arr">&rarr;</span>
-          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-purple">PR Created<br><small>N items, no Project ID (Stream A)</small></div></div><span class="impl-flow-arr">&rarr;</span>
-          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-purple">PR Approved</div></div><span class="impl-flow-arr">&rarr;</span>
-          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-blue">Rate Comparison</div></div><span class="impl-flow-arr">&rarr;</span>
           <div class="impl-flow-step"><div class="impl-flow-box impl-fb-blue">PO Issued<br><small>N items, no Project ID (Stream A)</small></div></div><span class="impl-flow-arr">&rarr;</span>
           <div class="impl-flow-step"><div class="impl-flow-box impl-fb-green">GRN<br><small>Partial/full, tagged to PO (Stream A, no Project ID)</small></div></div><span class="impl-flow-arr">&rarr;</span>
           <div class="impl-flow-step"><div class="impl-flow-box impl-fb-orange">QC / QA<br><small>Tagged to GRN</small></div></div><span class="impl-flow-arr">&rarr;</span>
           <div class="impl-flow-step"><div class="impl-flow-box impl-fb-green">Stock Updated</div></div>
         </div>
 
-        <h4>2. Project &rarr; Inventory Flow</h4>
+        <h4>2. Project &rarr; MR &rarr; Inventory Flow (with Verification Gates)</h4>
         <div class="impl-flow-row">
-          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-teal">Project Need</div></div><span class="impl-flow-arr">&rarr;</span>
-          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-orange">MR Created<br><small>N items, tagged to Project</small></div></div><span class="impl-flow-arr">&rarr;</span>
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-teal">Project Requirement<br><small>SO defines System scope</small></div></div><span class="impl-flow-arr">&rarr;</span>
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-orange">MR Draft<br><small>N items, tagged to Project</small></div></div><span class="impl-flow-arr">&rarr;</span>
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-yellow" style="background:#fef3c7;border-color:#f59e0b;color:#92400e">Production Verifies<br><small>Checks MR qty vs SO system req</small></div></div><span class="impl-flow-arr">&rarr;</span>
+          <div class="impl-flow-step">          <div class="impl-flow-box impl-fb-purple">Costing Approves<br><small>Approves TOTAL project cost</small></div></div><span class="impl-flow-arr">&rarr;</span>
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-green">MR Released</div></div><span class="impl-flow-arr">&rarr;</span>
           <div class="impl-flow-step"><div class="impl-flow-box impl-fb-green">MIS Issued<br><small>Stock deducted, tagged to MR+Project</small></div></div><span class="impl-flow-arr">&rarr;</span>
           <div class="impl-flow-step"><div class="impl-flow-box impl-fb-green">Balance tracked</div></div>
         </div>
+        <p style="margin-top:8px;font-size:13px;color:var(--gray-500)"><strong>⛔ Gate:</strong> Without a <strong>Released MR</strong>, there is no MIS, no Production, no Logistics, no project execution.</p>
 
-        <h4>3. Project &rarr; Production &rarr; FG Flow</h4>
+        <h4>3. Project &rarr; Production &rarr; FG Flow (MR-gated)</h4>
         <div class="impl-flow-row">
-          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-teal">Project Requirement</div></div><span class="impl-flow-arr">&rarr;</span>
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-teal">Project Requirement<br><small>SO System scope</small></div></div><span class="impl-flow-arr">&rarr;</span>
+          <div class="impl-flow-step">          <div class="impl-flow-box impl-fb-green">MR Released<br><small>⛔ Gate: Production verified + Costing approved TOTAL cost</small></div></div><span class="impl-flow-arr">&rarr;</span>
           <div class="impl-flow-step"><div class="impl-flow-box impl-fb-orange">Production Planning<br><small>Tagged to Project</small></div></div><span class="impl-flow-arr">&rarr;</span>
           <div class="impl-flow-step"><div class="impl-flow-box impl-fb-orange">BMR / Batch</div></div><span class="impl-flow-arr">&rarr;</span>
           <div class="impl-flow-step"><div class="impl-flow-box impl-fb-purple">FGHM Created<br><small>N FG items, tagged to Project</small></div></div><span class="impl-flow-arr">&rarr;</span>
           <div class="impl-flow-step"><div class="impl-flow-box impl-fb-red">Notification</div></div><span class="impl-flow-arr">&rarr;</span>
           <div class="impl-flow-step"><div class="impl-flow-box impl-fb-green">FGHM Inline Accept<br><small>FG stock updated</small></div></div>
         </div>
+        <p style="margin-top:8px;font-size:13px;color:var(--gray-500)"><strong>⛔ Gate:</strong> Production cannot proceed without a <strong>Released MR</strong>. MR Released triggers MIS (stock issued) → Production (BMR → Packing → FGHM) → Logistics (DC → Outward) → Project Site Execution.</p>
       </div>
     </section>
 
@@ -417,13 +420,16 @@
     </section>
 
     <section id="pr">
-      <h2>Purchase Requisition</h2>
+      <h2>Production Requisition (PR)</h2>
       <div class="impl-card">
-        <h3>Purchase Requisition (PR) <span class="badge badge-blue">Procurement</span></h3>
-        <p><strong>Purpose:</strong> Production/R&amp;D requests material for a specific Project. Supports <strong>N line items</strong> per PR.</p>
+        <h3>Production Requisition (PR) <span class="badge badge-yellow">Production</span></h3>
+        <p><strong>Purpose:</strong> PR is the costing arm for SO. Requests materials needed for production based on the SO system composition. Supports <strong>N line items</strong> per PR.</p>
         <p><strong>Tagged to:</strong> Project ID + Department. No orphan PRs.</p>
         <div class="impl-info-box">
-          <strong>Data entry:</strong> PR No/Date auto &rarr; Select <strong>Project ID</strong> &rarr; Dept auto from login &rarr; Add N items: Item Code OR Name (bidirectional autofill) &rarr; Qty + Description &rarr; UOM + Lead Time auto-fetched &rarr; Submit &rarr; Status: Pending Approval &rarr; After approval &rarr; available for Rate Comparison
+          <strong>Note:</strong> PR now originates in the <strong>Production module</strong> — it's the costing arm for SO. PR requests materials needed for production based on the SO system composition.
+        </div>
+        <div class="impl-info-box">
+          <strong>Data entry:</strong> PR No/Date auto &rarr; Select <strong>Project ID</strong> &rarr; Dept auto from login &rarr; Add N items: Item Code OR Name (bidirectional autofill) &rarr; Qty + Description &rarr; UOM + Lead Time auto-fetched &rarr; Submit &rarr; Status: Pending Approval
         </div>
 
         <h4>Header (Project-tagged)</h4>
@@ -457,16 +463,16 @@
     <section id="rc">
       <h2>Rate Comparison</h2>
       <div class="impl-card">
-        <h3>Rate Comparison <span class="badge badge-blue">Procurement</span></h3>
-        <p><strong>Purpose:</strong> Purchase dept compares up to 5 suppliers per PR item before issuing PO.</p>
-        <p><strong>Tagged to:</strong> PR &rarr; Project (inherited)</p>
+        <h3>Rate Comparison <span class="badge badge-slate">Standalone</span></h3>
+        <p><strong>Purpose:</strong> Standalone record form — maintained manually for rate record-keeping. Not linked to PR workflow.</p>
+        <p><strong>Type:</strong> Standalone master data record. Manual entry for rate reference.</p>
         <div class="impl-info-box">
-          <strong>Data entry:</strong> Date auto &rarr; Select PR Reference &rarr; Product No/Name auto-fetched &rarr; Supplier 1-5 (dropdown + Price + Credit) &rarr; Finalise Supplier + Rate &rarr; PO No linked after PO creation
+          <strong>Data entry:</strong> Date auto &rarr; Optionally select PR Reference &rarr; Product No/Name &rarr; Supplier 1-5 (dropdown + Price + Credit) &rarr; Finalise Supplier + Rate
         </div>
         <table class="impl-field-table">
           <tr><th>Field</th><th>Type</th><th>Req</th></tr>
           <tr><td>Date</td><td>Date (Today)</td><td class="impl-mand">*</td></tr>
-          <tr><td>PR Reference No</td><td>Lookup (PR)</td><td class="impl-mand">*</td></tr>
+          <tr><td>PR Reference No</td><td>Lookup (PR)</td><td class="impl-opt">&mdash;</td></tr>
           <tr><td>Product No / Name</td><td>AutoFetch from PR</td><td class="impl-mand">*</td></tr>
           <tr><td>Supplier 1-5</td><td>Lookup + Price + Credit</td><td class="impl-opt">—</td></tr>
           <tr><td>Finalised Supplier</td><td>Lookup</td><td class="impl-mand">*</td></tr>
@@ -654,10 +660,18 @@
       <h2>Material Requisition</h2>
       <div class="impl-card">
         <h3>Material Requisition (MR) <span class="badge badge-green">Inventory</span></h3>
-        <p><strong>Purpose:</strong> Production/R&amp;D requests material from stores for a Project. N items per MR.</p>
+        <p><strong>Purpose:</strong> Production/R&amp;D prepares the <strong>complete project implementation cost baseline</strong> for a Project. MR is NOT just RM allocation — it carries <strong>four cost components</strong> (Material, Application, Transportation, Tools &amp; Tackles) that sum to the <strong>Total MR Cost</strong>. N items per MR. The SO defines the revenue baseline; the MR defines the <strong>total project cost baseline that Costing approves</strong>.</p>
         <p><strong>Tagged to:</strong> Project ID</p>
         <div class="impl-info-box">
-          <strong>Data entry:</strong> MR No/Date auto &rarr; Select <strong>Project ID</strong> &rarr; Requisition Type &rarr; Priority &rarr; Add N items: Code &rarr; Name/Category/UOM/Stock auto-fetched &rarr; Required Qty &rarr; Submit
+          <strong>Data entry:</strong> MR No/Date auto &rarr; Select <strong>Project ID</strong> &rarr; Requisition Type &rarr; Priority &rarr; Add N items: Code &rarr; Name/Category/UOM/Stock auto-fetched &rarr; Required Qty &rarr; Submit &rarr; Status = Draft
+        </div>
+
+        <h4>MR Status Workflow</h4>
+        <div class="impl-flow-row" style="justify-content:flex-start;margin-bottom:16px">
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-orange">Draft</div></div><span class="impl-flow-arr">&rarr;</span>
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-yellow" style="background:#fef3c7;border-color:#f59e0b;color:#92400e">Production Verified<br><small>Production checks MR qty vs SO system req</small></div></div><span class="impl-flow-arr">&rarr;</span>
+          <div class="impl-flow-step">          <div class="impl-flow-box impl-fb-purple">Costing Approved<br><small>Costing approves TOTAL project cost</small></div></div><span class="impl-flow-arr">&rarr;</span>
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-green">Released<br><small>⛔ No downstream actions before this</small></div></div>
         </div>
 
         <h4>Header</h4>
@@ -670,6 +684,7 @@
           <tr><td>Department</td><td>AutoFetch from login</td><td class="impl-mand">*</td></tr>
           <tr><td>Requested By</td><td>Text (Employee Name)</td><td class="impl-mand">*</td></tr>
           <tr><td>Priority</td><td>Low / Medium / High / Urgent</td><td class="impl-mand">*</td></tr>
+          <tr><td><strong>MR Status</strong></td><td><strong>Dropdown</strong></td><td class="impl-mand">*</td><td><strong>Draft / Production Verified / Costing Approved / Released</strong></td></tr>
         </table>
 
         <h4>Line Items (N items)</h4>
@@ -680,6 +695,75 @@
             <tr><td>Item Code</td><td>Lookup &rarr; AutoFetch Name, Category, UOM, Available Stock</td></tr>
             <tr><td>Required Qty</td><td>Number</td></tr>
           </table>
+        </div>
+
+        <div class="impl-info-box">
+          <strong>MR = Complete Project Implementation Cost Baseline:</strong> MR is NOT just RM allocation — it carries <strong>four cost components</strong> that sum to the <strong>Total MR Cost</strong> (the project implementation cost baseline that <strong>Costing approves</strong>):
+          <strong>(1) Material Cost</strong> — from the per-project Material Allocation subform (&Sigma; Assigned Qty &times; Rate);
+          <strong>(2) Application Cost</strong> — labour/execution cost to apply material on site (Activity, UOM, Qty/Area, Rate, Amount);
+          <strong>(3) Transportation Cost</strong> — transport of material to site (From, To, Vehicle/Trips, Rate, Amount);
+          <strong>(4) Tools &amp; Tackles</strong> — tools/equipment needed (Item, Qty, Rate, Amount).
+          <strong>Total MR Cost = Material + Application + Transportation + Tools &amp; Tackles.</strong>
+        </div>
+
+        <h4>Material Allocation Subform (N rows — feeds Material Cost)</h4>
+        <div class="impl-line-items">
+          <h5>Per-project RM allocation — one line per allocated RM (consumption budget baseline)</h5>
+          <table class="impl-field-table">
+            <tr><th>Field</th><th>Type</th></tr>
+            <tr><td>Item Code / Name</td><td>Lookup (RM) &rarr; AutoFetch</td></tr>
+            <tr><td>UOM</td><td>AutoFetch</td></tr>
+            <tr><td>Assigned Qty</td><td>Number (allocation baseline, defaults from Required Qty)</td></tr>
+            <tr><td>Rate</td><td>Currency</td></tr>
+            <tr><td>Allocation Ratio %</td><td>Formula = Assigned Qty &divide; &Sigma; Assigned Qty &times; 100</td></tr>
+            <tr><td>Material Cost</td><td>Formula = Assigned Qty &times; Rate</td></tr>
+            <tr><td>80% Threshold Alert Flag</td><td>Checkbox (default ON)</td></tr>
+            <tr><td>Consumed Qty / Consumption %</td><td>Running total / Formula</td></tr>
+            <tr><td>Alert Triggered</td><td>Checkbox (readonly, auto-set at 80%)</td></tr>
+          </table>
+        </div>
+
+        <h4>Application Cost Subform (labour/execution on site)</h4>
+        <div class="impl-line-items">
+          <h5>Cost to apply material on site</h5>
+          <table class="impl-field-table">
+            <tr><th>Field</th><th>Type</th></tr>
+            <tr><td>Activity</td><td>Text (e.g., surface prep, laying, finishing)</td></tr>
+            <tr><td>UOM</td><td>Dropdown</td></tr>
+            <tr><td>Qty / Area</td><td>Number</td></tr>
+            <tr><td>Rate</td><td>Currency</td></tr>
+            <tr><td>Amount</td><td>Formula = Qty/Area &times; Rate</td></tr>
+          </table>
+        </div>
+
+        <h4>Transportation Cost Subform (material to site)</h4>
+        <div class="impl-line-items">
+          <h5>Cost to transport material to site</h5>
+          <table class="impl-field-table">
+            <tr><th>Field</th><th>Type</th></tr>
+            <tr><td>From</td><td>Text / Lookup (warehouse)</td></tr>
+            <tr><td>To</td><td>Text / Lookup (site)</td></tr>
+            <tr><td>Vehicle / Trips</td><td>Text / Number</td></tr>
+            <tr><td>Rate</td><td>Currency</td></tr>
+            <tr><td>Amount</td><td>Formula = Trips &times; Rate</td></tr>
+          </table>
+        </div>
+
+        <h4>Tools &amp; Tackles Subform (equipment needed)</h4>
+        <div class="impl-line-items">
+          <h5>Tools/equipment needed for the project</h5>
+          <table class="impl-field-table">
+            <tr><th>Field</th><th>Type</th></tr>
+            <tr><td>Item</td><td>Text / Lookup (Item Muster)</td></tr>
+            <tr><td>Qty</td><td>Number</td></tr>
+            <tr><td>Rate</td><td>Currency</td></tr>
+            <tr><td>Amount</td><td>Formula = Qty &times; Rate</td></tr>
+          </table>
+        </div>
+
+        <h4>Total MR Cost (Project Implementation Cost Baseline)</h4>
+        <div class="impl-info-box">
+          <strong>Total MR Cost = Material Cost + Application Cost + Transportation Cost + Tools &amp; Tackles.</strong> This total is the project implementation cost baseline presented to <strong>Costing for approval</strong>. Costing approves the <strong>TOTAL</strong> cost — not just the material portion.
         </div>
       </div>
     </section>
@@ -824,11 +908,14 @@
           <tr><td>Item Muster</td><td>Admin, Purchase-Entry</td><td>All depts</td></tr>
           <tr><td>Supplier / Customer</td><td>Admin, Purchase-Entry / Sales-Entry</td><td>Purchase, Finance / Sales, Projects</td></tr>
           <tr><td>Project</td><td>Project Manager, Coordinator</td><td>All depts (view)</td></tr>
-          <tr><td>PR</td><td>Production, R&amp;D</td><td>Purchase (review)</td></tr>
-          <tr><td>Rate Comparison / PO</td><td>Purchase-Entry</td><td>Purchase, Finance, Store</td></tr>
+          <tr><td>PR <small>(Production module)</small></td><td>Production, R&amp;D</td><td>Purchase (review)</td></tr>
+          <tr><td>Rate Comparison <small>(Standalone)</small></td><td>Purchase-Entry, Admin</td><td>Purchase, Finance, Store</td></tr>
+          <tr><td>PO</td><td>Purchase-Entry</td><td>Purchase, Finance, Store</td></tr>
           <tr><td>GRN</td><td>Purchase-Entry, Store-Entry</td><td>Purchase, Store</td></tr>
           <tr><td>QC/QA</td><td>QC-Entry</td><td>Purchase, Production</td></tr>
-          <tr><td>MR</td><td>Production, R&amp;D</td><td>Store</td></tr>
+          <tr><td>MR <small>(Verify)</small></td><td>Production <strong>(Verify MR qty vs SO)</strong></td><td>Store</td></tr>
+          <tr><td>MR <small>(Approve)</small></td><td>Costing <strong>(Validate material budget)</strong></td><td>Production, Store</td></tr>
+          <tr><td>MR</td><td>Production, R&amp;D (Create Draft)</td><td>Store</td></tr>
           <tr><td>MIS</td><td>Store-Entry</td><td>Store, Production</td></tr>
           <tr><td>FGHM</td><td>Production-Entry, Store-Entry</td><td>Store, Logistics, Production</td></tr>
           <tr><td>Sales/Work Order</td><td>Sales-Entry</td><td>Sales, Projects, Finance</td></tr>
@@ -837,6 +924,7 @@
 
         <h4>Approval Matrix</h4>
         <p>Per-department PR/PO limits. Fields: Department, Document Type (PR/PO/GRN/MR), Min/Max Amount, Approver 1/2/3 (level escalation).</p>
+        <p style="margin-top:8px;font-size:13px;color:var(--gray-500)"><strong>MR Verification Flow:</strong> <strong>Production</strong> verifies MR quantities against SO system requirements (checks MR line item qty vs expected RM from BOM × SO system qty). Then <strong>Costing</strong> approves the material budget. MR is Released only after both gates pass.</p>
       </div>
     </section>
 
@@ -848,8 +936,10 @@
         <h4>Project-Centric Data Flow</h4>
         <div class="impl-info-box">
           <p><strong>Two-Stream Data Flow:</strong> Stream A (Pre-Project, no Project ID) runs independently. Stream B (Project-Centric) carries Project ID downstream.</p>
-          <p><strong>Stream A:</strong> PR &rarr; Rate Comparison &rarr; PO &rarr; GRN &rarr; QC &rarr; Material Handover &rarr; Store</p>
-          <p><strong>Stream B:</strong> SO (Supply+Apply) &rarr; <strong>Project</strong> &rarr; MR &rarr; MIS &rarr; Production (Plan &rarr; BMR &rarr; Pack &rarr; FGHM) &rarr; Costing &rarr; Service &rarr; Finance &rarr; Logistics</p>
+          <p><strong>Stream A:</strong> PO &rarr; GRN &rarr; QC &rarr; Material Handover &rarr; Store</p>
+          <p><strong>Stream B:</strong> SO (Supply+Apply) &rarr; <strong>Project</strong> &rarr; MR (<strong>Draft &rarr; Production Verified &rarr; Costing Approved &rarr; Released</strong>) &rarr; MIS &rarr; Production (Plan &rarr; BMR &rarr; Pack &rarr; FGHM) &rarr; Logistics (DC &rarr; Outward) &rarr; Project Site Execution (Service Team)</p>
+          <p><strong>⛔ Critical gate:</strong> Without a <strong>Released MR</strong>, there is no MIS, no Production, no Logistics, no project execution. MR is the cost baseline — Production verifies quantities against SO system requirements; Costing validates the material budget.</p>
+          <p><strong>Standalone:</strong> Rate Comparison — maintained manually for rate record-keeping, not linked to workflow.</p>
           <p>Every Stream B form inherits <code>Project ID</code>. Stream A forms carry <strong>no</strong> Project ID.</p>
         </div>
 
@@ -925,11 +1015,11 @@
           <div class="impl-flow-step"><div class="impl-flow-box impl-fb-gray">Wk 12<br>UAT + Go-Live</div></div>
         </div>
         <ol style="margin-top:16px">
-          <li><strong>Week 1-2 (Master Data):</strong> Item Muster, Supplier, Customer, System Master, Store/Bin, User Access, Approval Matrix</li>
+          <li><strong>Week 1-2 (Master Data):</strong> Item Muster, Supplier, Customer, System Master, Store/Bin, User Access, Approval Matrix, Rate Comparison</li>
           <li><strong>Week 3-4 (Project Hub + Sales):</strong> Project form with 5 task categories, Sales Order, SO&rarr;Project auto-creation workflow</li>
-          <li><strong>Week 5-6 (Procurement &mdash; Stream A, no Project ID):</strong> PR (N items), Rate Comparison, PO (N items, dual numbering, GST split), GRN (partial), QC.</li>
+          <li><strong>Week 5-6 (Procurement &mdash; Stream A, no Project ID):</strong> PO (N items, dual numbering, GST split), GRN (partial), QC.</li>
           <li><strong>Week 7-8 (Inventory):</strong> MR (N items, stock check), MIS, FGHM (inline acceptance), Material Return, Handover, Vehicle &amp; Transport</li>
-          <li><strong>Week 9 (Production):</strong> Production Planning, BOM, Production Order, BMR, RM Consumption, Packing, Rework</li>
+          <li><strong>Week 9 (Production):</strong> Production Requisition (PR), Production Planning, BOM, Production Order, BMR, RM Consumption, Packing, Rework</li>
           <li><strong>Week 10-11 (Dashboards):</strong> Purchase, Store, Production, Project dashboards + 30+ reports</li>
           <li><strong>Week 12 (UAT + Go-Live):</strong> End-to-end testing, user training, data migration, go-live</li>
         </ol>

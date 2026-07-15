@@ -16,19 +16,20 @@ The system has two independent streams:
 
 ### Stream B: Project-Triggered (Project ID is root)
 - **SO (Supply+Apply)** → auto-creates **Project**. The SO **System Lines** subform (EP01…) defines the **System → FG → RM composition** (via System Composition + BOM) that drives backend consumption. **SO (Supply Only)** → sells **FG directly** (FG Lines subform); **NO Project** created — direct stock sale, no consumption tracking.
-          - **Project → MR → MIS** (project consumes materials from Store inventory). **The MR carries a per-project Material Allocation subform** — each RM line records its **Assigned Qty** (allocation baseline), **Allocation Ratio %** (share of total project RM allocation, always sums to 100%), and an **80% Threshold Alert Flag**. Applies to **Supply+Apply** projects only (SO auto-creates the Project); Supply Only FG sales skip MR allocation and the 80% alert entirely.
-- **Project → Production Planning → BMR → Packing → FGHM** (consume RM → produce FG with inline acceptance).
-- **Project → Costing Approval** (material cost valuation gate).
-- **Project → Service Team** (Area Measurement → Material Custody → Work Start → Final Invoice).
+- **Project Baseline = SO + MR**: The SO defines the System/FG scope (revenue). The MR defines the complete **project implementation cost baseline** — i.e. how much the project will cost. Both anchor the project.
+- **MR → Verified by Production → Approved by Costing** (the critical approval gate). MR carries the project cost broken into **cost components**: **(1) Material Cost** (per-project Material Allocation subform — each RM line with Assigned Qty, Allocation Ratio %, 80% Alert Flag), **(2) Application Cost** (labour/execution cost to apply material on site), **(3) Transportation Cost**, **(4) Tools & Tackles**. Applies to **Supply+Apply** projects only.
+- **After MR approval: MIS → Production (BMR → Packing → FGHM) → Logistics (DC → Outward Invoice)**. Stock is issued from Store (MIS), FG is produced (BMR/RM Consumption), handed over (FGHM), and dispatched (Logistics).
+- **Then Project Site Execution begins** — Service Team (Area Measurement → Material Custody → Work Start → Final Invoice). The project work starts only after materials are issued and FG is ready.
 - **Project → Finance** (Customer Invoice / AR / Supplier CN).
-- **Project → Logistics** (Delivery Challan → Outward Invoice).
+- **Project → Close** (P&amp;L auto-calculated).
 
 **Consumption Tracking (KEY):** The **Project is the anchor** for material consumption.
+- The **MR is the consumption baseline** — it records how much RM is allocated to the project (Assigned Qty per RM with ratio %).
 - FG production (BMR / RM Consumption) and **Site Manager consumption entries** both resolve to the **project-assigned RM** recorded in the MR Material Allocation (matched by `Project ID + Item Code`). They do **NOT** deduct from a generic stock pool.
 - The SO System composition (FG → RM via BOM) is the template: a Site Manager entry made against the System/FG is expanded into RMs at BOM ratios, then increments `Consumed Qty` on the matching MR Allocation line.
 - **80% Alert:** when any allocated RM reaches **80% of its Assigned Qty** (and the flag is ON), the system fires a pop-up + dashboard banner + email to the Project Manager.
 
-Project ID flows downstream via: MR → MIS. Production Planning → BMR → Packing → FGHM. Service → Finance → Logistics.
+Project ID flows downstream via: MR (verified by Production → Costing) → MIS → Production (Planning → BMR → Packing → FGHM) → Logistics (DC → Outward) → Service (Area → Custody → Work → Invoice) → Finance → Close.
 
 Master Data (Item Muster, Suppliers, Customers, Store Master) is global — used by both streams.
 
@@ -60,7 +61,7 @@ Master Data (Item Muster, Suppliers, Customers, Store Master) is global — used
 6. **Material Handover** — Coding/Non-Coding RM split from Purchase → Store (with Bin Location subform in Store Master).
 
 ### Inventory/Stores — Tagged to Project (Stream B)
-- **MR** (Material Requisition) — Project ID lookup, priority dropdown, batch no, RM line items (autofetch available stock), AND a **Material Allocation subform** (Assigned Qty per RM, Allocation Ratio %, 80% Alert Flag) that is the per-project consumption budget.
+- **MR** (Material Requisition) — Project cost baseline. Project ID lookup, priority dropdown, batch no, RM line items (autofetch available stock), a **Material Allocation subform** (Assigned Qty per RM, Allocation Ratio %, 80% Alert Flag), AND project cost components: **Material Cost** (from Allocation), **Application Cost** (labour/execution), **Transportation Cost**, **Tools & Tackles**. Total of all four = project implementation cost baseline that Costing approves.
 - **Consumption resolution** — FG production (BMR / RM Consumption) and Site Manager consumption entries resolve to the **project-assigned RM** (MR Allocation), not a generic pool; `Consumed Qty` is tracked per allocated line and compared to `Assigned Qty` for the 80% alert.
 - **MIS** (Material Issue Slip) — linked to MR, items with required/issued/balance qty, issued by/handover to. Stock deducted on MIS posting.
 - **FGHM** (FG Handover) — Project ID lookup, client/site, batch no, FG products with qty/QC, handed over/received by. Inline acceptance on handover (no separate FGAN).

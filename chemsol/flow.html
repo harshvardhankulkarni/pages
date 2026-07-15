@@ -54,10 +54,12 @@
           <span class="ah-arrow">▶</span>
         </div>
         <div class="accordion-body">
-          <a class="ab-link" href="forms.html#procurement"><span class="al-type type-forms">Forms</span>PR→PO→GRN→QC</a>
+          <a class="ab-link" href="forms.html#procurement"><span class="al-type type-forms">Forms</span>PO→GRN→QC</a>
+          <a class="ab-link" href="forms.html#production"><span class="al-type type-forms">Forms</span>PR (Purchase Requisition)</a>
           <a class="ab-link" href="forms.html#material-handover"><span class="al-type type-forms">Forms</span>Mat Handover</a>
           <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Stock Reports</a>
-          <a class="ab-link" href="flow.html#pr-pr"><span class="al-type type-flow">Flow</span>Purchase Flow</a>
+          <a class="ab-link" href="flow.html#procurement"><span class="al-type type-flow">Flow</span>Purchase Flow (PO→GRN→QC)</a>
+          <a class="ab-link" href="flow.html#rate-comparison"><span class="al-type type-flow">Flow</span>Rate Comparison</a>
         </div>
       </div>
 
@@ -103,7 +105,8 @@
         <div class="accordion-body">
           <a class="ab-link" href="forms.html#production"><span class="al-type type-forms">Forms</span>Planning→BMR→Pack</a>
           <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Production Reports</a>
-          <a class="ab-link" href="flow.html#org-prod"><span class="al-type type-flow">Flow</span>Production Flow</a>
+          <a class="ab-link" href="flow.html#org-prod"><span class="al-type type-flow">Flow</span>Production Flow (incl. PR)</a>
+          <a class="ab-link" href="flow.html#pr-pr"><span class="al-type type-flow">Flow</span>PR (Purchase Requisition)</a>
           <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>Production Model</a>
         </div>
       </div>
@@ -196,7 +199,8 @@
     <!-- Flow Pipeline — Two-Stream Cycle -->
     <div class="flow-bar" id="flow-bar">
       <!-- Stream A (blue tint) -->
-      <a href="#pr-pr" style="background:#dbeafe;padding:2px 10px;border-radius:4px;font-weight:700">PURCHASE</a><span class="arrow">&rarr;</span>
+      <a href="#rate-comparison" style="background:#dbeafe;padding:2px 10px;border-radius:4px;font-weight:400">RC</a><span class="arrow">&rarr;</span>
+      <a href="#procurement" style="background:#dbeafe;padding:2px 10px;border-radius:4px;font-weight:700">PO→GRN→QC</a><span class="arrow">&rarr;</span>
       <a href="#inv-store" style="background:#dbeafe;padding:2px 10px;border-radius:4px">STOCK</a>
       <span class="arrow" style="color:#3b82f6;font-weight:700">&#8660;</span>
       <span style="font-size:10px;color:#3b82f6;font-weight:600;padding:0 4px">Stream A</span>
@@ -224,7 +228,7 @@
           <!-- Stream A (Pre-Project) -->
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;border:2px dashed #3b82f6;border-radius:8px;padding:12px;background:rgba(59,130,246,0.04)">
             <span style="background:#3b82f6;color:#fff;padding:4px 12px;border-radius:999px;font-size:11px;font-weight:700">STREAM A</span>
-            <span class="ff-node" style="background:#dbeafe">PURCHASE (PR→PO→GRN→QC)</span>
+            <span class="ff-node" style="background:#dbeafe">PURCHASE (PO→GRN→QC)</span>
             <span class="ff-arrow">→</span>
             <span class="ff-node" style="background:#d1fae5">Material Handover</span>
             <span class="ff-arrow">→</span>
@@ -357,24 +361,30 @@
           </div>
           <div class="subtable-demo">
             <div class="st-hint">System → FG Composition (multiple FGs per System)</div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
-              <span style="font-size:11px;font-weight:600">FG Product</span>
-              <span style="font-size:11px;font-weight:600">Qty per System Unit</span>
-              <span style="font-size:11px;font-weight:600">UOM</span>
-              <span style="font-size:11px;font-weight:600">Rate</span>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
-              <select style="font-size:12px"><option>FG-001 — Floorchem 300 Matt [R]</option></select>
-              <input type="number" value="0.75" style="font-size:12px">
-              <input type="text" value="Kg" style="font-size:12px" disabled style="background:var(--gray-50)">
-              <input type="number" value="285" style="font-size:12px">
-            </div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
-              <select style="font-size:12px"><option>FG-002 — Floorchem 300 Matt [H]</option></select>
-              <input type="number" value="0.25" style="font-size:12px">
-              <input type="text" value="Kg" style="font-size:12px" disabled style="background:var(--gray-50)">
-              <input type="number" value="275" style="font-size:12px">
-            </div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead>
+                <tr>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">FG Product</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Qty per System Unit</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">UOM</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Rate</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option>FG-001 — Floorchem 300 Matt [R]</option></select></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="0.75" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled style="background:var(--gray-50)"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="285" style="font-size:12px"></td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option>FG-002 — Floorchem 300 Matt [H]</option></select></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="0.25" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled style="background:var(--gray-50)"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="275" style="font-size:12px"></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
           <div style="padding:8px 12px;background:#fffbeb;border-radius:6px;font-size:12px;color:#92400e;margin-top:4px">
             <strong>&#x2139; 3-Layer Hierarchy:</strong> SO sells <strong>Systems</strong> (EP01) → composed of multiple <strong>FGs</strong> → each FG formulated from multiple <strong>RMs</strong> (see BOM below). MR requisitions <strong>RM only</strong>.
@@ -401,51 +411,98 @@
           </div>
           <div class="subtable-demo">
             <div class="st-hint">FG → RM Formulation (12 RM components per FG-001 per 100 Kg FG batch)</div>
-            <div class="subtable-row" style="grid-template-columns:1fr 1fr 0.6fr 0.6fr">
-              <span style="font-size:11px;font-weight:600">RM Item</span>
-              <span style="font-size:11px;font-weight:600">Qty / 100 Kg FG</span>
-              <span style="font-size:11px;font-weight:600">UOM</span>
-              <span style="font-size:11px;font-weight:600">Ratio%</span>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:1fr 1fr 0.6fr 0.6fr">
-              <span style="font-size:12px">RK Resin</span><input type="number" value="32" style="font-size:12px"><input type="text" value="Kg" style="font-size:12px" disabled><input type="text" value="32%" style="font-size:12px" disabled>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:1fr 1fr 0.6fr 0.6fr">
-              <span style="font-size:12px">BA</span><input type="number" value="27.33" style="font-size:12px"><input type="text" value="Kg" style="font-size:12px" disabled><input type="text" value="27.3%" style="font-size:12px" disabled>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:1fr 1fr 0.6fr 0.6fr">
-              <span style="font-size:12px">Talc</span><input type="number" value="20" style="font-size:12px"><input type="text" value="Kg" style="font-size:12px" disabled><input type="text" value="20%" style="font-size:12px" disabled>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:1fr 1fr 0.6fr 0.6fr">
-              <span style="font-size:12px">Xylene</span><input type="number" value="8.95" style="font-size:12px"><input type="text" value="Kg" style="font-size:12px" disabled><input type="text" value="9%" style="font-size:12px" disabled>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:1fr 1fr 0.6fr 0.6fr">
-              <span style="font-size:12px">MSP</span><input type="number" value="6" style="font-size:12px"><input type="text" value="Kg" style="font-size:12px" disabled><input type="text" value="6%" style="font-size:12px" disabled>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:1fr 1fr 0.6fr 0.6fr">
-              <span style="font-size:12px">MAG 100</span><input type="number" value="2" style="font-size:12px"><input type="text" value="Kg" style="font-size:12px" disabled><input type="text" value="2%" style="font-size:12px" disabled>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:1fr 1fr 0.6fr 0.6fr">
-              <span style="font-size:12px">TH 2</span><input type="number" value="0.6" style="font-size:12px"><input type="text" value="Kg" style="font-size:12px" disabled><input type="text" value="0.6%" style="font-size:12px" disabled>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:1fr 1fr 0.6fr 0.6fr">
-              <span style="font-size:12px">AR 120</span><input type="number" value="0.5" style="font-size:12px"><input type="text" value="Kg" style="font-size:12px" disabled><input type="text" value="0.5%" style="font-size:12px" disabled>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:1fr 1fr 0.6fr 0.6fr">
-              <span style="font-size:12px">13 G</span><input type="number" value="0.3" style="font-size:12px"><input type="text" value="Kg" style="font-size:12px" disabled><input type="text" value="0.3%" style="font-size:12px" disabled>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:1fr 1fr 0.6fr 0.6fr">
-              <span style="font-size:12px">YAL 12</span><input type="number" value="0.2" style="font-size:12px"><input type="text" value="Kg" style="font-size:12px" disabled><input type="text" value="0.2%" style="font-size:12px" disabled>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:1fr 1fr 0.6fr 0.6fr">
-              <span style="font-size:12px">66F</span><input type="number" value="0.12" style="font-size:12px"><input type="text" value="Kg" style="font-size:12px" disabled><input type="text" value="0.12%" style="font-size:12px" disabled>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:1fr 1fr 0.6fr 0.6fr">
-              <span style="font-size:12px">MAG 42</span><input type="number" value="1" style="font-size:12px"><input type="text" value="Kg" style="font-size:12px" disabled><input type="text" value="1%" style="font-size:12px" disabled>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:1fr 1fr 0.6fr 0.6fr;background:#f0fdf4">
-              <span style="font-size:12px;font-weight:600">Total RMs</span><input type="number" value="100" style="font-size:12px;font-weight:600" disabled><input type="text" value="Kg" style="font-size:12px" disabled><input type="text" value="100%" style="font-size:12px;font-weight:600" disabled>
-            </div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead>
+                <tr>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">RM Item</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Qty / 100 Kg FG</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">UOM</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Ratio%</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px">RK Resin</span></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="32" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="32%" style="font-size:12px" disabled></td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px">BA</span></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="27.33" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="27.3%" style="font-size:12px" disabled></td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px">Talc</span></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="20" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="20%" style="font-size:12px" disabled></td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px">Xylene</span></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="8.95" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="9%" style="font-size:12px" disabled></td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px">MSP</span></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="6" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="6%" style="font-size:12px" disabled></td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px">MAG 100</span></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="2" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="2%" style="font-size:12px" disabled></td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px">TH 2</span></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="0.6" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="0.6%" style="font-size:12px" disabled></td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px">AR 120</span></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="0.5" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="0.5%" style="font-size:12px" disabled></td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px">13 G</span></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="0.3" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="0.3%" style="font-size:12px" disabled></td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px">YAL 12</span></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="0.2" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="0.2%" style="font-size:12px" disabled></td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px">66F</span></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="0.12" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="0.12%" style="font-size:12px" disabled></td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px">MAG 42</span></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="1" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="1%" style="font-size:12px" disabled></td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr style="background:#f0fdf4">
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee;font-weight:600"><span style="font-size:12px;font-weight:600">Total RMs</span></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="100" style="font-size:12px;font-weight:600" disabled></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="100%" style="font-size:12px;font-weight:600" disabled></td>
+                </tr>
+              </tfoot>
+            </table>
           </div>
         </div>
       </div>
@@ -525,18 +582,24 @@
           </div>
           <div class="subtable-demo">
             <div class="st-hint">Bin Locations (inline subform — not a separate module)</div>
-            <div class="subtable-row" style="grid-template-columns:1fr 1fr 1fr 1fr">
-              <span style="font-size:11px;font-weight:600">Rack No</span>
-              <span style="font-size:11px;font-weight:600">Shelf No</span>
-              <span style="font-size:11px;font-weight:600">Bin No</span>
-              <span style="font-size:11px;font-weight:600">Status</span>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:1fr 1fr 1fr 1fr">
-              <input type="text" value="A" style="font-size:12px">
-              <input type="text" value="1" style="font-size:12px">
-              <input type="text" value="A-1-01" style="font-size:12px">
-              <select style="font-size:12px"><option selected>Active</option></select>
-            </div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead>
+                <tr>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Rack No</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Shelf No</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Bin No</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="A" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="1" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="A-1-01" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option selected>Active</option></select></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -612,54 +675,66 @@
 
            <!-- Subform A: System Lines (Supply+Apply) -->
           <div style="padding:6px 10px;background:#ecfdf5;border-radius:6px 6px 0 0;font-size:12px;font-weight:700;color:#065f46;border:1px solid #a7f3d0;border-bottom:none">Subform A — System Lines &nbsp;<span style="font-weight:400;color:#065f46">Visible when Sales Type = Supply+Apply</span></div>
-          <div class="subtable-demo" style="border:1px solid #a7f3d0;border-top:none">
+           <div class="subtable-demo" style="border:1px solid #a7f3d0;border-top:none">
             <div class="st-hint">System Line Items (N items) — sells a SYSTEM (e.g., EP01 → drives Project)</div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr">
-              <span style="font-size:11px;font-weight:600">System Code</span>
-              <span style="font-size:11px;font-weight:600">Thickness</span>
-              <span style="font-size:11px;font-weight:600">Area (sqm)</span>
-              <span style="font-size:11px;font-weight:600">UOM</span>
-              <span style="font-size:11px;font-weight:600">Rate</span>
-              <span style="font-size:11px;font-weight:600">Amount</span>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr">
-              <select style="font-size:12px"><option selected>EP01 — Epoxy 1mm</option></select>
-              <input type="text" value="1mm" style="font-size:12px">
-              <input type="number" value="500" style="font-size:12px">
-              <select style="font-size:12px"><option selected>Sqm</option></select>
-              <input type="number" value="285" style="font-size:12px">
-              <input type="number" value="142500" style="font-size:12px;font-weight:700;color:var(--primary)" readonly>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr">
-              <select style="font-size:12px"><option selected>EP02 — Epoxy 2mm</option></select>
-              <input type="text" value="2mm" style="font-size:12px">
-              <input type="number" value="300" style="font-size:12px">
-              <select style="font-size:12px"><option selected>Sqm</option></select>
-              <input type="number" value="450" style="font-size:12px">
-              <input type="number" value="135000" style="font-size:12px;font-weight:700;color:var(--primary)" readonly>
-            </div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead>
+                <tr>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">System Code</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Thickness</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Area (sqm)</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">UOM</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Rate</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option selected>EP01 — Epoxy 1mm</option></select></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="1mm" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="500" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option selected>Sqm</option></select></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="285" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="142500" style="font-size:12px;font-weight:700;color:var(--primary)" readonly></td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option selected>EP02 — Epoxy 2mm</option></select></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="2mm" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="300" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option selected>Sqm</option></select></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="450" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="135000" style="font-size:12px;font-weight:700;color:var(--primary)" readonly></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
 
           <!-- Subform B: FG Lines (Supply Only) -->
           <div style="padding:6px 10px;background:#fffbeb;border-radius:6px 6px 0 0;font-size:12px;font-weight:700;color:#92400e;border:1px solid #fde68a;border-bottom:none;margin-top:12px">Subform B — FG Lines &nbsp;<span style="font-weight:400;color:#92400e">Visible when Sales Type = Supply Only</span></div>
-          <div class="subtable-demo" style="border:1px solid #fde68a;border-top:none">
+           <div class="subtable-demo" style="border:1px solid #fde68a;border-top:none">
             <div class="st-hint">FG Line Items (N items) — sells FG directly (NO Project created)</div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr">
-              <span style="font-size:11px;font-weight:600">FG Code</span>
-              <span style="font-size:11px;font-weight:600">FG Name</span>
-              <span style="font-size:11px;font-weight:600">Qty</span>
-              <span style="font-size:11px;font-weight:600">UOM</span>
-              <span style="font-size:11px;font-weight:600">Rate</span>
-              <span style="font-size:11px;font-weight:600">Amount</span>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr">
-              <select style="font-size:12px"><option selected>FG-001 — Floorchem 300 Matt [R]</option></select>
-              <input type="text" value="Floorchem 300 Matt [R]" style="font-size:12px" disabled>
-              <input type="number" value="120" style="font-size:12px">
-              <input type="text" value="Kg" style="font-size:12px" disabled>
-              <input type="number" value="285" style="font-size:12px">
-              <input type="number" value="34200" style="font-size:12px;font-weight:700;color:var(--primary)" readonly>
-            </div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead>
+                <tr>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">FG Code</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">FG Name</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Qty</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">UOM</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Rate</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option selected>FG-001 — Floorchem 300 Matt [R]</option></select></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Floorchem 300 Matt [R]" style="font-size:12px" disabled></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="120" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="285" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="34200" style="font-size:12px;font-weight:700;color:var(--primary)" readonly></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
 
           <div style="display:flex;gap:12px;align-items:center;padding:12px;background:var(--green-light);border-radius:8px;margin-top:8px">
@@ -713,18 +788,27 @@
           </div>
           <div class="subtable-demo">
             <div class="st-hint">Systems (copied from SO)</div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
-              <span style="font-size:11px;font-weight:600">System</span><span style="font-size:11px;font-weight:600">Area</span><span style="font-size:11px;font-weight:600">UOM</span><span style="font-size:11px;font-weight:600">Description</span>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
-              <input type="text" value="EP01 — Epoxy 1mm" style="font-size:12px">
-              <input type="number" value="500" style="font-size:12px">
-              <input type="text" value="Sqm" style="font-size:12px">
-              <input type="text" value="Production Floor" style="font-size:12px">
-            </div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead>
+                <tr>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">System</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Area</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">UOM</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="EP01 — Epoxy 1mm" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="500" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Sqm" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Production Floor" style="font-size:12px"></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
           <div style="padding:8px 12px;background:var(--accent-light);border-radius:6px;font-size:12px;color:#92400e;margin-top:8px">
-            <strong>&#x2139; Project ID = PRJ-2026-001</strong> — This ID flows into MR, Production Planning, FGHM (PR is Stream A — no Project ID)
+            <strong>&#x2139; Project ID = PRJ-2026-001</strong> — This ID flows into MR, Production Planning, FGHM, PR (PR now under Production arm)
           </div>
         </div>
       </div>
@@ -744,106 +828,65 @@
         <div class="form-demo">
           <div class="subtable-demo">
             <div class="st-hint">Task Items (N rows) <span style="color:var(--gray-400);font-weight:400;margin-left:8px">— Budget → Actual columns</span></div>
-            <div class="subtable-row" style="grid-template-columns:1fr 2fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr">
-              <span style="font-size:11px;font-weight:600">Category</span>
-              <span style="font-size:11px;font-weight:600">Description</span>
-              <span style="font-size:11px;font-weight:600">Qty/Area</span>
-              <span style="font-size:11px;font-weight:600">Rate</span>
-              <span style="font-size:11px;font-weight:600">Amount</span>
-              <span style="font-size:11px;font-weight:600">Manpower</span>
-              <span style="font-size:11px;font-weight:600;color:var(--green)">Actual Qty</span>
-              <span style="font-size:11px;font-weight:600;color:var(--green)">Actual Rate</span>
-              <span style="font-size:11px;font-weight:600;color:var(--green)">Actual Amt</span>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:1fr 2fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr">
-              <select style="font-size:12px"><option selected>Transport</option><option>Execution</option><option>Manpower</option><option>Tools</option><option>Overhead</option></select>
-              <input type="text" value="Intracity material movement" style="font-size:12px">
-              <input type="number" value="15" style="font-size:12px">
-              <input type="number" value="2000" style="font-size:12px">
-              <input type="number" value="30000" style="font-size:12px" readonly>
-              <input type="number" value="2" style="font-size:12px">
-            </div>
-            <div class="subtable-row" style="grid-template-columns:1fr 2fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr">
-              <select style="font-size:12px"><option selected>Execution</option><option>Transport</option><option>Manpower</option><option>Tools</option><option>Overhead</option></select>
-              <input type="text" value="Grinding & Primer application" style="font-size:12px">
-              <input type="number" value="500" style="font-size:12px">
-              <input type="number" value="85" style="font-size:12px">
-              <input type="number" value="42500" style="font-size:12px" readonly>
-              <input type="number" value="4" style="font-size:12px">
-              <input type="number" value="520" style="font-size:12px">
-              <input type="number" value="82" style="font-size:12px">
-              <input type="number" value="42640" style="font-size:12px" readonly>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:1fr 2fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr">
-              <select style="font-size:12px"><option selected>Manpower</option><option>Transport</option><option>Execution</option><option>Tools</option><option>Overhead</option></select>
-              <input type="text" value="Skilled labour - Day basis" style="font-size:12px">
-              <input type="number" value="60" style="font-size:12px">
-              <input type="number" value="800" style="font-size:12px">
-              <input type="number" value="48000" style="font-size:12px" readonly>
-              <input type="number" value="6" style="font-size:12px">
-              <input type="number" value="62" style="font-size:12px">
-              <input type="number" value="800" style="font-size:12px">
-              <input type="number" value="49600" style="font-size:12px" readonly>
-            </div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead>
+                <tr>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Category</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Description</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Qty/Area</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Rate</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Amount</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Manpower</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd;color:var(--green)">Actual Qty</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd;color:var(--green)">Actual Rate</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd;color:var(--green)">Actual Amt</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option selected>Transport</option><option>Execution</option><option>Manpower</option><option>Tools</option><option>Overhead</option></select></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Intracity material movement" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="15" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="2000" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="30000" style="font-size:12px" readonly></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="2" style="font-size:12px"></td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option selected>Execution</option><option>Transport</option><option>Manpower</option><option>Tools</option><option>Overhead</option></select></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Grinding &amp; Primer application" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="500" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="85" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="42500" style="font-size:12px" readonly></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="4" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="520" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="82" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="42640" style="font-size:12px" readonly></td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option selected>Manpower</option><option>Transport</option><option>Execution</option><option>Tools</option><option>Overhead</option></select></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Skilled labour - Day basis" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="60" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="800" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="48000" style="font-size:12px" readonly></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="6" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="62" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="800" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="49600" style="font-size:12px" readonly></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
     </div>
 
     <!-- ============================================================ -->
-    <!-- PROCUREMENT -->
+    <!-- RATE COMPARISON — Standalone -->
     <!-- ============================================================ -->
-    <div class="module-group" id="procurement">
-      <h3>Purchase <span class="mg-badge">Stage 2/3 — PR &rarr; PO &rarr; GRN &rarr; QC</span></h3>
-      <p><strong>Stream A (Pre-Project):</strong> Purchase for stock replenishment. <strong>No Project ID</strong> on procurement forms. PR starts the procurement chain independently.</p>
-
-      <div class="form-card" id="pr-pr">
-        <div class="fc-header">
-          <span class="fc-num">4A</span>
-          <span class="fc-title">Purchase Requisition (PR)</span>
-          <span class="fc-tag">N Items</span>
-        </div>
-        <div class="fc-flow">
-          <span class="fc-flow-in">From: Purchase Dept (Pre-Project)</span>
-          <span class="fc-flow-key">Add items from Item Muster</span>
-          <span class="fc-flow-out">To: Rate Comparison</span>
-        </div>
-        <div class="form-demo">
-          <div class="form-row-4">
-            <div><label>PR No</label><input type="text" value="PR-2026-001" disabled style="background:var(--gray-50)"></div>
-            <div><label>PR Date</label><input type="date" value="2026-07-02"></div>
-            <div><label>RM Type</label><select><option selected>Coding</option><option>Non-Coding</option></select></div>
-            <div><label>Department</label><input type="text" value="Production & R&D" disabled style="background:var(--gray-50)"></div>
-          </div>
-          <div class="subtable-demo">
-            <div class="st-hint">PR Items (N items)</div>
-            <div class="subtable-row" style="grid-template-columns:2fr 2fr 1fr 1fr 1fr">
-              <span style="font-size:11px;font-weight:600">Item Code</span>
-              <span style="font-size:11px;font-weight:600">Description</span>
-              <span style="font-size:11px;font-weight:600">Qty</span>
-              <span style="font-size:11px;font-weight:600">UOM</span>
-              <span style="font-size:11px;font-weight:600">Lead Time</span>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:2fr 2fr 1fr 1fr 1fr">
-              <select style="font-size:12px"><option selected>RM-EP-001 — Epoxy Resin</option></select>
-              <input type="text" value="Epoxy Resin Grade A" style="font-size:12px">
-              <input type="number" value="425" style="font-size:12px">
-              <input type="text" value="Kg" style="font-size:12px" disabled style="background:var(--gray-50)">
-              <input type="text" value="7 days" style="font-size:12px" disabled style="background:var(--gray-50)">
-            </div>
-            <div class="subtable-row" style="grid-template-columns:2fr 2fr 1fr 1fr 1fr">
-              <select style="font-size:12px"><option selected>RM-EP-002 — Epoxy Hardener</option></select>
-              <input type="text" value="Epoxy Hardener Grade B" style="font-size:12px">
-              <input type="number" value="75" style="font-size:12px">
-              <input type="text" value="Kg" style="font-size:12px" disabled style="background:var(--gray-50)">
-              <input type="text" value="5 days" style="font-size:12px" disabled style="background:var(--gray-50)">
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="connector-down">&#x25BC;</div>
-
+    <div class="module-group" id="rate-comparison">
+      <span id="org-rc" style="position:relative;top:-60px;display:block"></span>
+      <h3>Rate Comparison <span class="mg-badge">Standalone Record</span></h3>
+      <p>Standalone record form — used for manual rate record-keeping, not linked to PR</p>
       <div class="form-card" id="pr-rc">
         <div class="fc-header">
           <span class="fc-num">4B</span>
@@ -851,7 +894,7 @@
           <span class="fc-tag">5 Supplier Quotes</span>
         </div>
         <div class="fc-flow">
-          <span class="fc-flow-in">From: PR (autofetch items)</span>
+          <span class="fc-flow-in">From: Manual Entry</span>
           <span class="fc-flow-key">Compare 5 suppliers per item</span>
           <span class="fc-flow-out">To: PO (finalised rate)</span>
         </div>
@@ -863,25 +906,37 @@
           </div>
           <div class="subtable-demo">
             <div class="st-hint">Supplier Comparison (5 per item)</div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1.5fr 1fr 1fr 1fr">
-              <span style="font-size:11px;font-weight:600">Item</span>
-              <span style="font-size:11px;font-weight:600">Supplier</span>
-              <span style="font-size:11px;font-weight:600">Rate</span>
-              <span style="font-size:11px;font-weight:600">Credit</span>
-              <span style="font-size:11px;font-weight:600">Selected</span>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1.5fr 1fr 1fr 1fr">
-              <input type="text" value="Epoxy Resin" style="font-size:12px">
-              <select style="font-size:12px"><option selected>ABC Chemicals — Rs 245</option><option>XYZ Corp — Rs 260</option><option>PQR Ltd — Rs 238</option></select>
-              <input type="number" value="238" style="font-size:12px">
-              <input type="text" value="30 days" style="font-size:12px">
-              <input type="radio" checked style="width:auto;margin:0">
-            </div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead>
+                <tr>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Item</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Supplier</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Rate</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Credit</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Selected</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Epoxy Resin" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option selected>ABC Chemicals — Rs 245</option><option>XYZ Corp — Rs 260</option><option>PQR Ltd — Rs 238</option></select></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="238" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="30 days" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="radio" checked style="width:auto;margin:0"></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
+    </div>
 
-      <div class="connector-down">&#x25BC;</div>
+    <!-- ============================================================ -->
+    <!-- PROCUREMENT -->
+    <!-- ============================================================ -->
+    <div class="module-group" id="procurement">
+      <h3>Purchase <span class="mg-badge">Stage 2/3 — PO &rarr; GRN &rarr; QC</span></h3>
+      <p><strong>Stream A (Pre-Project):</strong> Purchase for stock replenishment. <strong>No Project ID</strong> on procurement forms. Procurement chain starts from PO (PR now under Production).</p>
 
       <div class="form-card" id="pr-po">
         <div class="fc-header">
@@ -890,8 +945,8 @@
           <span class="fc-tag">N Items · GST Split</span>
         </div>
         <div class="fc-flow">
-          <span class="fc-flow-in">From: PR, Rate Comparison</span>
-          <span class="fc-flow-key">Supplier, Items autofetched from PR</span>
+          <span class="fc-flow-in">From: Rate Comparison</span>
+          <span class="fc-flow-key">Supplier, Items from Rate Comparison</span>
           <span class="fc-flow-out">To: GRN</span>
         </div>
         <div class="form-demo">
@@ -909,24 +964,30 @@
           </div>
           <div class="subtable-demo">
             <div class="st-hint">PO Line Items with GST Split (CGST 6% + SGST 6%)</div>
-            <div class="subtable-row" style="grid-template-columns:1.5fr 1fr 1fr 1fr 1fr 1fr 1fr">
-              <span style="font-size:11px;font-weight:600">Item</span>
-              <span style="font-size:11px;font-weight:600">HSN</span>
-              <span style="font-size:11px;font-weight:600">Qty</span>
-              <span style="font-size:11px;font-weight:600">Rate</span>
-              <span style="font-size:11px;font-weight:600">Amount</span>
-              <span style="font-size:11px;font-weight:600">CGST</span>
-              <span style="font-size:11px;font-weight:600">SGST</span>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:1.5fr 1fr 1fr 1fr 1fr 1fr 1fr">
-              <input type="text" value="Epoxy Resin" style="font-size:12px">
-              <input type="text" value="3907.30" style="font-size:12px">
-              <input type="number" value="425" style="font-size:12px">
-              <input type="number" value="238" style="font-size:12px">
-              <input type="number" value="101150" style="font-size:12px" readonly>
-              <input type="number" value="6069" style="font-size:12px" readonly>
-              <input type="number" value="6069" style="font-size:12px" readonly>
-            </div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead>
+                <tr>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Item</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">HSN</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Qty</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Rate</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Amount</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">CGST</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">SGST</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Epoxy Resin" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="3907.30" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="425" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="238" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="101150" style="font-size:12px" readonly></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="6069" style="font-size:12px" readonly></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="6069" style="font-size:12px" readonly></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
           <div style="padding:8px 12px;background:var(--gray-50);border-radius:6px;font-size:12px;margin-top:4px">
             <strong>Total: &#8377;1,01,150</strong> + CGST &#8377;6,069 + SGST &#8377;6,069 = <strong>&#8377;1,13,288</strong>
@@ -960,30 +1021,36 @@
           </div>
           <div class="subtable-demo">
             <div class="st-hint">GRN Items (check = receive, uncheck = pending)</div>
-            <div class="subtable-row" style="grid-template-columns:1fr 2fr 1fr 1fr 1fr 1fr">
-              <span style="font-size:11px;font-weight:600">Receive</span>
-              <span style="font-size:11px;font-weight:600">Item</span>
-              <span style="font-size:11px;font-weight:600">Ordered</span>
-              <span style="font-size:11px;font-weight:600">Received</span>
-              <span style="font-size:11px;font-weight:600">Pending</span>
-              <span style="font-size:11px;font-weight:600">QC Status</span>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:1fr 2fr 1fr 1fr 1fr 1fr">
-              <input type="checkbox" checked style="width:auto;margin:0">
-              <input type="text" value="Epoxy Resin" style="font-size:12px">
-              <input type="number" value="425" style="font-size:12px" disabled style="background:var(--gray-50)">
-              <input type="number" value="425" style="font-size:12px">
-              <span style="font-size:12px;color:var(--green)">0</span>
-              <span style="font-size:12px;color:var(--gray-400)">Pending</span>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:1fr 2fr 1fr 1fr 1fr 1fr">
-              <input type="checkbox" style="width:auto;margin:0">
-              <input type="text" value="Epoxy Hardener" style="font-size:12px">
-              <input type="number" value="75" style="font-size:12px" disabled style="background:var(--gray-50)">
-              <input type="number" value="0" style="font-size:12px">
-              <span style="font-size:12px;color:var(--accent)">75</span>
-              <span style="font-size:12px;color:var(--gray-400)">—</span>
-            </div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead>
+                <tr>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Receive</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Item</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Ordered</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Received</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Pending</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">QC Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="checkbox" checked style="width:auto;margin:0"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Epoxy Resin" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="425" style="font-size:12px" disabled style="background:var(--gray-50)"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="425" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px;color:var(--green)">0</span></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px;color:var(--gray-400)">Pending</span></td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="checkbox" style="width:auto;margin:0"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Epoxy Hardener" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="75" style="font-size:12px" disabled style="background:var(--gray-50)"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="0" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px;color:var(--accent)">75</span></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px;color:var(--gray-400)">—</span></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
           <div style="padding:8px 12px;background:var(--accent-light);border-radius:6px;font-size:12px;color:#92400e;margin-top:8px">
             <strong>&#x26A0; Stock is NOT updated until GRN is Posted.</strong> Posting creates a timestamped stock entry.
@@ -1012,24 +1079,30 @@
           </div>
           <div class="subtable-demo">
             <div class="st-hint">QC Test Results</div>
-            <div class="subtable-row" style="grid-template-columns:1.5fr 1fr 1fr 1fr">
-              <span style="font-size:11px;font-weight:600">Parameter</span>
-              <span style="font-size:11px;font-weight:600">Specification</span>
-              <span style="font-size:11px;font-weight:600">Result</span>
-              <span style="font-size:11px;font-weight:600">Status</span>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:1.5fr 1fr 1fr 1fr">
-              <input type="text" value="Viscosity" style="font-size:12px">
-              <input type="text" value="800-1200 cP" style="font-size:12px">
-              <input type="text" value="950 cP" style="font-size:12px">
-              <select style="font-size:12px"><option selected>Pass</option><option>Fail</option></select>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:1.5fr 1fr 1fr 1fr">
-              <input type="text" value="Density" style="font-size:12px">
-              <input type="text" value="1.05-1.15 g/cm³" style="font-size:12px">
-              <input type="text" value="1.10 g/cm³" style="font-size:12px">
-              <select style="font-size:12px"><option selected>Pass</option><option>Fail</option></select>
-            </div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead>
+                <tr>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Parameter</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Specification</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Result</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Viscosity" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="800-1200 cP" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="950 cP" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option selected>Pass</option><option>Fail</option></select></td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Density" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="1.05-1.15 g/cm³" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="1.10 g/cm³" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option selected>Pass</option><option>Fail</option></select></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
           <div class="form-row-3">
             <div><label>Accepted Qty</label><input type="number" value="425"></div>
@@ -1054,7 +1127,7 @@
         </div>
         <div style="flex:1;padding:12px;background:#fee2e2;border-radius:6px;text-align:center">
           <strong style="color:var(--red);font-size:16px">&#x2717; Material Not Available</strong>
-          <p style="font-size:12px;color:var(--gray-600);margin:4px 0 0">Trigger Purchase → PR → PO → GRN → QC → Handover</p>
+          <p style="font-size:12px;color:var(--gray-600);margin:4px 0 0">Trigger Purchase → PO → GRN → QC → Handover (PR raised from Production)</p>
         </div>
       </div>
     </div>
@@ -1086,20 +1159,26 @@
           </div>
           <div class="subtable-demo">
             <div class="st-hint">Items (Mark RM Type)</div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr">
-              <span style="font-size:11px;font-weight:600">Item</span>
-              <span style="font-size:11px;font-weight:600">Qty</span>
-              <span style="font-size:11px;font-weight:600">UOM</span>
-              <span style="font-size:11px;font-weight:600">RM Type</span>
-              <span style="font-size:11px;font-weight:600">Handover To</span>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr">
-              <input type="text" value="Epoxy Resin" style="font-size:12px">
-              <input type="number" value="425" style="font-size:12px">
-              <input type="text" value="Kg" style="font-size:12px">
-              <select style="font-size:12px"><option selected>Coding RM</option><option>Non-Coding (RMWAD)</option></select>
-              <input type="text" value="Anil (Store)" style="font-size:12px">
-            </div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead>
+                <tr>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Item</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Qty</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">UOM</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">RM Type</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Handover To</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Epoxy Resin" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="425" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option selected>Coding RM</option><option>Non-Coding (RMWAD)</option></select></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Anil (Store)" style="font-size:12px"></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
           <div style="padding:8px 12px;background:#fffbeb;border-radius:6px;font-size:12px;color:#92400e;margin-top:8px">
             <strong>&#x2139; RM Type</strong> — Coding materials use PO series RM (Purchase dept). Non-coding use RMWAD series.
@@ -1135,20 +1214,26 @@
           </div>
           <div class="subtable-demo">
             <div class="st-hint">Material Valuation</div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr">
-              <span style="font-size:11px;font-weight:600">Item</span>
-              <span style="font-size:11px;font-weight:600">Qty</span>
-              <span style="font-size:11px;font-weight:600">Rate</span>
-              <span style="font-size:11px;font-weight:600">Amount</span>
-              <span style="font-size:11px;font-weight:600">Remark</span>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr">
-              <input type="text" value="Epoxy Resin" style="font-size:12px">
-              <input type="number" value="200" style="font-size:12px">
-              <input type="number" value="238" style="font-size:12px">
-              <input type="number" value="47,600" style="font-size:12px" readonly>
-              <input type="text" value="Within budget" style="font-size:12px">
-            </div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead>
+                <tr>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Item</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Qty</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Rate</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Amount</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Remark</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Epoxy Resin" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="200" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="238" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="47,600" style="font-size:12px" readonly></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Within budget" style="font-size:12px"></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
           <div class="form-row-3" style="margin-top:8px">
             <div><label>Total Material Cost</label><input type="number" value="65,800" disabled style="background:var(--gray-50);font-weight:700"></div>
@@ -1186,18 +1271,24 @@
           </div>
           <div class="subtable-demo">
             <div class="st-hint">Area Details</div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
-              <span style="font-size:11px;font-weight:600">System</span>
-              <span style="font-size:11px;font-weight:600">Measured Area</span>
-              <span style="font-size:11px;font-weight:600">UOM</span>
-              <span style="font-size:11px;font-weight:600">Remark</span>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
-              <input type="text" value="EP01 — Epoxy 1mm" style="font-size:12px">
-              <input type="number" value="520" style="font-size:12px">
-              <input type="text" value="Sqm" style="font-size:12px">
-              <input type="text" value="+20 sqm vs SO" style="font-size:12px">
-            </div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead>
+                <tr>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">System</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Measured Area</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">UOM</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Remark</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="EP01 — Epoxy 1mm" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="520" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Sqm" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="+20 sqm vs SO" style="font-size:12px"></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
           <div class="form-row-3">
             <div><label>Measured By</label><input type="text" value="Rahul (Service)"></div>
@@ -1229,18 +1320,24 @@
           </div>
           <div class="subtable-demo">
             <div class="st-hint">Material Under Custody</div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
-              <span style="font-size:11px;font-weight:600">Item</span>
-              <span style="font-size:11px;font-weight:600">Qty</span>
-              <span style="font-size:11px;font-weight:600">UOM</span>
-              <span style="font-size:11px;font-weight:600">Condition</span>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
-              <input type="text" value="Epoxy Resin" style="font-size:12px">
-              <input type="number" value="180" style="font-size:12px">
-              <input type="text" value="Kg" style="font-size:12px">
-              <select style="font-size:12px"><option selected>Good</option><option>Damaged</option></select>
-            </div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead>
+                <tr>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Item</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Qty</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">UOM</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Condition</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Epoxy Resin" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="180" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option selected>Good</option><option>Damaged</option></select></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
           <div class="form-row-3">
             <div><label>Handover By (Store)</label><input type="text" value="Anil Surve"></div>
@@ -1337,8 +1434,8 @@
     <!-- INVENTORY -->
     <!-- ============================================================ -->
     <div class="module-group" id="inventory">
-      <h3>Inventory / Stores <span class="mg-badge">Stage 1 — MR &rarr; MIS &rarr; FG Handover (inline acceptance status)</span></h3>
-      <p>Material moves from store to site. FG comes back via Production GRN (FGHM). <strong>Note:</strong> Procurement GRN (Supplier) and Production GRN (FGHM — FG Handover) are <strong>completely separate</strong> processes.</p>
+      <h3>Inventory / Stores <span class="mg-badge">Stage 1 — SO + MR = Project Baseline → MR Verified by Production → Costing Approves → MIS → FGHM</span></h3>
+      <p><strong>Project baseline = SO + MR.</strong> SO defines System/FG scope (revenue). MR defines RM allocation (cost baseline). <strong>MR → Production verifies quantities → Costing approves budget → Released → then MIS → Production → FGHM → Logistics → Project Site Execution begins.</strong></p>
       <div style="padding:8px 12px;background:#ecfdf5;border-left:4px solid var(--green);border-radius:6px;font-size:12px;color:#065f46;margin-bottom:12px">
         <strong>&#x1F4CC; Project as Consumption Anchor:</strong> MR carries a <strong>Material Allocation</strong> subform (per-RM Assigned Qty + Allocation Ratio % + 80% Alert Flag). All consumption — FG production and Site Manager entries — resolves to the <strong>project-assigned RM</strong>, not a generic pool. See <a href="#consumption-rule">Consumption Rule</a> and <a href="#alert-80-flow">80% Alert</a>.
       </div>
@@ -1351,78 +1448,121 @@
         </div>
         <div class="fc-flow">
           <span class="fc-flow-in">From: Project ID + Production Plan (FG requirement)</span>
-          <span class="fc-flow-key">Request <strong>RM only</strong> from store — derived from BOM × FG qty</span>
-          <span class="fc-flow-out">To: MIS</span>
+          <span class="fc-flow-key">Request <strong>RM only</strong> from store — derived from BOM × FG qty. Status: Draft → Production Verified → Costing Approved → Released</span>
+          <span class="fc-flow-out">To: Production Verification → Costing Approval → <strong>MIS (only when Released)</strong></span>
         </div>
         <div class="form-demo">
           <div class="form-row-4">
             <div><label>MR No</label><input type="text" value="MR-2026-001" disabled style="background:var(--gray-50)"></div>
             <div><label>MR Date</label><input type="date" value="2026-07-20"></div>
             <div><label>Project ID</label><select><option selected>PRJ-2026-001 — Tata Motors</option></select></div>
-            <div><label>Priority</label><select><option selected>Normal</option><option>Urgent</option><option>Critical</option></select></div>
+            <div><label>MR Status</label><select style="background:#fef3c7;font-weight:700"><option>Draft</option><option selected>Production Verified</option><option>Costing Approved</option><option>Released</option></select></div>
           </div>
           <div style="display:flex;gap:8px;padding:6px 10px;background:#fffbeb;border-radius:6px;font-size:11px;color:#92400e;margin-bottom:8px;border:1px solid #fde68a">
             <strong>&#x2139; MR deals with RM only.</strong> Production Plan calculates RM needed from BOM × FG qty × System qty.
           </div>
           <div class="subtable-demo">
             <div class="st-hint">RM Items Required</div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
-              <span style="font-size:11px;font-weight:600">RM Item</span>
-              <span style="font-size:11px;font-weight:600">Required</span>
-              <span style="font-size:11px;font-weight:600">Available</span>
-              <span style="font-size:11px;font-weight:600">UOM</span>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
-              <select style="font-size:12px"><option selected>RM-EP-001 — Epoxy Resin</option></select>
-              <input type="number" value="425" style="font-size:12px">
-              <span style="font-size:12px;color:var(--green);font-weight:600">500</span>
-              <input type="text" value="Kg" style="font-size:12px" disabled style="background:var(--gray-50)">
-            </div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
-              <select style="font-size:12px"><option>RM-EP-002 — Epoxy Hardener</option></select>
-              <input type="number" value="75" style="font-size:12px">
-              <span style="font-size:12px;color:var(--green);font-weight:600">120</span>
-              <input type="text" value="Kg" style="font-size:12px" disabled style="background:var(--gray-50)">
-            </div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead>
+                <tr>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">RM Item</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Required</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Available</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">UOM</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option selected>RM-EP-001 — Epoxy Resin</option></select></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="425" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px;color:var(--green);font-weight:600">500</span></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled style="background:var(--gray-50)"></td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option>RM-EP-002 — Epoxy Hardener</option></select></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="75" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px;color:var(--green);font-weight:600">120</span></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled style="background:var(--gray-50)"></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
           <!-- NEW: Material Allocation + 80% tracking -->
           <div class="subtable-demo" style="margin-top:10px;border:1px solid #86efac;background:#f0fdf4">
             <div class="st-hint">Material Allocation (Project Budget Baseline) — NEW</div>
-            <div class="subtable-row" style="grid-template-columns:1.4fr 0.8fr 0.6fr 0.8fr 0.7fr 0.7fr">
-              <span style="font-size:11px;font-weight:600">RM Item</span>
-              <span style="font-size:11px;font-weight:600">Assigned Qty</span>
-              <span style="font-size:11px;font-weight:600">UOM</span>
-              <span style="font-size:11px;font-weight:600">Alloc Ratio %</span>
-              <span style="font-size:11px;font-weight:600">Consumed</span>
-              <span style="font-size:11px;font-weight:600">Cons %</span>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:1.4fr 0.8fr 0.6fr 0.8fr 0.7fr 0.7fr">
-              <select style="font-size:12px"><option selected>RM-EP-001 — Epoxy Resin</option></select>
-              <input type="number" value="10" style="font-size:12px">
-              <input type="text" value="Kg" style="font-size:12px" disabled>
-              <input type="number" value="16.67" style="font-size:12px" disabled>
-              <input type="number" value="8" style="font-size:12px" disabled style="background:#fff7ed;color:#ea580c;font-weight:600">
-              <input type="number" value="80" style="font-size:12px" disabled style="background:#fff7ed;color:#ea580c;font-weight:600">
-            </div>
-            <div class="subtable-row" style="grid-template-columns:1.4fr 0.8fr 0.6fr 0.8fr 0.7fr 0.7fr">
-              <select style="font-size:12px"><option>RM-EP-002 — Epoxy Hardener</option></select>
-              <input type="number" value="20" style="font-size:12px">
-              <input type="text" value="Kg" style="font-size:12px" disabled>
-              <input type="number" value="33.33" style="font-size:12px" disabled>
-              <input type="number" value="10" style="font-size:12px" disabled>
-              <input type="number" value="50" style="font-size:12px" disabled>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:1.4fr 0.8fr 0.6fr 0.8fr 0.7fr 0.7fr">
-              <select style="font-size:12px"><option>RM-EP-003 — Pigment</option></select>
-              <input type="number" value="30" style="font-size:12px">
-              <input type="text" value="Kg" style="font-size:12px" disabled>
-              <input type="number" value="50" style="font-size:12px" disabled>
-              <input type="number" value="5" style="font-size:12px" disabled>
-              <input type="number" value="17" style="font-size:12px" disabled>
-            </div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead>
+                <tr>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">RM Item</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Assigned Qty</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">UOM</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Alloc Ratio %</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Consumed</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Cons %</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option selected>RM-EP-001 — Epoxy Resin</option></select></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="10" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="16.67" style="font-size:12px" disabled></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="8" style="font-size:12px" disabled style="background:#fff7ed;color:#ea580c;font-weight:600"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="80" style="font-size:12px" disabled style="background:#fff7ed;color:#ea580c;font-weight:600"></td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option>RM-EP-002 — Epoxy Hardener</option></select></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="20" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="33.33" style="font-size:12px" disabled></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="10" style="font-size:12px" disabled></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="50" style="font-size:12px" disabled></td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option>RM-EP-003 — Pigment</option></select></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="30" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="50" style="font-size:12px" disabled></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="5" style="font-size:12px" disabled></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="17" style="font-size:12px" disabled></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
           <div style="padding:8px 12px;background:#ecfdf5;border-radius:6px;font-size:12px;color:#065f46;margin-top:8px">
             <strong>&#x1F4CC; Per-Project Allocation:</strong> Epoxy Resin assigned 10 Kg (ratio 16.67%) — <strong style="color:#ea580c">at 80% (8 Kg) the 80% Alert fires</strong>. Hardener 20 Kg (33.33%), Pigment 30 Kg (50%). Each consumption (FG production or Site entry) increments <em>Consumed</em>, not global stock. See <a href="#consumption-rule">Consumption Rule</a> and <a href="#alert-80-flow">80% Alert</a>.
+          </div>
+          <div style="padding:8px 12px;background:#eff6ff;border-radius:6px;font-size:12px;color:#1e40af;margin-top:8px">
+            <strong>&#x1F4B0; MR = Project Cost Baseline.</strong> Besides RM material, the MR carries the full implementation cost: <strong>Application Cost</strong> (labour/execution), <strong>Transportation Cost</strong>, and <strong>Tools &amp; Tackles</strong>. Material + Application + Transport + Tools = <strong>Total MR Cost</strong> — this is what Costing approves at the gate.
+          </div>
+          <div class="subtable-demo" style="margin-top:10px;border:1px solid #93c5fd;background:#eff6ff">
+            <div class="st-hint">Application Cost (Labour / Execution)</div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead><tr><th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Activity</th><th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">UOM</th><th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Qty</th><th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Rate</th><th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Amount</th></tr></thead>
+              <tbody>
+                <tr><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Epoxy application" style="font-size:12px"></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Sqm" style="font-size:12px" disabled></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="5000" style="font-size:12px"></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="45" style="font-size:12px"></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="225000" style="font-size:12px" disabled></td></tr>
+                <tr><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Screeding" style="font-size:12px"></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Sqm" style="font-size:12px" disabled></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="5000" style="font-size:12px"></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="20" style="font-size:12px"></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="100000" style="font-size:12px" disabled></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="subtable-demo" style="margin-top:10px;border:1px solid #93c5fd;background:#eff6ff">
+            <div class="st-hint">Transportation Cost</div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead><tr><th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">From</th><th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">To (Site)</th><th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Trips</th><th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Rate</th><th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Amount</th></tr></thead>
+              <tbody>
+                <tr><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Wadki Store" style="font-size:12px"></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Tata Motors Site" style="font-size:12px" disabled></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="6" style="font-size:12px"></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="8000" style="font-size:12px"></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="48000" style="font-size:12px" disabled></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="subtable-demo" style="margin-top:10px;border:1px solid #93c5fd;background:#eff6ff">
+            <div class="st-hint">Tools &amp; Tackles</div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead><tr><th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Item</th><th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Qty</th><th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Rate</th><th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Amount</th></tr></thead>
+              <tbody>
+                <tr><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Mixer &amp; Trowel set" style="font-size:12px"></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="2" style="font-size:12px"></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="15000" style="font-size:12px"></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="30000" style="font-size:12px" disabled></td></tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -1436,7 +1576,7 @@
           <span class="fc-tag">Stock − on Post</span>
         </div>
         <div class="fc-flow">
-          <span class="fc-flow-in">From: MR (autofetch items)</span>
+          <span class="fc-flow-in">From: MR (only Released MR allowed)</span>
           <span class="fc-flow-key">Actual Qty issued, Balance tracked</span>
           <span class="fc-flow-out">Stock deducted on posting</span>
         </div>
@@ -1449,20 +1589,26 @@
           </div>
           <div class="subtable-demo">
             <div class="st-hint">Issue Items</div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr">
-              <span style="font-size:11px;font-weight:600">Item</span>
-              <span style="font-size:11px;font-weight:600">Required</span>
-              <span style="font-size:11px;font-weight:600">Issued</span>
-              <span style="font-size:11px;font-weight:600">Balance</span>
-              <span style="font-size:11px;font-weight:600">UOM</span>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr 1fr">
-              <input type="text" value="Epoxy Resin" style="font-size:12px" disabled style="background:var(--gray-50)">
-              <input type="number" value="200" style="font-size:12px" disabled style="background:var(--gray-50)">
-              <input type="number" value="180" style="font-size:12px">
-              <span style="font-size:12px;color:var(--green)">20</span>
-              <input type="text" value="Kg" style="font-size:12px" disabled style="background:var(--gray-50)">
-            </div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead>
+                <tr>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Item</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Required</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Issued</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Balance</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">UOM</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Epoxy Resin" style="font-size:12px" disabled style="background:var(--gray-50)"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="200" style="font-size:12px" disabled style="background:var(--gray-50)"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="180" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px;color:var(--green)">20</span></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled style="background:var(--gray-50)"></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -1490,22 +1636,28 @@
           </div>
           <div class="subtable-demo">
             <div class="st-hint">FG Products (not Systems) — Set acceptance, damaged, and status per line</div>
-            <div class="subtable-row" style="grid-template-columns:1.5fr 1fr 1fr 1fr 1fr 1fr">
-              <span style="font-size:11px;font-weight:600">FG Item</span>
-              <span style="font-size:11px;font-weight:600">Qty</span>
-              <span style="font-size:11px;font-weight:600">Accepted</span>
-              <span style="font-size:11px;font-weight:600">Damaged</span>
-              <span style="font-size:11px;font-weight:600">UOM</span>
-              <span style="font-size:11px;font-weight:600">Status</span>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:1.5fr 1fr 1fr 1fr 1fr 1fr">
-              <input type="text" value="FG-EP-001 — Epoxy Base Coat" style="font-size:12px">
-              <input type="number" value="600" style="font-size:12px" disabled style="background:var(--gray-50)">
-              <input type="number" value="580" style="font-size:12px">
-              <input type="number" value="20" style="font-size:12px">
-              <input type="text" value="Kg" style="font-size:12px">
-              <select style="font-size:12px"><option selected>Accepted</option><option>Partial</option><option>Rejected</option></select>
-            </div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead>
+                <tr>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">FG Item</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Qty</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Accepted</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Damaged</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">UOM</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="FG-EP-001 — Epoxy Base Coat" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="600" style="font-size:12px" disabled style="background:var(--gray-50)"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="580" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="20" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option selected>Accepted</option><option>Partial</option><option>Rejected</option></select></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
           <div class="form-row-3">
             <div><label>Handed Over By</label><input type="text" value="Suresh (Production)"></div>
@@ -1524,8 +1676,8 @@
     <!-- ============================================================ -->
     <div class="module-group" id="production">
       <span id="org-prod" style="position:relative;top:-60px;display:block"></span>
-      <h3>Production <span class="mg-badge">Stage 1 (cont.) — Plan &rarr; Order &rarr; BMR &rarr; RMC &rarr; Pack &rarr; Rework</span></h3>
-      <p>Production consumes <strong>RM</strong> (from MR) to produce <strong>FG</strong> via BMR. Multiple FGs together fulfill the <strong>System</strong> ordered on the SO. All tagged to Project.</p>
+      <h3>Production — Costing Arm for SO <span class="mg-badge">Stage 1 (cont.) — Plan &rarr; Order &rarr; BMR &rarr; RMC &rarr; Pack &rarr; Rework + PR</span></h3>
+      <p>Production consumes <strong>RM</strong> (from MR) to produce <strong>FG</strong> via BMR. Multiple FGs together fulfill the <strong>System</strong> ordered on the SO. All tagged to Project. PR (Purchase Requisition) now originates here for production-related material procurement.</p>
       <div style="display:flex;gap:8px;padding:8px 12px;background:var(--gray-50);border-radius:6px;font-size:12px;color:var(--gray-600);margin-bottom:12px;border:1px solid var(--gray-200)">
         <strong>Hierarchy:</strong>
         <span style="background:#dbeafe;padding:2px 8px;border-radius:4px;font-size:11px">SO → System (EP01)</span>
@@ -1555,24 +1707,30 @@
           </div>
           <div class="subtable-demo">
             <div class="st-hint">FG Breakdown (auto-calculated from System Composition × Qty)</div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
-              <span style="font-size:11px;font-weight:600">FG Product</span>
-              <span style="font-size:11px;font-weight:600">Required FG Qty</span>
-              <span style="font-size:11px;font-weight:600">FG Stock</span>
-              <span style="font-size:11px;font-weight:600">Net FG to Produce</span>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
-              <input type="text" value="FG-EP-001 — Epoxy Base Coat" style="font-size:12px">
-              <input type="number" value="600" style="font-size:12px" disabled style="background:var(--gray-50)">
-              <input type="number" value="0" style="font-size:12px" disabled style="background:var(--gray-50)">
-              <input type="number" value="600" style="font-size:12px" disabled style="background:var(--gray-50);font-weight:700;color:var(--primary)">
-            </div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
-              <input type="text" value="FG-EP-002 — Hardener Pack" style="font-size:12px">
-              <input type="number" value="200" style="font-size:12px" disabled style="background:var(--gray-50)">
-              <input type="number" value="50" style="font-size:12px" disabled style="background:var(--gray-50)">
-              <input type="number" value="150" style="font-size:12px" disabled style="background:var(--gray-50);font-weight:700;color:var(--primary)">
-            </div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead>
+                <tr>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">FG Product</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Required FG Qty</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">FG Stock</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Net FG to Produce</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="FG-EP-001 — Epoxy Base Coat" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="600" style="font-size:12px" disabled style="background:var(--gray-50)"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="0" style="font-size:12px" disabled style="background:var(--gray-50)"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="600" style="font-size:12px" disabled style="background:var(--gray-50);font-weight:700;color:var(--primary)"></td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="FG-EP-002 — Hardener Pack" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="200" style="font-size:12px" disabled style="background:var(--gray-50)"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="50" style="font-size:12px" disabled style="background:var(--gray-50)"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="150" style="font-size:12px" disabled style="background:var(--gray-50);font-weight:700;color:var(--primary)"></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
           <div style="padding:8px 12px;background:var(--accent-light);border-radius:6px;font-size:12px;color:#92400e;margin-top:8px">
             <strong>&#x2139; MR requisitions RM</strong> — auto-calculated from BOM × FG qty per FG above. MR is at RM level, not FG or System.
@@ -1630,30 +1788,45 @@
           </div>
           <div class="subtable-demo">
             <div class="st-hint">RM Consumed (from MR — via BOM formulation)</div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
-              <span style="font-size:11px;font-weight:600">RM Item</span>
-              <span style="font-size:11px;font-weight:600">Std Qty</span>
-              <span style="font-size:11px;font-weight:600">Actual Qty</span>
-              <span style="font-size:11px;font-weight:600">Batch</span>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
-              <input type="text" value="Epoxy Resin (RM)" style="font-size:12px">
-              <input type="number" value="425" style="font-size:12px" disabled style="background:var(--gray-50)">
-              <input type="number" value="430" style="font-size:12px">
-              <input type="text" value="BATCH-EP-001" style="font-size:12px">
-            </div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead>
+                <tr>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">RM Item</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Std Qty</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Actual Qty</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Batch</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Epoxy Resin (RM)" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="425" style="font-size:12px" disabled style="background:var(--gray-50)"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="430" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="BATCH-EP-001" style="font-size:12px"></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
           <div class="subtable-demo">
             <div class="st-hint">Process Parameters</div>
-            <div class="subtable-row" style="grid-template-columns:1fr 1fr 1fr 1fr">
-              <span style="font-size:11px;font-weight:600">Step</span><span style="font-size:11px;font-weight:600">Time</span><span style="font-size:11px;font-weight:600">Temp</span><span style="font-size:11px;font-weight:600">Operator</span>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:1fr 1fr 1fr 1fr">
-              <input type="text" value="Mixing" style="font-size:12px">
-              <input type="text" value="15 min" style="font-size:12px">
-              <input type="text" value="25°C" style="font-size:12px">
-              <input type="text" value="Ramesh" style="font-size:12px">
-            </div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead>
+                <tr>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Step</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Time</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Temp</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Operator</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Mixing" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="15 min" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="25°C" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Ramesh" style="font-size:12px"></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -1705,14 +1878,22 @@
           </div>
           <div class="subtable-demo">
             <div class="st-hint">Packing Material Used</div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr">
-              <span style="font-size:11px;font-weight:600">Item</span><span style="font-size:11px;font-weight:600">Qty</span><span style="font-size:11px;font-weight:600">UOM</span>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr">
-              <input type="text" value="5L Plastic Pail" style="font-size:12px">
-              <input type="number" value="100" style="font-size:12px">
-              <input type="text" value="Nos" style="font-size:12px">
-            </div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead>
+                <tr>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Item</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Qty</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">UOM</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="5L Plastic Pail" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="100" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Nos" style="font-size:12px"></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -1737,19 +1918,80 @@
           </div>
           <div class="subtable-demo">
             <div class="st-hint">Material Consumed for Rework</div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr">
-              <span style="font-size:11px;font-weight:600">Item</span><span style="font-size:11px;font-weight:600">Qty</span><span style="font-size:11px;font-weight:600">UOM</span>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr">
-              <input type="text" value="Epoxy Resin" style="font-size:12px">
-              <input type="number" value="15" style="font-size:12px">
-              <input type="text" value="Kg" style="font-size:12px">
-            </div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead>
+                <tr>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Item</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Qty</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">UOM</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Epoxy Resin" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="15" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px"></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
           <div class="form-row-3">
             <div><label>QC Revalidation</label><select><option selected>Pass</option><option>Fail</option></select></div>
             <div><label>Approved By</label><input type="text" value="Vikram Joshi (QC)"></div>
             <div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="connector-down">&#x25BC;</div>
+
+      <div class="form-card" id="pr-pr">
+        <div class="fc-header">
+          <span class="fc-num">6G</span>
+          <span class="fc-title">Purchase Requisition (PR)</span>
+          <span class="fc-tag">N Items</span>
+        </div>
+        <div class="fc-flow">
+          <span class="fc-flow-in">From: Production Dept (Production-related procurement)</span>
+          <span class="fc-flow-key">Add items from Item Muster</span>
+          <span class="fc-flow-out">To: Rate Comparison (standalone)</span>
+        </div>
+        <div class="form-demo">
+          <div class="form-row-4">
+            <div><label>PR No</label><input type="text" value="PR-2026-001" disabled style="background:var(--gray-50)"></div>
+            <div><label>PR Date</label><input type="date" value="2026-07-02"></div>
+            <div><label>RM Type</label><select><option selected>Coding</option><option>Non-Coding</option></select></div>
+            <div><label>Department</label><input type="text" value="Production &amp; R&amp;D" disabled style="background:var(--gray-50)"></div>
+          </div>
+          <div class="subtable-demo">
+            <div class="st-hint">PR Items (N items)</div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead>
+                <tr>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Item Code</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Description</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Qty</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">UOM</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Lead Time</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option selected>RM-EP-001 — Epoxy Resin</option></select></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Epoxy Resin Grade A" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="425" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled style="background:var(--gray-50)"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="7 days" style="font-size:12px" disabled style="background:var(--gray-50)"></td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option selected>RM-EP-002 — Epoxy Hardener</option></select></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Epoxy Hardener Grade B" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="75" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled style="background:var(--gray-50)"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="5 days" style="font-size:12px" disabled style="background:var(--gray-50)"></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -1818,33 +2060,39 @@
           </div>
           <div class="subtable-demo">
             <div class="st-hint">Credit Line Items</div>
-            <div class="subtable-row" style="grid-template-columns:1fr 2fr 1fr 1fr 1fr 1fr 1fr">
-              <span style="font-size:10px;font-weight:600;color:var(--gray-500)">Item Code</span>
-              <span style="font-size:10px;font-weight:600;color:var(--gray-500)">Item Name</span>
-              <span style="font-size:10px;font-weight:600;color:var(--gray-500)">Defective Qty</span>
-              <span style="font-size:10px;font-weight:600;color:var(--gray-500)">UOM</span>
-              <span style="font-size:10px;font-weight:600;color:var(--gray-500)">Rate</span>
-              <span style="font-size:10px;font-weight:600;color:var(--gray-500)">GST%</span>
-              <span style="font-size:10px;font-weight:600;color:var(--gray-500)">Total Credit</span>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:1fr 2fr 1fr 1fr 1fr 1fr 1fr">
-              <input type="text" value="RM003" style="font-size:12px">
-              <input type="text" value="Epoxy Hardener" style="font-size:12px">
-              <input type="number" value="100" style="font-size:12px">
-              <input type="text" value="Kg" style="font-size:12px">
-              <input type="text" value="₹180" style="font-size:12px">
-              <input type="text" value="18%" style="font-size:12px">
-              <input type="text" value="₹21,240" style="font-size:12px;font-weight:600">
-            </div>
-            <div class="subtable-row" style="grid-template-columns:1fr 2fr 1fr 1fr 1fr 1fr 1fr">
-              <input type="text" value="RM005" style="font-size:12px">
-              <input type="text" value="Pigment Paste" style="font-size:12px">
-              <input type="number" value="25" style="font-size:12px">
-              <input type="text" value="Kg" style="font-size:12px">
-              <input type="text" value="₹450" style="font-size:12px">
-              <input type="text" value="18%" style="font-size:12px">
-              <input type="text" value="₹13,275" style="font-size:12px;font-weight:600">
-            </div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead>
+                <tr>
+                  <th style="padding:6px 8px;text-align:left;font-size:10px;font-weight:600;border-bottom:2px solid #ddd;color:var(--gray-500)">Item Code</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:10px;font-weight:600;border-bottom:2px solid #ddd;color:var(--gray-500)">Item Name</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:10px;font-weight:600;border-bottom:2px solid #ddd;color:var(--gray-500)">Defective Qty</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:10px;font-weight:600;border-bottom:2px solid #ddd;color:var(--gray-500)">UOM</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:10px;font-weight:600;border-bottom:2px solid #ddd;color:var(--gray-500)">Rate</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:10px;font-weight:600;border-bottom:2px solid #ddd;color:var(--gray-500)">GST%</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:10px;font-weight:600;border-bottom:2px solid #ddd;color:var(--gray-500)">Total Credit</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="RM003" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Epoxy Hardener" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="100" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="₹180" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="18%" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="₹21,240" style="font-size:12px;font-weight:600"></td>
+                </tr>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="RM005" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Pigment Paste" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="25" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="₹450" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="18%" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="₹13,275" style="font-size:12px;font-weight:600"></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
           <div style="display:flex;justify-content:flex-end;padding:8px 0;border-top:2px solid var(--gray-200);font-size:16px;font-weight:700">
             Total Credit Amount: <span style="color:var(--accent);margin-left:12px;font-size:18px">&#8377; 34,515</span>
@@ -1888,18 +2136,24 @@
           </div>
           <div class="subtable-demo">
             <div class="st-hint">FG Dispatch Items</div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
-              <span style="font-size:11px;font-weight:600">Item</span>
-              <span style="font-size:11px;font-weight:600">Qty</span>
-              <span style="font-size:11px;font-weight:600">UOM</span>
-              <span style="font-size:11px;font-weight:600">Batch</span>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
-              <input type="text" value="Epoxy Flooring — 1mm" style="font-size:12px">
-              <input type="number" value="480" style="font-size:12px">
-              <input type="text" value="Sqm" style="font-size:12px">
-              <input type="text" value="BATCH-EP-001" style="font-size:12px">
-            </div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead>
+                <tr>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Item</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Qty</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">UOM</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Batch</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Epoxy Flooring — 1mm" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="480" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Sqm" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="BATCH-EP-001" style="font-size:12px"></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
           <div class="form-row-3">
             <div><label>Transport Mode</label><select><option selected>Truck</option><option>Mini Truck</option><option>Pickup</option></select></div>
@@ -1931,18 +2185,24 @@
           </div>
           <div class="subtable-demo">
             <div class="st-hint">Outward Items</div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
-              <span style="font-size:11px;font-weight:600">Item</span>
-              <span style="font-size:11px;font-weight:600">Qty</span>
-              <span style="font-size:11px;font-weight:600">UOM</span>
-              <span style="font-size:11px;font-weight:600">Status</span>
-            </div>
-            <div class="subtable-row" style="grid-template-columns:2fr 1fr 1fr 1fr">
-              <input type="text" value="Epoxy Flooring — 1mm" style="font-size:12px">
-              <input type="number" value="480" style="font-size:12px">
-              <input type="text" value="Sqm" style="font-size:12px">
-              <span style="font-size:12px;color:var(--green);font-weight:600">Dispatched</span>
-            </div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead>
+                <tr>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Item</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Qty</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">UOM</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Epoxy Flooring — 1mm" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="480" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Sqm" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px;color:var(--green);font-weight:600">Dispatched</span></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
           <div style="padding:8px 12px;background:var(--green-light);border-radius:6px;font-size:12px;color:var(--green);margin-top:8px">
             <strong>&#x2713; Outward quantity updated.</strong> FG Stock reduced by dispatched qty.
@@ -1966,7 +2226,7 @@
         <tbody>
           <tr style="background:#dbeafe"><td colspan="6"><strong>STAGE 1: Sales → Production → MR → Store → Costing</strong></td></tr>
           <tr><td>S1</td><td>1</td><td>SO</td><td>Customer Master</td><td>System line items (EP01). Client PO ref</td><td>Creates Project</td></tr>
-          <tr><td>S1</td><td>2</td><td>Project</td><td>SO (auto)</td><td>Project ID, Manager, Dates</td><td>PR, MR, FGHM, Production</td></tr>
+          <tr><td>S1</td><td>2</td><td>Project</td><td>SO (auto)</td><td>Project ID, Manager, Dates</td><td>PR (via Production), MR, FGHM, Production</td></tr>
           <tr><td>S1</td><td>3</td><td>Task Budget</td><td>Project</td><td>Budget line items per category</td><td>P&amp;L</td></tr>
           <tr><td>S1</td><td>4</td><td>System Composition</td><td>System Master</td><td>System→FG mapping (which FGs per System)</td><td>Production Planning</td></tr>
           <tr><td>S1</td><td>5</td><td>BOM / FG Formulation</td><td>FG Product (Item Muster)</td><td>FG→RM formulation with ratios</td><td>BMR, Costing</td></tr>
@@ -1982,9 +2242,9 @@
           <tr><td>S1</td><td>15</td><td><strong>Costing Approval</strong></td><td>Store (material valuation)</td><td>Costing approval gate sign-off</td><td>Production / Purchase</td></tr>
           <tr style="background:#fef3c7"><td colspan="6"><strong>STAGE 2: Stock Check → Y=Production → N=Purchase</strong></td></tr>
           <tr style="background:#fee2e2"><td colspan="6"><strong>STAGE 3: Purchase → Handover (if Stock=N)</strong></td></tr>
-          <tr><td>S3</td><td>16</td><td>PR</td><td>Project ID</td><td>PR No, Item requests</td><td>Rate Comparison</td></tr>
-          <tr><td>S3</td><td>17</td><td>Rate Comparison</td><td>PR items</td><td>5 supplier quotes, selected rate</td><td>PO</td></tr>
-          <tr><td>S3</td><td>18</td><td>PO</td><td>PR + Rate Comparison</td><td>PO with GST split items + Receipt Status</td><td>GRN</td></tr>
+          <tr><td>S3</td><td>—</td><td>PR</td><td>Production / Project ID</td><td>PR No, Item requests (now under Production)</td><td>Rate Comparison (standalone)</td></tr>
+          <tr><td>S3</td><td>16</td><td>Rate Comparison</td><td>Manual entry / PR items</td><td>5 supplier quotes, selected rate</td><td>PO</td></tr>
+          <tr><td>S3</td><td>17</td><td>PO</td><td>Rate Comparison</td><td>PO with GST split items + Receipt Status</td><td>GRN</td></tr>
           <tr><td>S3</td><td>19</td><td>GRN</td><td>PO items</td><td>Received qty, partial checkboxes</td><td>QC</td></tr>
           <tr><td>S3</td><td>20</td><td>QC</td><td>GRN items</td><td>Test results, Pass/Fail</td><td>Stock update</td></tr>
           <tr><td>S3</td><td>21</td><td><strong>Material Handover</strong></td><td>GRN items</td><td>RM classification (Coding/Non-Coding)</td><td>Store stock</td></tr>
@@ -2051,7 +2311,7 @@
     <h2>Data Flow Key</h2>
     <div class="data-flow-key">
       <span class="data-badge pid">&#x1F517; Project ID</span> <span class="flow-note" style="display:inline">flows through ALL forms</span>
-      <span class="data-badge ref" style="margin-left:16px">&#x1F517; Reference No</span> <span class="flow-note" style="display:inline">PR&rarr;RC&rarr;PO&rarr;GRN&rarr;QC</span>
+      <span class="data-badge ref" style="margin-left:16px">&#x1F517; Reference No</span> <span class="flow-note" style="display:inline">RC&rarr;PO&rarr;GRN&rarr;QC (PR now in Production)</span>
       <span class="data-badge type" style="margin-left:16px">&#x1F517; AutoFetch</span> <span class="flow-note" style="display:inline">Item details, UOM, rates</span>
     </div>
 

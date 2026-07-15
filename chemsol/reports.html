@@ -559,27 +559,46 @@
       <div class="phase">
         <div class="phase-header">
           <span class="phase-number">C</span>
-          <span class="phase-title">Material Issue + FG Flow</span>
-          <span class="phase-tag">MR→MIS · FGHM (inline acceptance)</span>
+          <span class="phase-title">Material Requisition (Cost Baseline) + Issue + FG Flow</span>
+          <span class="phase-tag">MR (Draft→Verified→Approved→Released) → MIS · FGHM</span>
+        </div>
+        <div class="callout callout-warning" style="font-size:13px;margin-bottom:16px">
+          <strong>⛔ Critical Gate:</strong> MR is the <strong>complete project implementation cost baseline</strong> — four cost components (Material + Application + Transportation + Tools &amp; Tackles) summing to the Total MR Cost that Costing approves. MR must be <strong>Released</strong> before MIS can issue stock. Status flow: <strong>Draft → Production Verified → Costing Approved (TOTAL cost) → Released</strong>. Without a Released MR, there is no MIS, no Production, no Logistics, no project execution.
         </div>
         <div class="tree">
           <ul class="tree-list">
-            <li class="tree-item root"><span class="tree-label">MR <span class="tree-tag blue">Tagged to Project</span></span>
+            <li class="tree-item root"><span class="tree-label">MR (Project Cost Baseline — 4 components) <span class="tree-tag blue">Tagged to Project</span></span>
               <ul class="tree-children">
-                <li class="tree-item"><span class="tree-label">MIS <span class="tree-tag amber">Store issues</span></span>
+                <li class="tree-item"><span class="tree-label">Draft <span class="tree-tag amber">Initial state</span></span>
                   <ul class="tree-children">
-                    <li class="tree-item"><span class="tree-label">Stock − <span class="tree-tag red">Deducted</span></span></li>
-                  </ul>
-                </li>
-              </ul>
-            </li>
-            <li class="tree-item root" style="margin-top:12px"><span class="tree-label">Production <span class="tree-tag blue">Tagged to Project</span></span>
-              <ul class="tree-children">
-                <li class="tree-item"><span class="tree-label">FGHM <span class="tree-tag purple">Handover + Inline Acceptance</span></span>
-                  <ul class="tree-children">
-                    <li class="tree-item"><span class="tree-label">Notify Store</span>
+                    <li class="tree-item"><span class="tree-label">Production Verified <span class="tree-tag amber">Qty vs SO checked</span></span>
                       <ul class="tree-children">
-                        <li class="tree-item"><span class="tree-label">FG Stock + <span class="tree-tag green">Updated</span></span></li>
+                        <li class="tree-item"><span class="tree-label">Costing Approved <span class="tree-tag purple">Approves TOTAL project cost</span></span>
+                          <ul class="tree-children">
+                            <li class="tree-item"><span class="tree-label">Released <span class="tree-tag green">Gate passed</span></span>
+                              <ul class="tree-children">
+                                <li class="tree-item"><span class="tree-label">MIS <span class="tree-tag amber">Store issues — N items</span></span>
+                                  <ul class="tree-children">
+                                    <li class="tree-item"><span class="tree-label">Stock − <span class="tree-tag red">Deducted</span></span></li>
+                                  </ul>
+                                </li>
+                                <li class="tree-item"><span class="tree-label">Production <span class="tree-tag blue">Tagged to Project</span></span>
+                                  <ul class="tree-children">
+                                    <li class="tree-item"><span class="tree-label">FGHM <span class="tree-tag purple">Handover + Inline Acceptance</span></span>
+                                      <ul class="tree-children">
+                                        <li class="tree-item"><span class="tree-label">Notify Store</span>
+                                          <ul class="tree-children">
+                                            <li class="tree-item"><span class="tree-label">FG Stock + <span class="tree-tag green">Updated</span></span></li>
+                                          </ul>
+                                        </li>
+                                      </ul>
+                                    </li>
+                                  </ul>
+                                </li>
+                              </ul>
+                            </li>
+                          </ul>
+                        </li>
                       </ul>
                     </li>
                   </ul>
@@ -588,6 +607,32 @@
             </li>
           </ul>
         </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">C1</span>
+          <span class="phase-title">MR Status &amp; Verification Report</span>
+          <span class="phase-tag">MR Workflow Tracking</span>
+        </div>
+        <p>Tracks all MRs across their lifecycle — from Draft through Production Verification and Costing Approval to Released. Shows current status, verification dates, and approvers.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Field</th><th>Source</th></tr></thead>
+            <tbody>
+              <tr><td>MR Number, Date, Project ID</td><td>MR header</td></tr>
+              <tr><td>MR Status</td><td>Draft / Production Verified / Costing Approved / Released</td></tr>
+              <tr><td>Production Verified By / Date</td><td>Production user + timestamp</td></tr>
+              <tr><td>Costing Approved By / Date</td><td>Costing user + timestamp</td></tr>
+              <tr><td>Released By / Date</td><td>Costing user + timestamp (Released = Costing approval auto-releases)</td></tr>
+              <tr><td>Total Items / Total Qty</td><td>Sum of Required Qty per MR line</td></tr>
+              <tr><td>Total MR Cost</td><td>Material Cost + Application Cost + Transportation Cost + Tools &amp; Tackles — the project implementation cost baseline approved by Costing</td></tr>
+              <tr><td>SO Reference (via Project)</td><td>AutoFetch from Project → SO</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p><strong>Filters:</strong> MR Status, Project ID, Date Range. <strong>Export:</strong> PDF / CSV.</p>
+        <p><strong>Business Rule:</strong> MRs stuck in "Draft" for > 7 days trigger a reminder notification. MRs in "Production Verified" for > 3 days trigger escalation to Costing.</p>
       </div>
 
       <div class="phase">
@@ -605,6 +650,9 @@
               <tr><td>PO Ready</td><td>Purchase dept</td><td>In-app</td></tr>
               <tr><td>GRN Overdue</td><td>Purchase + Store</td><td>In-app</td></tr>
               <tr><td>FGHM Submitted</td><td>Store &amp; Logistics</td><td>Pop-up</td></tr>
+              <tr><td><strong>MR Submitted (Draft → Pending Verification)</strong></td><td>Production dept</td><td>In-app</td></tr>
+              <tr><td><strong>MR Production Verified (→ Pending Costing Approval)</strong></td><td>Costing dept</td><td>In-app</td></tr>
+              <tr><td><strong>MR Released</strong></td><td>Store + Production + Logistics</td><td>In-app + Email</td></tr>
               <tr><td><strong>Supplier Credit Created</strong></td><td>Account &amp; Finance (pending approval)</td><td>In-app</td></tr>
               <tr><td><strong>Supplier Credit Approved</strong></td><td>Purchase Dept + Finance</td><td>In-app</td></tr>
               <tr><td><strong>Supplier Credit Credited</strong></td><td>Purchase Dept (supplier balance adjusted)</td><td>In-app</td></tr>

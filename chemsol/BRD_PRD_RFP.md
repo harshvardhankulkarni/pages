@@ -529,8 +529,9 @@ Every form uses a **single field table** with a **Section** column. The Section 
 
 #### FORM: Material Requisition (MR)
 
-**Purpose:** Request materials from store. Dept: Production & R&D  
-**Subforms:** Line Items (N rows)
+**Purpose:** Request materials from store. Dept: Production & R&D. **MR is the project implementation cost baseline** — carries four cost components (Material, Application, Transportation, Tools & Tackles) summing to the Total MR Cost that Costing approves (alongside SO as revenue baseline). MR is NOT just RM allocation.  
+**Subforms:** Line Items (N rows), Material Allocation (N rows, feeds Material Cost), Application Cost (N rows), Transportation Cost (N rows), Tools & Tackles (N rows). All four cost components sum to the Total MR Cost.  
+**Status Workflow:** Draft → Production Verified → Costing Approved → Released
 
 | # | Field Name | Field Type | Section | Req | Notes / Options |
 |---|---|---|---|---|---|
@@ -538,11 +539,12 @@ Every form uses a **single field table** with a **Section** column. The Section 
 | 2 | MR Date | Date | Header | * | Today's Date |
 | 3 | Requisition Type | Dropdown | Header | * | Production / R&D |
 | 4 | Batch Number | Text | Header | | — |
-| 5 | Project ID | Lookup | Header | * | From Project Master (Stream B root) — anchors the Material Allocation |
+| 5 | Project ID | Lookup | Header | * | From Project Master (Stream B root) — anchors the MR (project implementation cost baseline with 4 cost components) |
 | 6 | Department | AutoFetch | Header | * | As per user login |
 | 7 | Requested By | Text | Header | * | Employee Name |
 | 8 | Priority | Dropdown | Header | * | Normal / Urgent / Emergency |
-| 9 | **Line Items** | **Subform (N rows)** | **Subform** | * | Materials requested (RM only) |
+| 9 | **MR Status** | **Dropdown** | **Header** | * | **Draft / Production Verified / Costing Approved / Released** — governs downstream execution |
+| 10 | **Line Items** | **Subform (N rows)** | **Subform** | * | Materials requested (RM only) |
 |   | — Sr No | Number | Subform Column | * | Auto |
 |   | — Item Code | Lookup | Subform Column | * | From Purchase Item Muster |
 |   | — Item Name | AutoFetch | Subform Column | | — |
@@ -551,18 +553,44 @@ Every form uses a **single field table** with a **Section** column. The Section 
 |   | — Available Stock | AutoFetch | Subform Column | | From current stock |
 |   | — Required Qty | Number | Subform Column | * | — |
 |   | — Remarks | Multi-line | Subform Column | | — |
-| 10 | **Material Allocation** | **Subform (N rows)** | **Subform** | * | **Per-project consumption budget (NEW)** — one line per allocated RM |
+| 11 | **Material Allocation** | **Subform (N rows)** | **Subform** | * | **Material Cost component** — one line per allocated RM (Σ Assigned Qty × Rate = Material Cost) |
 |   | — Item Code | Lookup | Subform Column | * | From Purchase Item Muster (RM) |
 |   | — Item Name | AutoFetch | Subform Column | * | — |
 |   | — UOM | AutoFetch | Subform Column | * | From Item Muster |
 |   | — Assigned Qty | Number | Subform Column | * | Allocation baseline for this Project (e.g., X=10, Y=20, Z=30). Defaults from Required Qty |
+|   | — Rate | Currency | Subform Column | * | Per-unit RM rate |
+|   | — Material Cost | Formula | Subform Column | * | = Assigned Qty × Rate |
 |   | — Allocation Ratio % | Formula | Subform Column | * | = Assigned Qty ÷ Σ Assigned Qty × 100 |
 |   | — 80% Threshold Alert Flag | Checkbox | Subform Column | | Default ON — alert when consumption ≥ 80% of Assigned Qty |
 |   | — Consumed Qty | Number (auto) | Subform Column | | Running total; incremented by FG production + Site entries |
 |   | — Consumption % | Formula | Subform Column | | = Consumed Qty ÷ Assigned Qty × 100 |
 |   | — Alert Triggered | Checkbox (readonly) | Subform Column | | Auto-set TRUE once Consumption % ≥ 80% |
+| 12 | **Application Cost** | **Subform (N rows)** | **Subform** | | **Labour/execution cost to apply material on site** |
+|   | — Activity | Text | Subform Column | | e.g., surface prep, laying, finishing |
+|   | — UOM | Dropdown | Subform Column | | — |
+|   | — Qty / Area | Number | Subform Column | | — |
+|   | — Rate | Currency | Subform Column | | Per unit |
+|   | — Amount | Formula | Subform Column | | = Qty/Area × Rate |
+| 13 | **Transportation Cost** | **Subform (N rows)** | **Subform** | | **Transport of material to site** |
+|   | — From | Text/Lookup | Subform Column | | Source (warehouse) |
+|   | — To | Text/Lookup | Subform Column | | Destination (site) |
+|   | — Vehicle / Trips | Text / Number | Subform Column | | — |
+|   | — Rate | Currency | Subform Column | | Per trip |
+|   | — Amount | Formula | Subform Column | | = Trips × Rate |
+| 14 | **Tools & Tackles** | **Subform (N rows)** | **Subform** | | **Tools/equipment needed for the project** |
+|   | — Item | Text/Lookup | Subform Column | | From Item Muster |
+|   | — Qty | Number | Subform Column | | — |
+|   | — Rate | Currency | Subform Column | | Per unit |
+|   | — Amount | Formula | Subform Column | | = Qty × Rate |
+| 15 | **Total MR Cost** | Formula | Footer | * | **Material Cost + Application Cost + Transportation Cost + Tools & Tackles** — the project implementation cost baseline that Costing approves |
 
-**Automation:** Item Code → autofetch Name, Category, UOM, Available Stock. Project ID lookup from Project Master. **Material Allocation** establishes the per-project RM budget; `Assigned Qty` defaults from `Required Qty`. **Consumption resolution (backend):** FG production (BMR / RM Consumption) and Site Manager entries expand the SO System→FG→RM via BOM and increment `Consumed Qty` on the matching MR Allocation line (`Project ID + Item Code`) — never a generic pool. **80% Alert:** when Consumption % ≥ 80% (flag ON) → pop-up + dashboard banner + email to Project Manager.
+**Automation:** Item Code → autofetch Name, Category, UOM, Available Stock. Project ID lookup from Project Master. **Material Allocation** establishes the per-project RM budget; `Assigned Qty` defaults from `Required Qty`.  
+**MR Status Workflow:**  
+- **Draft** → initial state on creation  
+- **Production Verified** → Production checks MR quantities against SO system requirements (via BOM — verifies item qty matches expected RM from BOM × SO system qty)  
+- **Costing Approved** → Costing approves the TOTAL project cost — all four MR cost components (Material + Application + Transportation + Tools & Tackles)  
+- **Released** → MR is actionable. **Without Released status, no MIS, no Production, no Logistics, no project execution.**  
+**Consumption resolution (backend):** FG production (BMR / RM Consumption) and Site Manager entries expand the SO System→FG→RM via BOM and increment `Consumed Qty` on the matching MR Allocation line (`Project ID + Item Code`) — never a generic pool. **80% Alert:** when Consumption % ≥ 80% (flag ON) → pop-up + dashboard banner + email to Project Manager.
 
 ---
 
@@ -847,8 +875,9 @@ Forms requiring subforms:
 | Goods Receipt Note (GRN) | Line Items | N |
 | Goods Receipt Note (GRN) | Transport (conditional) | 1 |
 | QC / QA | Inspection Line Items | N |
+| Material Requisition (MR) | MR Status (Draft/Prod Verified/Costing Approved/Released) | 1 (header) |
 | Material Requisition (MR) | Line Items | N |
-| Material Requisition (MR) | Material Allocation (per-project RM budget) | N |
+| Material Requisition (MR) | Material Allocation (Material Cost), Application Cost, Transportation Cost, Tools & Tackles (4 cost components → Total MR Cost) | N each |
 | Material Issue Slip (MIS) | Line Items | N |
 | Finish Goods Handover (FGHM) | FG Items (inline acceptance) | N |
 | Production Planning | (none) | — |
@@ -875,7 +904,9 @@ Purchase Dept → PR → Rate Comparison → PO → GRN → QC → Material Hand
 
 === STREAM B (Project-Centric — Project ID on all forms) ===
 SO (Supply+Apply → creates Project; Supply Only → NO Project, FG sale only) → Project (root, Supply+Apply only)
-                ├── MR → MIS (Project ID autofetched)
+                ├── MR [Cost Baseline] (Draft → Production Verified → Costing Approved → Released)
+                │       └── ⛔ Without Released MR → no further steps
+                ├── After MR Released: MIS (Project ID autofetched)
                 ├── Production Planning → Order → BMR → Packing → FGHM (inline acceptance)
                 ├── Costing Approval (valuation gate)
                 ├── Service Team (Area→Work→Invoice)
@@ -885,10 +916,12 @@ SO (Supply+Apply → creates Project; Supply Only → NO Project, FG sale only) 
 ```
 
 The Project ID is passed from parent to child in Stream B only:
-- **MR**: User selects Project ID → flows to MIS
+- **MR**: User selects Project ID → MR is the **project implementation cost baseline** (four cost components: Material + Application + Transportation + Tools & Tackles → Total MR Cost) that Costing approves. MR Status: **Draft → Production Verified → Costing Approved (TOTAL cost) → Released**.
+- **MIS**: Only creatable after MR is **Released** — stock issued against the Released MR
 - **Production**: User selects Project ID → flows through all production forms
 - **FGHM**: Project ID lookup with inline acceptance
 - **Stream A procurement forms (PR/PO/GRN/QC)**: No Project ID — these are pre-project stock purchases
+- **Critical rule**: Without a **Released MR**, there is no MIS, no Production, no Logistics, no project execution
 
 ### 4.4 Numbering Series
 
@@ -912,6 +945,9 @@ The Project ID is passed from parent to child in Stream B only:
 | Rate Comparison Data Missing | Purchase dept | Alert |
 | PO Ready | Purchase dept | In-app |
 | GRN Overdue | Purchase + Store | In-app |
+| **MR Submitted (Draft → Pending Verification)** | **Production dept** | **In-app** |
+| **MR Production Verified (→ Pending Costing Approval)** | **Costing dept** | **In-app** |
+| **MR Released** | **Store + Production + Logistics** | **In-app + Email** |
 | FGHM Submitted | Store & Logistics | Pop-up |
 | Project Close | Account & Finance + Project Manager | In-app + Email |
 | P&L Margin below threshold (< 15%) | Account & Finance + Project Manager | Alert |
@@ -923,15 +959,17 @@ The Project ID is passed from parent to child in Stream B only:
 | Rule | Description |
 |------|-------------|
 | SO → Project | Supply+Apply acceptance auto-creates Project record |
+| **Project Baseline** | **SO = revenue side (System/FG scope). MR = complete project implementation cost baseline (Material + Application + Transportation + Tools & Tackles) that Costing approves. Both anchor the project.** |
+| **MR Status Workflow** | **Draft → Production Verified (Production checks qty vs SO) → Costing Approved (Costing approves TOTAL project cost — all 4 components) → Released. Without Released MR, no downstream steps.** |
 | PR → PO | PR approval triggers PO readiness |
 | Partial GRN | Checkbox per line item; only checked items received |
 | GRN Posting | Stock added only after posting; timestamp logged |
-| MIS Posting | Stock deducted on issue |
+| MIS Posting | Stock deducted on issue (only after MR Released) |
 | FGHM Inline Acceptance | FG stock added on FGHM submission with inline acceptance |
 | P&L Auto-calculation | On Project Close — revenue minus all costs |
 | Material Return | Qty added back to stock |
 | Min/Max Alert | Alert when stock crosses threshold from Item Muster |
-| MR Material Allocation | Each MR records per-project RM allocation (Assigned Qty, Allocation Ratio, 80% Alert Flag) as the consumption budget baseline |
+| MR = Project Cost Baseline | MR carries four cost components — Material (per-project RM allocation: Assigned Qty, Rate, Allocation Ratio, 80% Alert Flag), Application, Transportation, Tools & Tackles — summing to Total MR Cost, the project implementation cost baseline that Costing approves |
 | Consumption → Project-Assigned RM | BMR/RM Consumption and Site Manager entries increment `Consumed Qty` on the matching MR Allocation line (`Project ID + Item Code`), never a generic pool |
 | 80% Consumption Alert | When any allocated RM hits 80% of Assigned Qty (flag ON) → pop-up + dashboard banner + email to Project Manager |
 
@@ -1002,9 +1040,20 @@ The Project ID is passed from parent to child in Stream B only:
        [Project] ──→ … (Stream B)   [FG Dispatch / Invoice]  (no Project · Stream A-adjacent)
             │
             ▼
-   [PR]──→[RC]──→ [PO]──→[GRN]──→[QC]    Procurement
+   [PR]──→[RC]──→ [PO]──→[GRN]──→[QC]    Procurement (Stream A)
+        
+   ╔══════════════════════════════════════════╗
+   ║  PROJECT BASELINE = SO + MR             ║
+   ║  SO = Revenue (System/FG scope)         ║
+   ║  MR = Cost (RM allocation)              ║
+   ╚══════════════════════════════════════════╝
+              
         ▼
-   [MR]──→[MIS]    Inventory / Stores
+   [MR (Cost Baseline)]──→ MR Workflow:
+        │  Draft → Production Verified → Costing Approved → Released
+        │  ⛔ Without Released MR → STOP
+        ▼
+   [MIS] (Stock issued)    Inventory / Stores
         ▼
    [Production Planning]──→[Production Order]──→[BMR]──→[RM Consumption]
         │                                              │
@@ -1013,7 +1062,13 @@ The Project ID is passed from parent to child in Stream B only:
         │                                              │
         │                                              ▼
         │                                         [FGHM (inline acceptance)]
-                                                   FG Flow
+        │                                              │
+        │                                              ▼
+        │                                    [Logistics: DC → Outward]
+        │                                              │
+        │                                              ▼
+        │                                    [Project Site Execution]
+        │                                    (Service Team: Area→Custody→Work→Invoice)
 ```
 
 ---
