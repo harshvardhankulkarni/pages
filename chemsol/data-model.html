@@ -548,6 +548,10 @@
         </div>
       </div>
 
+      <div class="callout callout-info">
+        <strong>Production Planning — FGs Required for Project:</strong> Production Planning must show which FGs to manufacture for the project, derived from the SO <strong>System Lines</strong> × <strong>System Composition</strong> (System → FG), with <strong>To Produce = Required Qty − FG Stock Available</strong>. The BOM (FG → RM) drives the underlying RM requisition for each FG. <em>Example:</em> SO sells EP01 over 500 SqM; System Composition maps EP01 → FG "FG-EP01" at 1.2 Kg/SqM → Required Qty = 600 Kg. (Supply+Apply projects only — Supply Only FG sales bypass Production planning.)
+      </div>
+
       <h3>Project ID Lookup Chain</h3>
       <div class="table-wrap">
         <table>
@@ -598,6 +602,16 @@
           <li><strong>Tools &amp; Tackles</strong> — tools/equipment needed (Item, Qty, Rate, Amount).</li>
         </ul>
         <strong>Total MR Cost = Material Cost + Application Cost + Transportation Cost + Tools &amp; Tackles.</strong> Costing approves the <strong>TOTAL</strong> cost — not just the material portion.
+      </div>
+
+      <div class="callout callout-info">
+        <strong>Project Profitability Summary — for Sales / Actual Team:</strong> Costing must give the sales/actual team a clear profitability view: <strong>SO Revenue − Total Cost = Gross Margin / Margin %</strong>.
+        <ul>
+          <li><strong>SO Revenue</strong> — from SO System Lines (Σ Area × Rate) + SO Transportation.</li>
+          <li><strong>Total Cost</strong> = Material Cost + Application Cost + Transportation Cost + Tools &amp; Tackles (the four MR cost components) + Production Cost (BMR RM Consumption + Packing).</li>
+          <li><strong>Gross Margin</strong> = Revenue − Total Cost; <strong>Margin %</strong> = (Gross Margin / Revenue) × 100.</li>
+        </ul>
+        If Margin % falls below the set threshold, Costing flags the project before approval.
       </div>
       <div class="callout callout-warning">
         <strong>MR Status Workflow (Critical Gate):</strong>

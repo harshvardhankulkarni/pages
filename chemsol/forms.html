@@ -972,7 +972,7 @@
       </div>
 
       <h2 id="inventory">5 · MR → MIS → FG Handover <span class="badge badge-purple">Stream B — Project ID</span></h2>
-      <p><strong>Project baseline = SO + MR.</strong> The SO defines System/FG scope (revenue). The MR defines the RM allocation (cost baseline). Both anchor the project. MR → verified by <strong>Production</strong> → approved by <strong>Costing</strong> → MIS (stock deduction) → Production (BMR→Packing→FGHM) → Logistics (DC→Outward) → then <strong>Project Site Execution begins</strong> (Service Team).</p>
+      <p><strong>Project baseline = SO + MR.</strong> The SO defines System/FG scope (revenue). The MR defines the <strong>complete project cost baseline</strong> — Material Cost + Application Cost + Transportation Cost + Tools &amp; Tackles — with the <strong>Material Allocation</strong> establishing the per-project RM consumption budget within it. Both anchor the project. MR → verified by <strong>Production</strong> → approved by <strong>Costing</strong> → MIS (stock deduction) → Production (BMR→Packing→FGHM) → Logistics (DC→Outward) → then <strong>Project Site Execution begins</strong> (Service Team).</p>
       <div style="padding:10px 14px;background:#ecfdf5;border-left:4px solid var(--green);border-radius:6px;font-size:13px;color:#065f46;margin:10px 0">
         <strong>&#x1F4CC; Per-Project Material Allocation Model (NEW):</strong> The <strong>Project</strong> is the anchor for consumption tracking. Each MR against a Project carries a <strong>Material Allocation</strong> subform that records, per RM, the <strong>Assigned Qty</strong> (allocation baseline), its <strong>Allocation Ratio</strong> (share of total project RM allocation), and an <strong>80% Threshold Alert Flag</strong>. Consumption (FG production + Site Manager entries) is measured against this <em>assigned</em> quantity — not global stock. When any allocated RM reaches <strong>80% of its Assigned Qty</strong>, the system raises a pop-up + dashboard banner + email to the Project Manager. See <a href="#mr-allocation">Section 5A Material Allocation</a> and the <a href="#alert-80">80% Alert rule</a>.
       </div>
@@ -1087,7 +1087,7 @@
           </div>
           <p><strong>Total MR Cost</strong> = Material Cost (Σ Allocation × Rate) + Application Cost + Transportation Cost + Tools &amp; Tackles. This total is the <strong>project implementation cost baseline</strong> that Costing approves at the MR gate.</p>
           <p><strong>Backend rule (consumption resolution):</strong> Every consumption of this RM against the Project — whether from <em>FG production (BMR / RM Consumption)</em> or a <em>Site Manager consumption entry</em> — increments <strong>Consumed Qty</strong> on the matching MR Allocation line (matched by Project ID + Item Code). The system <strong>never</strong> deducts from a generic pool for project-tagged material. See <a href="flow.html#consumption-rule">Consumption Flow (flow.html)</a>.</p>
-          <p><strong>MR Approval workflow:</strong> Draft → <strong>Production verifies</strong> MR qty against SO system requirements → <strong>Costing approves</strong> material budget → <strong>Released</strong> (available for MIS). Notification to Project Manager on each change. Only Released MR can create MIS.</p>
+          <p><strong>MR Approval workflow:</strong> Draft → <strong>Production verifies</strong> MR qty against SO system requirements → <strong>Costing approves the MR cost baseline</strong> (all four cost components) → <strong>Released</strong> (available for MIS). Notification to Project Manager on each change. Only Released MR can create MIS.</p>
           <p><strong>80% Alert:</strong> When Consumption % crosses 80% for any line with the Alert Flag ON, the system fires a pop-up + dashboard banner + email to the Project Manager. See <a href="#alert-80">80% Consumption Alert</a>.</p>
         </div>
         <!-- 80% CONSUMPTION ALERT -->
@@ -1269,6 +1269,26 @@
               <div><label>Approval Status</label><select><option selected>Approved</option><option>Pending</option><option>Rejected</option></select></div>
               <div><label>Approved By</label><input type="text" value="Sanjay (Costing Head)"></div>
             </div>
+
+            <div style="margin-top:10px;padding:10px 12px;background:#f5f3ff;border:1px solid #c4b5fd;border-radius:6px">
+              <div style="font-size:12px;font-weight:700;color:#5b21b6;margin-bottom:6px">&#x1F4CA; Project Profitability Summary — for Sales / Actual Team</div>
+              <p style="margin:0 0 6px;font-size:12px;color:#4c1d95">Pulls the full cost picture together so the sales/actual team can see <strong>how much this project costs and whether it is profitable</strong>. Revenue comes from the SO; cost is built from the MR cost components + production cost.</p>
+              <table style="width:100%;border-collapse:collapse;font-size:12px">
+                <thead><tr style="border-bottom:2px solid #ddd"><th style="padding:5px 8px;text-align:left;font-weight:600">Line</th><th style="padding:5px 8px;text-align:right;font-weight:600">Amount (&#x20B9;)</th><th style="padding:5px 8px;text-align:left;font-weight:600">Source</th></tr></thead>
+                <tbody>
+                  <tr style="border-bottom:1px solid #eee"><td style="padding:4px 8px">SO Revenue</td><td style="padding:4px 8px;text-align:right;font-weight:700;color:var(--green)">12,50,000</td><td style="padding:4px 8px;color:#6b7280">From SO System Lines</td></tr>
+                  <tr style="border-bottom:1px solid #eee"><td style="padding:4px 8px">&nbsp;&nbsp;− Material Cost</td><td style="padding:4px 8px;text-align:right">65,800</td><td style="padding:4px 8px;color:#6b7280">MR Material Allocation × Rate</td></tr>
+                  <tr style="border-bottom:1px solid #eee"><td style="padding:4px 8px">&nbsp;&nbsp;− Application (Labour) Cost</td><td style="padding:4px 8px;text-align:right">3,25,000</td><td style="padding:4px 8px;color:#6b7280">MR Application Cost</td></tr>
+                  <tr style="border-bottom:1px solid #eee"><td style="padding:4px 8px">&nbsp;&nbsp;− Transportation Cost</td><td style="padding:4px 8px;text-align:right">48,000</td><td style="padding:4px 8px;color:#6b7280">MR Transportation Cost</td></tr>
+                  <tr style="border-bottom:1px solid #eee"><td style="padding:4px 8px">&nbsp;&nbsp;− Tools &amp; Tackles</td><td style="padding:4px 8px;text-align:right">30,000</td><td style="padding:4px 8px;color:#6b7280">MR Tools &amp; Tackles</td></tr>
+                  <tr style="border-bottom:1px solid #eee"><td style="padding:4px 8px">&nbsp;&nbsp;− Production Cost</td><td style="padding:4px 8px;text-align:right">85,000</td><td style="padding:4px 8px;color:#6b7280">BMR RM Consumption + Packing</td></tr>
+                  <tr style="border-bottom:2px solid #a78bfa"><td style="padding:4px 8px;font-weight:700">Total Cost</td><td style="padding:4px 8px;text-align:right;font-weight:700">5,53,800</td><td style="padding:4px 8px;color:#6b7280">Sum of all cost lines</td></tr>
+                  <tr style="border-bottom:1px solid #eee;background:#ecfdf5"><td style="padding:4px 8px;font-weight:700;color:#065f46">Gross Margin (Profit)</td><td style="padding:4px 8px;text-align:right;font-weight:700;color:#065f46">6,96,200</td><td style="padding:4px 8px;color:#6b7280">Revenue − Total Cost</td></tr>
+                  <tr style="background:#ecfdf5"><td style="padding:4px 8px;font-weight:700;color:#065f46">Margin %</td><td style="padding:4px 8px;text-align:right;font-weight:700;color:#065f46">55.7%</td><td style="padding:4px 8px;color:#6b7280">Margin ÷ Revenue</td></tr>
+                </tbody>
+              </table>
+              <div style="margin-top:6px;padding:6px 8px;background:#dcfce7;border-radius:4px;font-size:12px;font-weight:600;color:#166534">&#x2705; Project is profitable &amp; under budget — Costing approves. If margin falls below the set threshold, Costing flags the project before approval.</div>
+            </div>
           </div>
         </div>
       </div>
@@ -1291,10 +1311,9 @@
                 <tr><td>1</td><td>PR Number</td><td>Autogen</td><td>*</td><td>PR-YYYY-XXXX</td></tr>
                 <tr><td>2</td><td>PR Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
                 <tr><td>3</td><td>Reference</td><td>Text</td><td></td><td>Manual reference</td></tr>
-                <tr><td>4</td><td><strong>Department</strong></td><td>Dropdown</td><td>*</td><td>Auto from login — Production</td></tr>
-                <tr><td>5</td><td>Department</td><td>AutoFetch</td><td>*</td><td>As per user login (Production)</td></tr>
-                <tr><td>6</td><td>Approved By</td><td>User lookup</td><td></td><td>Filled after approval</td></tr>
-                <tr><td>7</td><td>Status</td><td>Dropdown</td><td>*</td><td>Draft / Pending Approval / Approved / Rejected</td></tr>
+                <tr><td>4</td><td>Department</td><td>AutoFetch</td><td>*</td><td>Auto from user login — Production (costing arm for SO)</td></tr>
+                <tr><td>5</td><td>Approved By</td><td>User lookup</td><td></td><td>Filled after approval</td></tr>
+                <tr><td>6</td><td>Status</td><td>Dropdown</td><td>*</td><td>Draft / Pending Approval / Approved / Rejected</td></tr>
               </tbody>
             </table>
           </div>
@@ -1337,6 +1356,24 @@
                 <tr><td>8</td><td>Total SO/WO Qty</td><td>AutoFetch</td><td>*</td><td>From MR Sheet</td></tr>
                 <tr><td>9</td><td>FG Stock Available</td><td>AutoFetch</td><td>*</td><td>From current FG stock</td></tr>
                 <tr><td>10</td><td>Net Production Requirement</td><td>Formula</td><td>*</td><td>SO/WO Qty - Available FG Stock</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h4>FGs Required for Project <span style="font-size:11px;font-weight:400;color:var(--gray-500)">— what Production must manufacture (derived from SO)</span></h4>
+          <div style="padding:8px 12px;background:#eff6ff;border-radius:6px;font-size:12px;color:#1e3a8a;margin-bottom:8px">
+            <strong>Derivation:</strong> <strong>Required Qty</strong> per FG is computed from the SO <strong>System Lines</strong>: SO area × the FG ratio defined in <strong>System Composition</strong> (System → FG). Example: SO sells EP01 over 500 SqM; System Composition maps EP01 → FG "FG-EP01" at 1.2 Kg/SqM → Required Qty = 600 Kg. The underlying RM for each FG is driven by the <strong>BOM (FG → RM)</strong> mapping, which Production uses for BMR / RM Consumption. <em>(Supply+Apply projects only — Supply Only FG sales bypass Production planning.)</em>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>FG Product Code</td><td>Lookup</td><td>*</td><td>From Purchase Item Muster (FG items)</td></tr>
+                <tr><td>2</td><td>FG Product Name</td><td>AutoFetch</td><td>*</td><td>—</td></tr>
+                <tr><td>3</td><td>System Code</td><td>AutoFetch</td><td>*</td><td>From SO System Lines (e.g., EP01, PU02)</td></tr>
+                <tr><td>4</td><td>Required Qty</td><td>Formula</td><td>*</td><td>SO area × System Composition FG ratio</td></tr>
+                <tr><td>5</td><td>FG Stock Available</td><td>AutoFetch</td><td>*</td><td>From current FG stock</td></tr>
+                <tr><td>6</td><td>To Produce</td><td>Formula</td><td>*</td><td>= Required Qty − FG Stock Available</td></tr>
+                <tr><td>7</td><td>UOM</td><td>AutoFetch</td><td>*</td><td>From Item Muster</td></tr>
               </tbody>
             </table>
           </div>

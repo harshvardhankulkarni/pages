@@ -765,6 +765,18 @@
         <div class="impl-info-box">
           <strong>Total MR Cost = Material Cost + Application Cost + Transportation Cost + Tools &amp; Tackles.</strong> This total is the project implementation cost baseline presented to <strong>Costing for approval</strong>. Costing approves the <strong>TOTAL</strong> cost — not just the material portion.
         </div>
+
+        <h4>Project Profitability Summary — for Sales / Actual Team</h4>
+        <div class="impl-info-box">
+          <strong>SO Revenue − Total Cost = Gross Margin / Margin %.</strong>
+          <ul>
+            <li><strong>SO Revenue</strong> — from SO System Lines (Σ Area × Rate) + SO Transportation.</li>
+            <li><strong>Total Cost</strong> = Material Cost + Application Cost + Transportation Cost + Tools &amp; Tackles (the four MR cost components) + Production Cost (BMR RM Consumption + Packing).</li>
+            <li><strong>Gross Margin</strong> = Revenue − Total Cost.</li>
+            <li><strong>Margin %</strong> = (Gross Margin / Revenue) × 100.</li>
+          </ul>
+          If Margin % falls below the set threshold, Costing flags the project before approval. This gives the sales/actual team a clear, at-a-glance profitability view of the project.
+        </div>
       </div>
     </section>
 
@@ -835,8 +847,13 @@
           <tr><td>Status</td><td>Draft / Approved / Released</td><td>—</td></tr>
           <tr><td>Total SO/WO Qty</td><td>AutoFetch from MR Sheet</td><td>—</td></tr>
           <tr><td>FG Stock Available</td><td>AutoFetch from inventory</td><td>—</td></tr>
-          <tr><td>Net Production Requirement</td><td>Formula: SO/WO - FG Stock</td><td>—</td></tr>
-        </table>
+            <tr><td>Net Production Requirement</td><td>Formula: SO/WO - FG Stock</td><td>—</td></tr>
+          </table>
+        <div class="impl-info-box" style="margin-top:12px">
+          <strong>FGs Required for Project — what Production must manufacture (derived from SO):</strong>
+          Production Planning shows which FGs to manufacture for the project, derived from the SO <strong>System Lines</strong> × <strong>System Composition</strong> (System → FG), with <strong>To Produce = Required Qty − FG Stock Available</strong>. The BOM (FG → RM) drives the underlying RM requisition for each FG.
+          <em>Example:</em> SO sells EP01 over 500 SqM; System Composition maps EP01 → FG "FG-EP01" at 1.2 Kg/SqM → Required Qty = 600 Kg. (Supply+Apply projects only — Supply Only FG sales bypass Production planning.)
+        </div>
       </div>
     </section>
 
@@ -914,7 +931,7 @@
           <tr><td>GRN</td><td>Purchase-Entry, Store-Entry</td><td>Purchase, Store</td></tr>
           <tr><td>QC/QA</td><td>QC-Entry</td><td>Purchase, Production</td></tr>
           <tr><td>MR <small>(Verify)</small></td><td>Production <strong>(Verify MR qty vs SO)</strong></td><td>Store</td></tr>
-          <tr><td>MR <small>(Approve)</small></td><td>Costing <strong>(Validate material budget)</strong></td><td>Production, Store</td></tr>
+          <tr><td>MR <small>(Approve)</small></td><td>Costing <strong>(Approves TOTAL project cost)</strong></td><td>Production, Store</td></tr>
           <tr><td>MR</td><td>Production, R&amp;D (Create Draft)</td><td>Store</td></tr>
           <tr><td>MIS</td><td>Store-Entry</td><td>Store, Production</td></tr>
           <tr><td>FGHM</td><td>Production-Entry, Store-Entry</td><td>Store, Logistics, Production</td></tr>
@@ -924,7 +941,7 @@
 
         <h4>Approval Matrix</h4>
         <p>Per-department PR/PO limits. Fields: Department, Document Type (PR/PO/GRN/MR), Min/Max Amount, Approver 1/2/3 (level escalation).</p>
-        <p style="margin-top:8px;font-size:13px;color:var(--gray-500)"><strong>MR Verification Flow:</strong> <strong>Production</strong> verifies MR quantities against SO system requirements (checks MR line item qty vs expected RM from BOM × SO system qty). Then <strong>Costing</strong> approves the material budget. MR is Released only after both gates pass.</p>
+        <p style="margin-top:8px;font-size:13px;color:var(--gray-500)"><strong>MR Verification Flow:</strong> <strong>Production</strong> verifies MR quantities against SO system requirements (checks MR line item qty vs expected RM from BOM × SO system qty). Then <strong>Costing</strong> approves the MR cost baseline (all four cost components). MR is Released only after both gates pass.</p>
       </div>
     </section>
 
@@ -938,7 +955,7 @@
           <p><strong>Two-Stream Data Flow:</strong> Stream A (Pre-Project, no Project ID) runs independently. Stream B (Project-Centric) carries Project ID downstream.</p>
           <p><strong>Stream A:</strong> PO &rarr; GRN &rarr; QC &rarr; Material Handover &rarr; Store</p>
           <p><strong>Stream B:</strong> SO (Supply+Apply) &rarr; <strong>Project</strong> &rarr; MR (<strong>Draft &rarr; Production Verified &rarr; Costing Approved &rarr; Released</strong>) &rarr; MIS &rarr; Production (Plan &rarr; BMR &rarr; Pack &rarr; FGHM) &rarr; Logistics (DC &rarr; Outward) &rarr; Project Site Execution (Service Team)</p>
-          <p><strong>⛔ Critical gate:</strong> Without a <strong>Released MR</strong>, there is no MIS, no Production, no Logistics, no project execution. MR is the cost baseline — Production verifies quantities against SO system requirements; Costing validates the material budget.</p>
+          <p><strong>⛔ Critical gate:</strong> Without a <strong>Released MR</strong>, there is no MIS, no Production, no Logistics, no project execution. MR is the cost baseline — Production verifies quantities against SO system requirements; Costing approves TOTAL project cost.</p>
           <p><strong>Standalone:</strong> Rate Comparison — maintained manually for rate record-keeping, not linked to workflow.</p>
           <p>Every Stream B form inherits <code>Project ID</code>. Stream A forms carry <strong>no</strong> Project ID.</p>
         </div>
