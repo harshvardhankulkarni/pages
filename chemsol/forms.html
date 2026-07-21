@@ -1046,27 +1046,53 @@
       <!-- SECTION 6: INVENTORY -->
       <!-- ============================================================ -->
       <h2 id="inventory">6 · Inventory <span class="badge badge-blue">RM + FG Stock Management</span></h2>
-      <p>Inventory tracks both RM and FG stock levels. Automations handle stock updates, reorder alerts, and consumption monitoring.</p>
+      <p>Inventory tracks both RM and FG stock levels. Stock ledgers maintain running balance with transaction-level traceability. Automations handle stock updates, reorder alerts, and consumption monitoring.</p>
 
       <div class="phase-container">
 
-        <!-- 6A RM Inventory -->
+        <!-- 6A RM Inventory — Stock Ledger -->
         <div class="phase">
           <div class="phase-header">
             <span class="phase-number">6A</span>
-            <span class="phase-title">RM Inventory</span>
+            <span class="phase-title">RM Inventory — Stock Ledger</span>
             <span class="phase-tag">Raw Material Stock</span>
           </div>
-          <p>Raw material inventory management with automated stock updates.</p>
+          <p>Raw material inventory managed via a stock ledger. Each RM item carries opening balance, transactional movements (in/out), and closing balance. Automated updates from GRN (in) and MIS (out).</p>
+
+          <h4>Stock Ledger Fields</h4>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Event</th><th>Direction</th><th>Source Form</th><th>Condition</th></tr></thead>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Source / Notes</th></tr></thead>
               <tbody>
-                <tr><td>Stock Increase</td><td>RM Stock +</td><td>GRN Posting</td><td>On GRN posting — received qty added to stock</td></tr>
-                <tr><td>Stock Decrease</td><td>RM Stock −</td><td>MIS Posting</td><td>On MIS posting — issued qty deducted from stock</td></tr>
+                <tr><td>1</td><td>Item Code</td><td>Lookup (Item Muster — RM)</td><td>*</td><td>Unique RM code</td></tr>
+                <tr><td>2</td><td>Item Name</td><td>AutoFetch</td><td>*</td><td>From Item Muster</td></tr>
+                <tr><td>3</td><td>Category</td><td>AutoFetch</td><td>*</td><td>From Item Muster</td></tr>
+                <tr><td>4</td><td>UOM</td><td>AutoFetch</td><td>*</td><td>Nos / Kg / Ltr / Mtr / Kit</td></tr>
+                <tr><td>5</td><td>Opening Stock</td><td>Number</td><td>*</td><td>Carried forward from previous period</td></tr>
+                <tr><td>6</td><td>GRN Received</td><td>Number (auto)</td><td>*</td><td>Sum of GRN quantities posted</td></tr>
+                <tr><td>7</td><td>MIS Issued</td><td>Number (auto)</td><td>*</td><td>Sum of MIS quantities posted</td></tr>
+                <tr><td>8</td><td>Returns</td><td>Number</td><td></td><td>Material returned to store</td></tr>
+                <tr><td>9</td><td>Closing Stock</td><td>Formula</td><td>*</td><td>Opening + GRN − MIS + Returns</td></tr>
+                <tr><td>10</td><td>Min Stock</td><td>AutoFetch</td><td>*</td><td>From Purchase Item Muster</td></tr>
+                <tr><td>11</td><td>Max Stock</td><td>AutoFetch</td><td></td><td>From Purchase Item Muster</td></tr>
+                <tr><td>12</td><td>Reorder Status</td><td>Formula</td><td>*</td><td>OK / Below Min / Above Max</td></tr>
               </tbody>
             </table>
           </div>
+
+          <h4>Sample RM Stock Ledger</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Item Code</th><th>Item Name</th><th>Category</th><th>UOM</th><th>Opening</th><th>GRN In</th><th>MIS Out</th><th>Returns</th><th>Closing</th><th>Min</th><th>Max</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>RM-001</td><td>Epoxy Resin A</td><td>RM</td><td>Kg</td><td>500</td><td>200</td><td>150</td><td>5</td><td>555</td><td>100</td><td>1000</td><td><span class="badge" style="background:#d1fae5;color:#059669">OK</span></td></tr>
+                <tr><td>RM-002</td><td>Hardener B</td><td>RM</td><td>Kg</td><td>300</td><td>100</td><td>180</td><td>10</td><td>230</td><td>50</td><td>500</td><td><span class="badge" style="background:#d1fae5;color:#059669">OK</span></td></tr>
+                <tr><td>RM-003</td><td>Pigment Red</td><td>RM</td><td>Kg</td><td>80</td><td>0</td><td>65</td><td>0</td><td>15</td><td>50</td><td>200</td><td><span class="badge" style="background:#fee2e2;color:#dc2626">Below Min</span></td></tr>
+                <tr><td>RM-004</td><td>Solvent X</td><td>RM</td><td>Ltr</td><td>1200</td><td>0</td><td>50</td><td>0</td><td>1150</td><td>100</td><td>800</td><td><span class="badge" style="background:#fef3c7;color:#d97706">Above Max</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+
           <h4>Stock Movement Flow</h4>
           <div style="padding:10px 14px;background:#f8fafc;border-radius:6px;font-size:12px;color:var(--gray-600);margin:8px 0">
             <strong>GRN → Stock In:</strong> Quantity added to RM inventory only after GRN posting (timestamp logged).<br>
@@ -1075,33 +1101,166 @@
           </div>
         </div>
 
-        <!-- 6B FG Inventory -->
+        <!-- 6B FG Inventory — Stock Ledger -->
         <div class="phase">
           <div class="phase-header">
             <span class="phase-number">6B</span>
-            <span class="phase-title">FG Inventory</span>
+            <span class="phase-title">FG Inventory — Stock Ledger</span>
             <span class="phase-tag">Finished Goods Stock</span>
           </div>
-          <p>Finished goods inventory — stock increases on FGHM acceptance, decreases on dispatch.</p>
+          <p>Finished goods inventory managed via a stock ledger. FG stock increases on FGHM inline acceptance, decreases on dispatch (Supply Only SO / DC).</p>
+
+          <h4>Stock Ledger Fields</h4>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Event</th><th>Direction</th><th>Source Form</th><th>Condition</th></tr></thead>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Source / Notes</th></tr></thead>
               <tbody>
-                <tr><td>Stock Increase</td><td>FG Stock +</td><td>FGHM Inline Acceptance</td><td>On FGHM acceptance — accepted qty added to FG stock</td></tr>
-                <tr><td>Stock Decrease</td><td>FG Stock −</td><td>Dispatch (Supply Only SO / DC)</td><td>On FG dispatch — dispatched qty deducted</td></tr>
+                <tr><td>1</td><td>Item Code</td><td>Lookup (Item Muster — FG)</td><td>*</td><td>Unique FG code</td></tr>
+                <tr><td>2</td><td>Item Name</td><td>AutoFetch</td><td>*</td><td>From Item Muster</td></tr>
+                <tr><td>3</td><td>UOM</td><td>AutoFetch</td><td>*</td><td>Nos / Kg / Ltr / Mtr / Kit</td></tr>
+                <tr><td>4</td><td>Opening Stock</td><td>Number</td><td>*</td><td>Carried forward from previous period</td></tr>
+                <tr><td>5</td><td>FGHM Accepted</td><td>Number (auto)</td><td>*</td><td>Sum of FGHM accepted quantities</td></tr>
+                <tr><td>6</td><td>Dispatched</td><td>Number (auto)</td><td>*</td><td>Sum of dispatch quantities (SO Supply Only / DC)</td></tr>
+                <tr><td>7</td><td>Returns</td><td>Number</td><td></td><td>Customer returns / reversal entries</td></tr>
+                <tr><td>8</td><td>Closing Stock</td><td>Formula</td><td>*</td><td>Opening + FGHM − Dispatched + Returns</td></tr>
+                <tr><td>9</td><td>Min Stock</td><td>AutoFetch</td><td>*</td><td>From Purchase Item Muster</td></tr>
+                <tr><td>10</td><td>Status</td><td>Formula</td><td>*</td><td>In Stock / Low Stock / Out of Stock</td></tr>
               </tbody>
             </table>
           </div>
+
+          <h4>Sample FG Stock Ledger</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Item Code</th><th>Item Name</th><th>UOM</th><th>Opening</th><th>FGHM In</th><th>Dispatched</th><th>Returns</th><th>Closing</th><th>Min</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>FG-001</td><td>Epoxy Primer Coat</td><td>Kg</td><td>200</td><td>80</td><td>50</td><td>0</td><td>230</td><td>50</td><td><span class="badge" style="background:#d1fae5;color:#059669">In Stock</span></td></tr>
+                <tr><td>FG-002</td><td>Epoxy Top Coat</td><td>Kg</td><td>150</td><td>100</td><td>120</td><td>5</td><td>135</td><td>30</td><td><span class="badge" style="background:#d1fae5;color:#059669">In Stock</span></td></tr>
+                <tr><td>FG-003</td><td>PU Sealer</td><td>Kg</td><td>60</td><td>0</td><td>55</td><td>0</td><td>5</td><td>40</td><td><span class="badge" style="background:#fee2e2;color:#dc2626">Low Stock</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+
           <h4>MR → MIS → FG Stock Flow</h4>
           <div style="background:#ecfdf5;border-radius:6px;padding:10px 14px;font-size:12px;color:#065f46;margin:8px 0">
             <code>MR Released → MIS Created → MIS Posted (RM Stock −) → Production (BMR → RM Consumption → Packing) → FGHM Created → FGHM Inline Accepted (FG Stock +)</code>
           </div>
         </div>
 
-        <!-- 6C Reorder Alerts -->
+        <!-- 6C Stock Movement Transaction Log -->
         <div class="phase">
           <div class="phase-header">
             <span class="phase-number">6C</span>
+            <span class="phase-title">Stock Movement Transaction Log</span>
+            <span class="phase-tag">Audit Trail</span>
+          </div>
+          <p>Real-time log of all stock movements across RM and FG inventory. Every GRN, MIS, FGHM, dispatch, and return generates a timestamped transaction entry with running balance.</p>
+
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Source / Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Date / Time</td><td>Timestamp</td><td>Auto-logged on transaction posting</td></tr>
+                <tr><td>2</td><td>Form Ref</td><td>Text</td><td>GRN-2026-001 / MIS-2026-015 / FGH-2026-008 / DC-2026-003</td></tr>
+                <tr><td>3</td><td>Item Code / Name</td><td>Text</td><td>Auto-populated from source form</td></tr>
+                <tr><td>4</td><td>Type</td><td>Dropdown</td><td>RM / FG</td></tr>
+                <tr><td>5</td><td>In / Out</td><td>Dropdown</td><td>In / Out</td></tr>
+                <tr><td>6</td><td>Qty</td><td>Number</td><td>Transaction quantity</td></tr>
+                <tr><td>7</td><td>Running Balance</td><td>Formula</td><td>Previous balance ± Qty</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Sample Transaction Log</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Date</th><th>Form Ref</th><th>Item</th><th>Type</th><th>In/Out</th><th>Qty</th><th>Running Balance</th></tr></thead>
+              <tbody>
+                <tr><td>2026-07-21 09:15</td><td>GRN-2026-042</td><td>Epoxy Resin A</td><td>RM</td><td><span class="badge" style="background:#d1fae5;color:#059669">In</span></td><td>200</td><td>555</td></tr>
+                <tr><td>2026-07-21 08:30</td><td>MIS-2026-018</td><td>Epoxy Resin A</td><td>RM</td><td><span class="badge" style="background:#fee2e2;color:#dc2626">Out</span></td><td>80</td><td>355</td></tr>
+                <tr><td>2026-07-20 16:00</td><td>FGH-2026-012</td><td>Epoxy Top Coat</td><td>FG</td><td><span class="badge" style="background:#d1fae5;color:#059669">In</span></td><td>100</td><td>135</td></tr>
+                <tr><td>2026-07-20 14:45</td><td>MIS-2026-017</td><td>Hardener B</td><td>RM</td><td><span class="badge" style="background:#fee2e2;color:#dc2626">Out</span></td><td>60</td><td>230</td></tr>
+                <tr><td>2026-07-19 11:20</td><td>DC-2026-005</td><td>Epoxy Primer Coat</td><td>FG</td><td><span class="badge" style="background:#fee2e2;color:#dc2626">Out</span></td><td>50</td><td>230</td></tr>
+                <tr><td>2026-07-18 10:00</td><td>GRN-2026-041</td><td>Pigment Red</td><td>RM</td><td><span class="badge" style="background:#d1fae5;color:#059669">In</span></td><td>25</td><td>15</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="margin-top:8px;font-size:12px;color:var(--gray-500)">The transaction log is auto-populated by workflow rules on each relevant form posting. Running balance is recalculated per item.</p>
+        </div>
+
+        <!-- 6D BOM → BMR → FG Creation Flow -->
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">6D</span>
+            <span class="phase-title">BOM → BMR → FG Creation</span>
+            <span class="phase-tag">Visual Flow</span>
+          </div>
+          <p>The complete formulation-to-production-to-finished-goods pipeline. From BOM definition to FG handover into stock.</p>
+
+          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:11px;padding:14px 10px;background:#f0f9ff;border-radius:8px;margin:8px 0">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;min-width:80px;padding:8px 6px;background:#eff6ff;border-radius:6px;border:1px solid #bfdbfe">
+              <span style="font-weight:700;color:#1d4ed8;font-size:13px">BOM</span>
+              <span style="color:var(--gray-500);font-size:10px;text-align:center">FG → RM<br>Formulation</span>
+            </div>
+            <span style="color:#93c5fd;font-size:16px">→</span>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;min-width:80px;padding:8px 6px;background:#fef3c7;border-radius:6px;border:1px solid #fde68a">
+              <span style="font-weight:700;color:#d97706;font-size:13px">MR</span>
+              <span style="color:var(--gray-500);font-size:10px;text-align:center">RM Allocation<br>per Project</span>
+            </div>
+            <span style="color:#fcd34d;font-size:16px">→</span>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;min-width:80px;padding:8px 6px;background:#fce7f3;border-radius:6px;border:1px solid #fbcfe8">
+              <span style="font-weight:700;color:#db2777;font-size:13px">MIS</span>
+              <span style="color:var(--gray-500);font-size:10px;text-align:center">RM Issued<br>to Production</span>
+            </div>
+            <span style="color:#f9a8d4;font-size:16px">→</span>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;min-width:80px;padding:8px 6px;background:#ecfdf5;border-radius:6px;border:1px solid #a7f3d0">
+              <span style="font-weight:700;color:#059669;font-size:13px">BMR</span>
+              <span style="color:var(--gray-500);font-size:10px;text-align:center">RM Consumed<br>FG Produced</span>
+            </div>
+            <span style="color:#6ee7b7;font-size:16px">→</span>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;min-width:80px;padding:8px 6px;background:#f5f3ff;border-radius:6px;border:1px solid #ddd6fe">
+              <span style="font-weight:700;color:#7c3aed;font-size:13px">Packing</span>
+              <span style="color:var(--gray-500);font-size:10px;text-align:center">FG Packed<br>Batch Ready</span>
+            </div>
+            <span style="color:#a78bfa;font-size:16px">→</span>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;min-width:80px;padding:8px 6px;background:#fffbeb;border-radius:6px;border:1px solid #fde68a">
+              <span style="font-weight:700;color:#92400e;font-size:13px">FGHM</span>
+              <span style="color:var(--gray-500);font-size:10px;text-align:center">FG Accepted<br>Stock Updated</span>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px;font-size:11px">
+            <div style="padding:8px;background:#eff6ff;border-radius:6px;border:1px solid #bfdbfe">
+              <strong style="color:#1d4ed8">1. BOM</strong><br>
+              <span style="color:var(--gray-500)">FG → RM formulation with ratios. Defines how much RM per FG unit.</span>
+            </div>
+            <div style="padding:8px;background:#fef3c7;border-radius:6px;border:1px solid #fde68a">
+              <strong style="color:#d97706">2. MR</strong><br>
+              <span style="color:var(--gray-500)">Per-project RM allocation. Only Released MR can proceed.</span>
+            </div>
+            <div style="padding:8px;background:#fce7f3;border-radius:6px;border:1px solid #fbcfe8">
+              <strong style="color:#db2777">3. MIS</strong><br>
+              <span style="color:var(--gray-500)">Store issues RMs to production. Stock deducted on posting.</span>
+            </div>
+            <div style="padding:8px;background:#ecfdf5;border-radius:6px;border:1px solid #a7f3d0">
+              <strong style="color:#059669">4. BMR</strong><br>
+              <span style="color:var(--gray-500)">Batch manufacturing: RMs consumed, FG produced. Increments MR Consumed Qty.</span>
+            </div>
+            <div style="padding:8px;background:#f5f3ff;border-radius:6px;border:1px solid #ddd6fe">
+              <strong style="color:#7c3aed">5. Packing</strong><br>
+              <span style="color:var(--gray-500)">FG packed with packing material consumption tracking.</span>
+            </div>
+            <div style="padding:8px;background:#fffbeb;border-radius:6px;border:1px solid #fde68a">
+              <strong style="color:#92400e">6. FGHM</strong><br>
+              <span style="color:var(--gray-500)">FG handed over with inline acceptance. FG stock updated.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6E Reorder Alerts -->
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">6E</span>
             <span class="phase-title">Reorder & Stock Alerts</span>
             <span class="phase-tag">Min/Max Thresholds</span>
           </div>
@@ -1117,10 +1276,10 @@
           </div>
         </div>
 
-        <!-- 6D Automation Rules -->
+        <!-- 6F Automation Rules -->
         <div class="phase">
           <div class="phase-header">
-            <span class="phase-number">6D</span>
+            <span class="phase-number">6F</span>
             <span class="phase-title">Automation Rules & Notifications</span>
             <span class="phase-tag">Business Rules</span>
           </div>

@@ -890,6 +890,59 @@
       <h3>Production <span class="mg-badge">Stage 5 — MIS &rarr; Planning &rarr; BMR &rarr; Pack &rarr; FGHM</span></h3>
       <p>Production consumes <strong>RM</strong> (from MR) to produce <strong>FG</strong> via BMR. All tagged to Project.</p>
 
+      <!-- FG from RM — Complete Process Diagram -->
+      <div style="background:var(--gray-50);border:2px solid var(--gray-300);border-radius:12px;padding:20px;margin:12px 0">
+        <h4 style="margin:0 0 12px;font-size:14px;color:var(--gray-700)">FG from RM — Complete Process</h4>
+        <div style="display:flex;flex-direction:column;gap:4px;font-size:12px">
+          <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#e0f2fe;border-left:4px solid #0284c7;border-radius:6px;">
+            <span style="background:#0284c7;color:#fff;padding:2px 10px;border-radius:4px;font-weight:700;font-size:10px;white-space:nowrap">BOM</span>
+            <span>FG &rarr; RM ratios (<em>e.g., FG-EP-001 = 85 Kg Epoxy + 12 Kg Hardener + 3 Kg Pigment per 100 Kg FG</em>)</span>
+          </div>
+          <div style="text-align:center;color:var(--gray-400);font-size:14px;line-height:1">&#x25BC;</div>
+          <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#fef3c7;border-left:4px solid #d97706;border-radius:6px;">
+            <span style="background:#d97706;color:#fff;padding:2px 10px;border-radius:4px;font-weight:700;font-size:10px;white-space:nowrap">MR</span>
+            <span>RM allocated per project (Material Allocation &mdash; Assigned Qty per RM)</span>
+          </div>
+          <div style="text-align:center;color:var(--gray-400);font-size:14px;line-height:1">&#x25BC;</div>
+          <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#f0fdf4;border-left:4px solid #16a34a;border-radius:6px;">
+            <span style="background:#16a34a;color:#fff;padding:2px 10px;border-radius:4px;font-weight:700;font-size:10px;white-space:nowrap">MIS</span>
+            <span>RM issued from Store to Production (RM stock &minus;)</span>
+          </div>
+          <div style="text-align:center;color:var(--gray-400);font-size:14px;line-height:1">&#x25BC;</div>
+          <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#f3e8ff;border-left:4px solid #9333ea;border-radius:6px;">
+            <span style="background:#9333ea;color:#fff;padding:2px 10px;border-radius:4px;font-weight:700;font-size:10px;white-space:nowrap">BMR</span>
+            <span><strong>RM consumed &rarr; FG produced</strong> — Main transformation step</span>
+          </div>
+          <div style="text-align:center;color:var(--gray-400);font-size:14px;line-height:1">&#x25BC;</div>
+          <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#fff7ed;border-left:4px solid #ea580c;border-radius:6px;">
+            <span style="background:#ea580c;color:#fff;padding:2px 10px;border-radius:4px;font-weight:700;font-size:10px;white-space:nowrap">RM Cons.</span>
+            <span>Actual qty vs Standard qty, Variance calculated per RM</span>
+          </div>
+          <div style="text-align:center;color:var(--gray-400);font-size:14px;line-height:1">&#x25BC;</div>
+          <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#e0f2fe;border-left:4px solid #0284c7;border-radius:6px;">
+            <span style="background:#0284c7;color:#fff;padding:2px 10px;border-radius:4px;font-weight:700;font-size:10px;white-space:nowrap">Packing</span>
+            <span>FG packed into containers + Packing material consumed</span>
+          </div>
+          <div style="text-align:center;color:var(--gray-400);font-size:14px;line-height:1">&#x25BC;</div>
+          <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:#f0fdf4;border:2px solid #86efac;border-radius:6px;">
+            <span style="background:#16a34a;color:#fff;padding:2px 10px;border-radius:4px;font-weight:700;font-size:10px;white-space:nowrap">FGHM</span>
+            <span><strong>FG handed over + inline acceptance &rarr; FG Stock</strong> (FG stock +)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- How FG is Made from RM — Example Callout -->
+      <div style="padding:14px 16px;background:#f0fdf4;border:1px solid #86efac;border-left:5px solid #16a34a;border-radius:8px;margin:12px 0">
+        <h4 style="margin:0 0 6px;font-size:13px;color:#166534">&#x2699; How FG is Made from RM</h4>
+        <p style="margin:0;font-size:12px;color:#14532d">
+          <strong>Example:</strong> To make <strong>100 Kg of FG-EP-001 (Epoxy Base Coat)</strong>:
+          Consume <strong>85 Kg Epoxy Resin</strong> + <strong>12 Kg Hardener</strong> + <strong>3 Kg Pigment</strong>
+          via <strong>BMR</strong> &rarr; yields <strong>100 Kg FG</strong>.
+          The BOM defines these ratios. The MR allocates them per project. MIS issues them from store.
+          BMR records the actual consumption. FGHM hands over the finished FG.
+        </p>
+      </div>
+
       <div class="form-card" id="inv-mis">
         <div class="fc-header">
           <span class="fc-num">10A</span>
@@ -998,6 +1051,30 @@
             <div><label>Batch No</label><input type="text" value="BATCH-EP-001"></div>
             <div><label>Yield (FG Qty)</label><input type="number" value="500"></div>
           </div>
+
+          <!-- BOM Reference: Standard RM quantities for this FG -->
+          <div class="subtable-demo" style="border:1px solid #93c5fd;background:#eff6ff">
+            <div class="st-hint">BOM Reference — Standard RM quantities for FG-EP-001 (per 100 Kg FG)</div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead>
+                <tr>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">RM Item</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Std Qty / 100Kg</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Ratio %</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">UOM</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td style="padding:4px 8px;border-bottom:1px solid #eee">Epoxy Resin</td><td style="padding:4px 8px;border-bottom:1px solid #eee">85</td><td style="padding:4px 8px;border-bottom:1px solid #eee">85%</td><td style="padding:4px 8px;border-bottom:1px solid #eee">Kg</td></tr>
+                <tr><td style="padding:4px 8px;border-bottom:1px solid #eee">Hardener</td><td style="padding:4px 8px;border-bottom:1px solid #eee">12</td><td style="padding:4px 8px;border-bottom:1px solid #eee">12%</td><td style="padding:4px 8px;border-bottom:1px solid #eee">Kg</td></tr>
+                <tr><td style="padding:4px 8px;border-bottom:1px solid #eee">Pigment</td><td style="padding:4px 8px;border-bottom:1px solid #eee">3</td><td style="padding:4px 8px;border-bottom:1px solid #eee">3%</td><td style="padding:4px 8px;border-bottom:1px solid #eee">Kg</td></tr>
+              </tbody>
+              <tfoot>
+                <tr style="background:#ecfdf5"><td style="padding:4px 8px;font-weight:600">Total</td><td style="padding:4px 8px;font-weight:600">100</td><td style="padding:4px 8px;font-weight:600">100%</td><td style="padding:4px 8px;font-weight:600">Kg</td></tr>
+              </tfoot>
+            </table>
+          </div>
+
           <div class="subtable-demo">
             <div class="st-hint">RM Consumed (from MR — via BOM formulation)</div>
             <table style="width:100%;border-collapse:collapse;font-size:12px">
@@ -1019,6 +1096,32 @@
               </tbody>
             </table>
           </div>
+
+          <!-- Produced FG section -->
+          <div class="subtable-demo" style="border:1px solid #86efac;background:#f0fdf4">
+            <div class="st-hint">Produced FG — Output of this BMR batch</div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead>
+                <tr>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">FG Item</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Batch No</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Qty Produced</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">UOM</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="FG-EP-001 — Epoxy Base Coat" style="font-size:12px" disabled></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="BATCH-EP-001" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="500" style="font-size:12px;font-weight:700"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option selected>Awaiting Packing</option><option>Packed</option><option>Hold</option></select></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
           <div class="subtable-demo">
             <div class="st-hint">Process Parameters</div>
             <table style="width:100%;border-collapse:collapse;font-size:12px">
@@ -1225,6 +1328,69 @@
         MIS posting &rarr; RM stock &minus; &middot;
         FGHM inline acceptance &rarr; FG stock + &middot;
         Min/Max stock &rarr; Alert when stock crosses thresholds.
+      </div>
+
+      <!-- Stock Movement Mini-Ledger -->
+      <h4 style="margin:18px 0 8px;font-size:14px;color:var(--gray-700)">Stock Movement Ledger</h4>
+      <p style="font-size:12px;color:var(--gray-500);margin:0 0 10px">RM movements and FG movements are tracked in separate ledgers. Each entry reference links to the source document.</p>
+      <div style="display:flex;gap:16px;flex-wrap:wrap">
+        <!-- RM Ledger -->
+        <div style="flex:1;min-width:300px;padding:12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px">
+          <strong style="color:var(--green);font-size:13px">RM Stock Movements</strong>
+          <div class="subtable-demo" style="margin-top:8px">
+            <table style="width:100%;border-collapse:collapse;font-size:11px">
+              <thead>
+                <tr>
+                  <th style="padding:4px 6px;text-align:left;font-size:9px;font-weight:600;border-bottom:2px solid #ddd">Date</th>
+                  <th style="padding:4px 6px;text-align:left;font-size:9px;font-weight:600;border-bottom:2px solid #ddd">Document</th>
+                  <th style="padding:4px 6px;text-align:left;font-size:9px;font-weight:600;border-bottom:2px solid #ddd">Item</th>
+                  <th style="padding:4px 6px;text-align:left;font-size:9px;font-weight:600;border-bottom:2px solid #ddd">In</th>
+                  <th style="padding:4px 6px;text-align:left;font-size:9px;font-weight:600;border-bottom:2px solid #ddd">Out</th>
+                  <th style="padding:4px 6px;text-align:left;font-size:9px;font-weight:600;border-bottom:2px solid #ddd">Balance</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td style="padding:3px 6px;border-bottom:1px solid #eee">10-Jul</td><td style="padding:3px 6px;border-bottom:1px solid #eee">GRN-001</td><td style="padding:3px 6px;border-bottom:1px solid #eee">Epoxy Resin</td><td style="padding:3px 6px;border-bottom:1px solid #eee;color:var(--green);font-weight:600">+425</td><td style="padding:3px 6px;border-bottom:1px solid #eee">—</td><td style="padding:3px 6px;border-bottom:1px solid #eee;font-weight:600">425</td></tr>
+                <tr><td style="padding:3px 6px;border-bottom:1px solid #eee">10-Jul</td><td style="padding:3px 6px;border-bottom:1px solid #eee">GRN-001</td><td style="padding:3px 6px;border-bottom:1px solid #eee">Hardener</td><td style="padding:3px 6px;border-bottom:1px solid #eee;color:var(--green);font-weight:600">+75</td><td style="padding:3px 6px;border-bottom:1px solid #eee">—</td><td style="padding:3px 6px;border-bottom:1px solid #eee;font-weight:600">75</td></tr>
+                <tr><td style="padding:3px 6px;border-bottom:1px solid #eee">20-Jul</td><td style="padding:3px 6px;border-bottom:1px solid #eee">MIS-001</td><td style="padding:3px 6px;border-bottom:1px solid #eee">Epoxy Resin</td><td style="padding:3px 6px;border-bottom:1px solid #eee">—</td><td style="padding:3px 6px;border-bottom:1px solid #eee;color:var(--accent);font-weight:600">-180</td><td style="padding:3px 6px;border-bottom:1px solid #eee;font-weight:600">245</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="font-size:10px;color:var(--gray-500);margin:6px 0 0">In: GRN posting &middot; Out: MIS posting</p>
+        </div>
+        <!-- FG Ledger -->
+        <div style="flex:1;min-width:300px;padding:12px;background:#dbeafe;border:1px solid #93c5fd;border-radius:8px">
+          <strong style="color:var(--primary);font-size:13px">FG Stock Movements</strong>
+          <div class="subtable-demo" style="margin-top:8px">
+            <table style="width:100%;border-collapse:collapse;font-size:11px">
+              <thead>
+                <tr>
+                  <th style="padding:4px 6px;text-align:left;font-size:9px;font-weight:600;border-bottom:2px solid #ddd">Date</th>
+                  <th style="padding:4px 6px;text-align:left;font-size:9px;font-weight:600;border-bottom:2px solid #ddd">Document</th>
+                  <th style="padding:4px 6px;text-align:left;font-size:9px;font-weight:600;border-bottom:2px solid #ddd">Item</th>
+                  <th style="padding:4px 6px;text-align:left;font-size:9px;font-weight:600;border-bottom:2px solid #ddd">In</th>
+                  <th style="padding:4px 6px;text-align:left;font-size:9px;font-weight:600;border-bottom:2px solid #ddd">Out</th>
+                  <th style="padding:4px 6px;text-align:left;font-size:9px;font-weight:600;border-bottom:2px solid #ddd">Balance</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td style="padding:3px 6px;border-bottom:1px solid #eee">15-Aug</td><td style="padding:3px 6px;border-bottom:1px solid #eee">FGHM-001</td><td style="padding:3px 6px;border-bottom:1px solid #eee">FG-EP-001 Base Coat</td><td style="padding:3px 6px;border-bottom:1px solid #eee;color:var(--green);font-weight:600">+580</td><td style="padding:3px 6px;border-bottom:1px solid #eee">—</td><td style="padding:3px 6px;border-bottom:1px solid #eee;font-weight:600">580</td></tr>
+                <tr><td style="padding:3px 6px;border-bottom:1px solid #eee">18-Aug</td><td style="padding:3px 6px;border-bottom:1px solid #eee">FGHM-002</td><td style="padding:3px 6px;border-bottom:1px solid #eee">FG-EP-002 Top Coat</td><td style="padding:3px 6px;border-bottom:1px solid #eee;color:var(--green);font-weight:600">+200</td><td style="padding:3px 6px;border-bottom:1px solid #eee">—</td><td style="padding:3px 6px;border-bottom:1px solid #eee;font-weight:600">200</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="font-size:10px;color:var(--gray-500);margin:6px 0 0">In: FGHM inline acceptance &middot; Out: Dispatch / SO Supply Only</p>
+        </div>
+      </div>
+
+      <!-- FG Traceability Callout -->
+      <div style="padding:12px 14px;background:#f3e8ff;border:1px solid #d8b4fe;border-left:5px solid #9333ea;border-radius:8px;margin:16px 0">
+        <h4 style="margin:0 0 4px;font-size:13px;color:#6b21a8">&#x1F50D; FG Creation Traceability</h4>
+        <p style="margin:0;font-size:12px;color:#581c87">
+          Each FG unit recorded in <strong>FGHM</strong> can be traced back to its <strong>BMR batch</strong> (via BMR No.),
+          which consumed specific <strong>RM batches</strong> (RM Batch No. in BMR line items).
+          This provides full <strong>batch-level traceability</strong> from RM procurement &rarr; production &rarr; FG handover.
+        </p>
       </div>
     </div>
 
