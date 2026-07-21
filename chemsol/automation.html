@@ -977,6 +977,100 @@ sendmail
       </div>
     </div>
 
+    <div class="auto-card">
+      <div class="auto-card-header" style="background:#d1fae5">
+        <span class="auto-tag tag-workflow">Workflow</span>
+        <span class="auto-tag tag-deluge">Deluge</span>
+        <span class="auto-tag tag-formrule">Form Rule</span>
+        5G &middot; FG Consumption Entry (Project Site Usage)
+      </div>
+      <div class="auto-card-body">
+        <p style="font-size:12px;color:var(--gray-600);margin-bottom:8px">When FG is used at the project site, record consumption against the project. This deducts from FG inventory and tracks per-project FG usage.</p>
+
+        <div class="auto-sub-title">Auto-fetch FG Handover Reference</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Form Rule:</strong> On Project ID selection, show only FGHM records for that project</div></div>
+        <div class="auto-step"><span class="auto-step-num">2</span><div><strong>Form Rule:</strong> On FGHM Reference selection, auto-populate FG items, Qty, Batch No</div></div>
+
+        <div class="auto-sub-title">Project Task / Site Usage Entry</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Form fields:</strong> Project ID, FGHM Reference, Task Date, Site Location, Supervisor, Usage Line Items</div></div>
+        <div class="auto-code">
+// Usage Line Items subform fields:
+// FG_Product_Code (lookup), FG_Product_Name (autofetch),
+// UOM (autofetch), Used_Qty (number),
+// Site_Area (text - where applied on site),
+// Remark
+        </div>
+
+        <div class="auto-sub-title">Deduct FG from Inventory + Log Consumption</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Workflow Rule:</strong> On Submit, deduct used qty from FG Inventory and log against project</div></div>
+        <div class="auto-code">
+// Workflow Rule - On Submit
+for each item in input.Usage_Line_Items
+{
+  // Check FG stock availability
+  inventory = lookupRecords(FG_Inventory, "Item_Code == '" + item.FG_Product_Code + "'");
+  if(!isNull(inventory) && inventory.Current_Stock >= item.Used_Qty)
+  {
+    // Deduct from FG inventory
+    updateRecord
+    {
+      "Form_Type": "FG_Inventory",
+      "ID": inventory.ID,
+      "Current_Stock": inventory.Current_Stock - item.Used_Qty
+    };
+  }
+  else
+  {
+    throw "Insufficient FG stock for " + item.FG_Product_Code 
+        + ". Available: " + inventory.Current_Stock 
+        + ", Required: " + item.Used_Qty;
+  }
+
+  // Create project FG consumption record for tracking
+  createRecord
+  {
+    "Form_Type": "Project_FG_Consumption",
+    "Project_ID": input.Project_ID,
+    "FG_Product_Code": item.FG_Product_Code,
+    "FG_Product_Name": item.FG_Product_Name,
+    "UOM": item.UOM,
+    "Used_Qty": item.Used_Qty,
+    "Consumption_Date": today(),
+    "Site_Location": input.Site_Location,
+    "Supervisor": input.Supervisor,
+    "Reference_FGHM": input.FGHM_Reference,
+    "Remark": item.Remark
+  };
+
+  // Log stock movement
+  createRecord
+  {
+    "Form_Type": "Stock_Movement_Log",
+    "Document_Type": "FG_CONSUMPTION",
+    "Document_Ref": input.ID,
+    "Item_Code": item.FG_Product_Code,
+    "Item_Name": item.FG_Product_Name,
+    "Movement_Type": "OUT",
+    "Quantity": item.Used_Qty,
+    "UOM": item.UOM,
+    "Project_ID": input.Project_ID,
+    "Timestamp": now()
+  };
+}
+        </div>
+
+        <div class="auto-sub-title">Project FG Summary (Formula / Report)</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div>Add a <strong>Project Dashboard</strong> showing per-project FG position:</div></div>
+        <div class="auto-code">
+// Report fields (computed view across FGHM + FG Consumption):
+// FG_Received = SUM(FGHM_Line_Items.Accepted_Qty) grouped by Project + FG Code
+// FG_Consumed = SUM(Project_FG_Consumption.Used_Qty) grouped by Project + FG Code
+// FG_Remaining = FG_Received - FG_Consumed
+        </div>
+        <div class="auto-note"><strong>Important:</strong> FG consumption tracking mirrors RM consumption (MR Allocation). Together they give a complete project material picture: RM issued → FG produced → FG handed over to site → FG consumed at site. The Project FG position report shows this end-to-end.</div>
+      </div>
+    </div>
+
     <!-- ============================================================ -->
     <!-- PHASE 6: INVENTORY -->
     <!-- ============================================================ -->
@@ -1110,6 +1204,7 @@ return 0;  // Item not found
           <tr><td>Packing</td><td><span class="auto-tag tag-workflow">Workflow</span></td><td>On Submit</td><td>Deduct packing material from inventory</td><td>Pending</td></tr>
           <tr><td>FGHM</td><td><span class="auto-tag tag-deluge">Deluge</span></td><td>On Submit (Accepted)</td><td>Update FG Inventory + Stock Movement Log + Notify Store</td><td>Pending</td></tr>
           <tr><td>FGHM</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: FGH-YYYY-XXXX</td><td>Pending</td></tr>
+          <tr><td>FG Consumption</td><td><span class="auto-tag tag-workflow">Workflow</span></td><td>On Submit</td><td>Deduct FG inventory + Log project FG consumption</td><td>Pending</td></tr>
 
           <tr><td colspan="5"><strong>Inventory</strong></td></tr>
           <tr><td>RM/FG Stock</td><td><span class="auto-tag tag-workflow">Workflow</span></td><td>Scheduled Daily</td><td>Min/Max reorder alerts + overstock warnings</td><td>Pending</td></tr>
@@ -1130,7 +1225,7 @@ return 0;  // Item not found
           <li><strong>Form Rules</strong> &mdash; Conditional visibility (SO Sales Type), lookup filters (MIS MR No), auto-populate (PO from PR, BMR RM list from BOM)</li>
           <li><strong>Formula Fields</strong> &mdash; Total Amount on SO, GST split on PO, Total MR Cost, Allocation Ratio, Variance</li>
           <li><strong>Blueprints</strong> &mdash; MR Status workflow (Draft -> Pending Prod Verification -> Prod Verified -> Costing Approved -> Released). This is the critical gate. Test thoroughly.</li>
-          <li><strong>Workflow Rules</strong> &mdash; SO -> Project creation, Stock updates (GRN -> RM+, MIS -> RM-, FGHM -> FG+), 80% alert, PR notifications</li>
+          <li><strong>Workflow Rules</strong> &mdash; SO -> Project creation, Stock updates (GRN -> RM+, MIS -> RM-, FGHM -> FG+, FG Consumption -> FG-), 80% alert, PR notifications</li>
           <li><strong>Custom Buttons</strong> &mdash; "Post GRN", "Post MIS" with Deluge scripts for stock updates and logging</li>
           <li><strong>Scheduled Workflows</strong> &mdash; Daily escalation reminders, Min/Max stock alerts</li>
           <li><strong>Custom Functions</strong> &mdash; Reusable getCurrentStock(), stock movement summary functions</li>
@@ -1162,6 +1257,7 @@ return 0;  // Item not found
               <li>GRN Post -> RM stock +</li>
               <li>MIS Post -> RM stock -</li>
               <li>FGHM Accept -> FG stock +</li>
+              <li>FG Consumption -> FG stock - (site usage)</li>
               <li>Partial GRN works via checkbox</li>
               <li>Stock reversal on material return</li>
             </ul>
@@ -1190,6 +1286,7 @@ return 0;  // Item not found
               <li>GRN auto-fetches from PO</li>
               <li>MIS auto-fetches from MR</li>
               <li>BMR auto-fetches RM list from BOM</li>
+              <li>FG Consumption auto-fetches from FGHM</li>
             </ul>
           </div>
           <div style="font-size:12px;color:var(--gray-600)">
