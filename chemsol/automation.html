@@ -235,6 +235,22 @@ if(zoho.login.department != "Purchase" && zoho.login.department != "Store") {
       </div>
     </div>
 
+    <div class="auto-card">
+      <div class="auto-card-header" style="background:var(--primary-light)">
+        <span class="auto-tag tag-numbering">Numbering</span>
+        1G &middot; User Access &amp; Approval Matrix
+      </div>
+      <div class="auto-card-body">
+        <div class="auto-sub-title">User Access: Auto-generate ID</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div>Field Properties -> User ID -> Auto Numbering: <code>USR-{XXXX}</code></div></div>
+        <div class="auto-step"><span class="auto-step-num">2</span><div><strong>Configuration form</strong> — No complex automation. Manually define Role &amp; Department per user.</div></div>
+
+        <div class="auto-sub-title">Approval Matrix: Auto-generate ID</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div>Field Properties -> Matrix ID -> Auto Numbering: <code>AM-{XXXX}</code></div></div>
+        <div class="auto-step"><span class="auto-step-num">2</span><div><strong>Configuration form</strong> — Define approval limits per Department + Document Type (PR/PO/MR). Manual setup.</div></div>
+      </div>
+    </div>
+
     <!-- ============================================================ -->
     <!-- PHASE 2: SALES & PROJECT -->
     <!-- ============================================================ -->
@@ -786,6 +802,9 @@ for each item in input.MIS_Line_Items
 input.Status = "Posted";
 input.Posted_Time = now();
         </div>
+        <div class="auto-sub-title">Auto-generate MIS Number</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div>Field Properties -> MIS Number -> Auto Numbering: <code>MIS-{YYYY}-{XXXX}</code></div></div>
+
         <div class="auto-note"><strong>Balance Qty</strong> = Required Qty - Issued Qty (Formula field in line items). Only createable after MR Released.</div>
       </div>
     </div>
@@ -1071,6 +1090,8 @@ return 0;  // Item not found
           <tr><td>BOM</td><td><span class="auto-tag tag-blueprint">Blueprint</span></td><td>On Submit</td><td>Status: Draft -> Approved -> Released</td><td>Pending</td></tr>
           <tr><td>Supplier Master</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: SUP-YYYY-XXXX</td><td>Pending</td></tr>
           <tr><td>Store Master</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: ST-XXXX</td><td>Pending</td></tr>
+          <tr><td>User Access</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: USR-XXXX (config form)</td><td>Pending</td></tr>
+          <tr><td>Approval Matrix</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: AM-XXXX (config form)</td><td>Pending</td></tr>
 
           <tr><td colspan="5"><strong>Sales &amp; Project</strong></td></tr>
           <tr><td>SO</td><td><span class="auto-tag tag-formrule">Form Rule</span></td><td>On Sales Type change</td><td>Toggle Subform A (System) / Subform B (FG)</td><td>Pending</td></tr>
@@ -1086,18 +1107,21 @@ return 0;  // Item not found
           <tr><td>MR</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: MR-YYYY-XXXX</td><td>Pending</td></tr>
 
           <tr><td colspan="5"><strong>Procurement</strong></td></tr>
-          <tr><td>PR</td><td><span class="auto-tag tag-workflow">Workflow</span></td><td>On Submit</td><td>Status: Draft -> Pending Approval</td><td>Pending</td></tr>
+          <tr><td>PR</td><td><span class="auto-tag tag-workflow">Workflow</span></td><td>On Submit</td><td>Status: Draft -> Pending Approval + Notify Purchase</td><td>Pending</td></tr>
           <tr><td>PR</td><td><span class="auto-tag tag-workflow">Workflow</span></td><td>On Approval</td><td>Notify Production user</td><td>Pending</td></tr>
           <tr><td>PR</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: PR-YYYY-XXXX</td><td>Pending</td></tr>
           <tr><td>PO</td><td><span class="auto-tag tag-formrule">Form Rule</span></td><td>On Load</td><td>Set PO Number series by RM Type (RM- / RMWAD-)</td><td>Pending</td></tr>
           <tr><td>PO</td><td><span class="auto-tag tag-formrule">Form Rule</span></td><td>Line Item entry</td><td>Auto-calculate GST split + Footer totals</td><td>Pending</td></tr>
+          <tr><td>PO</td><td><span class="auto-tag tag-workflow">Workflow</span></td><td>On Dispatched/Delivered</td><td>Notify Purchase + Store: PO ready for GRN</td><td>Pending</td></tr>
           <tr><td>GRN</td><td><span class="auto-tag tag-workflow">Workflow</span></td><td>Custom Button "Post GRN"</td><td>Update RM Inventory + Stock Movement Log</td><td>Pending</td></tr>
           <tr><td>GRN</td><td><span class="auto-tag tag-formrule">Form Rule</span></td><td>On PO selected</td><td>Auto-fetch Supplier, Items, Ordered Qty</td><td>Pending</td></tr>
+          <tr><td>GRN</td><td><span class="auto-tag tag-workflow">Workflow</span></td><td>Scheduled Daily 8 AM</td><td>Overdue reminder: dispatched PO without GRN >7d</td><td>Pending</td></tr>
           <tr><td>QC</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: QC-YYYY-XXXX</td><td>Pending</td></tr>
 
           <tr><td colspan="5"><strong>Production</strong></td></tr>
           <tr><td>MIS</td><td><span class="auto-tag tag-formrule">Form Rule</span></td><td>On Load</td><td>Restrict MR lookup to "Released" only</td><td>Pending</td></tr>
           <tr><td>MIS</td><td><span class="auto-tag tag-deluge">Deluge</span></td><td>Custom Button "Post MIS"</td><td>Deduct RM Inventory + Stock Movement Log</td><td>Pending</td></tr>
+          <tr><td>MIS</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: MIS-YYYY-XXXX</td><td>Pending</td></tr>
           <tr><td>Prod Planning</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: PLAN-YYYY-XXXX</td><td>Pending</td></tr>
           <tr><td>BMR</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: BMR-YYYY-XXXX</td><td>Pending</td></tr>
           <tr><td>BMR</td><td><span class="auto-tag tag-deluge">Deluge</span></td><td>On Submit</td><td>Increment Consumed Qty on MR Allocation</td><td>Pending</td></tr>
@@ -1123,7 +1147,7 @@ return 0;  // Item not found
           <li><strong>Auto Numbering</strong> &mdash; Configure on ALL forms first (PR, PO, GRN, MR, MIS, FGHM, QC, SO, Project, BMR, Planning)</li>
           <li><strong>Form Rules</strong> &mdash; Conditional visibility (SO Sales Type), lookup filters (MIS MR No), auto-populate (PO from PR, BMR RM list from BOM)</li>
           <li><strong>Formula Fields</strong> &mdash; Total Amount on SO, GST split on PO, Total MR Cost, Allocation Ratio, Variance</li>
-          <li><strong>Blueprints</strong> &mdash; MR Status workflow (Draft -> Prod Verified -> Costing Approved -> Released). This is the critical gate. Test thoroughly.</li>
+          <li><strong>Blueprints</strong> &mdash; MR Status workflow (Draft -> Pending Prod Verification -> Prod Verified -> Costing Approved -> Released). This is the critical gate. Test thoroughly.</li>
           <li><strong>Workflow Rules</strong> &mdash; SO -> Project creation, Stock updates (GRN -> RM+, MIS -> RM-, FGHM -> FG+), 80% alert, PR notifications</li>
           <li><strong>Custom Buttons</strong> &mdash; "Post GRN", "Post MIS" with Deluge scripts for stock updates and logging</li>
           <li><strong>Scheduled Workflows</strong> &mdash; Daily escalation reminders, Min/Max stock alerts</li>
