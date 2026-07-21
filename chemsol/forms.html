@@ -101,7 +101,7 @@
           <span class="ah-arrow">▶</span>
         </div>
         <div class="accordion-body">
-          <a class="ab-link" href="forms.html#production"><span class="al-type type-forms">Forms</span>MIS→Planning→BMR→Pack→FGHM</a>
+          <a class="ab-link" href="forms.html#production"><span class="al-type type-forms">Forms</span>MIS→Planning→BMR→Pack→FGHM→FG Consump</a>
           <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Production Reports</a>
           <a class="ab-link" href="flow.html#production-flow"><span class="al-type type-flow">Flow</span>Production Flow</a>
         </div>
@@ -512,15 +512,17 @@
       <h2 id="mr">3 · MR — Costing Gate <span class="badge badge-purple">Stream B — Project ID</span></h2>
       <p><strong>MR is the complete project implementation cost baseline</strong> — four cost components (Material + Application + Transportation + Tools & Tackles) summing to Total MR Cost. Costing approves this TOTAL cost. MR is NOT just RM allocation — it is the full project cost estimate. <strong>Only Released MR can proceed to MIS → Production → FGHM.</strong></p>
 
-      <div style="margin:12px 0;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <div style="margin:12px 0;display:flex;gap:6px;align-items:center;flex-wrap:wrap">
         <strong>MR Status Workflow:</strong>
         <span class="badge" style="background:#e5e7eb;color:#374151">Draft</span>
         <span style="color:var(--gray-400)">→</span>
-        <span class="badge" style="background:#dbeafe;color:#1d4ed8">Production Verified</span>
+        <span class="badge" style="background:#fef3c7;color:#d97706">Pending Verif</span>
+        <span style="color:var(--gray-400)">→</span>
+        <span class="badge" style="background:#dbeafe;color:#1d4ed8">Prod Verified</span>
         <span style="color:var(--gray-400)">→</span>
         <span class="badge" style="background:#d1fae5;color:#059669">Costing Approved</span>
         <span style="color:var(--gray-400)">→</span>
-        <span class="badge" style="background:#fef3c7;color:#d97706">Released</span>
+        <span class="badge" style="background:#a7f3d0;color:#065f46">Released</span>
         <span style="margin-left:8px;font-size:12px;color:var(--gray-500)"><strong>⛔ Gate:</strong> Without Released status, no MIS, no Production, no project execution</span>
       </div>
 
@@ -534,6 +536,14 @@
             <span class="phase-tag">4 Cost Components · N Line Items · Material Allocation</span>
           </div>
           <p>Department: Production & R&D. Created against the SO/Project. Carries the per-project Material Allocation subform — the consumption budget baseline with per-RM allocation ratios and 80% alert flags.</p>
+          <div style="margin:8px 0;font-size:12px;color:var(--gray-600)">
+            <strong>MR Status Workflow (5 states):</strong>
+            <span class="badge" style="background:#e5e7eb;color:#374151">Draft</span> →
+            <span class="badge" style="background:#fef3c7;color:#d97706">Pending Prod Verification</span> →
+            <span class="badge" style="background:#dbeafe;color:#1d4ed8">Production Verified</span> →
+            <span class="badge" style="background:#d1fae5;color:#059669">Costing Approved</span> →
+            <span class="badge" style="background:#a7f3d0;color:#065f46">Released</span>
+          </div>
 
           <h4>Header</h4>
           <div class="table-wrap">
@@ -1041,6 +1051,51 @@
           <p><strong>Automation:</strong> On FGHM submission → Notification to Store. FG Stock updated on inline acceptance.</p>
         </div>
 
+        <!-- 5G FG Consumption Entry (Project Site Usage) -->
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">5G</span>
+            <span class="phase-title">FG Consumption Entry</span>
+            <span class="phase-tag">Project Site Usage · FG Stock −</span>
+          </div>
+          <p>Records FG consumed at the project site. Deducts from FG inventory and logs per-project FG usage. Mirrors RM consumption tracking — together they give a complete project material picture.</p>
+
+          <div style="padding:8px 12px;background:#ecfdf5;border-radius:6px;font-size:12px;color:#065f46;margin-bottom:8px">
+            <strong>Flow:</strong> FG produced via BMR → FG handed over via FGHM (FG stock +) → FG consumed at site via FG Consumption Entry (FG stock −). Project FG position = FGHM received − site consumed.
+          </div>
+
+          <h4>Header</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Project ID</td><td>Lookup (Project Master)</td><td>*</td><td>Filters FGHM to this project</td></tr>
+                <tr><td>2</td><td>FGHM Reference</td><td>Lookup (FGHM — filtered by Project)</td><td>*</td><td>Auto-fetch FG items, Qty, Batch No</td></tr>
+                <tr><td>3</td><td>Task Date</td><td>Date</td><td>*</td><td>Date of site usage</td></tr>
+                <tr><td>4</td><td>Site Location</td><td>Text</td><td>*</td><td>Area/location on site where FG applied</td></tr>
+                <tr><td>5</td><td>Supervisor</td><td>Text</td><td>*</td><td>Site supervisor name</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Usage Line Items</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Source</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>FG Product Code</td><td>Lookup (Item Muster - FG) → AutoFetch: Name, UOM</td><td>*</td><td>Item Muster</td><td>Filtered by FGHM reference</td></tr>
+                <tr><td>2</td><td>FG Product Name</td><td>AutoFetch</td><td>*</td><td>Item Muster</td><td>—</td></tr>
+                <tr><td>3</td><td>UOM</td><td>AutoFetch</td><td>*</td><td>Item Muster</td><td>—</td></tr>
+                <tr><td>4</td><td>Used Qty</td><td>Number</td><td>*</td><td></td><td>Qty consumed at site</td></tr>
+                <tr><td>5</td><td>Site Area</td><td>Text</td><td></td><td></td><td>Where applied on site (e.g., Section A)</td></tr>
+                <tr><td>6</td><td>Remark</td><td>Multi-line</td><td></td><td></td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p><strong>Automation:</strong> On Submit, deduct Used Qty from FG Inventory. Create Project_FG_Consumption record for per-project tracking. Log movement in Stock Movement Log as "FG_CONSUMPTION — OUT".</p>
+        </div>
+
       </div>
 
       <!-- ============================================================ -->
@@ -1109,7 +1164,11 @@
             <span class="phase-title">FG Inventory — Stock Ledger</span>
             <span class="phase-tag">Finished Goods Stock</span>
           </div>
-          <p>Finished goods inventory managed via a stock ledger. FG stock increases on FGHM inline acceptance, decreases on dispatch (Supply Only SO / DC).</p>
+          <p>Finished goods inventory managed via a stock ledger. FG stock increases on FGHM inline acceptance, decreases on site usage (FG Consumption Entry) or dispatch (Supply Only SO / DC).</p>
+
+          <div style="padding:8px 12px;background:#ecfdf5;border-radius:6px;font-size:12px;color:#065f46;margin-bottom:8px">
+            <strong>Project FG Tracking:</strong> FGHM records FG received <strong>per project</strong>. FG Consumption Entry records FG used <strong>at project site</strong>. The difference = FG remaining on site for the project.
+          </div>
 
           <h4>Stock Ledger Fields</h4>
           <div class="table-wrap">
@@ -1133,29 +1192,74 @@
           <h4>Sample FG Stock Ledger</h4>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Item Code</th><th>Item Name</th><th>UOM</th><th>Opening</th><th>FGHM In</th><th>Dispatched</th><th>Returns</th><th>Closing</th><th>Min</th><th>Status</th></tr></thead>
+              <thead><tr><th>Item Code</th><th>Item Name</th><th>UOM</th><th>Opening</th><th>FGHM In</th><th>Site Usage</th><th>Dispatched</th><th>Returns</th><th>Closing</th><th>Min</th><th>Status</th></tr></thead>
               <tbody>
-                <tr><td>FG-001</td><td>Epoxy Primer Coat</td><td>Kg</td><td>200</td><td>80</td><td>50</td><td>0</td><td>230</td><td>50</td><td><span class="badge" style="background:#d1fae5;color:#059669">In Stock</span></td></tr>
-                <tr><td>FG-002</td><td>Epoxy Top Coat</td><td>Kg</td><td>150</td><td>100</td><td>120</td><td>5</td><td>135</td><td>30</td><td><span class="badge" style="background:#d1fae5;color:#059669">In Stock</span></td></tr>
-                <tr><td>FG-003</td><td>PU Sealer</td><td>Kg</td><td>60</td><td>0</td><td>55</td><td>0</td><td>5</td><td>40</td><td><span class="badge" style="background:#fee2e2;color:#dc2626">Low Stock</span></td></tr>
+                <tr><td>FG-001</td><td>Epoxy Primer Coat</td><td>Kg</td><td>200</td><td>80</td><td>30</td><td>50</td><td>0</td><td>200</td><td>50</td><td><span class="badge" style="background:#d1fae5;color:#059669">In Stock</span></td></tr>
+                <tr><td>FG-002</td><td>Epoxy Top Coat</td><td>Kg</td><td>150</td><td>100</td><td>60</td><td>40</td><td>5</td><td>155</td><td>30</td><td><span class="badge" style="background:#d1fae5;color:#059669">In Stock</span></td></tr>
+                <tr><td>FG-003</td><td>PU Sealer</td><td>Kg</td><td>60</td><td>50</td><td>45</td><td>0</td><td>0</td><td>65</td><td>40</td><td><span class="badge" style="background:#d1fae5;color:#059669">In Stock</span></td></tr>
               </tbody>
             </table>
           </div>
 
           <h4>MR → MIS → FG Stock Flow</h4>
           <div style="background:#ecfdf5;border-radius:6px;padding:10px 14px;font-size:12px;color:#065f46;margin:8px 0">
-            <code>MR Released → MIS Created → MIS Posted (RM Stock −) → Production (BMR → RM Consumption → Packing) → FGHM Created → FGHM Inline Accepted (FG Stock +)</code>
+            <code>MR Released → MIS Created → MIS Posted (RM Stock −) → Production (BMR → RM Consumption → Packing) → FGHM Created → FGHM Inline Accepted (FG Stock +) → FG Consumption Entry (FG Stock −, site usage)</code>
           </div>
         </div>
 
-        <!-- 6C Stock Movement Transaction Log -->
+        <!-- 6C Project FG Consumption Tracking -->
         <div class="phase">
           <div class="phase-header">
             <span class="phase-number">6C</span>
+            <span class="phase-title">Project FG Consumption Tracking</span>
+            <span class="phase-tag">Per-Project FG Position</span>
+          </div>
+          <p>Auto-created tracking records when FG Consumption Entry is submitted. Shows per-project FG position: received vs consumed vs remaining.</p>
+
+          <div style="padding:8px 12px;background:#fffbeb;border-radius:6px;font-size:12px;color:#92400e;margin-bottom:8px">
+            <strong>Not a manual form.</strong> These records are auto-created by the FG Consumption Entry workflow rule. View via Project Dashboard or Report.
+          </div>
+
+          <h4>Tracking Record Fields</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Source</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Project ID</td><td>Lookup (Project Master)</td><td>Auto</td><td>From FG Consumption Entry</td></tr>
+                <tr><td>2</td><td>FG Product Code</td><td>Lookup (Item Muster - FG)</td><td>Auto</td><td>From FG Consumption Entry</td></tr>
+                <tr><td>3</td><td>FG Product Name</td><td>AutoFetch</td><td>Auto</td><td>—</td></tr>
+                <tr><td>4</td><td>UOM</td><td>AutoFetch</td><td>Auto</td><td>—</td></tr>
+                <tr><td>5</td><td>Used Qty</td><td>Number</td><td>Auto</td><td>From FG Consumption Entry</td></tr>
+                <tr><td>6</td><td>Consumption Date</td><td>Date</td><td>Auto</td><td>Today's date</td></tr>
+                <tr><td>7</td><td>Site Location</td><td>Text</td><td>Auto</td><td>From FG Consumption Entry</td></tr>
+                <tr><td>8</td><td>Supervisor</td><td>Text</td><td>Auto</td><td>From FG Consumption Entry</td></tr>
+                <tr><td>9</td><td>Reference FGHM</td><td>Text</td><td>Auto</td><td>FGHM reference number</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Sample Project FG Position Report</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Project</th><th>FG Code</th><th>FG Name</th><th>FGHM Received</th><th>Site Consumed</th><th>Remaining</th><th>Status</th></tr></thead>
+              <tbody>
+                <tr><td>PRJ-2026-001</td><td>FG-001</td><td>Epoxy Primer Coat</td><td>200 Kg</td><td>150 Kg</td><td>50 Kg</td><td><span class="badge" style="background:#d1fae5;color:#059669">In Progress</span></td></tr>
+                <tr><td>PRJ-2026-001</td><td>FG-002</td><td>Epoxy Top Coat</td><td>300 Kg</td><td>300 Kg</td><td>0 Kg</td><td><span class="badge" style="background:#fef3c7;color:#d97706">Exhausted</span></td></tr>
+                <tr><td>PRJ-2026-002</td><td>FG-001</td><td>Epoxy Primer Coat</td><td>100 Kg</td><td>80 Kg</td><td>20 Kg</td><td><span class="badge" style="background:#d1fae5;color:#059669">In Progress</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="margin-top:8px;font-size:12px;color:var(--gray-500)">Report fields: FG_Received = SUM(FGHM.Accepted_Qty), FG_Consumed = SUM(Project_FG_Consumption.Used_Qty), FG_Remaining = FG_Received − FG_Consumed. Grouped by Project + FG Code.</p>
+        </div>
+
+        <!-- 6D Stock Movement Transaction Log -->
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">6D</span>
             <span class="phase-title">Stock Movement Transaction Log</span>
             <span class="phase-tag">Audit Trail</span>
           </div>
-          <p>Real-time log of all stock movements across RM and FG inventory. Every GRN, MIS, FGHM, dispatch, and return generates a timestamped transaction entry with running balance.</p>
+          <p>Real-time log of all stock movements across RM and FG inventory. Every GRN, MIS, FGHM, FG Consumption, dispatch, and return generates a timestamped transaction entry with running balance.</p>
 
           <div class="table-wrap">
             <table>
@@ -1181,6 +1285,7 @@
                 <tr><td>2026-07-21 08:30</td><td>MIS-2026-018</td><td>Epoxy Resin A</td><td>RM</td><td><span class="badge" style="background:#fee2e2;color:#dc2626">Out</span></td><td>80</td><td>355</td></tr>
                 <tr><td>2026-07-20 16:00</td><td>FGH-2026-012</td><td>Epoxy Top Coat</td><td>FG</td><td><span class="badge" style="background:#d1fae5;color:#059669">In</span></td><td>100</td><td>135</td></tr>
                 <tr><td>2026-07-20 14:45</td><td>MIS-2026-017</td><td>Hardener B</td><td>RM</td><td><span class="badge" style="background:#fee2e2;color:#dc2626">Out</span></td><td>60</td><td>230</td></tr>
+                <tr><td>2026-07-20 10:30</td><td>FGC-2026-003</td><td>Epoxy Top Coat</td><td>FG</td><td><span class="badge" style="background:#fee2e2;color:#dc2626">Out</span></td><td>40</td><td>95</td></tr>
                 <tr><td>2026-07-19 11:20</td><td>DC-2026-005</td><td>Epoxy Primer Coat</td><td>FG</td><td><span class="badge" style="background:#fee2e2;color:#dc2626">Out</span></td><td>50</td><td>230</td></tr>
                 <tr><td>2026-07-18 10:00</td><td>GRN-2026-041</td><td>Pigment Red</td><td>RM</td><td><span class="badge" style="background:#d1fae5;color:#059669">In</span></td><td>25</td><td>15</td></tr>
               </tbody>
@@ -1189,10 +1294,10 @@
           <p style="margin-top:8px;font-size:12px;color:var(--gray-500)">The transaction log is auto-populated by workflow rules on each relevant form posting. Running balance is recalculated per item.</p>
         </div>
 
-        <!-- 6D BOM → BMR → FG Creation Flow -->
+        <!-- 6E BOM → BMR → FG Creation Flow -->
         <div class="phase">
           <div class="phase-header">
-            <span class="phase-number">6D</span>
+            <span class="phase-number">6E</span>
             <span class="phase-title">BOM → BMR → FG Creation</span>
             <span class="phase-tag">Visual Flow</span>
           </div>
@@ -1258,10 +1363,10 @@
           </div>
         </div>
 
-        <!-- 6E Reorder Alerts -->
+        <!-- 6F Reorder Alerts -->
         <div class="phase">
           <div class="phase-header">
-            <span class="phase-number">6E</span>
+            <span class="phase-number">6F</span>
             <span class="phase-title">Reorder & Stock Alerts</span>
             <span class="phase-tag">Min/Max Thresholds</span>
           </div>
@@ -1277,10 +1382,10 @@
           </div>
         </div>
 
-        <!-- 6F Automation Rules -->
+        <!-- 6G Automation Rules -->
         <div class="phase">
           <div class="phase-header">
-            <span class="phase-number">6F</span>
+            <span class="phase-number">6G</span>
             <span class="phase-title">Automation Rules & Notifications</span>
             <span class="phase-tag">Business Rules</span>
           </div>
@@ -1341,6 +1446,7 @@
             <li><strong>GRN posting:</strong> Qty added to stock only after posting; timestamp logged</li>
             <li><strong>MIS posting:</strong> Qty deducted from stock</li>
             <li><strong>FGHM inline acceptance:</strong> FG qty added to stock after inline acceptance</li>
+            <li><strong>FG Consumption Entry:</strong> FG qty deducted from stock on site usage</li>
             <li><strong>Material Return:</strong> Qty added back to stock</li>
             <li><strong>Min/Max stock:</strong> Alert when stock crosses thresholds</li>
             <li><strong>Consumption → Project-Assigned RM:</strong> Every consumption entry resolves to MR Allocation line matched by Project ID + Item Code — never a generic pool</li>
