@@ -8,9 +8,20 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 <style>
-  /* flow.html-specific overrides (thin — most styles now in style.css) */
   .form-demo label { display: block; font-size: 12px; font-weight: 600; color: var(--gray-600); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
   .form-demo input, .form-demo select, .form-demo textarea { margin-bottom: 12px; }
+  .status-badge { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; margin-right: 4px; }
+  .status-draft { background: #f3f4f6; color: #6b7280; }
+  .status-verified { background: #fef3c7; color: #92400e; }
+  .status-approved { background: #dbeafe; color: #1e40af; }
+  .status-released { background: #d1fae5; color: #065f46; }
+  .flow-pipeline { display:flex; align-items:center; gap:6px; flex-wrap:wrap; background:var(--gray-50); border-radius:8px; padding:10px 14px; margin:12px 0; border:1px solid var(--gray-200); font-size:12px; }
+  .flow-pipeline .fp-node { padding:4px 12px; border-radius:6px; font-weight:600; white-space:nowrap; }
+  .fp-node.stream-a { background:#dbeafe; color:#1e40af; }
+  .fp-node.stream-b { background:#fef3c7; color:#92400e; }
+  .fp-node.gate { background:#fce7f3; color:#9d174d; border:2px solid #f9a8d4; }
+  .fp-arrow { color:var(--gray-400); font-size:16px; font-weight:700; }
+  .fp-label { font-size:10px; color:var(--gray-500); font-weight:600; text-transform:uppercase; letter-spacing:0.3px; }
 </style>
 </head>
 <body>
@@ -35,154 +46,104 @@
         <div class="fp-step" data-step="5"><span class="fp-circle">5</span></div>
         <span class="fp-connector"></span>
         <div class="fp-step" data-step="6"><span class="fp-circle">6</span></div>
-        <span class="fp-connector"></span>
-        <div class="fp-step" data-step="7"><span class="fp-circle">7</span></div>
-        <span class="fp-connector"></span>
-        <div class="fp-step" data-step="8"><span class="fp-circle">8</span></div>
       </div>
 
-      <!-- Zone 2: Accordion Steps — Organization Cycle -->
+      <!-- STREAM A -->
+      <div class="accordion-stream-label">STREAM A — STOCK PROCUREMENT</div>
 
-      <!-- STREAM A: Pre-Project / Stock Procurement (No Project ID) -->
-      <div class="accordion-stream-label">STREAM A — PRE-PROJECT</div>
-
-      <!-- Stage 1: Purchase + Stock (Pre-Project) -->
       <div class="accordion-section">
         <div class="accordion-header">
           <span class="ah-num">1</span>
-          Purchase + Stock
+          Procurement
           <span class="ah-arrow">▶</span>
         </div>
         <div class="accordion-body">
-          <a class="ab-link" href="forms.html#procurement"><span class="al-type type-forms">Forms</span>PO→GRN→QC</a>
-          <a class="ab-link" href="forms.html#production"><span class="al-type type-forms">Forms</span>PR (Purchase Requisition)</a>
-          <a class="ab-link" href="forms.html#material-handover"><span class="al-type type-forms">Forms</span>Mat Handover</a>
+          <a class="ab-link" href="forms.html#procurement"><span class="al-type type-forms">Forms</span>PR → PO → GRN → QC</a>
           <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Stock Reports</a>
-          <a class="ab-link" href="flow.html#procurement"><span class="al-type type-flow">Flow</span>Purchase Flow (PO→GRN→QC)</a>
-          <a class="ab-link" href="flow.html#rate-comparison"><span class="al-type type-flow">Flow</span>Rate Comparison</a>
+          <a class="ab-link" href="flow.html#procurement"><span class="al-type type-flow">Flow</span>Purchase Flow</a>
         </div>
       </div>
 
+      <!-- STREAM B -->
       <div class="accordion-stream-label">STREAM B — PROJECT-CENTRIC</div>
 
-      <!-- Stage 2: Sales → Project (Root) -->
       <div class="accordion-section">
         <div class="accordion-header">
           <span class="ah-num">2</span>
-          Sales → Project
+          Master Data
+          <span class="ah-arrow">▶</span>
+        </div>
+        <div class="accordion-body">
+          <a class="ab-link" href="forms.html#master-data"><span class="al-type type-forms">Forms</span>Item Muster → BOM → Supplier</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Item Reports</a>
+          <a class="ab-link" href="flow.html#master-data"><span class="al-type type-flow">Flow</span>Master Data</a>
+        </div>
+      </div>
+
+      <div class="accordion-section">
+        <div class="accordion-header">
+          <span class="ah-num">3</span>
+          SO → Project
           <span class="ah-arrow">▶</span>
         </div>
         <div class="accordion-body">
           <a class="ab-link" href="forms.html#sales"><span class="al-type type-forms">Forms</span>Sales Order + Project</a>
           <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Sales Register</a>
-          <a class="ab-link" href="flow.html#so-so"><span class="al-type type-flow">Flow</span>SO Flow</a>
-          <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>SO Model</a>
+          <a class="ab-link" href="flow.html#so-flow"><span class="al-type type-flow">Flow</span>SO Flow</a>
         </div>
       </div>
 
-      <!-- Stage 3: MR → MIS (Bridge) -->
-      <div class="accordion-section">
-        <div class="accordion-header">
-          <span class="ah-num">3</span>
-          MR → MIS
-          <span class="ah-arrow">▶</span>
-        </div>
-        <div class="accordion-body">
-          <a class="ab-link" href="forms.html#inventory"><span class="al-type type-forms">Forms</span>MR→MIS→FG Handover</a>
-          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Stock Reports</a>
-          <a class="ab-link" href="flow.html#inv-mr"><span class="al-type type-flow">Flow</span>Inventory Flow</a>
-          <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>Inventory Model</a>
-        </div>
-      </div>
-
-      <!-- Stage 4: Production -->
       <div class="accordion-section">
         <div class="accordion-header">
           <span class="ah-num">4</span>
+          MR — Costing Gate
+          <span class="ah-arrow">▶</span>
+        </div>
+        <div class="accordion-body">
+          <a class="ab-link" href="forms.html#inventory"><span class="al-type type-forms">Forms</span>MR + Costing Approval</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Cost Reports</a>
+          <a class="ab-link" href="flow.html#mr-flow"><span class="al-type type-flow">Flow</span>MR Flow</a>
+        </div>
+      </div>
+
+      <div class="accordion-section">
+        <div class="accordion-header">
+          <span class="ah-num">5</span>
           Production
           <span class="ah-arrow">▶</span>
         </div>
         <div class="accordion-body">
-          <a class="ab-link" href="forms.html#production"><span class="al-type type-forms">Forms</span>Planning→BMR→Pack</a>
+          <a class="ab-link" href="forms.html#production"><span class="al-type type-forms">Forms</span>MIS → Planning → BMR → Pack → FGHM</a>
           <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Production Reports</a>
-          <a class="ab-link" href="flow.html#org-prod"><span class="al-type type-flow">Flow</span>Production Flow (incl. PR)</a>
-          <a class="ab-link" href="flow.html#pr-pr"><span class="al-type type-flow">Flow</span>PR (Purchase Requisition)</a>
-          <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>Production Model</a>
+          <a class="ab-link" href="flow.html#production-flow"><span class="al-type type-flow">Flow</span>Production Flow</a>
         </div>
       </div>
 
-      <!-- Stage 5: Costing -->
-      <div class="accordion-section">
-        <div class="accordion-header">
-          <span class="ah-num">5</span>
-          Costing
-          <span class="ah-arrow">▶</span>
-        </div>
-        <div class="accordion-body">
-          <a class="ab-link" href="forms.html#costing"><span class="al-type type-forms">Forms</span>Costing Approval</a>
-          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Cost Reports</a>
-          <a class="ab-link" href="flow.html#org-costing"><span class="al-type type-flow">Flow</span>Costing Flow</a>
-          <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>Cost Model</a>
-        </div>
-      </div>
-
-      <!-- Stage 6: Service -->
       <div class="accordion-section">
         <div class="accordion-header">
           <span class="ah-num">6</span>
-          Service
+          Inventory
           <span class="ah-arrow">▶</span>
         </div>
         <div class="accordion-body">
-          <a class="ab-link" href="forms.html#service-team"><span class="al-type type-forms">Forms</span>Area→Work→Invoice</a>
-          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Service Reports</a>
-          <a class="ab-link" href="flow.html#org-service"><span class="al-type type-flow">Flow</span>Service Flow</a>
-          <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>Service Model</a>
-        </div>
-      </div>
-
-      <!-- Stage 7: Finance -->
-      <div class="accordion-section">
-        <div class="accordion-header">
-          <span class="ah-num">7</span>
-          Finance
-          <span class="ah-arrow">▶</span>
-        </div>
-        <div class="accordion-body">
-          <a class="ab-link" href="forms.html#finance"><span class="al-type type-forms">Forms</span>Finance (SCN)</a>
-          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>P&amp;L / Reports</a>
-          <a class="ab-link" href="flow.html#org-finance"><span class="al-type type-flow">Flow</span>Finance Flow</a>
-          <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>Finance Model</a>
-        </div>
-      </div>
-
-      <!-- Stage 8: Logistics → Closure -->
-      <div class="accordion-section">
-        <div class="accordion-header">
-          <span class="ah-num">8</span>
-          Logistics → Closure
-          <span class="ah-arrow">▶</span>
-        </div>
-        <div class="accordion-body">
-          <a class="ab-link" href="forms.html#logistics"><span class="al-type type-forms">Forms</span>DC / Outward</a>
-          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Logistics Reports</a>
-          <a class="ab-link" href="flow.html#org-logistics"><span class="al-type type-flow">Flow</span>Logistics Flow</a>
-          <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>Logistics Model</a>
+          <a class="ab-link" href="forms.html#inventory"><span class="al-type type-forms">Forms</span>RM + FG Stock</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Stock Reports</a>
+          <a class="ab-link" href="flow.html#inventory-flow"><span class="al-type type-flow">Flow</span>Inventory Flow</a>
         </div>
       </div>
 
       <!-- Zone 3: System Links -->
       <div class="nav-divider">━━━━ QUICK NAV ━━━━</div>
-      <a href="index.html" class="sidebar-flat-link">🏠 Overview</a>
-      <a href="forms.html" class="sidebar-flat-link">📝 Forms</a>
-      <a href="flow.html" class="sidebar-flat-link">🔄 Flow Demo</a>
-      <a href="reports.html" class="sidebar-flat-link">📊 Reports</a>
+      <a href="index.html" class="sidebar-flat-link">&#x1F3E0; Overview</a>
+      <a href="forms.html" class="sidebar-flat-link">&#x1F4DD; Forms</a>
+      <a href="flow.html" class="sidebar-flat-link">&#x1F504; Flow Demo</a>
+      <a href="reports.html" class="sidebar-flat-link">&#x1F4CA; Reports</a>
       <div class="nav-divider">━━━━ SYSTEM ━━━━</div>
-      <a href="security.html" class="sidebar-flat-link">🔒 Security &amp; Roles</a>
-      <a href="data-model.html" class="sidebar-flat-link">📐 Data Model</a>
-      <a href="implementation-plan.html" class="sidebar-flat-link">📋 Implementation Plan</a>
-      <a href="BRD_PRD_RFP.md" class="sidebar-flat-link">📄 BRD / PRD / RFP</a>
-      <a href="../index.html" class="sidebar-flat-link">← Back to Hub</a>
+      <a href="security.html" class="sidebar-flat-link">&#x1F512; Security &amp; Roles</a>
+      <a href="data-model.html" class="sidebar-flat-link">&#x1F4D0; Data Model</a>
+      <a href="implementation-plan.html" class="sidebar-flat-link">&#x1F4CB; Implementation Plan</a>
+      <a href="BRD_PRD_RFP.md" class="sidebar-flat-link">&#x1F4C4; BRD / PRD / RFP</a>
+      <a href="../index.html" class="sidebar-flat-link">&larr; Back to Hub</a>
     </div>
 </nav>
 
@@ -190,98 +151,100 @@
   <div class="hero">
     <div class="hero-eyebrow">Organization Cycle · Interactive Demo</div>
     <h1>Process of Productivity</h1>
-    <p><strong>Two-Stream Architecture:</strong> <strong>Stream A (Pre-Project):</strong> PURCHASE → STOCK (no Project ID). <strong>Stream B (Project-Centric):</strong> SALES → PROJECT → MR→MIS → PRODUCTION → COSTING → SERVICE → FINANCE → LOGISTICS (Project ID flows downstream). Procurement runs independently for stock. MR consumes from Store inventory for projects.</p>
+    <p><strong>Two-Stream Architecture:</strong> <strong>Stream A (Stock Procurement):</strong> PURCHASE → STOCK (no Project ID). <strong>Stream B (Project-Centric):</strong> MASTER DATA → SO → PROJECT → MR (Costing Gate) → PRODUCTION → INVENTORY (Project ID flows downstream).</p>
     <p style="margin-top:4px;font-size:13px;color:var(--gray-500)"><strong>3-Layer Hierarchy:</strong> SO sells <strong>Systems</strong> (EP01) → composed of <strong>FGs</strong> (System Composition) → each FG formulated from <strong>RMs</strong> (BOM). MR works at <strong>RM level only</strong>.</p>
   </div>
 
   <div class="content">
 
-    <!-- Flow Pipeline — Two-Stream Cycle -->
-    <div class="flow-bar" id="flow-bar">
-      <!-- Stream A (blue tint) -->
-      <a href="#rate-comparison" style="background:#dbeafe;padding:2px 10px;border-radius:4px;font-weight:400">RC</a><span class="arrow">&rarr;</span>
-      <a href="#procurement" style="background:#dbeafe;padding:2px 10px;border-radius:4px;font-weight:700">PO→GRN→QC</a><span class="arrow">&rarr;</span>
-      <a href="#inv-store" style="background:#dbeafe;padding:2px 10px;border-radius:4px">STOCK</a>
-      <span class="arrow" style="color:#3b82f6;font-weight:700">&#8660;</span>
-      <span style="font-size:10px;color:#3b82f6;font-weight:600;padding:0 4px">Stream A</span>
-      <span class="arrow" style="color:#3b82f6">&#10151;</span>
-      <!-- Stream B -->
-      <a href="#so-so">SALES</a><span class="arrow">&rarr;</span>
-      <a href="#org-prod">PRODUCTION</a><span class="arrow">&rarr;</span>
-      <a href="#inv-mr">MR→MIS</a><span class="arrow">&rarr;</span>
-      <a href="#org-costing">COSTING</a><span class="arrow">&rarr;</span>
-      <a href="#org-service">SERVICE</a><span class="arrow">&rarr;</span>
-      <a href="#org-finance">FINANCE</a><span class="arrow">&rarr;</span>
-      <a href="#org-logistics">LOGISTICS</a>
+    <!-- Flow Pipeline -->
+    <div class="flow-pipeline" id="flow-bar">
+      <span class="fp-label">Stream A</span>
+      <span class="fp-node stream-a" href="#procurement">PR → PO → GRN → QC</span>
+      <span class="fp-arrow">&rarr;</span>
+      <span class="fp-node stream-a">STOCK</span>
+      <span class="fp-arrow" style="color:#3b82f6">&#8660;</span>
+      <span class="fp-label" style="margin-left:8px">Stream B</span>
+      <span class="fp-node stream-b" href="#master-data">MASTER DATA</span>
+      <span class="fp-arrow">&rarr;</span>
+      <span class="fp-node stream-b" href="#so-flow">SO → PROJECT</span>
+      <span class="fp-arrow">&rarr;</span>
+      <span class="fp-node gate" href="#mr-flow">MR (COSTING GATE)</span>
+      <span class="fp-arrow">&rarr;</span>
+      <span class="fp-node stream-b" href="#production-flow">PRODUCTION</span>
+      <span class="fp-arrow">&rarr;</span>
+      <span class="fp-node stream-b" href="#inventory-flow">INVENTORY</span>
     </div>
 
     <!-- ============================================================ -->
     <!-- ORGANIZATION CYCLE OVERVIEW -->
     <!-- ============================================================ -->
     <div class="module-group" id="org-cycle">
-      <h3>Organization Cycle <span class="mg-badge">Two-Stream Architecture — 8 Stages</span></h3>
-      <p>The system follows a <strong>Two-Stream Architecture.</strong> <strong>Stream A (Pre-Project):</strong> Purchase for stock — no Project ID. <strong>Stream B (Project-Centric):</strong> SO → Project triggers MR→MIS→Production→Service→Finance→Logistics.</p>
+      <h3>Organization Cycle <span class="mg-badge">Two-Stream Architecture — 6 Stages</span></h3>
+      <p>The system follows a <strong>Two-Stream Architecture.</strong> <strong>Stream A (Stock Procurement):</strong> Purchase for stock — no Project ID. <strong>Stream B (Project-Centric):</strong> Master Data → SO → Project → MR Costing Gate → Production → Inventory.</p>
 
       <div class="org-cycle-flow" style="background:var(--gray-50);border-radius:12px;padding:24px;margin:16px 0;border:1px solid var(--gray-200)">
         <div style="display:flex;flex-direction:column;gap:16px">
 
-          <!-- Stream A (Pre-Project) -->
+          <!-- Stream A -->
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;border:2px dashed #3b82f6;border-radius:8px;padding:12px;background:rgba(59,130,246,0.04)">
             <span style="background:#3b82f6;color:#fff;padding:4px 12px;border-radius:999px;font-size:11px;font-weight:700">STREAM A</span>
-            <span class="ff-node" style="background:#dbeafe">PURCHASE (PO→GRN→QC)</span>
-            <span class="ff-arrow">→</span>
-            <span class="ff-node" style="background:#d1fae5">Material Handover</span>
+            <span class="ff-node" style="background:#dbeafe">PR → PO → GRN → QC</span>
             <span class="ff-arrow">→</span>
             <span class="ff-node" style="background:#d1fae5">STORE (RM Inventory)</span>
             <span style="font-size:11px;color:#3b82f6;margin-left:8px;font-weight:600">No Project ID</span>
           </div>
 
-          <!-- Stream B: Sales → Project (Stages 1-2) -->
-          <div style="display:flex;flex-direction:column;gap:10px">
+          <!-- Stream B -->
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span style="background:var(--primary);color:#fff;padding:4px 12px;border-radius:999px;font-size:11px;font-weight:700">STAGE 2</span>
+            <span class="ff-node" style="background:#dbeafe">MASTER DATA (Global Reference)</span>
+            <span class="ff-arrow">→</span>
+            <span class="ff-node" style="background:#fef3c7">Used by all forms</span>
+          </div>
+
+          <div style="display:flex;flex-direction:column;gap:8px">
             <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-              <span style="background:var(--primary);color:#fff;padding:4px 12px;border-radius:999px;font-size:11px;font-weight:700">STAGE 1</span>
-              <span class="ff-node" style="background:#dbeafe">SALES (SO · <strong>Sales Type</strong> toggle)</span>
-              <span style="font-size:11px;color:var(--gray-500)">Client PO ref attached</span>
+              <span style="background:var(--green);color:#fff;padding:4px 12px;border-radius:999px;font-size:11px;font-weight:700">STAGE 3</span>
+              <span class="ff-node" style="background:#dbeafe">SO (Sales Order)</span>
+              <span class="ff-arrow">→</span>
+              <span class="ff-node" style="background:#fef3c7">PROJECT (Root Entity)</span>
             </div>
             <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-left:24px">
-              <span style="background:var(--green);color:#fff;padding:2px 10px;border-radius:999px;font-size:10px;font-weight:700">Supply+Apply</span>
+              <span style="background:#f59e0b;color:#fff;padding:2px 10px;border-radius:999px;font-size:10px;font-weight:700">Supply+Apply</span>
               <span class="ff-arrow">→</span>
-              <span class="ff-node" style="background:#fef3c7">PROJECT (Root Entity) · System Lines</span>
-              <span class="ff-arrow">→</span>
-              <span class="ff-node" style="background:#fef3c7">Task Budget</span>
+              <span class="ff-node" style="background:#fef3c7">PROJECT created · System Lines</span>
               <span class="ff-arrow">→</span>
               <span class="ff-node" style="background:#d1fae5">MR → MIS (consumes Store)</span>
-              <span style="font-size:11px;color:var(--primary);margin-left:8px;font-weight:600">Project ID on all forms</span>
             </div>
             <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-left:24px">
               <span style="background:#f59e0b;color:#fff;padding:2px 10px;border-radius:999px;font-size:10px;font-weight:700">Supply Only</span>
               <span class="ff-arrow">→</span>
-              <span class="ff-node" style="background:#fee2e2">FG DISPATCH / INVOICE (no Project)</span>
-              <span style="font-size:11px;color:#92400e;margin-left:8px;font-weight:600">Direct FG sale · No Project ID · No consumption tracking</span>
+              <span class="ff-node" style="background:#fee2e2">FG DISPATCH (no Project)</span>
             </div>
           </div>
 
-          <!-- Stream B: Production (Stage 3) -->
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-            <span style="background:var(--accent);color:#fff;padding:4px 12px;border-radius:999px;font-size:11px;font-weight:700">STAGE 2</span>
-            <span class="ff-node" style="background:#fef3c7">PRODUCTION (Plan→BMR→Pack)</span>
+            <span style="background:#8b5cf6;color:#fff;padding:4px 12px;border-radius:999px;font-size:11px;font-weight:700">STAGE 4</span>
+            <span class="ff-node" style="background:#fce7f3;border:2px solid #f9a8d4">MR — COSTING GATE</span>
             <span class="ff-arrow">→</span>
-            <span class="ff-node" style="background:#e8effd">FGHM (FG + QC)</span>
-            <span class="ff-arrow">→</span>
-            <span class="ff-node" style="background:#fef3c7">COSTING Approval</span>
-            <span style="font-size:11px;color:var(--gray-500);margin-left:8px">(Material cost valuation gate)</span>
+            <span class="ff-node" style="background:#d1fae5">Draft → Production Verified → Costing Approved → Released</span>
           </div>
 
-          <!-- Stream B: Service → Finance (Stage 4) -->
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-            <span style="background:#8b5cf6;color:#fff;padding:4px 12px;border-radius:999px;font-size:11px;font-weight:700">STAGE 3</span>
-            <span class="ff-node" style="background:#dbeafe">SERVICE (Area→Work→Invoice)</span>
+            <span style="background:var(--accent);color:#fff;padding:4px 12px;border-radius:999px;font-size:11px;font-weight:700">STAGE 5</span>
+            <span class="ff-node" style="background:#fef3c7">PRODUCTION (Plan → BMR → Pack)</span>
             <span class="ff-arrow">→</span>
-            <span class="ff-node" style="background:#dbeafe">FINANCE</span>
+            <span class="ff-node" style="background:#d1fae5">FGHM (FG + QC)</span>
             <span class="ff-arrow">→</span>
-            <span class="ff-node" style="background:#d1fae5">LOGISTICS (DC→Outward)</span>
-            <span class="ff-arrow">→</span>
-            <span class="ff-node" style="background:#e8effd">PROJECT CLOSE (P&amp;L)</span>
+            <span class="ff-node" style="background:#dbeafe">FG STOCK</span>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span style="background:#059669;color:#fff;padding:4px 12px;border-radius:999px;font-size:11px;font-weight:700">STAGE 6</span>
+            <span class="ff-node" style="background:#d1fae5">RM INVENTORY</span>
+            <span class="ff-arrow">&#8660;</span>
+            <span class="ff-node" style="background:#dbeafe">FG INVENTORY</span>
           </div>
 
         </div>
@@ -297,7 +260,7 @@
 
       <div class="form-card">
         <div class="fc-header">
-          <span class="fc-num">1A</span>
+          <span class="fc-num">1</span>
           <span class="fc-title">Purchase Item Muster</span>
           <span class="fc-tag">Global</span>
         </div>
@@ -324,7 +287,7 @@
 
       <div class="form-card">
         <div class="fc-header">
-          <span class="fc-num">1B</span>
+          <span class="fc-num">2</span>
           <span class="fc-title">System Master</span>
           <span class="fc-tag">Global</span>
         </div>
@@ -346,59 +309,9 @@
 
       <div class="form-card">
         <div class="fc-header">
-          <span class="fc-num">1C</span>
-          <span class="fc-title">System Composition</span>
-          <span class="fc-tag">System→FG Mapping</span>
-        </div>
-        <div class="fc-flow">
-          <span class="fc-flow-in">From: System Master</span>
-          <span class="fc-flow-key">Maps which FGs make up each System</span>
-          <span class="fc-flow-out">To: Production Planning, SO pricing</span>
-        </div>
-        <div class="form-demo">
-          <div class="form-row">
-            <div><label>System Code</label><select><option>EP01 — Epoxy Flooring 1mm</option></select></div>
-          </div>
-          <div class="subtable-demo">
-            <div class="st-hint">System → FG Composition (multiple FGs per System)</div>
-            <table style="width:100%;border-collapse:collapse;font-size:12px">
-              <thead>
-                <tr>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">FG Product</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Qty per System Unit</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">UOM</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Rate</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option>FG-001 — Floorchem 300 Matt [R]</option></select></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="0.75" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled style="background:var(--gray-50)"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="285" style="font-size:12px"></td>
-                </tr>
-                <tr>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option>FG-002 — Floorchem 300 Matt [H]</option></select></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="0.25" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled style="background:var(--gray-50)"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="275" style="font-size:12px"></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div style="padding:8px 12px;background:#fffbeb;border-radius:6px;font-size:12px;color:#92400e;margin-top:4px">
-            <strong>&#x2139; 3-Layer Hierarchy:</strong> SO sells <strong>Systems</strong> (EP01) → composed of multiple <strong>FGs</strong> → each FG formulated from multiple <strong>RMs</strong> (see BOM below). MR requisitions <strong>RM only</strong>.
-          </div>
-        </div>
-      </div>
-
-      <div class="connector-down">&#x25BC;</div>
-
-      <div class="form-card">
-        <div class="fc-header">
-          <span class="fc-num">1D</span>
+          <span class="fc-num">3</span>
           <span class="fc-title">BOM / FG Formulation</span>
-          <span class="fc-tag">FG→RM Mapping</span>
+          <span class="fc-tag">FG &rarr; RM Mapping</span>
         </div>
         <div class="fc-flow">
           <span class="fc-flow-in">From: FG Product (Item Muster)</span>
@@ -410,7 +323,7 @@
             <div><label>FG Product</label><select><option>FG-001 — Floorchem 300 Matt [R]</option></select></div>
           </div>
           <div class="subtable-demo">
-            <div class="st-hint">FG → RM Formulation (12 RM components per FG-001 per 100 Kg FG batch)</div>
+            <div class="st-hint">FG &rarr; RM Formulation (12 RM components per 100 Kg FG batch)</div>
             <table style="width:100%;border-collapse:collapse;font-size:12px">
               <thead>
                 <tr>
@@ -421,78 +334,12 @@
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px">RK Resin</span></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="32" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="32%" style="font-size:12px" disabled></td>
-                </tr>
-                <tr>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px">BA</span></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="27.33" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="27.3%" style="font-size:12px" disabled></td>
-                </tr>
-                <tr>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px">Talc</span></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="20" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="20%" style="font-size:12px" disabled></td>
-                </tr>
-                <tr>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px">Xylene</span></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="8.95" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="9%" style="font-size:12px" disabled></td>
-                </tr>
-                <tr>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px">MSP</span></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="6" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="6%" style="font-size:12px" disabled></td>
-                </tr>
-                <tr>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px">MAG 100</span></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="2" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="2%" style="font-size:12px" disabled></td>
-                </tr>
-                <tr>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px">TH 2</span></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="0.6" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="0.6%" style="font-size:12px" disabled></td>
-                </tr>
-                <tr>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px">AR 120</span></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="0.5" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="0.5%" style="font-size:12px" disabled></td>
-                </tr>
-                <tr>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px">13 G</span></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="0.3" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="0.3%" style="font-size:12px" disabled></td>
-                </tr>
-                <tr>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px">YAL 12</span></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="0.2" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="0.2%" style="font-size:12px" disabled></td>
-                </tr>
-                <tr>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px">66F</span></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="0.12" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="0.12%" style="font-size:12px" disabled></td>
-                </tr>
-                <tr>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px">MAG 42</span></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="1" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="1%" style="font-size:12px" disabled></td>
-                </tr>
+                <tr><td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px">RK Resin</span></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="32" style="font-size:12px"></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="32%" style="font-size:12px" disabled></td></tr>
+                <tr><td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px">BA</span></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="27.33" style="font-size:12px"></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="27.3%" style="font-size:12px" disabled></td></tr>
+                <tr><td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px">Talc</span></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="20" style="font-size:12px"></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="20%" style="font-size:12px" disabled></td></tr>
+                <tr><td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px">Xylene</span></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="8.95" style="font-size:12px"></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="9%" style="font-size:12px" disabled></td></tr>
+                <tr><td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px">MSP</span></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="6" style="font-size:12px"></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="6%" style="font-size:12px" disabled></td></tr>
+                <tr><td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px">MAG 100</span></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="2" style="font-size:12px"></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="2%" style="font-size:12px" disabled></td></tr>
               </tbody>
               <tfoot>
                 <tr style="background:#f0fdf4">
@@ -511,13 +358,13 @@
 
       <div class="form-card">
         <div class="fc-header">
-          <span class="fc-num">1E</span>
+          <span class="fc-num">4</span>
           <span class="fc-title">Supplier Master</span>
           <span class="fc-tag">Global</span>
         </div>
         <div class="fc-flow">
           <span class="fc-flow-key">No dependencies</span>
-          <span class="fc-flow-out">Used by: PO, Rate Comparison</span>
+          <span class="fc-flow-out">Used by: PO</span>
         </div>
         <div class="form-demo">
           <div class="form-row-4">
@@ -538,7 +385,7 @@
 
       <div class="form-card">
         <div class="fc-header">
-          <span class="fc-num">1F</span>
+          <span class="fc-num">5</span>
           <span class="fc-title">Customer / Site Master</span>
           <span class="fc-tag">Global</span>
         </div>
@@ -565,12 +412,12 @@
 
       <div class="form-card">
         <div class="fc-header">
-          <span class="fc-num">1G</span>
+          <span class="fc-num">6</span>
           <span class="fc-title">Store Master</span>
           <span class="fc-tag">Global</span>
         </div>
         <div class="fc-flow">
-          <span class="fc-flow-key">No dependencies. Bin Location is a subform, not a separate form.</span>
+          <span class="fc-flow-key">No dependencies</span>
           <span class="fc-flow-out">Used by: GRN, MIS</span>
         </div>
         <div class="form-demo">
@@ -580,76 +427,26 @@
             <div><label>Location</label><input type="text" value="Pune"></div>
             <div><label>Incharge</label><input type="text" value="Suresh Patil"></div>
           </div>
-          <div class="subtable-demo">
-            <div class="st-hint">Bin Locations (inline subform — not a separate module)</div>
-            <table style="width:100%;border-collapse:collapse;font-size:12px">
-              <thead>
-                <tr>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Rack No</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Shelf No</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Bin No</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="A" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="1" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="A-1-01" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option selected>Active</option></select></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <div class="connector-down">&#x25BC;</div>
-
-      <div class="form-card">
-        <div class="fc-header">
-          <span class="fc-num">1H</span>
-          <span class="fc-title">User Access &amp; Approval Matrix</span>
-          <span class="fc-tag">Admin</span>
-        </div>
-        <div class="fc-flow">
-          <span class="fc-flow-key">No dependencies</span>
-          <span class="fc-flow-out">Used by: All forms (login + approval checks)</span>
-        </div>
-        <div class="form-demo">
-          <div class="form-row-3">
-            <div><label>User</label><select><option>Rajesh (Purchase)</option><option>Priya (Sales)</option><option selected>Anil (Store)</option></select></div>
-            <div><label>Department</label><input type="text" value="Store & Logistics" disabled style="background:var(--gray-50)"></div>
-            <div><label>Role</label><select><option>User</option><option selected>Approver</option><option>Admin</option></select></div>
-          </div>
-          <div style="border-top:1px solid var(--gray-200);padding-top:12px;margin-top:4px">
-            <div class="form-row-4">
-              <div><label>Module</label><select><option selected>PR</option><option>PO</option><option>MIS</option></select></div>
-              <div><label>Min Limit</label><input type="number" value="0"></div>
-              <div><label>Max Limit</label><input type="number" value="50000"></div>
-              <div><label>Approver</label><select><option>Sanjay (Manager)</option></select></div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
 
     <!-- ============================================================ -->
-    <!-- SALES -->
+    <!-- SALES --->
     <!-- ============================================================ -->
-    <div class="module-group" id="sales">
-      <h3>Sales <span class="mg-badge">Stage 1 (Start) — Client PO ref attached to SO</span></h3>
-      <p>SO creates the Project. Client PO is just a reference record attached to the SO (text/attachment field). This is the <strong>starting point</strong> of the Organization Cycle.</p>
+    <div class="module-group" id="so-flow">
+      <h3>Sales <span class="mg-badge">Stage 3 — Client PO ref attached to SO</span></h3>
+      <p>SO creates the Project. Client PO is just a reference record attached to the SO.</p>
 
       <div class="form-card" id="so-so">
         <div class="fc-header">
-          <span class="fc-num">2A</span>
+          <span class="fc-num">7A</span>
           <span class="fc-title">Sales / Work Order (SO)</span>
-          <span class="fc-tag blue" style="background:var(--green-light);color:var(--green)">Dual Mode · Project only on Supply+Apply</span>
+          <span class="fc-tag blue" style="background:var(--green-light);color:var(--green)">Dual Mode</span>
         </div>
         <div class="fc-flow">
           <span class="fc-flow-in">From: Customer Master</span>
-          <span class="fc-flow-key">Sales Type toggle → Subform A (System) or B (FG)</span>
+          <span class="fc-flow-key">Sales Type toggle &rarr; Subform A (System) or B (FG)</span>
           <span class="fc-flow-out">Supply+Apply: Creates Project · Supply Only: FG dispatch only</span>
         </div>
         <div class="form-demo">
@@ -657,26 +454,23 @@
             <div><label>Date</label><input type="date" value="2026-07-01"></div>
             <div><label>Employee</label><input type="text" value="Priya Sharma"></div>
             <div><label>Customer</label><select><option selected>CUST-001 — Tata Motors Ltd</option></select></div>
-            <div><label><strong>Sales Type</strong> (CONTROLLING)</label><select><option selected>Supply+Apply</option><option>Supply Only</option></select></div>
+            <div><label>Sales Type</label><select><option selected>Supply+Apply</option><option>Supply Only</option></select></div>
           </div>
           <div class="form-row-3">
             <div><label>Site Name</label><input type="text" value="Pune Plant - Unit 2"></div>
             <div><label>Site Manager</label><input type="text" value="Rajesh Sharma"></div>
-            <div><label>Project Type</label><select><option selected>Industrial</option><option>Commercial</option></select><span style="font-size:10px;color:#92400e">shown only if Supply+Apply</span></div>
+            <div><label>Project Type</label><select><option selected>Industrial</option><option>Commercial</option></select></div>
           </div>
           <div style="display:flex;gap:12px;padding:8px 12px;background:#fffbeb;border-radius:6px;font-size:12px;color:#92400e;margin-bottom:8px;border:1px solid #fde68a">
             <strong>&#x1F4CB; Client PO Reference:</strong>
             <input type="text" value="PO/CHM/2026/0421" placeholder="Client PO No." style="padding:4px 8px;border:1px solid #fde68a;border-radius:4px;font-size:12px;width:200px">
-            <span style="color:var(--gray-500)">Client PO is just a reference record — attached to SO, not a separate process step.</span>
             <span class="badge badge-green">Attach file</span>
           </div>
 
-           <div style="padding:6px 10px;background:#eef2ff;border-radius:6px;font-size:11px;color:#3730a3;margin-bottom:8px"><strong>&#x1F504; Dynamic subform:</strong> Only ONE of the two subforms below is visible at a time. <code>Sales Type = Supply+Apply</code> shows <strong>Subform A (System Lines)</strong>; <code>Sales Type = Supply Only</code> shows <strong>Subform B (FG Lines)</strong>. The hidden subform is removed from the record and its validation is skipped.</div>
-
-           <!-- Subform A: System Lines (Supply+Apply) -->
-          <div style="padding:6px 10px;background:#ecfdf5;border-radius:6px 6px 0 0;font-size:12px;font-weight:700;color:#065f46;border:1px solid #a7f3d0;border-bottom:none">Subform A — System Lines &nbsp;<span style="font-weight:400;color:#065f46">Visible when Sales Type = Supply+Apply</span></div>
-           <div class="subtable-demo" style="border:1px solid #a7f3d0;border-top:none">
-            <div class="st-hint">System Line Items (N items) — sells a SYSTEM (e.g., EP01 → drives Project)</div>
+          <!-- Subform A: System Lines -->
+          <div style="padding:6px 10px;background:#ecfdf5;border-radius:6px 6px 0 0;font-size:12px;font-weight:700;color:#065f46;border:1px solid #a7f3d0;border-bottom:none">Subform A — System Lines (Supply+Apply)</div>
+          <div class="subtable-demo" style="border:1px solid #a7f3d0;border-top:none">
+            <div class="st-hint">System Line Items — sells a SYSTEM (e.g., EP01 &rarr; drives Project)</div>
             <table style="width:100%;border-collapse:collapse;font-size:12px">
               <thead>
                 <tr>
@@ -697,22 +491,14 @@
                   <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="285" style="font-size:12px"></td>
                   <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="142500" style="font-size:12px;font-weight:700;color:var(--primary)" readonly></td>
                 </tr>
-                <tr>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option selected>EP02 — Epoxy 2mm</option></select></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="2mm" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="300" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option selected>Sqm</option></select></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="450" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="135000" style="font-size:12px;font-weight:700;color:var(--primary)" readonly></td>
-                </tr>
               </tbody>
             </table>
           </div>
 
-          <!-- Subform B: FG Lines (Supply Only) -->
-          <div style="padding:6px 10px;background:#fffbeb;border-radius:6px 6px 0 0;font-size:12px;font-weight:700;color:#92400e;border:1px solid #fde68a;border-bottom:none;margin-top:12px">Subform B — FG Lines &nbsp;<span style="font-weight:400;color:#92400e">Visible when Sales Type = Supply Only</span></div>
-           <div class="subtable-demo" style="border:1px solid #fde68a;border-top:none">
-            <div class="st-hint">FG Line Items (N items) — sells FG directly (NO Project created)</div>
+          <!-- Subform B: FG Lines -->
+          <div style="padding:6px 10px;background:#fffbeb;border-radius:6px 6px 0 0;font-size:12px;font-weight:700;color:#92400e;border:1px solid #fde68a;border-bottom:none;margin-top:12px">Subform B — FG Lines (Supply Only)</div>
+          <div class="subtable-demo" style="border:1px solid #fde68a;border-top:none">
+            <div class="st-hint">FG Line Items — sells FG directly (NO Project created)</div>
             <table style="width:100%;border-collapse:collapse;font-size:12px">
               <thead>
                 <tr>
@@ -738,35 +524,25 @@
           </div>
 
           <div style="display:flex;gap:12px;align-items:center;padding:12px;background:var(--green-light);border-radius:8px;margin-top:8px">
-            <strong style="font-size:14px;color:var(--green)">Total: &#8377;2,77,500</strong>
+            <strong style="font-size:14px;color:var(--green)">Total: &#8377;1,42,500</strong>
             <span style="font-size:11px;color:var(--gray-600)">Payment Terms: 30 Days</span>
-            <span style="font-size:11px;color:var(--gray-600)">Transport: Included</span>
             <span style="margin-left:auto;padding:4px 12px;border-radius:6px;background:var(--green);color:#fff;font-size:11px;font-weight:600">Supply+Apply &rarr; Creates Project</span>
-          </div>
-          <div style="padding:8px 12px;background:#f8fafc;border:1px dashed var(--gray-300);border-radius:6px;font-size:11px;color:var(--gray-600);margin-top:8px">
-            <strong>Zoho Creator implementation:</strong> One SO form with <strong>two subforms</strong>. A show/hide rule on <code>Sales Type</code> displays Subform A (Supply+Apply) or Subform B (Supply Only). The inactive subform is hidden &amp; its validation skipped. Project auto-creation fires <strong>only</strong> on Supply+Apply acceptance.
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- ============================================================ -->
-    <!-- PROJECT MANAGEMENT -->
-    <!-- ============================================================ -->
-    <div class="module-group" id="project-mgmt">
-      <h3>Project Management <span class="mg-badge">Root Entity — Auto-created from SO</span></h3>
-      <p>Auto-created from SO. Every downstream form carries the Project ID.</p>
+      <div class="connector-down">&#x25BC;</div>
 
       <div class="form-card" id="pm-project">
         <div class="fc-header">
-          <span class="fc-num">3A</span>
+          <span class="fc-num">7B</span>
           <span class="fc-title">Create Project</span>
           <span class="fc-tag blue" style="background:var(--green-light);color:var(--green)">Auto from SO</span>
         </div>
         <div class="fc-flow">
           <span class="fc-flow-in">From: SO (auto-created)</span>
           <span class="fc-flow-key">Project ID links ALL downstream forms</span>
-          <span class="fc-flow-out">To: PR, MR, Production, FGHM</span>
+          <span class="fc-flow-out">To: MR, Production, FGHM</span>
         </div>
         <div class="form-demo">
           <div class="form-row-4">
@@ -783,170 +559,31 @@
           </div>
           <div class="form-row-3">
             <div><label>Project Cost</label><input type="number" value="277500"></div>
-            <div><label>Adjustments</label><input type="number" value="0"></div>
             <div><label>Status</label><select><option selected>Active</option><option>On Hold</option><option>Completed</option></select></div>
           </div>
-          <div class="subtable-demo">
-            <div class="st-hint">Systems (copied from SO)</div>
-            <table style="width:100%;border-collapse:collapse;font-size:12px">
-              <thead>
-                <tr>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">System</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Area</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">UOM</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Description</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="EP01 — Epoxy 1mm" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="500" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Sqm" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Production Floor" style="font-size:12px"></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
           <div style="padding:8px 12px;background:var(--accent-light);border-radius:6px;font-size:12px;color:#92400e;margin-top:8px">
-            <strong>&#x2139; Project ID = PRJ-2026-001</strong> — This ID flows into MR, Production Planning, FGHM, PR (PR now under Production arm)
-          </div>
-        </div>
-      </div>
-
-      <div class="connector-down">&#x25BC;</div>
-
-      <div class="form-card" id="pm-tasks">
-        <div class="fc-header">
-          <span class="fc-num">3B</span>
-          <span class="fc-title">Task Budget</span>
-          <span class="fc-tag">5 Categories in one table</span>
-        </div>
-        <div class="fc-flow">
-          <span class="fc-flow-in">From: Project (Execution Base)</span>
-          <span class="fc-flow-key">Budget planning per category</span>
-        </div>
-        <div class="form-demo">
-          <div class="subtable-demo">
-            <div class="st-hint">Task Items (N rows) <span style="color:var(--gray-400);font-weight:400;margin-left:8px">— Budget → Actual columns</span></div>
-            <table style="width:100%;border-collapse:collapse;font-size:12px">
-              <thead>
-                <tr>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Category</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Description</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Qty/Area</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Rate</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Amount</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Manpower</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd;color:var(--green)">Actual Qty</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd;color:var(--green)">Actual Rate</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd;color:var(--green)">Actual Amt</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option selected>Transport</option><option>Execution</option><option>Manpower</option><option>Tools</option><option>Overhead</option></select></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Intracity material movement" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="15" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="2000" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="30000" style="font-size:12px" readonly></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="2" style="font-size:12px"></td>
-                </tr>
-                <tr>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option selected>Execution</option><option>Transport</option><option>Manpower</option><option>Tools</option><option>Overhead</option></select></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Grinding &amp; Primer application" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="500" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="85" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="42500" style="font-size:12px" readonly></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="4" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="520" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="82" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="42640" style="font-size:12px" readonly></td>
-                </tr>
-                <tr>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option selected>Manpower</option><option>Transport</option><option>Execution</option><option>Tools</option><option>Overhead</option></select></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Skilled labour - Day basis" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="60" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="800" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="48000" style="font-size:12px" readonly></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="6" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="62" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="800" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="49600" style="font-size:12px" readonly></td>
-                </tr>
-              </tbody>
-            </table>
+            <strong>&#x2139; Project ID = PRJ-2026-001</strong> — This ID flows into MR, Production, FGHM, and all downstream forms.
           </div>
         </div>
       </div>
     </div>
 
     <!-- ============================================================ -->
-    <!-- RATE COMPARISON — Standalone -->
-    <!-- ============================================================ -->
-    <div class="module-group" id="rate-comparison">
-      <span id="org-rc" style="position:relative;top:-60px;display:block"></span>
-      <h3>Rate Comparison <span class="mg-badge">Standalone Record</span></h3>
-      <p>Standalone record form — used for manual rate record-keeping, not linked to PR</p>
-      <div class="form-card" id="pr-rc">
-        <div class="fc-header">
-          <span class="fc-num">4B</span>
-          <span class="fc-title">Rate Comparison</span>
-          <span class="fc-tag">5 Supplier Quotes</span>
-        </div>
-        <div class="fc-flow">
-          <span class="fc-flow-in">From: Manual Entry</span>
-          <span class="fc-flow-key">Compare 5 suppliers per item</span>
-          <span class="fc-flow-out">To: PO (finalised rate)</span>
-        </div>
-        <div class="form-demo">
-          <div class="form-row-3">
-            <div><label>RC No</label><input type="text" value="RC-2026-001" disabled style="background:var(--gray-50)"></div>
-            <div><label>PR Reference</label><select><option selected>PR-2026-001</option></select></div>
-            <div><label>Date</label><input type="date" value="2026-07-05"></div>
-          </div>
-          <div class="subtable-demo">
-            <div class="st-hint">Supplier Comparison (5 per item)</div>
-            <table style="width:100%;border-collapse:collapse;font-size:12px">
-              <thead>
-                <tr>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Item</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Supplier</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Rate</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Credit</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Selected</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Epoxy Resin" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option selected>ABC Chemicals — Rs 245</option><option>XYZ Corp — Rs 260</option><option>PQR Ltd — Rs 238</option></select></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="238" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="30 days" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="radio" checked style="width:auto;margin:0"></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ============================================================ -->
-    <!-- PROCUREMENT -->
+    <!-- PROCUREMENT — Stream A -->
     <!-- ============================================================ -->
     <div class="module-group" id="procurement">
-      <h3>Purchase <span class="mg-badge">Stage 2/3 — PO &rarr; GRN &rarr; QC</span></h3>
-      <p><strong>Stream A (Pre-Project):</strong> Purchase for stock replenishment. <strong>No Project ID</strong> on procurement forms. Procurement chain starts from PO (PR now under Production).</p>
+      <h3>Procurement <span class="mg-badge">Stream A — PR &rarr; PO &rarr; GRN &rarr; QC</span></h3>
+      <p><strong>Stream A (Stock Procurement):</strong> Purchase for stock replenishment. <strong>No Project ID</strong> on procurement forms.</p>
 
       <div class="form-card" id="pr-po">
         <div class="fc-header">
-          <span class="fc-num">4C</span>
+          <span class="fc-num">8A</span>
           <span class="fc-title">Purchase Order (PO)</span>
           <span class="fc-tag">N Items · GST Split</span>
         </div>
         <div class="fc-flow">
-          <span class="fc-flow-in">From: Rate Comparison</span>
-          <span class="fc-flow-key">Supplier, Items from Rate Comparison</span>
+          <span class="fc-flow-in">From: PR (Purchase Requisition)</span>
+          <span class="fc-flow-key">Supplier, Items from PR</span>
           <span class="fc-flow-out">To: GRN</span>
         </div>
         <div class="form-demo">
@@ -954,8 +591,7 @@
             <div><label>PO No</label><input type="text" value="RM-2026-001" disabled style="background:var(--gray-50);font-family:var(--font-mono)"></div>
             <div><label>PO Date</label><input type="date" value="2026-07-05"></div>
             <div><label>PR Reference</label><input type="text" value="PR-2026-001" disabled style="background:var(--gray-50)"></div>
-            <div><label>Supplier</label><select><option selected>PQR Ltd — Rs 238</option></select>
-            </div>
+            <div><label>Supplier</label><select><option selected>PQR Ltd</option></select></div>
           </div>
           <div class="form-row-3">
             <div><label>RM Type</label><input type="text" value="Coding" disabled style="background:var(--gray-50)"></div>
@@ -992,10 +628,6 @@
           <div style="padding:8px 12px;background:var(--gray-50);border-radius:6px;font-size:12px;margin-top:4px">
             <strong>Total: &#8377;1,01,150</strong> + CGST &#8377;6,069 + SGST &#8377;6,069 = <strong>&#8377;1,13,288</strong>
           </div>
-          <div style="display:flex;gap:8px;margin-top:8px;padding:8px 12px;background:var(--gray-50);border-radius:6px;font-size:11px;color:var(--gray-500)">
-            <span class="data-badge type">RM Series (Non-Coding)</span>
-            <span class="data-badge type">Transport Scope: Supplier to Wadki</span>
-          </div>
         </div>
       </div>
 
@@ -1003,7 +635,7 @@
 
       <div class="form-card" id="pr-grn">
         <div class="fc-header">
-          <span class="fc-num">4D</span>
+          <span class="fc-num">8B</span>
           <span class="fc-title">Goods Receipt Note (GRN)</span>
           <span class="fc-tag">Partial Receipt · Post = Stock +</span>
         </div>
@@ -1062,7 +694,7 @@
 
       <div class="form-card" id="pr-qc">
         <div class="fc-header">
-          <span class="fc-num">4E</span>
+          <span class="fc-num">8C</span>
           <span class="fc-title">QC / QA</span>
           <span class="fc-tag">Pass/Fail per Item</span>
         </div>
@@ -1097,8 +729,8 @@
                 </tr>
                 <tr>
                   <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Density" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="1.05-1.15 g/cm³" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="1.10 g/cm³" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="1.05-1.15 g/cm&sup3;" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="1.10 g/cm&sup3;" style="font-size:12px"></td>
                   <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option selected>Pass</option><option>Fail</option></select></td>
                 </tr>
               </tbody>
@@ -1114,361 +746,34 @@
     </div>
 
     <!-- ============================================================ -->
-    <!-- STOCK CHECK — Bridge Between Streams -->
+    <!-- MR — COSTING GATE -->
     <!-- ============================================================ -->
-    <div class="module-group" id="stock-check">
-      <span id="org-stock-check" style="position:relative;top:-60px;display:block"></span>
-      <h3>Stock Check <span class="mg-badge">Stream A → Stream B Bridge</span></h3>
-      <p><strong>Stream A (Pre-Project):</strong> Purchase → Stock (no Project ID). <strong>Stream B:</strong> When MR is raised, Store checks available stock. <strong>Materials flow from Store inventory to Project via MR/MIS.</strong> If stock is insufficient, a new purchase cycle (Stream A) is triggered independently.</p>
-      <div style="display:flex;gap:16px;padding:16px;background:var(--gray-50);border-radius:8px;border:1px solid var(--gray-200)">
-        <div style="flex:1;padding:12px;background:#d1fae5;border-radius:6px;text-align:center">
-          <strong style="color:var(--green);font-size:16px">&#x2713; Material Available</strong>
-          <p style="font-size:12px;color:var(--gray-600);margin:4px 0 0">Proceed to Production</p>
-        </div>
-        <div style="flex:1;padding:12px;background:#fee2e2;border-radius:6px;text-align:center">
-          <strong style="color:var(--red);font-size:16px">&#x2717; Material Not Available</strong>
-          <p style="font-size:12px;color:var(--gray-600);margin:4px 0 0">Trigger Purchase → PO → GRN → QC → Handover (PR raised from Production)</p>
-        </div>
-      </div>
-    </div>
+    <div class="module-group" id="mr-flow">
+      <h3>MR — Costing Gate <span class="mg-badge">Stage 4 — Critical Approval Gate</span></h3>
+      <p>MR is the <strong>complete project implementation cost baseline</strong> — four cost components (Material + Application + Transportation + Tools & Tackles) summing to Total MR Cost. Costing approves this TOTAL cost.</p>
 
-    <!-- ============================================================ -->
-    <!-- MATERIAL HANDOVER (Purchase → Store) -->
-    <!-- ============================================================ -->
-    <div class="module-group" id="material-handover">
-      <h3>Material Handover <span class="mg-badge">Stage 3 — Purchase → Store (Coding RM / Non-Coding)</span></h3>
-      <p>Purchase department hands over received material to Store. Split by Coding RM and Non-Coding (RMWAD) series.</p>
-
-      <div class="form-card" id="org-mat-handover">
-        <div class="fc-header">
-          <span class="fc-num" style="background:#059669">4F</span>
-          <span class="fc-title">Material Handover Note</span>
-          <span class="fc-tag">Coding RM / Non-Coding</span>
-        </div>
-        <div class="fc-flow">
-          <span class="fc-flow-in">From: GRN (received items)</span>
-          <span class="fc-flow-key">Purchase hands over to Store with RM classification</span>
-          <span class="fc-flow-out">To: Store (Stock Update)</span>
-        </div>
-        <div class="form-demo">
-          <div class="form-row-4">
-            <div><label>Handover No</label><input type="text" value="MH-2026-001" disabled style="background:var(--gray-50)"></div>
-            <div><label>GRN Reference</label><select><option selected>GRN-2026-001</option></select></div>
-            <div><label>Handover Date</label><input type="date" value="2026-07-10"></div>
-            <div><label>Store</label><select><option selected>Wadki</option><option>Main</option><option>Neelo</option></select></div>
-          </div>
-          <div class="subtable-demo">
-            <div class="st-hint">Items (Mark RM Type)</div>
-            <table style="width:100%;border-collapse:collapse;font-size:12px">
-              <thead>
-                <tr>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Item</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Qty</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">UOM</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">RM Type</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Handover To</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Epoxy Resin" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="425" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option selected>Coding RM</option><option>Non-Coding (RMWAD)</option></select></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Anil (Store)" style="font-size:12px"></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div style="padding:8px 12px;background:#fffbeb;border-radius:6px;font-size:12px;color:#92400e;margin-top:8px">
-            <strong>&#x2139; RM Type</strong> — Coding materials use PO series RM (Purchase dept). Non-coding use RMWAD series.
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ============================================================ -->
-    <!-- COSTING -->
-    <!-- ============================================================ -->
-    <div class="module-group" id="costing">
-      <h3>Costing <span class="mg-badge">Stage 1 — Costing Approval Gate</span></h3>
-      <p>Costing becomes a distinct <strong>approval gate</strong> between Store and next stage. Not just a computation — it's a department handover with sign-off.</p>
-
-      <div class="form-card" id="org-costing">
-        <div class="fc-header">
-          <span class="fc-num" style="background:#7c3aed">3C</span>
-          <span class="fc-title">Costing Approval</span>
-          <span class="fc-tag">Approval Gate</span>
-        </div>
-        <div class="fc-flow">
-          <span class="fc-flow-in">From: Store (Material Check complete)</span>
-          <span class="fc-flow-key">Costing Dept reviews material valuation and approves handover</span>
-          <span class="fc-flow-out">To: Production / Purchase decision</span>
-        </div>
-        <div class="form-demo">
-          <div class="form-row-4">
-            <div><label>Costing No</label><input type="text" value="COST-2026-001" disabled style="background:var(--gray-50)"></div>
-            <div><label>Date</label><input type="date" value="2026-07-22"></div>
-            <div><label>Project ID</label><select><option selected>PRJ-2026-001 — Tata Motors</option></select></div>
-            <div><label>Prepared By</label><input type="text" value="Meera (Costing)"></div>
-          </div>
-          <div class="subtable-demo">
-            <div class="st-hint">Material Valuation</div>
-            <table style="width:100%;border-collapse:collapse;font-size:12px">
-              <thead>
-                <tr>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Item</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Qty</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Rate</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Amount</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Remark</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Epoxy Resin" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="200" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="238" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="47,600" style="font-size:12px" readonly></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Within budget" style="font-size:12px"></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="form-row-3" style="margin-top:8px">
-            <div><label>Total Material Cost</label><input type="number" value="65,800" disabled style="background:var(--gray-50);font-weight:700"></div>
-            <div><label>Approval Status</label><select><option selected>Approved</option><option>Pending</option><option>Rejected</option></select></div>
-            <div><label>Approved By</label><input type="text" value="Sanjay (Costing Head)"></div>
-          </div>
-          <div style="margin-top:10px;padding:10px 12px;background:#f5f3ff;border:1px solid #c4b5fd;border-radius:6px">
-            <div style="font-size:12px;font-weight:700;color:#5b21b6;margin-bottom:6px">&#x1F4CA; Project Profitability Summary — for Sales / Actual Team</div>
-            <p style="margin:0 0 6px;font-size:12px;color:#4c1d95">Pulls the full cost picture together so the sales/actual team can see how much this project costs and whether it is profitable. Revenue comes from the SO; cost is built from the MR cost components + production cost.</p>
-            <table style="width:100%;border-collapse:collapse;font-size:12px">
-              <thead><tr style="border-bottom:2px solid #ddd"><th style="padding:5px 8px;text-align:left;font-weight:600">Line</th><th style="padding:5px 8px;text-align:right;font-weight:600">Amount (&#x20B9;)</th><th style="padding:5px 8px;text-align:left;font-weight:600">Source</th></tr></thead>
-              <tbody>
-                <tr style="border-bottom:1px solid #eee"><td style="padding:4px 8px">SO Revenue</td><td style="padding:4px 8px;text-align:right;font-weight:700;color:var(--green)">12,50,000</td><td style="padding:4px 8px;color:#6b7280">From SO System Lines</td></tr>
-                <tr style="border-bottom:1px solid #eee"><td style="padding:4px 8px">&nbsp;&nbsp;− Material Cost</td><td style="padding:4px 8px;text-align:right">65,800</td><td style="padding:4px 8px;color:#6b7280">MR Material Allocation × Rate</td></tr>
-                <tr style="border-bottom:1px solid #eee"><td style="padding:4px 8px">&nbsp;&nbsp;− Application (Labour) Cost</td><td style="padding:4px 8px;text-align:right">3,25,000</td><td style="padding:4px 8px;color:#6b7280">MR Application Cost</td></tr>
-                <tr style="border-bottom:1px solid #eee"><td style="padding:4px 8px">&nbsp;&nbsp;− Transportation Cost</td><td style="padding:4px 8px;text-align:right">48,000</td><td style="padding:4px 8px;color:#6b7280">MR Transportation Cost</td></tr>
-                <tr style="border-bottom:1px solid #eee"><td style="padding:4px 8px">&nbsp;&nbsp;− Tools &amp; Tackles</td><td style="padding:4px 8px;text-align:right">30,000</td><td style="padding:4px 8px;color:#6b7280">MR Tools &amp; Tackles</td></tr>
-                <tr style="border-bottom:1px solid #eee"><td style="padding:4px 8px">&nbsp;&nbsp;− Production Cost</td><td style="padding:4px 8px;text-align:right">85,000</td><td style="padding:4px 8px;color:#6b7280">BMR RM Consumption + Packing</td></tr>
-                <tr style="border-bottom:2px solid #a78bfa"><td style="padding:4px 8px;font-weight:700">Total Cost</td><td style="padding:4px 8px;text-align:right;font-weight:700">5,53,800</td><td style="padding:4px 8px;color:#6b7280">Sum of all cost lines</td></tr>
-                <tr style="border-bottom:1px solid #eee;background:#ecfdf5"><td style="padding:4px 8px;font-weight:700;color:#065f46">Gross Margin (Profit)</td><td style="padding:4px 8px;text-align:right;font-weight:700;color:#065f46">6,96,200</td><td style="padding:4px 8px;color:#6b7280">Revenue − Total Cost</td></tr>
-                <tr style="background:#ecfdf5"><td style="padding:4px 8px;font-weight:700;color:#065f46">Margin %</td><td style="padding:4px 8px;text-align:right;font-weight:700;color:#065f46">55.7%</td><td style="padding:4px 8px;color:#6b7280">Margin ÷ Revenue</td></tr>
-              </tbody>
-            </table>
-            <div style="margin-top:6px;padding:6px 8px;background:#dcfce7;border-radius:4px;font-size:12px;font-weight:600;color:#166534">&#x2705; Project is profitable &amp; under budget — Costing approves. If margin falls below the set threshold, Costing flags the project before approval.</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ============================================================ -->
-    <!-- SERVICE TEAM -->
-    <!-- ============================================================ -->
-    <div class="module-group" id="service-team">
-      <h3>Service Team <span class="mg-badge">Stage 4 — Site Operations: Area → Work → Final Invoice</span></h3>
-      <p>Service Team handles on-site execution from area measurement through final invoice submission. Operates in parallel with Store/Production.</p>
-
-      <div class="form-card" id="org-service">
-        <div class="fc-header">
-          <span class="fc-num" style="background:#0891b2">7A</span>
-          <span class="fc-title">Area Measurement</span>
-          <span class="fc-tag">Service Team</span>
-        </div>
-        <div class="fc-flow">
-          <span class="fc-flow-in">From: Site / Project</span>
-          <span class="fc-flow-key">Record actual area measured at site</span>
-          <span class="fc-flow-out">To: Material Custody</span>
-        </div>
-        <div class="form-demo">
-          <div class="form-row-4">
-            <div><label>Measurement No</label><input type="text" value="MEAS-2026-001" disabled style="background:var(--gray-50)"></div>
-            <div><label>Project ID</label><select><option selected>PRJ-2026-001 — Tata Motors</option></select></div>
-            <div><label>Site</label><input type="text" value="Pune Plant - Unit 2"></div>
-            <div><label>Date</label><input type="date" value="2026-07-16"></div>
-          </div>
-          <div class="subtable-demo">
-            <div class="st-hint">Area Details</div>
-            <table style="width:100%;border-collapse:collapse;font-size:12px">
-              <thead>
-                <tr>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">System</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Measured Area</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">UOM</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Remark</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="EP01 — Epoxy 1mm" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="520" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Sqm" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="+20 sqm vs SO" style="font-size:12px"></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="form-row-3">
-            <div><label>Measured By</label><input type="text" value="Rahul (Service)"></div>
-            <div><label>Approved By</label><input type="text" value="Amit (PM)"></div>
-            <div></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="connector-down">&#x25BC;</div>
-
-      <div class="form-card">
-        <div class="fc-header">
-          <span class="fc-num" style="background:#0891b2">7B</span>
-          <span class="fc-title">Material Custody</span>
-          <span class="fc-tag">Service Team</span>
-        </div>
-        <div class="fc-flow">
-          <span class="fc-flow-in">From: Store (MIS issued)</span>
-          <span class="fc-flow-key">Service Team takes custody of material at site</span>
-          <span class="fc-flow-out">To: Work Start</span>
-        </div>
-        <div class="form-demo">
-          <div class="form-row-4">
-            <div><label>Custody No</label><input type="text" value="CUST-2026-001" disabled style="background:var(--gray-50)"></div>
-            <div><label>Project ID</label><select><option selected>PRJ-2026-001 — Tata Motors</option></select></div>
-            <div><label>MIS Reference</label><select><option selected>MIS-2026-001</option></select></div>
-            <div><label>Date</label><input type="date" value="2026-07-18"></div>
-          </div>
-          <div class="subtable-demo">
-            <div class="st-hint">Material Under Custody</div>
-            <table style="width:100%;border-collapse:collapse;font-size:12px">
-              <thead>
-                <tr>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Item</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Qty</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">UOM</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Condition</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Epoxy Resin" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="180" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option selected>Good</option><option>Damaged</option></select></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="form-row-3">
-            <div><label>Handover By (Store)</label><input type="text" value="Anil Surve"></div>
-            <div><label>Received By (Service)</label><input type="text" value="Rahul Kumar"></div>
-            <div></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="connector-down">&#x25BC;</div>
-
-      <div class="form-card">
-        <div class="fc-header">
-          <span class="fc-num" style="background:#0891b2">7C</span>
-          <span class="fc-title">Work Start / Daily Progress</span>
-          <span class="fc-tag">Service Team</span>
-        </div>
-        <div class="fc-flow">
-          <span class="fc-flow-in">From: Material Custody</span>
-          <span class="fc-flow-key">Log daily work progress and material usage</span>
-          <span class="fc-flow-out">To: Final Invoice</span>
-        </div>
-        <div class="form-demo">
-          <div class="form-row-4">
-            <div><label>Work Date</label><input type="date" value="2026-07-19"></div>
-            <div><label>Project ID</label><select><option selected>PRJ-2026-001 — Tata Motors</option></select></div>
-            <div><label>System</label><select><option selected>EP01 — Epoxy 1mm</option></select></div>
-            <div><label>Area Completed</label><input type="number" value="120"></div>
-          </div>
-          <div class="form-row-3">
-            <div><label>Material Used</label><input type="text" value="Epoxy Resin — 85 Kg"></div>
-            <div><label>Team Size</label><input type="number" value="4"></div>
-            <div><label>Hours</label><input type="number" value="8"></div>
-          </div>
-          <div style="padding:8px 12px;background:#eff6ff;border-radius:6px;font-size:12px;color:#1e3a8a;margin-top:8px">
-            <strong>&#x1F517; Driven by SO System → BOM:</strong> This entry is logged against the SO System/FG. The system expands it to RMs (BOM ratios) and deducts from the <strong>project-assigned RM</strong> (MR Material Allocation) — not a generic pool. See <a href="#consumption-rule">Consumption Rule</a>.
-          </div>
-        </div>
-      </div>
-
-      <!-- CONSUMPTION BACKEND RULE -->
-      <div id="consumption-rule" style="margin:16px 0;padding:14px 16px;background:#eff6ff;border:1px solid #93c5fd;border-left:5px solid var(--primary);border-radius:8px">
-        <h4 style="margin:0 0 8px;color:#1e40af">&#x1F517; Backend Rule — Site Manager Consumption Entry → Project-Assigned RM</h4>
-        <p style="margin:0 0 8px;font-size:13px;color:#1e3a8a"><strong>Front-end (what the Site Manager sees):</strong> The entry is made against the <strong>SO System</strong> (e.g., EP01) and the FG/work done — the system composition (System → FG → RM via BOM) is shown for reference.</p>
-        <p style="margin:0 0 8px;font-size:13px;color:#1e3a8a"><strong>Backend (what actually happens):</strong> The system expands the FG into its RMs using <strong>BOM ratios</strong>, then for each RM increments <strong>Consumed Qty</strong> on the matching line of the Project's <strong>MR Material Allocation</strong> (matched by <code>Project ID + Item Code</code>). It does <strong>NOT</strong> deduct from a generic stock pool for project-tagged material.</p>
-        <div style="font-family:var(--font-mono);font-size:12px;background:#1e293b;color:#e2e8f0;padding:10px 12px;border-radius:6px;margin:8px 0;white-space:pre-wrap">Site Consumption Entry (Project, System/FG, Qty)
-   └─> expand via BOM:  FG = RM₁×r₁ + RM₂×r₂ + ...
-   └─> for each RMᵢ:
-         MR.Allocation[Project, RMᵢ].ConsumedQty += Qty × rᵢ
-         MR.Allocation[Project, RMᵢ].Consumption% = ConsumedQty / AssignedQty × 100
-         IF Consumption% ≥ 80%  AND  80%AlertFlag → FIRE 80% ALERT
-   └─> (same logic applies to FG production BMR / RM Consumption entries)</div>
-        <p style="margin:0;font-size:13px;color:#1e3a8a"><strong>Reconciliation:</strong> MIS issued qty and FG-production consumption both roll up into the same <em>Consumed Qty</em> so the Project sees true remaining allocation at all times.</p>
-      </div>
-
-      <!-- 80% ALERT (FLOW) -->
-      <div id="alert-80-flow" style="margin:0 0 16px;padding:14px 16px;background:#fff7ed;border:1px solid #fdba74;border-left:5px solid #ea580c;border-radius:8px">
-        <h4 style="margin:0 0 8px;color:#9a3412">&#x26A0; 80% Consumption Alert — Automation</h4>
-        <p style="margin:0 0 6px;font-size:13px;color:#7c2d12"><strong>Trigger:</strong> Per RM in the MR Material Allocation, when <code>Consumed Qty ÷ Assigned Qty × 100 ≥ 80%</code> and the 80% Alert Flag is ON.</p>
-        <p style="margin:0;font-size:13px;color:#7c2d12"><strong>Fires:</strong> (1) In-app <strong>pop-up</strong> to the entry user; (2) <strong>Dashboard banner</strong> on Project + Store + Service dashboards ("Material X at 80% of project allocation"); (3) <strong>Email</strong> to Project Manager &amp; Coordinator. At 100% the banner escalates to "Allocation Exhausted".</p>
-      </div>
-
-      <div class="connector-down">&#x25BC;</div>
-
-      <div class="form-card">
-        <div class="fc-header">
-          <span class="fc-num" style="background:#0891b2">7D</span>
-          <span class="fc-title">Final Invoice Submission</span>
-          <span class="fc-tag blue" style="background:var(--blue-light);color:var(--blue)">Triggers Finance</span>
-        </div>
-        <div class="fc-flow">
-          <span class="fc-flow-in">From: Completed Work</span>
-          <span class="fc-flow-key">Service Team submits final measurement and invoice data</span>
-          <span class="fc-flow-out">To: Finance (Invoice generation)</span>
-        </div>
-        <div class="form-demo">
-          <div class="form-row-4">
-            <div><label>Submission No</label><input type="text" value="FINV-2026-001" disabled style="background:var(--gray-50)"></div>
-            <div><label>Project ID</label><select><option selected>PRJ-2026-001 — Tata Motors</option></select></div>
-            <div><label>Total Area Completed</label><input type="number" value="520" disabled style="background:var(--gray-50)"></div>
-            <div><label>Invoice Amount</label><input type="number" value="277500" disabled style="background:var(--gray-50);font-weight:700"></div>
-          </div>
-          <div style="display:flex;gap:8px;padding:8px 12px;background:var(--blue-light);border-radius:6px;font-size:12px;color:#1e40af;margin-top:8px">
-            <strong>&#x1F4C4; Documents Attached:</strong>
-            <span class="badge badge-green">Area Measurement</span>
-            <span class="badge badge-green">Work Completion</span>
-            <span class="badge badge-green">Material Consumption</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ============================================================ -->
-    <!-- INVENTORY -->
-    <!-- ============================================================ -->
-    <div class="module-group" id="inventory">
-      <h3>Inventory / Stores <span class="mg-badge">Stage 1 — SO + MR = Project Baseline → MR Verified by Production → Costing Approves → MIS → FGHM</span></h3>
-      <p><strong>Project baseline = SO + MR.</strong> SO defines System/FG scope (revenue). MR defines RM allocation (cost baseline). <strong>MR → Production verifies quantities → Costing approves the MR cost baseline (all four cost components) → Released → then MIS → Production → FGHM → Logistics → Project Site Execution begins.</strong></p>
-      <div style="padding:8px 12px;background:#ecfdf5;border-left:4px solid var(--green);border-radius:6px;font-size:12px;color:#065f46;margin-bottom:12px">
-        <strong>&#x1F4CC; Project as Consumption Anchor:</strong> MR carries a <strong>Material Allocation</strong> subform (per-RM Assigned Qty + Allocation Ratio % + 80% Alert Flag). All consumption — FG production and Site Manager entries — resolves to the <strong>project-assigned RM</strong>, not a generic pool. See <a href="#consumption-rule">Consumption Rule</a> and <a href="#alert-80-flow">80% Alert</a>.
+      <div style="display:flex;gap:8px;align-items:center;padding:10px 14px;background:#f0fdf4;border:1px solid #86efac;border-radius:8px;margin-bottom:12px;font-size:12px">
+        <strong>MR Status Workflow:</strong>
+        <span class="status-badge status-draft">Draft</span>
+        <span style="color:var(--gray-400)">&rarr;</span>
+        <span class="status-badge status-verified">Production Verified</span>
+        <span style="color:var(--gray-400)">&rarr;</span>
+        <span class="status-badge status-approved">Costing Approved</span>
+        <span style="color:var(--gray-400)">&rarr;</span>
+        <span class="status-badge status-released">Released</span>
+        <span style="margin-left:8px;font-size:11px;color:var(--gray-500)">&#x26A0; Without Released MR, no MIS, no Production</span>
       </div>
 
       <div class="form-card" id="inv-mr">
         <div class="fc-header">
-          <span class="fc-num">5A</span>
+          <span class="fc-num">9A</span>
           <span class="fc-title">Material Requisition (MR)</span>
-          <span class="fc-tag">N Items</span>
+          <span class="fc-tag">Project Cost Baseline</span>
         </div>
         <div class="fc-flow">
-          <span class="fc-flow-in">From: Project ID + Production Plan (FG requirement)</span>
-          <span class="fc-flow-key">Request <strong>RM only</strong> from store — derived from BOM × FG qty. Status: Draft → Production Verified → Costing Approved → Released</span>
-          <span class="fc-flow-out">To: Production Verification → Costing Approval → <strong>MIS (only when Released)</strong></span>
+          <span class="fc-flow-in">From: Project ID + Production Plan</span>
+          <span class="fc-flow-key">Request <strong>RM only</strong> from store. Status: Draft &rarr; Production Verified &rarr; Costing Approved &rarr; Released</span>
+          <span class="fc-flow-out">To: <strong>MIS (only when Released)</strong></span>
         </div>
         <div class="form-demo">
           <div class="form-row-4">
@@ -1476,9 +781,6 @@
             <div><label>MR Date</label><input type="date" value="2026-07-20"></div>
             <div><label>Project ID</label><select><option selected>PRJ-2026-001 — Tata Motors</option></select></div>
             <div><label>MR Status</label><select style="background:#fef3c7;font-weight:700"><option>Draft</option><option selected>Production Verified</option><option>Costing Approved</option><option>Released</option></select></div>
-          </div>
-          <div style="display:flex;gap:8px;padding:6px 10px;background:#fffbeb;border-radius:6px;font-size:11px;color:#92400e;margin-bottom:8px;border:1px solid #fde68a">
-            <strong>&#x2139; MR deals with RM only.</strong> Production Plan calculates RM needed from BOM × FG qty × System qty.
           </div>
           <div class="subtable-demo">
             <div class="st-hint">RM Items Required</div>
@@ -1498,18 +800,13 @@
                   <td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px;color:var(--green);font-weight:600">500</span></td>
                   <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled style="background:var(--gray-50)"></td>
                 </tr>
-                <tr>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option>RM-EP-002 — Epoxy Hardener</option></select></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="75" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px;color:var(--green);font-weight:600">120</span></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled style="background:var(--gray-50)"></td>
-                </tr>
               </tbody>
             </table>
           </div>
-          <!-- NEW: Material Allocation + 80% tracking -->
+
+          <!-- Material Allocation -->
           <div class="subtable-demo" style="margin-top:10px;border:1px solid #86efac;background:#f0fdf4">
-            <div class="st-hint">Material Allocation (Project Budget Baseline) — NEW</div>
+            <div class="st-hint">Material Allocation (Project Budget Baseline)</div>
             <table style="width:100%;border-collapse:collapse;font-size:12px">
               <thead>
                 <tr>
@@ -1538,30 +835,20 @@
                   <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="10" style="font-size:12px" disabled></td>
                   <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="50" style="font-size:12px" disabled></td>
                 </tr>
-                <tr>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option>RM-EP-003 — Pigment</option></select></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="30" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="50" style="font-size:12px" disabled></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="5" style="font-size:12px" disabled></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="17" style="font-size:12px" disabled></td>
-                </tr>
               </tbody>
             </table>
           </div>
           <div style="padding:8px 12px;background:#ecfdf5;border-radius:6px;font-size:12px;color:#065f46;margin-top:8px">
-            <strong>&#x1F4CC; Per-Project Allocation:</strong> Epoxy Resin assigned 10 Kg (ratio 16.67%) — <strong style="color:#ea580c">at 80% (8 Kg) the 80% Alert fires</strong>. Hardener 20 Kg (33.33%), Pigment 30 Kg (50%). Each consumption (FG production or Site entry) increments <em>Consumed</em>, not global stock. See <a href="#consumption-rule">Consumption Rule</a> and <a href="#alert-80-flow">80% Alert</a>.
+            <strong>&#x1F4CC; Per-Project Allocation:</strong> Epoxy Resin assigned 10 Kg (ratio 16.67%) — <strong style="color:#ea580c">at 80% (8 Kg) the 80% Alert fires</strong>. Each consumption increments <em>Consumed</em>, not global stock.
           </div>
-          <div style="padding:8px 12px;background:#eff6ff;border-radius:6px;font-size:12px;color:#1e40af;margin-top:8px">
-            <strong>&#x1F4B0; MR = Project Cost Baseline.</strong> Besides RM material, the MR carries the full implementation cost: <strong>Application Cost</strong> (labour/execution), <strong>Transportation Cost</strong>, and <strong>Tools &amp; Tackles</strong>. Material + Application + Transport + Tools = <strong>Total MR Cost</strong> — this is what Costing approves at the gate.
-          </div>
+
+          <!-- Cost Components -->
           <div class="subtable-demo" style="margin-top:10px;border:1px solid #93c5fd;background:#eff6ff">
             <div class="st-hint">Application Cost (Labour / Execution)</div>
             <table style="width:100%;border-collapse:collapse;font-size:12px">
               <thead><tr><th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Activity</th><th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">UOM</th><th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Qty</th><th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Rate</th><th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Amount</th></tr></thead>
               <tbody>
                 <tr><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Epoxy application" style="font-size:12px"></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Sqm" style="font-size:12px" disabled></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="5000" style="font-size:12px"></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="45" style="font-size:12px"></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="225000" style="font-size:12px" disabled></td></tr>
-                <tr><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Screeding" style="font-size:12px"></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Sqm" style="font-size:12px" disabled></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="5000" style="font-size:12px"></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="20" style="font-size:12px"></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="100000" style="font-size:12px" disabled></td></tr>
               </tbody>
             </table>
           </div>
@@ -1583,16 +870,31 @@
               </tbody>
             </table>
           </div>
+          <div style="padding:8px 12px;background:#ecfdf5;border-radius:6px;font-size:12px;color:#065f46;margin-top:8px">
+            <strong>&#x1F4B0; Total MR Cost = Material + Application + Transportation + Tools &amp; Tackles</strong> — this is what Costing approves at the gate.
+          </div>
+
+          <!-- 80% Alert -->
+          <div id="alert-80-flow" style="margin-top:10px;padding:12px 14px;background:#fff7ed;border:1px solid #fdba74;border-left:5px solid #ea580c;border-radius:8px">
+            <h4 style="margin:0 0 6px;font-size:13px;color:#9a3412">&#x26A0; 80% Consumption Alert</h4>
+            <p style="margin:0;font-size:12px;color:#7c2d12"><strong>Trigger:</strong> When <code>Consumed Qty &divide; Assigned Qty &times; 100 &ge; 80%</code> and the 80% Alert Flag is ON. Fires: (1) In-app <strong>pop-up</strong>; (2) <strong>Dashboard banner</strong>; (3) <strong>Email</strong> to Project Manager.</p>
+          </div>
         </div>
       </div>
+    </div>
 
-      <div class="connector-down">&#x25BC;</div>
+    <!-- ============================================================ -->
+    <!-- PRODUCTION -->
+    <!-- ============================================================ -->
+    <div class="module-group" id="production-flow">
+      <h3>Production <span class="mg-badge">Stage 5 — MIS &rarr; Planning &rarr; BMR &rarr; Pack &rarr; FGHM</span></h3>
+      <p>Production consumes <strong>RM</strong> (from MR) to produce <strong>FG</strong> via BMR. All tagged to Project.</p>
 
       <div class="form-card" id="inv-mis">
         <div class="fc-header">
-          <span class="fc-num">5B</span>
+          <span class="fc-num">10A</span>
           <span class="fc-title">Material Issue Slip (MIS)</span>
-          <span class="fc-tag">Stock − on Post</span>
+          <span class="fc-tag">Stock &minus; on Post</span>
         </div>
         <div class="fc-flow">
           <span class="fc-flow-in">From: MR (only Released MR allowed)</span>
@@ -1634,87 +936,15 @@
 
       <div class="connector-down">&#x25BC;</div>
 
-      <span id="org-prod-grn" style="position:relative;top:-60px;display:block"></span>
-      <div class="form-card" id="inv-fghm">
-        <div class="fc-header">
-          <span class="fc-num">5C</span>
-          <span class="fc-title">FG Handover / Production GRN (FGHM)</span>
-          <span class="fc-tag">Production → Store</span>
-        </div>
-        <div class="fc-flow">
-          <span class="fc-flow-in">From: Production (Packing — FG produced from RM)</span>
-          <span class="fc-flow-key">Production hands FG to Store with acceptance status inline</span>
-          <span class="fc-flow-out">To: Inventory (FG stock) / Logistics (DC for dispatch)</span>
-        </div>
-        <div class="form-demo">
-          <div class="form-row-4">
-            <div><label>FGHM No</label><input type="text" value="FGHM-2026-001" disabled style="background:var(--gray-50)"></div>
-            <div><label>Project ID</label><select><option selected>PRJ-2026-001 — Tata Motors</option></select></div>
-            <div><label>Customer</label><input type="text" value="Tata Motors Ltd" disabled style="background:var(--gray-50)"></div>
-            <div><label>Handover Date</label><input type="date" value="2026-08-15"></div>
-          </div>
-          <div class="subtable-demo">
-            <div class="st-hint">FG Products (not Systems) — Set acceptance, damaged, and status per line</div>
-            <table style="width:100%;border-collapse:collapse;font-size:12px">
-              <thead>
-                <tr>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">FG Item</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Qty</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Accepted</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Damaged</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">UOM</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="FG-EP-001 — Epoxy Base Coat" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="600" style="font-size:12px" disabled style="background:var(--gray-50)"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="580" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="20" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option selected>Accepted</option><option>Partial</option><option>Rejected</option></select></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="form-row-3">
-            <div><label>Handed Over By</label><input type="text" value="Suresh (Production)"></div>
-            <div><label>Received By</label><input type="text" value="Anil (Store)"></div>
-            <div><label>Overall Status</label><select><option selected>Accepted</option><option>Pending</option><option>Rejected</option></select></div>
-          </div>
-          <div style="padding:8px 12px;background:#fffbeb;border-radius:6px;font-size:12px;color:#92400e;margin-top:8px">
-            <strong>&#x26A0; No separate FGAN module.</strong> Acceptance is managed via <strong>status field</strong> on the FGHM itself. QC check, damaged qty, and acceptance status are inline fields.
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ============================================================ -->
-    <!-- PRODUCTION -->
-    <!-- ============================================================ -->
-    <div class="module-group" id="production">
-      <span id="org-prod" style="position:relative;top:-60px;display:block"></span>
-      <h3>Production — Costing Arm for SO <span class="mg-badge">Stage 1 (cont.) — Plan &rarr; Order &rarr; BMR &rarr; RMC &rarr; Pack &rarr; Rework + PR</span></h3>
-      <p>Production consumes <strong>RM</strong> (from MR) to produce <strong>FG</strong> via BMR. Multiple FGs together fulfill the <strong>System</strong> ordered on the SO. All tagged to Project. PR (Purchase Requisition) now originates here for production-related material procurement.</p>
-      <div style="display:flex;gap:8px;padding:8px 12px;background:var(--gray-50);border-radius:6px;font-size:12px;color:var(--gray-600);margin-bottom:12px;border:1px solid var(--gray-200)">
-        <strong>Hierarchy:</strong>
-        <span style="background:#dbeafe;padding:2px 8px;border-radius:4px;font-size:11px">SO → System (EP01)</span>
-        <span class="ff-arrow" style="font-size:12px">→</span>
-        <span style="background:#fef3c7;padding:2px 8px;border-radius:4px;font-size:11px">Multiple FG</span>
-        <span class="ff-arrow" style="font-size:12px">→</span>
-        <span style="background:#d1fae5;padding:2px 8px;border-radius:4px;font-size:11px">RM (via BOM) ← MR works here</span>
-      </div>
-
       <div class="form-card" id="prod-plan">
         <div class="fc-header">
-          <span class="fc-num">6A</span>
+          <span class="fc-num">10B</span>
           <span class="fc-title">Production Planning</span>
           <span class="fc-tag">Per Project</span>
         </div>
         <div class="fc-flow">
           <span class="fc-flow-in">From: Project ID + System Composition</span>
-          <span class="fc-flow-key">System qty from SO → FG qty from System Composition → RM from BOM</span>
+          <span class="fc-flow-key">System qty from SO &rarr; FG qty from System Composition &rarr; RM from BOM</span>
           <span class="fc-flow-out">To: Production Order (per FG)</span>
         </div>
         <div class="form-demo">
@@ -1725,7 +955,7 @@
             <div><label>Planner</label><input type="text" value="Suresh Patil"></div>
           </div>
           <div class="subtable-demo">
-              <div class="st-hint">FGs Required for Project <span style="font-weight:400;color:var(--gray-500)">— what Production must manufacture (derived from SO)</span></div>
+            <div class="st-hint">FGs Required for Project</div>
             <table style="width:100%;border-collapse:collapse;font-size:12px">
               <thead>
                 <tr>
@@ -1742,48 +972,8 @@
                   <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="0" style="font-size:12px" disabled style="background:var(--gray-50)"></td>
                   <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="600" style="font-size:12px" disabled style="background:var(--gray-50);font-weight:700;color:var(--primary)"></td>
                 </tr>
-                <tr>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="FG-EP-002 — Hardener Pack" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="200" style="font-size:12px" disabled style="background:var(--gray-50)"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="50" style="font-size:12px" disabled style="background:var(--gray-50)"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="150" style="font-size:12px" disabled style="background:var(--gray-50);font-weight:700;color:var(--primary)"></td>
-                </tr>
               </tbody>
             </table>
-          </div>
-          <div style="padding:8px 12px;background:#eff6ff;border-radius:6px;font-size:12px;color:#1e3a8a;margin-top:8px">
-            <strong>Derivation:</strong> <strong>Required Qty</strong> per FG is computed from the SO <strong>System Lines</strong>: SO area × the FG ratio defined in <strong>System Composition</strong> (System → FG). Example: SO sells EP01 over 500 SqM; System Composition maps EP01 → FG "FG-EP01" at 1.2 Kg/SqM → Required Qty = 600 Kg. The underlying RM for each FG is driven by the <strong>BOM (FG → RM)</strong> mapping, which Production uses for BMR / RM Consumption. <em>(Supply+Apply projects only — Supply Only FG sales bypass Production planning.)</em>
-          </div>
-          <div style="padding:8px 12px;background:var(--accent-light);border-radius:6px;font-size:12px;color:#92400e;margin-top:8px">
-            <strong>&#x2139; MR requisitions RM</strong> — auto-calculated from BOM × FG qty per FG above. MR is at RM level, not FG or System.
-          </div>
-        </div>
-      </div>
-
-      <div class="connector-down">&#x25BC;</div>
-
-      <div class="form-card" id="prod-order">
-        <div class="fc-header">
-          <span class="fc-num">6B</span>
-          <span class="fc-title">Production Order</span>
-          <span class="fc-tag">Per System</span>
-        </div>
-        <div class="fc-flow">
-          <span class="fc-flow-in">From: Production Planning (FG breakdown)</span>
-          <span class="fc-flow-key">One Production Order per FG to produce</span>
-          <span class="fc-flow-out">To: BMR (consumes RM → produces FG)</span>
-        </div>
-        <div class="form-demo">
-          <div class="form-row-4">
-            <div><label>Order No</label><input type="text" value="PROD-2026-001" disabled style="background:var(--gray-50)"></div>
-            <div><label>Plan Reference</label><select><option selected>PLAN-2026-001</option></select></div>
-            <div><label>FG Product</label><select><option selected>FG-EP-001 — Epoxy Base Coat</option></select></div>
-            <div><label>Planned FG Qty</label><input type="number" value="600"></div>
-          </div>
-          <div class="form-row-3">
-            <div><label>Start Date</label><input type="date" value="2026-07-21"></div>
-            <div><label>End Date</label><input type="date" value="2026-08-15"></div>
-            <div><label>Status</label><select><option selected>Planned</option><option>In Progress</option><option>Completed</option></select></div>
           </div>
         </div>
       </div>
@@ -1792,14 +982,14 @@
 
       <div class="form-card" id="prod-bmr">
         <div class="fc-header">
-          <span class="fc-num">6C</span>
-          <span class="fc-title">Batch Manufacturing Record (BMR)</span>
-          <span class="fc-tag">3 Subforms</span>
+          <span class="fc-num">10C</span>
+          <span class="fc-title">BMR / RM Consumption</span>
+          <span class="fc-tag">Consume RM &rarr; Produce FG</span>
         </div>
         <div class="fc-flow">
-          <span class="fc-flow-in">From: Production Order (for an FG)</span>
-          <span class="fc-flow-key">Consumes RM → Produces FG. RM from MR.</span>
-          <span class="fc-flow-out">To: RM Consumption, Packing → FGHM</span>
+          <span class="fc-flow-in">From: Production Order</span>
+          <span class="fc-flow-key">Consumes RM &rarr; Produces FG. RM from MR.</span>
+          <span class="fc-flow-out">To: RM Consumption, Packing &rarr; FGHM</span>
         </div>
         <div class="form-demo">
           <div class="form-row-4">
@@ -1844,37 +1034,16 @@
                 <tr>
                   <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Mixing" style="font-size:12px"></td>
                   <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="15 min" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="25°C" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="25&deg;C" style="font-size:12px"></td>
                   <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Ramesh" style="font-size:12px"></td>
                 </tr>
               </tbody>
             </table>
           </div>
-        </div>
-      </div>
-
-      <div class="connector-down">&#x25BC;</div>
-
-      <div class="form-card" id="prod-consume">
-        <div class="fc-header">
-          <span class="fc-num">6D</span>
-          <span class="fc-title">RM Consumption Entry</span>
-          <span class="fc-tag">Actual vs Standard</span>
-        </div>
-        <div class="fc-flow">
-          <span class="fc-flow-in">From: BMR</span>
-          <span class="fc-flow-key">Compare actual vs standard consumption</span>
-        </div>
-        <div class="form-demo">
-          <div class="form-row-3">
-            <div><label>BMR Reference</label><select><option selected>BMR-2026-001</option></select></div>
-            <div><label>Item</label><input type="text" value="Epoxy Resin" disabled style="background:var(--gray-50)"></div>
-            <div><label>Variance</label><input type="text" value="+5 Kg (1.2%)" disabled style="background:var(--gray-50);color:var(--accent);font-weight:600"></div>
-          </div>
-          <div class="form-row-3">
+          <div class="form-row-3" style="margin-top:8px">
             <div><label>Standard Qty</label><input type="number" value="425" disabled style="background:var(--gray-50)"></div>
             <div><label>Actual Qty</label><input type="number" value="430"></div>
-            <div><label>Reason</label><input type="text" value="Slight overmix during startup"></div>
+            <div><label>Variance</label><input type="text" value="+5 Kg (1.2%)" disabled style="background:var(--gray-50);color:var(--accent);font-weight:600"></div>
           </div>
         </div>
       </div>
@@ -1883,7 +1052,7 @@
 
       <div class="form-card" id="prod-pack">
         <div class="fc-header">
-          <span class="fc-num">6E</span>
+          <span class="fc-num">10D</span>
           <span class="fc-title">Packing Entry</span>
           <span class="fc-tag">FG + Packing Material</span>
         </div>
@@ -1922,441 +1091,212 @@
 
       <div class="connector-down">&#x25BC;</div>
 
-      <div class="form-card" id="prod-rework">
+      <div class="form-card" id="inv-fghm">
         <div class="fc-header">
-          <span class="fc-num">6F</span>
-          <span class="fc-title">Rework Register</span>
-          <span class="fc-tag">QC Revalidation</span>
+          <span class="fc-num">10E</span>
+          <span class="fc-title">FG Handover (FGHM)</span>
+          <span class="fc-tag">Inline Acceptance</span>
         </div>
         <div class="fc-flow">
-          <span class="fc-flow-in">From: BMR (failed QC)</span>
-          <span class="fc-flow-key">Track rework reasons and revalidation</span>
-        </div>
-        <div class="form-demo">
-          <div class="form-row-3">
-            <div><label>BMR Reference</label><select><option>BMR-2026-002</option></select></div>
-            <div><label>Rework Reason</label><input type="text" value="Viscosity out of spec"></div>
-            <div><label>Rework Qty</label><input type="number" value="50"></div>
-          </div>
-          <div class="subtable-demo">
-            <div class="st-hint">Material Consumed for Rework</div>
-            <table style="width:100%;border-collapse:collapse;font-size:12px">
-              <thead>
-                <tr>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Item</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Qty</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">UOM</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Epoxy Resin" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="15" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px"></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="form-row-3">
-            <div><label>QC Revalidation</label><select><option selected>Pass</option><option>Fail</option></select></div>
-            <div><label>Approved By</label><input type="text" value="Vikram Joshi (QC)"></div>
-            <div></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="connector-down">&#x25BC;</div>
-
-      <div class="form-card" id="pr-pr">
-        <div class="fc-header">
-          <span class="fc-num">6G</span>
-          <span class="fc-title">Purchase Requisition (PR)</span>
-          <span class="fc-tag">N Items</span>
-        </div>
-        <div class="fc-flow">
-          <span class="fc-flow-in">From: Production Dept (Production-related procurement)</span>
-          <span class="fc-flow-key">Add items from Item Muster</span>
-          <span class="fc-flow-out">To: Rate Comparison (standalone)</span>
+          <span class="fc-flow-in">From: Production (Packing)</span>
+          <span class="fc-flow-key">Production hands FG to Store with inline acceptance status</span>
+          <span class="fc-flow-out">To: Inventory (FG stock)</span>
         </div>
         <div class="form-demo">
           <div class="form-row-4">
-            <div><label>PR No</label><input type="text" value="PR-2026-001" disabled style="background:var(--gray-50)"></div>
-            <div><label>PR Date</label><input type="date" value="2026-07-02"></div>
-            <div><label>RM Type</label><select><option selected>Coding</option><option>Non-Coding</option></select></div>
-            <div><label>Department</label><input type="text" value="Production &amp; R&amp;D" disabled style="background:var(--gray-50)"></div>
-          </div>
-          <div class="subtable-demo">
-            <div class="st-hint">PR Items (N items)</div>
-            <table style="width:100%;border-collapse:collapse;font-size:12px">
-              <thead>
-                <tr>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Item Code</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Description</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Qty</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">UOM</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Lead Time</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option selected>RM-EP-001 — Epoxy Resin</option></select></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Epoxy Resin Grade A" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="425" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled style="background:var(--gray-50)"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="7 days" style="font-size:12px" disabled style="background:var(--gray-50)"></td>
-                </tr>
-                <tr>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option selected>RM-EP-002 — Epoxy Hardener</option></select></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Epoxy Hardener Grade B" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="75" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled style="background:var(--gray-50)"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="5 days" style="font-size:12px" disabled style="background:var(--gray-50)"></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ============================================================ -->
-    <!-- FINANCE — Supplier Credit -->
-    <!-- ============================================================ -->
-    <div class="module-group" id="finance">
-      <span id="org-finance" style="position:relative;top:-60px;display:block"></span>
-      <h3>Finance <span class="mg-badge">Stage 4 — Invoice → Payment → AP/AR</span></h3>
-      <p>Finance handles invoicing (from Service Team submission), supplier payments, and customer collections. Supplier Credit Notes for rejected QC material.</p>
-
-      <div class="credit-card">
-        <div class="fc-header" style="margin-bottom:12px">
-          <span class="fc-num" style="background:var(--accent)">8A</span>
-          <span class="fc-title">Supplier Credit Note</span>
-          <span class="credit-badge credited" style="margin-left:auto">Credited</span>
-        </div>
-        <div class="flow-finance" style="margin-bottom:16px">
-          <span class="ff-node" style="background:#fee2e2;color:var(--red)">QC Rejected</span>
-          <span class="ff-arrow">→</span>
-          <span class="ff-node" style="background:#fef3c7;color:#92400e">Finance Creates</span>
-          <span class="ff-arrow">→</span>
-          <span class="ff-node" style="background:#dbeafe;color:#1e40af">Approved</span>
-          <span class="ff-arrow">→</span>
-          <span class="ff-node" style="background:var(--green-light);color:var(--green)">Credited ✓</span>
-          <span class="ff-arrow">→</span>
-          <span class="ff-node" style="background:var(--gray-100);color:var(--gray-700)">Supplier Balance −</span>
-        </div>
-        <div class="form-demo">
-          <div class="form-row">
-            <div><label>Supplier Code</label>
-              <select style="font-size:13px;padding:8px 12px;width:100%;border:1px solid var(--gray-300);border-radius:6px;margin-bottom:12px">
-                <option>SUP-001 — Acme Chemicals</option>
-                <option selected>SUP-004 — Polycoat India</option>
-                <option>SUP-007 — ResinTech Corp</option>
-              </select>
-            </div>
-            <div><label>PO Reference</label>
-              <select style="font-size:13px;padding:8px 12px;width:100%;border:1px solid var(--gray-300);border-radius:6px;margin-bottom:12px">
-                <option>RM-2025-0042 — 15 Apr 2025</option>
-                <option selected>RM-2025-0047 — 22 May 2025</option>
-                <option>RMWAD-2025-0012 — 10 Jun 2025</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-row">
-            <div><label>Credit Reason</label>
-              <select style="font-size:13px;padding:8px 12px;width:100%;border:1px solid var(--gray-300);border-radius:6px;margin-bottom:12px">
-                <option selected>Defective Material</option>
-                <option>Damaged in Transit</option>
-                <option>Shortage</option>
-                <option>Quality Issue</option>
-                <option>Rate Difference</option>
-              </select>
-            </div>
-            <div><label>Status</label>
-              <select style="font-size:13px;padding:8px 12px;width:100%;border:1px solid var(--gray-300);border-radius:6px;margin-bottom:12px">
-                <option>Draft</option>
-                <option>Approved</option>
-                <option selected>Credited</option>
-                <option>Cancelled</option>
-              </select>
-            </div>
-          </div>
-          <div class="subtable-demo">
-            <div class="st-hint">Credit Line Items</div>
-            <table style="width:100%;border-collapse:collapse;font-size:12px">
-              <thead>
-                <tr>
-                  <th style="padding:6px 8px;text-align:left;font-size:10px;font-weight:600;border-bottom:2px solid #ddd;color:var(--gray-500)">Item Code</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:10px;font-weight:600;border-bottom:2px solid #ddd;color:var(--gray-500)">Item Name</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:10px;font-weight:600;border-bottom:2px solid #ddd;color:var(--gray-500)">Defective Qty</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:10px;font-weight:600;border-bottom:2px solid #ddd;color:var(--gray-500)">UOM</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:10px;font-weight:600;border-bottom:2px solid #ddd;color:var(--gray-500)">Rate</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:10px;font-weight:600;border-bottom:2px solid #ddd;color:var(--gray-500)">GST%</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:10px;font-weight:600;border-bottom:2px solid #ddd;color:var(--gray-500)">Total Credit</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="RM003" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Epoxy Hardener" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="100" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="₹180" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="18%" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="₹21,240" style="font-size:12px;font-weight:600"></td>
-                </tr>
-                <tr>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="RM005" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Pigment Paste" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="25" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="₹450" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="18%" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="₹13,275" style="font-size:12px;font-weight:600"></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div style="display:flex;justify-content:flex-end;padding:8px 0;border-top:2px solid var(--gray-200);font-size:16px;font-weight:700">
-            Total Credit Amount: <span style="color:var(--accent);margin-left:12px;font-size:18px">&#8377; 34,515</span>
-          </div>
-        </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
-          <span class="data-badge pid">&#x1F517; PO Linked</span>
-          <span class="data-badge ref">&#x1F517; QC Referenced</span>
-          <span class="data-badge type">&#x1F517; Auto-calc GST</span>
-        </div>
-        <p style="font-size:12px;color:var(--gray-500);margin:8px 0 0">
-          <strong>Credit Note SC-2025-0047</strong> — Created from QC inspection #QC-2025-0089. 125 Kg defective material from PO RM-2025-0047. Awaiting approval.
-        </p>
-      </div>
-    </div>
-
-    <!-- ============================================================ -->
-    <!-- LOGISTICS -->
-    <!-- ============================================================ -->
-    <div class="module-group" id="logistics">
-      <h3>Logistics <span class="mg-badge">Stage 4 — Delivery Challan → Outward → Dispatch</span></h3>
-      <p>Logistics handles FG dispatch with Delivery Challan (DC) and Outward Invoice. Completes the outward movement.</p>
-
-      <div class="form-card" id="org-logistics">
-        <div class="fc-header">
-          <span class="fc-num" style="background:#ea580c">9A</span>
-          <span class="fc-title">Delivery Challan (DC)</span>
-          <span class="fc-tag">Logistics</span>
-        </div>
-        <div class="fc-flow">
-          <span class="fc-flow-in">From: FGHM (accepted FG — inline acceptance)</span>
-          <span class="fc-flow-key">Create DC for FG dispatch to customer</span>
-          <span class="fc-flow-out">To: Outward Invoice</span>
-        </div>
-        <div class="form-demo">
-          <div class="form-row-4">
-            <div><label>DC No</label><input type="text" value="DC-2026-001" disabled style="background:var(--gray-50)"></div>
-            <div><label>Date</label><input type="date" value="2026-08-20"></div>
+            <div><label>FGHM No</label><input type="text" value="FGHM-2026-001" disabled style="background:var(--gray-50)"></div>
             <div><label>Project ID</label><select><option selected>PRJ-2026-001 — Tata Motors</option></select></div>
             <div><label>Customer</label><input type="text" value="Tata Motors Ltd" disabled style="background:var(--gray-50)"></div>
+            <div><label>Handover Date</label><input type="date" value="2026-08-15"></div>
           </div>
           <div class="subtable-demo">
-            <div class="st-hint">FG Dispatch Items</div>
+            <div class="st-hint">FG Products — Set acceptance, damaged, and status per line</div>
             <table style="width:100%;border-collapse:collapse;font-size:12px">
               <thead>
                 <tr>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Item</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">FG Item</th>
                   <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Qty</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">UOM</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Batch</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Epoxy Flooring — 1mm" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="480" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Sqm" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="BATCH-EP-001" style="font-size:12px"></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="form-row-3">
-            <div><label>Transport Mode</label><select><option selected>Truck</option><option>Mini Truck</option><option>Pickup</option></select></div>
-            <div><label>Vehicle No</label><input type="text" value="MH-12-AB-1234"></div>
-            <div><label>Driver</label><input type="text" value="Suresh (Transport)"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="connector-down">&#x25BC;</div>
-
-      <div class="form-card">
-        <div class="fc-header">
-          <span class="fc-num" style="background:#ea580c">9B</span>
-          <span class="fc-title">Outward Invoice</span>
-          <span class="fc-tag blue" style="background:var(--green-light);color:var(--green)">Dispatch Complete</span>
-        </div>
-        <div class="fc-flow">
-          <span class="fc-flow-in">From: DC</span>
-          <span class="fc-flow-key">Final dispatch record with outward qty</span>
-          <span class="fc-flow-out">Outward quantity updated</span>
-        </div>
-        <div class="form-demo">
-          <div class="form-row-4">
-            <div><label>Outward No</label><input type="text" value="OUT-2026-001" disabled style="background:var(--gray-50)"></div>
-            <div><label>DC Reference</label><select><option selected>DC-2026-001</option></select></div>
-            <div><label>Customer</label><input type="text" value="Tata Motors Ltd" disabled style="background:var(--gray-50)"></div>
-            <div><label>Dispatch Date</label><input type="date" value="2026-08-20"></div>
-          </div>
-          <div class="subtable-demo">
-            <div class="st-hint">Outward Items</div>
-            <table style="width:100%;border-collapse:collapse;font-size:12px">
-              <thead>
-                <tr>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Item</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Qty</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Accepted</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Damaged</th>
                   <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">UOM</th>
                   <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Status</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Epoxy Flooring — 1mm" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="480" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Sqm" style="font-size:12px"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><span style="font-size:12px;color:var(--green);font-weight:600">Dispatched</span></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="FG-EP-001 — Epoxy Base Coat" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="600" style="font-size:12px" disabled style="background:var(--gray-50)"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="580" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="20" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option selected>Accepted</option><option>Partial</option><option>Rejected</option></select></td>
                 </tr>
               </tbody>
             </table>
           </div>
+          <div class="form-row-3">
+            <div><label>Handed Over By</label><input type="text" value="Suresh (Production)"></div>
+            <div><label>Received By</label><input type="text" value="Anil (Store)"></div>
+            <div><label>Overall Status</label><select><option selected>Accepted</option><option>Pending</option><option>Rejected</option></select></div>
+          </div>
+          <div style="padding:8px 12px;background:#fffbeb;border-radius:6px;font-size:12px;color:#92400e;margin-top:8px">
+            <strong>&#x26A0; No separate FGAN module.</strong> Acceptance is managed via <strong>status field</strong> on the FGHM itself.
+          </div>
           <div style="padding:8px 12px;background:var(--green-light);border-radius:6px;font-size:12px;color:var(--green);margin-top:8px">
-            <strong>&#x2713; Outward quantity updated.</strong> FG Stock reduced by dispatched qty.
+            <strong>&#x2713; On FGHM inline acceptance:</strong> FG Stock updated. Notification sent to Store &amp; Logistics.
           </div>
         </div>
       </div>
     </div>
 
+    <!-- ============================================================ -->
+    <!-- INVENTORY -->
+    <!-- ============================================================ -->
+    <div class="module-group" id="inventory-flow">
+      <h3>Inventory <span class="mg-badge">Stage 6 — RM Stock + FG Stock</span></h3>
+      <p>Inventory is the final stage. RM stock is updated via GRN posting (Stream A) and MIS posting (Stream B). FG stock is updated via FGHM inline acceptance.</p>
 
+      <div style="display:flex;gap:16px;padding:16px;background:var(--gray-50);border-radius:8px;border:1px solid var(--gray-200)">
+        <div style="flex:1;padding:12px;background:#d1fae5;border-radius:6px;">
+          <strong style="color:var(--green);font-size:14px">RM Inventory</strong>
+          <div class="subtable-demo" style="margin-top:8px">
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead>
+                <tr>
+                  <th style="padding:4px 6px;text-align:left;font-size:10px;font-weight:600;border-bottom:2px solid #ddd">Item</th>
+                  <th style="padding:4px 6px;text-align:left;font-size:10px;font-weight:600;border-bottom:2px solid #ddd">Stock</th>
+                  <th style="padding:4px 6px;text-align:left;font-size:10px;font-weight:600;border-bottom:2px solid #ddd">Min</th>
+                  <th style="padding:4px 6px;text-align:left;font-size:10px;font-weight:600;border-bottom:2px solid #ddd">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:3px 6px;border-bottom:1px solid #eee;font-size:11px">Epoxy Resin</td>
+                  <td style="padding:3px 6px;border-bottom:1px solid #eee;font-size:11px">500 Kg</td>
+                  <td style="padding:3px 6px;border-bottom:1px solid #eee;font-size:11px">50 Kg</td>
+                  <td style="padding:3px 6px;border-bottom:1px solid #eee;font-size:11px"><span style="color:var(--green);font-weight:600">&#x2713; OK</span></td>
+                </tr>
+                <tr>
+                  <td style="padding:3px 6px;border-bottom:1px solid #eee;font-size:11px">Epoxy Hardener</td>
+                  <td style="padding:3px 6px;border-bottom:1px solid #eee;font-size:11px">120 Kg</td>
+                  <td style="padding:3px 6px;border-bottom:1px solid #eee;font-size:11px">25 Kg</td>
+                  <td style="padding:3px 6px;border-bottom:1px solid #eee;font-size:11px"><span style="color:var(--green);font-weight:600">&#x2713; OK</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="font-size:11px;color:var(--gray-600);margin:8px 0 0">Updated via: GRN posting (RM +), MIS posting (RM &minus;)</p>
+        </div>
+        <div style="flex:1;padding:12px;background:#dbeafe;border-radius:6px;">
+          <strong style="color:var(--primary);font-size:14px">FG Inventory</strong>
+          <div class="subtable-demo" style="margin-top:8px">
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead>
+                <tr>
+                  <th style="padding:4px 6px;text-align:left;font-size:10px;font-weight:600;border-bottom:2px solid #ddd">Item</th>
+                  <th style="padding:4px 6px;text-align:left;font-size:10px;font-weight:600;border-bottom:2px solid #ddd">Stock</th>
+                  <th style="padding:4px 6px;text-align:left;font-size:10px;font-weight:600;border-bottom:2px solid #ddd">Min</th>
+                  <th style="padding:4px 6px;text-align:left;font-size:10px;font-weight:600;border-bottom:2px solid #ddd">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding:3px 6px;border-bottom:1px solid #eee;font-size:11px">Floorchem 300 Matt [R]</td>
+                  <td style="padding:3px 6px;border-bottom:1px solid #eee;font-size:11px">580 Kg</td>
+                  <td style="padding:3px 6px;border-bottom:1px solid #eee;font-size:11px">100 Kg</td>
+                  <td style="padding:3px 6px;border-bottom:1px solid #eee;font-size:11px"><span style="color:var(--green);font-weight:600">&#x2713; OK</span></td>
+                </tr>
+                <tr>
+                  <td style="padding:3px 6px;border-bottom:1px solid #eee;font-size:11px">Floorchem 300 Matt [H]</td>
+                  <td style="padding:3px 6px;border-bottom:1px solid #eee;font-size:11px">200 Kg</td>
+                  <td style="padding:3px 6px;border-bottom:1px solid #eee;font-size:11px">50 Kg</td>
+                  <td style="padding:3px 6px;border-bottom:1px solid #eee;font-size:11px"><span style="color:var(--green);font-weight:600">&#x2713; OK</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p style="font-size:11px;color:var(--gray-600);margin:8px 0 0">Updated via: FGHM inline acceptance (FG +)</p>
+        </div>
+      </div>
 
-
+      <div class="callout callout-info" style="margin-top:12px">
+        <strong>Stock Management Rules:</strong>
+        GRN posting &rarr; RM stock + (timestamp logged) &middot;
+        MIS posting &rarr; RM stock &minus; &middot;
+        FGHM inline acceptance &rarr; FG stock + &middot;
+        Min/Max stock &rarr; Alert when stock crosses thresholds.
+      </div>
+    </div>
 
     <!-- ============================================================ -->
     <!-- FLOW SUMMARY -->
     <!-- ============================================================ -->
     <h2>Form Flow Summary <span class="badge badge-green">Two-Stream Architecture</span></h2>
-    <p>How data passes from one form to the next — organized by the 4-stage Organization Cycle.</p>
+    <p>How data passes from one form to the next — organized by the 6-stage Organization Cycle.</p>
     <div class="table-wrap">
       <table>
-        <thead><tr><th>Stage</th><th>Order</th><th>Form</th><th>Data Source</th><th>What It Creates</th><th>Next Form</th></tr></thead>
+        <thead><tr><th>Stage</th><th>Form</th><th>Data Source</th><th>What It Creates</th><th>Next Form</th></tr></thead>
         <tbody>
-          <tr style="background:#dbeafe"><td colspan="6"><strong>STAGE 1: Sales → Production → MR → Store → Costing</strong></td></tr>
-          <tr><td>S1</td><td>1</td><td>SO</td><td>Customer Master</td><td>System line items (EP01). Client PO ref</td><td>Creates Project</td></tr>
-          <tr><td>S1</td><td>2</td><td>Project</td><td>SO (auto)</td><td>Project ID, Manager, Dates</td><td>PR (via Production), MR, FGHM, Production</td></tr>
-          <tr><td>S1</td><td>3</td><td>Task Budget</td><td>Project</td><td>Budget line items per category</td><td>P&amp;L</td></tr>
-          <tr><td>S1</td><td>4</td><td>System Composition</td><td>System Master</td><td>System→FG mapping (which FGs per System)</td><td>Production Planning</td></tr>
-          <tr><td>S1</td><td>5</td><td>BOM / FG Formulation</td><td>FG Product (Item Muster)</td><td>FG→RM formulation with ratios</td><td>BMR, Costing</td></tr>
-          <tr><td>S1</td><td>6</td><td>Production Planning</td><td>System Composition × SO qty</td><td>FG breakdown per System, RM needed</td><td>Production Order</td></tr>
-          <tr><td>S1</td><td>7</td><td>Production Order</td><td>Planning</td><td>Order per FG to produce</td><td>BMR</td></tr>
-          <tr><td>S1</td><td>8</td><td>BMR</td><td>Production Order</td><td>Consume RM → Produce FG. Batch record</td><td>RMC, Packing</td></tr>
-          <tr><td>S1</td><td>7</td><td>RM Consumption</td><td>BMR</td><td>Actual vs standard variance</td><td>—</td></tr>
-          <tr><td>S1</td><td>8</td><td>Packing</td><td>BMR</td><td>FG packed, packing material used</td><td>FGHM</td></tr>
-          <tr><td>S1</td><td>11</td><td>Rework</td><td>BMR (failed)</td><td>Rework with QC revalidation</td><td>—</td></tr>
-          <tr><td>S1</td><td>12</td><td>MR</td><td>Production Plan (RM needed)</td><td><strong>RM request</strong> from store — derived from BOM × FG qty</td><td>MIS</td></tr>
-          <tr><td>S1</td><td>13</td><td>MIS</td><td>MR items</td><td>Issued qty, balance tracking</td><td>Stock deduction</td></tr>
-          <tr><td>S1</td><td>14</td><td><strong>FGHM / Production GRN</strong></td><td>Packing (FG produced from RM)</td><td>FG handover with inline acceptance status (no separate FGAN)</td><td>FG stock / Logistics DC</td></tr>
-          <tr><td>S1</td><td>15</td><td><strong>Costing Approval</strong></td><td>Store (material valuation)</td><td>Costing approval gate sign-off</td><td>Production / Purchase</td></tr>
-          <tr style="background:#fef3c7"><td colspan="6"><strong>STAGE 2: Stock Check → Y=Production → N=Purchase</strong></td></tr>
-          <tr style="background:#fee2e2"><td colspan="6"><strong>STAGE 3: Purchase → Handover (if Stock=N)</strong></td></tr>
-          <tr><td>S3</td><td>—</td><td>PR</td><td>Production / Project ID</td><td>PR No, Item requests (now under Production)</td><td>Rate Comparison (standalone)</td></tr>
-          <tr><td>S3</td><td>16</td><td>Rate Comparison</td><td>Manual entry / PR items</td><td>5 supplier quotes, selected rate</td><td>PO</td></tr>
-          <tr><td>S3</td><td>17</td><td>PO</td><td>Rate Comparison</td><td>PO with GST split items + Receipt Status</td><td>GRN</td></tr>
-          <tr><td>S3</td><td>19</td><td>GRN</td><td>PO items</td><td>Received qty, partial checkboxes</td><td>QC</td></tr>
-          <tr><td>S3</td><td>20</td><td>QC</td><td>GRN items</td><td>Test results, Pass/Fail</td><td>Stock update</td></tr>
-          <tr><td>S3</td><td>21</td><td><strong>Material Handover</strong></td><td>GRN items</td><td>RM classification (Coding/Non-Coding)</td><td>Store stock</td></tr>
-          <tr style="background:#d1fae5"><td colspan="6"><strong>STAGE 4: Production GRN → Finance → Logistics → Outward</strong></td></tr>
-          <tr><td>S4</td><td>22</td><td><strong>Area Measurement</strong></td><td>Site / Project</td><td>Actual area measured at site</td><td>Material Custody</td></tr>
-          <tr><td>S4</td><td>23</td><td><strong>Material Custody</strong></td><td>MIS (Store)</td><td>Service Team takes custody</td><td>Work Start</td></tr>
-           <tr><td>S4</td><td>24</td><td><strong>Work Start / Daily Progress</strong></td><td>Material Custody</td><td>Daily progress and material usage</td><td>Final Invoice</td></tr>
-           <tr style="background:#e0f2fe"><td>S4</td><td>24a</td><td><strong>Site Material Consumption</strong></td><td>Work Start (SO System → FG → RM via BOM)</td><td>Expands FG→RM, deducts from MR Allocation[Project,RM].ConsumedQty; 80% alert at 80%</td><td>MR Allocation / 80% Alert</td></tr>
-          <tr><td>S4</td><td>25</td><td><strong>Final Invoice Submission</strong></td><td>Completed Work</td><td>Trigger Finance invoice generation</td><td>Finance Invoice</td></tr>
-          <tr><td>S4</td><td>26</td><td><strong>Supplier Credit Note</strong></td><td>QC rejected / GRN shortage</td><td>Credit line items with GST, linked to PO</td><td>Supplier balance</td></tr>
-           <tr><td>S4</td><td>27</td><td><strong>Customer Invoice</strong></td><td>SO Reference / Service Invoice</td><td>INV-YYYY-XXXX, auto-fetch lines, GST split</td><td>AR Posting</td></tr>
-          <tr><td>S4</td><td>28</td><td><strong>Delivery Challan (DC)</strong></td><td>FGHM (accepted FG)</td><td>DC for FG dispatch</td><td>Outward Invoice</td></tr>
-          <tr><td>S4</td><td>29</td><td><strong>Outward Invoice</strong></td><td>DC</td><td>Final dispatch record</td><td>FG stock reduced</td></tr>
+          <tr style="background:#dbeafe"><td colspan="5"><strong>STAGE 1: Procurement (Stream A — No Project ID)</strong></td></tr>
+          <tr><td>1A</td><td>PR</td><td>Production Dept</td><td>Purchase Requisition</td><td>PO</td></tr>
+          <tr><td>1B</td><td>PO</td><td>Supplier Master</td><td>PO with GST split items</td><td>GRN</td></tr>
+          <tr><td>1C</td><td>GRN</td><td>PO items</td><td>Received qty, partial checkboxes</td><td>QC</td></tr>
+          <tr><td>1D</td><td>QC</td><td>GRN items</td><td>Test results, Pass/Fail</td><td>Stock update</td></tr>
 
+          <tr style="background:#fef3c7"><td colspan="5"><strong>STAGE 2: Master Data (Stream B — Global Reference)</strong></td></tr>
+          <tr><td>2A</td><td>Item Muster</td><td>—</td><td>Item codes, categories</td><td>All forms</td></tr>
+          <tr><td>2B</td><td>System Master</td><td>—</td><td>System definitions (EP01)</td><td>SO, BOM</td></tr>
+          <tr><td>2C</td><td>BOM / FG Formulation</td><td>Item Muster (FG)</td><td>FG &rarr; RM mapping with ratios</td><td>BMR, Costing</td></tr>
+          <tr><td>2D</td><td>Supplier Master</td><td>—</td><td>Vendor database</td><td>PO</td></tr>
+
+          <tr style="background:#d1fae5"><td colspan="5"><strong>STAGE 3: SO &rarr; Project (Stream B)</strong></td></tr>
+          <tr><td>3A</td><td>SO</td><td>Customer Master</td><td>System line items, Client PO ref</td><td>Creates Project (Supply+Apply)</td></tr>
+          <tr><td>3B</td><td>Project</td><td>SO (auto)</td><td>Project ID, Manager, Dates</td><td>MR, Production, FGHM</td></tr>
+
+          <tr style="background:#fce7f3"><td colspan="5"><strong>STAGE 4: MR — Costing Gate (Stream B)</strong></td></tr>
+          <tr><td>4A</td><td>MR</td><td>Project + Prod Plan</td><td>RM request + 4 cost components</td><td>MIS (only when Released)</td></tr>
+
+          <tr style="background:#e8effd"><td colspan="5"><strong>STAGE 5: Production (Stream B)</strong></td></tr>
+          <tr><td>5A</td><td>MIS</td><td>MR (Released only)</td><td>Issued qty, balance tracking</td><td>Stock deduction</td></tr>
+          <tr><td>5B</td><td>Production Planning</td><td>System Composition &times; SO qty</td><td>FG breakdown per System</td><td>Production Order</td></tr>
+          <tr><td>5C</td><td>BMR</td><td>Production Order</td><td>Consume RM &rarr; Produce FG</td><td>Packing</td></tr>
+          <tr><td>5D</td><td>Packing</td><td>BMR</td><td>FG packed, packing material used</td><td>FGHM</td></tr>
+          <tr><td>5E</td><td>FGHM</td><td>Packing</td><td>FG handover with inline acceptance</td><td>FG stock</td></tr>
+
+          <tr style="background:#d1fae5"><td colspan="5"><strong>STAGE 6: Inventory (Stream B)</strong></td></tr>
+          <tr><td>6A</td><td>RM Stock</td><td>GRN / MIS</td><td>RM inventory view</td><td>—</td></tr>
+          <tr><td>6B</td><td>FG Stock</td><td>FGHM</td><td>FG inventory view</td><td>—</td></tr>
         </tbody>
       </table>
-    </div>
-
-    <!-- ============================================================ -->
-    <!-- P&L Summary -->
-    <!-- ============================================================ -->
-    <div class="module-group" id="pnl">
-      <h3>Project P&amp;L Statement <span class="mg-badge">Computed — No data entry</span></h3>
-      <p>Revenue minus all tracked costs, computed automatically from transactional forms. All figures are formula-driven.</p>
-
-      <div class="pnl-grid">
-        <div class="pnl-revenue">
-          <h4>Revenue</h4>
-          <table class="pnl-table">
-            <tr><td>SO Work Order Amount</td><td style="text-align:right;font-weight:600">&#8377; 2,15,000</td></tr>
-            <tr><td>Transportation (billed)</td><td style="text-align:right;font-weight:600">&#8377; 30,000</td></tr>
-            <tr style="border-top:2px solid var(--green);font-weight:700"><td>Total Revenue</td><td style="text-align:right">&#8377; 2,45,000</td></tr>
-          </table>
-        </div>
-        <div class="pnl-cost">
-          <h4>Costs</h4>
-          <table class="pnl-table">
-            <tr><td>Materials (GRN &times; PO Rate)</td><td style="text-align:right">&#8377; 82,000</td></tr>
-            <tr><td>Execution (Task Actual)</td><td style="text-align:right">&#8377; 42,640</td></tr>
-            <tr><td>Manpower (Task Actual)</td><td style="text-align:right">&#8377; 49,600</td></tr>
-            <tr><td>Transport + Loading (Task + GRN)</td><td style="text-align:right">&#8377; 35,400</td></tr>
-            <tr><td>Tools + Overhead (Task Actual)</td><td style="text-align:right">&#8377; 12,000</td></tr>
-            <tr><td>Production (BMR RM + Packing)</td><td style="text-align:right">&#8377; 8,960</td></tr>
-            <tr style="border-top:2px solid var(--red);font-weight:700"><td>Total Cost</td><td style="text-align:right">&#8377; 2,30,600</td></tr>
-          </table>
-        </div>
-      </div>
-      <div class="pnl-gross-margin">
-        Gross Margin: <span style="color:var(--green)">&#8377; 14,400</span>
-        <span style="margin:0 16px;color:var(--gray-300)">|</span>
-        Margin %: <span style="color:var(--green)">5.88%</span>
-      </div>
-      <div class="callout callout-warning" style="font-size:12px;margin:8px 0">
-        <strong>CR-03 — Material Cost Recognition:</strong> Material cost is recognized at <strong>consumption</strong> (MIS/BMR), NOT at GRN receipt.
-        GRN costs flow to <strong>Inventory (asset on Balance Sheet)</strong>. Only consumed material flows to P&amp;L.
-        See <a href="data-model.html#cost-flow">Cost Flow Diagram</a> for details.
-      </div>
-      <p class="pnl-data-sources">
-        <strong>Data sources:</strong> SO (Revenue) &middot; PO &times; Procurement GRN → Inventory (Material Cost — consumed via MIS/BMR) &middot; Task Budget Actuals (Execution, Manpower, Transport, Tools, Overhead) &middot; GRN Transport subform (Logistics) &middot; BMR + RM Consumption + Packing (Production) &middot; Supplier Credit Note (Credit adjustments) &middot; FGHM / Production GRN (FG valuation — no separate FGAN)
-      </p>
     </div>
 
     <!-- Data Flow Key -->
     <h2>Data Flow Key</h2>
     <div class="data-flow-key">
-      <span class="data-badge pid">&#x1F517; Project ID</span> <span class="flow-note" style="display:inline">flows through ALL forms</span>
-      <span class="data-badge ref" style="margin-left:16px">&#x1F517; Reference No</span> <span class="flow-note" style="display:inline">RC&rarr;PO&rarr;GRN&rarr;QC (PR now in Production)</span>
+      <span class="data-badge pid">&#x1F517; Project ID</span> <span class="flow-note" style="display:inline">flows through ALL Stream B forms</span>
+      <span class="data-badge ref" style="margin-left:16px">&#x1F517; Reference No</span> <span class="flow-note" style="display:inline">PR&rarr;PO&rarr;GRN&rarr;QC</span>
       <span class="data-badge type" style="margin-left:16px">&#x1F517; AutoFetch</span> <span class="flow-note" style="display:inline">Item details, UOM, rates</span>
     </div>
 
     <div class="callout callout-info">
-      <strong>Pro tip:</strong> Every transactional form carries the <strong>Project ID</strong> — that's how the system stays linked. You never enter data in isolation.
+      <strong>Pro tip:</strong> Every Stream B transactional form carries the <strong>Project ID</strong> — that's how the system stays linked. You never enter data in isolation.
     </div>
 
     <div class="callout callout-info" style="border-left:4px solid var(--green)">
-      <strong>Project as Consumption Anchor (NEW):</strong> MR carries a <strong>Material Allocation</strong> subform (per-RM Assigned Qty + Allocation Ratio + 80% Alert Flag). All consumption — FG production and Site Manager entries — resolves to the <strong>project-assigned RM</strong>, not a generic pool, and raises an <strong>80% alert</strong> as each material nears its allocation.
+      <strong>Project as Consumption Anchor:</strong> MR carries a <strong>Material Allocation</strong> subform (per-RM Assigned Qty + Allocation Ratio + 80% Alert Flag). All consumption resolves to the <strong>project-assigned RM</strong>, not a generic pool, and raises an <strong>80% alert</strong> as each material nears its allocation.
     </div>
 
     <div class="callout callout-warning" style="font-size:12px;margin:8px 0">
       <strong>3-Layer Product Hierarchy:</strong>
-      <strong>System</strong> (sold on SO — EP01) →
-      <strong>FG</strong> (produced in production — consumed RM) →
+      <strong>System</strong> (sold on SO — EP01) &rarr;
+      <strong>FG</strong> (produced in production) &rarr;
       <strong>RM</strong> (raw materials via BOM — MR works at this level).
       MR requisitions <strong>RM only</strong>. BMR consumes RM to produce FG.
-      FGs combine per System Composition to fulfill the System ordered.
     </div>
 
     <div class="footer">
       <p>Chemsol — Zoho Creator ERP &middot; ITOTCloud Systems Pvt. Ltd.</p>
-      <p>Organization Cycle &middot; 40+ Modules &middot; 3-Layer Hierarchy (System→FG→RM) &middot; Built on Zoho Creator India (.in)</p>
+      <p>Organization Cycle &middot; 6 Stages &middot; 3-Layer Hierarchy (System&rarr;FG&rarr;RM) &middot; Built on Zoho Creator India (.in)</p>
     </div>
   </div>
 </div>

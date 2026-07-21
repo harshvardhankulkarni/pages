@@ -30,27 +30,20 @@
         <div class="fp-step" data-step="5"><span class="fp-circle">5</span></div>
         <span class="fp-connector"></span>
         <div class="fp-step" data-step="6"><span class="fp-circle">6</span></div>
-        <span class="fp-connector"></span>
-        <div class="fp-step" data-step="7"><span class="fp-circle">7</span></div>
-        <span class="fp-connector"></span>
-        <div class="fp-step" data-step="8"><span class="fp-circle">8</span></div>
       </div>
 
-      <!-- Zone 2: Accordion Steps — Organization Cycle -->
+      <!-- STREAM A: Stock Procurement -->
+      <div class="accordion-stream-label">STREAM A — STOCK PROCUREMENT</div>
 
-      <!-- STREAM A: Pre-Project / Stock Procurement (No Project ID) -->
-      <div class="accordion-stream-label">STREAM A — PRE-PROJECT</div>
-
-      <!-- Stage 1: Purchase + Stock (Pre-Project) -->
+      <!-- Stage 1: Procurement -->
       <div class="accordion-section">
         <div class="accordion-header">
           <span class="ah-num">1</span>
-          Purchase + Stock
+          Procurement
           <span class="ah-arrow">▶</span>
         </div>
         <div class="accordion-body">
           <a class="ab-link" href="forms.html#procurement"><span class="al-type type-forms">Forms</span>PR→PO→GRN→QC</a>
-          <a class="ab-link" href="forms.html#material-handover"><span class="al-type type-forms">Forms</span>Mat Handover</a>
           <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Stock Reports</a>
           <a class="ab-link" href="flow.html#pr-pr"><span class="al-type type-flow">Flow</span>Purchase Flow</a>
         </div>
@@ -58,108 +51,73 @@
 
       <div class="accordion-stream-label">STREAM B — PROJECT-CENTRIC</div>
 
-      <!-- Stage 2: Sales → Project (Root) -->
+      <!-- Stage 2: Master Data -->
       <div class="accordion-section">
         <div class="accordion-header">
           <span class="ah-num">2</span>
-          Sales → Project
+          Master Data
+          <span class="ah-arrow">▶</span>
+        </div>
+        <div class="accordion-body">
+          <a class="ab-link" href="forms.html#master-data"><span class="al-type type-forms">Forms</span>Item Muster → BOM → Supplier</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Item Reports</a>
+          <a class="ab-link" href="flow.html"><span class="al-type type-flow">Flow</span>Master Data</a>
+        </div>
+      </div>
+
+      <!-- Stage 3: SO → Project -->
+      <div class="accordion-section">
+        <div class="accordion-header">
+          <span class="ah-num">3</span>
+          SO → Project
           <span class="ah-arrow">▶</span>
         </div>
         <div class="accordion-body">
           <a class="ab-link" href="forms.html#sales"><span class="al-type type-forms">Forms</span>Sales Order + Project</a>
           <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Sales Register</a>
           <a class="ab-link" href="flow.html#so-so"><span class="al-type type-flow">Flow</span>SO Flow</a>
-          <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>SO Model</a>
         </div>
       </div>
 
-      <!-- Stage 3: MR → MIS (Bridge) -->
-      <div class="accordion-section">
-        <div class="accordion-header">
-          <span class="ah-num">3</span>
-          MR → MIS
-          <span class="ah-arrow">▶</span>
-        </div>
-        <div class="accordion-body">
-          <a class="ab-link" href="forms.html#inventory"><span class="al-type type-forms">Forms</span>MR→MIS→FG Handover</a>
-          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Stock Reports</a>
-          <a class="ab-link" href="flow.html#inv-mr"><span class="al-type type-flow">Flow</span>Inventory Flow</a>
-          <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>Inventory Model</a>
-        </div>
-      </div>
-
-      <!-- Stage 4: Production -->
+      <!-- Stage 4: MR — Costing Gate -->
       <div class="accordion-section">
         <div class="accordion-header">
           <span class="ah-num">4</span>
+          MR — Costing Gate
+          <span class="ah-arrow">▶</span>
+        </div>
+        <div class="accordion-body">
+          <a class="ab-link" href="forms.html#mr"><span class="al-type type-forms">Forms</span>MR + Costing Approval</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Cost Reports</a>
+          <a class="ab-link" href="flow.html"><span class="al-type type-flow">Flow</span>MR Flow</a>
+        </div>
+      </div>
+
+      <!-- Stage 5: Production -->
+      <div class="accordion-section">
+        <div class="accordion-header">
+          <span class="ah-num">5</span>
           Production
           <span class="ah-arrow">▶</span>
         </div>
         <div class="accordion-body">
-          <a class="ab-link" href="forms.html#production"><span class="al-type type-forms">Forms</span>Planning→BMR→Pack</a>
+          <a class="ab-link" href="forms.html#production"><span class="al-type type-forms">Forms</span>MIS→Planning→BMR→Pack→FGHM</a>
           <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Production Reports</a>
-          <a class="ab-link" href="flow.html#org-prod"><span class="al-type type-flow">Flow</span>Production Flow</a>
-          <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>Production Model</a>
+          <a class="ab-link" href="flow.html"><span class="al-type type-flow">Flow</span>Production Flow</a>
         </div>
       </div>
 
-      <!-- Stage 5: Costing -->
-      <div class="accordion-section">
-        <div class="accordion-header">
-          <span class="ah-num">5</span>
-          Costing
-          <span class="ah-arrow">▶</span>
-        </div>
-        <div class="accordion-body">
-          <a class="ab-link" href="forms.html#costing"><span class="al-type type-forms">Forms</span>Costing Approval</a>
-          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Cost Reports</a>
-          <a class="ab-link" href="flow.html#org-costing"><span class="al-type type-flow">Flow</span>Costing Flow</a>
-          <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>Cost Model</a>
-        </div>
-      </div>
-
-      <!-- Stage 6: Service -->
+      <!-- Stage 6: Inventory -->
       <div class="accordion-section">
         <div class="accordion-header">
           <span class="ah-num">6</span>
-          Service
+          Inventory
           <span class="ah-arrow">▶</span>
         </div>
         <div class="accordion-body">
-          <a class="ab-link" href="forms.html#service-team"><span class="al-type type-forms">Forms</span>Area→Work→Invoice</a>
-          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Service Reports</a>
-          <a class="ab-link" href="flow.html#org-service"><span class="al-type type-flow">Flow</span>Service Flow</a>
-          <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>Service Model</a>
-        </div>
-      </div>
-
-      <!-- Stage 7: Finance -->
-      <div class="accordion-section">
-        <div class="accordion-header">
-          <span class="ah-num">7</span>
-          Finance
-          <span class="ah-arrow">▶</span>
-        </div>
-        <div class="accordion-body">
-          <a class="ab-link" href="forms.html#finance"><span class="al-type type-forms">Forms</span>Finance (SCN)</a>
-          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>P&amp;L / Reports</a>
-          <a class="ab-link" href="flow.html#org-finance"><span class="al-type type-flow">Flow</span>Finance Flow</a>
-          <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>Finance Model</a>
-        </div>
-      </div>
-
-      <!-- Stage 8: Logistics → Closure -->
-      <div class="accordion-section">
-        <div class="accordion-header">
-          <span class="ah-num">8</span>
-          Logistics → Closure
-          <span class="ah-arrow">▶</span>
-        </div>
-        <div class="accordion-body">
-          <a class="ab-link" href="forms.html#logistics"><span class="al-type type-forms">Forms</span>DC / Outward</a>
-          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Logistics Reports</a>
-          <a class="ab-link" href="flow.html#org-logistics"><span class="al-type type-flow">Flow</span>Logistics Flow</a>
-          <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>Logistics Model</a>
+          <a class="ab-link" href="forms.html#inventory"><span class="al-type type-forms">Forms</span>RM + FG Stock</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Stock Reports</a>
+          <a class="ab-link" href="flow.html#inv-mr"><span class="al-type type-flow">Flow</span>Inventory Flow</a>
         </div>
       </div>
 
@@ -180,18 +138,18 @@
 
   <div class="main">
     <section class="hero">
-      <div class="hero-eyebrow">Project-Centric ERP · v2.0</div>
+      <div class="hero-eyebrow">Streamlined ERP · v2.0</div>
       <h1>Chemsol<br>Zoho Creator ERP</h1>
-      <p>Flooring/construction materials company (Epoxy, PU, Demarcation). <strong>Two-stream architecture:</strong> Stream A is pre-project procurement (PR→PO→GRN→QC→Stock) with <strong>no Project ID</strong>. Stream B is project-triggered (SO→Project→MR→MIS→Production→Service→Finance→Logistics→Closure) where <strong>Project is the root entity</strong>. <strong>34-module architecture</strong> spanning the full project lifecycle from budget planning to financial closure.</p>
+      <p>Flooring/construction materials company (Epoxy, PU, Demarcation). <strong>Two-stream streamlined architecture</strong> — Stream A: Stock Procurement (PR→PO→GRN→QC, no Project ID). Stream B: Project-Centric (SO→Costing→MR→MIS→Production→FGHM→FG Stock). Core flow: <strong>SO → Costing → MR (Draft→Production Verified→Costing Approved→Released) → MIS → Production → FGHM → FG Stock</strong>, with Procurement as a side process when inventory insufficient. <strong>15-module architecture</strong> across 6 implementation phases.</p>
       <div class="hero-meta">
-        <div class="hero-meta-item"><span class="label">Stream A</span><span class="value">Pre-Project Procurement</span></div>
+        <div class="hero-meta-item"><span class="label">Stream A</span><span class="value">Stock Procurement</span></div>
         <div class="hero-meta-item"><span class="label">Stream B</span><span class="value">Project-Centric</span></div>
-        <div class="hero-meta-item"><span class="label">Modules</span><span class="value">29</span></div>
-        <div class="hero-meta-item"><span class="label">Forms</span><span class="value">29+</span></div>
-        <div class="hero-meta-item"><span class="label">Reports</span><span class="value">50+</span></div>
-        <div class="hero-meta-item"><span class="label">Automations</span><span class="value">63+</span></div>
-        <div class="hero-meta-item"><span class="label">Depts</span><span class="value">8</span></div>
-        <div class="hero-meta-item"><span class="label">Impl. Phases</span><span class="value">11</span></div>
+        <div class="hero-meta-item"><span class="label">Modules</span><span class="value">15</span></div>
+        <div class="hero-meta-item"><span class="label">Forms</span><span class="value">15+</span></div>
+        <div class="hero-meta-item"><span class="label">Reports</span><span class="value">20+</span></div>
+        <div class="hero-meta-item"><span class="label">Automations</span><span class="value">30+</span></div>
+        <div class="hero-meta-item"><span class="label">Depts</span><span class="value">5</span></div>
+        <div class="hero-meta-item"><span class="label">Impl. Phases</span><span class="value">6</span></div>
       </div>
     </section>
 
@@ -201,16 +159,16 @@
       <p>Click any card to jump to its forms, reports, or configuration page. Each card colour corresponds to a functional domain.</p>
 
       <div class="dashboard-grid">
-        <!-- Card 1 — Foundation -->
+        <!-- Card 1 — Foundation / Master Data -->
         <a href="forms.html#master-data" class="dash-card theme-teal">
-          <span class="dash-card-badge">Master Data</span>
+          <span class="dash-card-badge">Foundation</span>
           <div class="dash-card-header">
             <div class="dash-card-icon">📦</div>
-            <div class="dash-card-title">Foundation</div>
+            <div class="dash-card-title">Foundation / Master Data</div>
           </div>
-          <div class="dash-card-subtitle">Vendors, Accounts, Items, Warehouses</div>
+          <div class="dash-card-subtitle">Item Muster · Supplier · System · BOM</div>
           <div class="dash-card-stats">
-            <span class="dash-card-stat"><strong>5</strong> modules</span>
+            <span class="dash-card-stat"><strong>7</strong> modules</span>
           </div>
           <div class="dash-card-progress">
             <div class="dash-progress-bar"><div class="dash-progress-fill" style="width:80%"></div></div>
@@ -218,33 +176,33 @@
           </div>
         </a>
 
-        <!-- Card 2 — Procurement -->
-        <a href="forms.html#procurement" class="dash-card theme-blue">
-          <span class="dash-card-badge">Procure</span>
+        <!-- Card 2 — Sales & Project -->
+        <a href="forms.html#sales" class="dash-card theme-blue">
+          <span class="dash-card-badge">Sales</span>
           <div class="dash-card-header">
-            <div class="dash-card-icon">🏗️</div>
-            <div class="dash-card-title">Procurement</div>
+            <div class="dash-card-icon">📈</div>
+            <div class="dash-card-title">Sales &amp; Project</div>
           </div>
-          <div class="dash-card-subtitle">PR → PO → GRN → QC</div>
+          <div class="dash-card-subtitle">SO → Project (root entity)</div>
           <div class="dash-card-stats">
-            <span class="dash-card-stat"><strong>5</strong> modules</span>
+            <span class="dash-card-stat"><strong>2</strong> modules</span>
           </div>
           <div class="dash-card-progress">
-            <div class="dash-progress-bar"><div class="dash-progress-fill" style="width:70%"></div></div>
-            <span class="dash-progress-label">70%</span>
+            <div class="dash-progress-bar"><div class="dash-progress-fill" style="width:60%"></div></div>
+            <span class="dash-progress-label">60%</span>
           </div>
         </a>
 
-        <!-- Card 3 — Production -->
-        <a href="forms.html#production" class="dash-card theme-amber">
-          <span class="dash-card-badge">Production</span>
+        <!-- Card 3 — Costing & MR -->
+        <a href="forms.html#mr" class="dash-card theme-purple">
+          <span class="dash-card-badge">Costing Gate</span>
           <div class="dash-card-header">
-            <div class="dash-card-icon">🏭</div>
-            <div class="dash-card-title">Production</div>
+            <div class="dash-card-icon">💰</div>
+            <div class="dash-card-title">Costing &amp; MR</div>
           </div>
-          <div class="dash-card-subtitle">BOM → MO → FG Handover</div>
+          <div class="dash-card-subtitle">MR → Prod Verified → Costing Approved → Released</div>
           <div class="dash-card-stats">
-            <span class="dash-card-stat"><strong>5</strong> modules</span>
+            <span class="dash-card-stat"><strong>2</strong> modules</span>
           </div>
           <div class="dash-card-progress">
             <div class="dash-progress-bar"><div class="dash-progress-fill" style="width:50%"></div></div>
@@ -252,317 +210,127 @@
           </div>
         </a>
 
-        <!-- Card 4 — Inventory -->
-        <a href="forms.html#inventory" class="dash-card theme-green">
-          <span class="dash-card-badge">Stores</span>
+        <!-- Card 4 — Procurement -->
+        <a href="forms.html#procurement" class="dash-card theme-amber">
+          <span class="dash-card-badge">Procure</span>
           <div class="dash-card-header">
-            <div class="dash-card-icon">📋</div>
-            <div class="dash-card-title">Inventory</div>
+            <div class="dash-card-icon">🏗️</div>
+            <div class="dash-card-title">Procurement</div>
           </div>
-          <div class="dash-card-subtitle">MR → MIS → FG Handover</div>
+          <div class="dash-card-subtitle">PR → PO → GRN → QC</div>
           <div class="dash-card-stats">
             <span class="dash-card-stat"><strong>4</strong> modules</span>
           </div>
           <div class="dash-card-progress">
-            <div class="dash-progress-bar"><div class="dash-progress-fill" style="width:60%"></div></div>
-            <span class="dash-progress-label">60%</span>
+            <div class="dash-progress-bar"><div class="dash-progress-fill" style="width:70%"></div></div>
+            <span class="dash-progress-label">70%</span>
           </div>
         </a>
 
-        <!-- Card 5 — Finance -->
-        <a href="forms.html#finance" class="dash-card theme-purple">
-          <span class="dash-card-badge">Finance</span>
+        <!-- Card 5 — Production & Inventory -->
+        <a href="forms.html#production" class="dash-card theme-green">
+          <span class="dash-card-badge">Production</span>
           <div class="dash-card-header">
-            <div class="dash-card-icon">💰</div>
-            <div class="dash-card-title">Finance</div>
+            <div class="dash-card-icon">🏭</div>
+            <div class="dash-card-title">Production &amp; Inventory</div>
           </div>
-          <div class="dash-card-subtitle">SCN, AR</div>
+          <div class="dash-card-subtitle">MIS → Planning → BMR → Pack → FGHM → FG Stock</div>
           <div class="dash-card-stats">
-            <span class="dash-card-stat"><strong>2</strong> modules</span>
+            <span class="dash-card-stat"><strong>6</strong> modules</span>
           </div>
           <div class="dash-card-progress">
-            <div class="dash-progress-bar"><div class="dash-progress-fill" style="width:40%"></div></div>
-            <span class="dash-progress-label">40%</span>
+            <div class="dash-progress-bar"><div class="dash-progress-fill" style="width:55%"></div></div>
+            <span class="dash-progress-label">55%</span>
           </div>
         </a>
 
-        <!-- Card 6 — Reports -->
+        <!-- Card 6 — Reports & Automation -->
         <a href="reports.html" class="dash-card theme-indigo">
           <span class="dash-card-badge">Reports</span>
           <div class="dash-card-header">
             <div class="dash-card-icon">📊</div>
-            <div class="dash-card-title">Reports &amp; Dashboards</div>
+            <div class="dash-card-title">Reports &amp; Automation</div>
           </div>
-          <div class="dash-card-subtitle">50+ Reports &amp; KPIs</div>
+          <div class="dash-card-subtitle">20+ Reports &amp; Dashboards</div>
           <div class="dash-card-stats">
-            <span class="dash-card-stat"><strong>7</strong> modules</span>
+            <span class="dash-card-stat"><strong>20+</strong> reports</span>
           </div>
           <div class="dash-card-progress">
             <div class="dash-progress-bar"><div class="dash-progress-fill" style="width:60%"></div></div>
             <span class="dash-progress-label">60%</span>
           </div>
         </a>
-
-        <!-- Card 7 — Governance -->
-        <a href="security.html" class="dash-card theme-slate">
-          <span class="dash-card-badge">System</span>
-          <div class="dash-card-header">
-            <div class="dash-card-icon">🔒</div>
-            <div class="dash-card-title">Security &amp; Governance</div>
-          </div>
-          <div class="dash-card-subtitle">Audit, SoD, Roles</div>
-          <div class="dash-card-stats">
-            <span class="dash-card-stat"><strong>3</strong> modules</span>
-          </div>
-          <div class="dash-card-progress">
-            <div class="dash-progress-bar"><div class="dash-progress-fill" style="width:40%"></div></div>
-            <span class="dash-progress-label">40%</span>
-          </div>
-        </a>
-
-        <!-- Card 8 — Billing -->
-        <a href="forms.html#billing" class="dash-card theme-red">
-          <span class="dash-card-badge">Revenue</span>
-          <div class="dash-card-header">
-            <div class="dash-card-icon">📈</div>
-            <div class="dash-card-title">Billing</div>
-          </div>
-          <div class="dash-card-subtitle">Invoice, CCN, SO</div>
-          <div class="dash-card-stats">
-            <span class="dash-card-stat"><strong>2</strong> modules</span>
-          </div>
-          <div class="dash-card-progress">
-            <div class="dash-progress-bar"><div class="dash-progress-fill" style="width:60%"></div></div>
-            <span class="dash-progress-label">60%</span>
-          </div>
-        </a>
-
-        <!-- Card 9 — Settings -->
-        <a href="data-model.html" class="dash-card theme-teal">
-          <span class="dash-card-badge">System</span>
-          <div class="dash-card-header">
-            <div class="dash-card-icon">⚙️</div>
-            <div class="dash-card-title">Data &amp; Settings</div>
-          </div>
-          <div class="dash-card-subtitle">Data Model, Config</div>
-          <div class="dash-card-stats">
-            <span class="dash-card-stat"><strong>2</strong> modules</span>
-          </div>
-          <div class="dash-card-progress">
-            <div class="dash-progress-bar"><div class="dash-progress-fill" style="width:90%"></div></div>
-            <span class="dash-progress-label">90%</span>
-          </div>
-        </a>
       </div>
 
-      <!-- ── Bottom Process Strip ── -->
-      <h3>Two-Stream Process</h3>
-      <div class="process-strip" style="margin-bottom:8px">
-        <div class="process-strip-step" style="border:2px dashed #3b82f6;border-radius:8px;padding:4px 10px;background:rgba(59,130,246,0.06)">
-          <span class="ps-circle" style="background:#3b82f6">A</span>
-          <span class="ps-label">PURCHASE + STOCK</span>
-          <span style="font-size:9px;opacity:0.6;display:block">No Project ID</span>
-        </div>
-      </div>
-      <div class="process-strip">
-        <a href="forms.html#sales" class="process-strip-step">
-          <span class="ps-circle">1</span>
-          <span class="ps-label">Sales Order</span>
-        </a>
-        <span class="process-strip-connector"></span>
-        <a href="forms.html#project-management" class="process-strip-step">
-          <span class="ps-circle">2</span>
-          <span class="ps-label">Project</span>
-        </a>
-        <span class="process-strip-connector"></span>
-        <a href="forms.html#inventory" class="process-strip-step">
-          <span class="ps-circle">3</span>
-          <span class="ps-label">MR → MIS</span>
-        </a>
-        <span class="process-strip-connector"></span>
-        <a href="forms.html#production" class="process-strip-step">
-          <span class="ps-circle">4</span>
-          <span class="ps-label">Production</span>
-        </a>
-        <span class="process-strip-connector"></span>
-        <a href="forms.html#costing" class="process-strip-step">
-          <span class="ps-circle">5</span>
-          <span class="ps-label">Costing</span>
-        </a>
-        <span class="process-strip-connector"></span>
-        <a href="forms.html#service-team" class="process-strip-step">
-          <span class="ps-circle">6</span>
-          <span class="ps-label">Service</span>
-        </a>
-        <span class="process-strip-connector"></span>
-        <a href="forms.html#finance" class="process-strip-step">
-          <span class="ps-circle">7</span>
-          <span class="ps-label">Finance</span>
-        </a>
-        <span class="process-strip-connector"></span>
-        <a href="forms.html#logistics" class="process-strip-step">
-          <span class="ps-circle">8</span>
-          <span class="ps-label">Logistics → Close</span>
-        </a>
+      <!-- ── Core Process Flow ── -->
+      <h2>Core Process Flow</h2>
+      <p>The end-to-end project lifecycle. MR acts as the critical costing approval gate — all downstream execution depends on MR being Released.</p>
+
+      <div class="flow-visual" style="flex-wrap:wrap;gap:6px;">
+        <span class="fv-node fv-blue">SO <span class="fv-icon">📄</span></span>
+        <span class="fv-arrow">→</span>
+        <span class="fv-node fv-amber">Costing <span class="fv-icon">💰</span></span>
+        <span class="fv-arrow">→</span>
+        <span class="fv-node fv-purple">MR <span class="fv-icon">📋</span><br><span style="font-size:10px;font-weight:400;opacity:0.8">Draft→Prod Verified→Costing Approved→Released</span></span>
+        <span class="fv-arrow">→</span>
+        <span class="fv-node fv-blue">MIS <span class="fv-icon">📝</span></span>
+        <span class="fv-arrow">→</span>
+        <span class="fv-node fv-amber">Production <span class="fv-icon">🏭</span></span>
+        <span class="fv-arrow">→</span>
+        <span class="fv-node fv-green">FGHM <span class="fv-icon">📦</span></span>
+        <span class="fv-arrow">→</span>
+        <span class="fv-node fv-blue">FG Stock <span class="fv-icon">📈</span></span>
       </div>
 
-      <!-- ═══════════════════════════════════════════════════════════
-           RESTORED CONTENT — Hub Architecture · Step Flow · Modules
-           ═══════════════════════════════════════════════════════════ -->
-
-      <!-- ── Two-Stream Hub Architecture ── -->
-      <h2>System Architecture — Two-Stream Hub</h2>
-      <p><strong>Stream A</strong> (Pre-Project): Procurement for stock — PR→PO→GRN→QC→Material Handover→Store. <strong>No Project ID</strong> on these forms. <strong>Stream B</strong> (Project-Centric): SO→Project triggers MR→MIS→Production→Service→Finance→Logistics. Project ID is the root entity in Stream B only.</p>
-
-      <div class="hub-arch">
-        <div class="hub-arch-inner">
-          <div class="hub-bottom-bar" style="border-style:solid;margin-top:0">
-            <span class="hbb-item" style="font-weight:600;color:var(--gray-700)">MASTER DATA (Global — Phase 1)</span>
-            <span class="hbb-item">📦 Item Muster</span>
-            <span class="hbb-item">🏢 Supplier Master</span>
-            <span class="hbb-item">🔧 System Master</span>
-            <span class="hbb-item">📐 System Comp.</span>
-            <span class="hbb-item">📐 BOM Formulation</span>
-            <span class="hbb-item">👥 Customer/Site Master</span>
-            <span class="hbb-item">🏪 Store Master</span>
-          </div>
-
-          <div class="hub-top-connector"></div>
-
-          <!-- Stream A: Pre-Project Procurement -->
-          <div class="hub-row" style="border:2px dashed #3b82f6;border-radius:12px;padding:16px;margin:8px 0;background:rgba(59,130,246,0.04)">
-            <div class="hub-module green" style="flex:1">
-              <span class="hm-icon">📦</span>
-              <span class="hm-name">STREAM A — Pre-Project Procurement</span>
-              <span class="hm-desc">No Project ID · PR→PO→GRN→QC→Material Handover→Store Inventory</span>
-            </div>
-          </div>
-
-          <div class="hub-top-connector"></div>
-
-          <!-- Stream B: Project Centric -->
-          <div class="hub-center">
-            <div class="hub-module amber" style="padding:10px 24px;flex-direction:row">
-              <span style="font-size:13px;font-weight:600">SALES ORDER (Phase 6)</span>
-              <span class="tree-tag green" style="font-size:10px;padding:2px 10px;border-radius:999px;background:var(--green-light);color:var(--green)">Supply+Apply → auto-creates Project</span>
-            </div>
-          </div>
-
-          <div class="hub-top-connector"></div>
-
-          <div class="hub-center">
-            <div class="hub-node">
-              <strong>[ PROJECT ]</strong>
-              <span class="hub-badge">Root Entity (Stream B)</span>
-              <span style="font-size:11px;font-weight:400;opacity:0.7">ID · Name · SO Ref · Manager · Cost · Dates · Systems</span>
-            </div>
-          </div>
-
-          <div class="hub-top-connector"></div>
-
-          <div class="hub-row">
-            <div class="hub-module blue">
-              <span class="hm-icon">📋</span>
-              <span class="hm-name">MR → MIS</span>
-              <span class="hm-desc">Consumes from Store<br>Project ID</span>
-            </div>
-            <div class="hub-module purple">
-              <span class="hm-icon">⚙️</span>
-              <span class="hm-name">Production</span>
-              <span class="hm-desc">Plan→BMR→Pack→FGHM<br>Project ID</span>
-            </div>
-            <div class="hub-module amber">
-              <span class="hm-icon">💰</span>
-              <span class="hm-name">Costing</span>
-              <span class="hm-desc">Material Cost Valuation<br>Project ID</span>
-            </div>
-            <div class="hub-module" style="border-color:#f59e0b">
-              <span class="hm-icon">👷</span>
-              <span class="hm-name">Service</span>
-              <span class="hm-desc">Area→Work→Invoice<br>Project ID</span>
-            </div>
-            <div class="hub-module" style="border-color:#8b5cf6">
-              <span class="hm-icon">💰</span>
-              <span class="hm-name">Finance</span>
-              <span class="hm-desc">SCN / AR<br>Project ID</span>
-            </div>
-            <div class="hub-module slate">
-              <span class="hm-icon">🚚</span>
-              <span class="hm-name">Logistics</span>
-              <span class="hm-desc">DC→Outward→Close<br>Project ID</span>
-            </div>
-          </div>
-
-          <div class="hub-bottom-bar" style="margin-top:0">
-            <span class="hbb-item" style="font-weight:600;color:var(--primary)">Stream A: No Project ID · Stream B: Project ID on all forms</span>
-          </div>
-        </div>
+      <div class="flow-visual" style="margin-top:8px;justify-content:flex-start;">
+        <span class="fv-node fv-amber" style="border-style:dashed">Procurement (PR→PO→GRN→QC) <span class="fv-icon">🏗️</span></span>
+        <span class="fv-node" style="border-style:dashed;border-color:var(--gray-400);background:var(--gray-100);color:var(--gray-600)">when stock insufficient</span>
       </div>
 
-      <!-- ── Step-by-Step Process Flow ── -->
-      <h2>Process Flow — Two-Stream Lifecycle</h2>
-      <p><strong>Stream A (Pre-Project):</strong> Procurement runs independently — no Project ID. <strong>Stream B (Project-Centric):</strong> SO triggers Project → MR (verified by Production + Costing) → MIS → Production/FG → Logistics → Project Execution. Project ID flows downstream through Stream B only.</p>
-
-      <div class="step-flow">
-        <div class="step-flow-row" style="border:2px dashed #3b82f6;border-radius:8px;padding:16px;margin-bottom:16px;background:rgba(59,130,246,0.04)">
-          <div class="step-flow-step" style="flex:1">
-            <span class="sfs-num" style="background:#3b82f6">A</span>
-            <span class="sfs-title">Stream A: Purchase + Stock</span>
-            <span class="sfs-desc">PO → GRN → QC → Material Handover → Store. <strong>No Project ID.</strong> Materials bought for stock.</span>
-          </div>
-        </div>
-
+      <div class="step-flow" style="margin-top:24px;">
         <div class="step-flow-row">
           <div class="step-flow-step">
             <span class="sfs-num">1</span>
-            <span class="sfs-title">Sales Order</span>
-            <span class="sfs-desc">Supply+Apply mode auto-creates Project. System codes with thickness, area, rate.</span>
+            <span class="sfs-title">SO → Costing Review</span>
+            <span class="sfs-desc">Sales Order creates Project. Costing team reviews RM + cost requirements.</span>
           </div>
           <div class="step-flow-arrow">→</div>
           <div class="step-flow-step">
             <span class="sfs-num">2</span>
-            <span class="sfs-title">Project Setup</span>
-            <span class="sfs-desc">Root entity created. Manager assigned, dates set, cost budget defined.</span>
+            <span class="sfs-title">MR — Draft</span>
+            <span class="sfs-desc">Material Requisition with 4 cost components: Material, Application, Transportation, Tools.</span>
           </div>
           <div class="step-flow-arrow">→</div>
           <div class="step-flow-step">
             <span class="sfs-num">3</span>
-            <span class="sfs-title">Task Budget</span>
-            <span class="sfs-desc">Transport, Execution, Manpower, Tools, Overhead. Actual columns for P&amp;L.</span>
+            <span class="sfs-title">Production Verified</span>
+            <span class="sfs-desc">Production checks MR qty vs SO system req via BOM.</span>
           </div>
         </div>
-
         <div class="step-flow-row">
           <div class="step-flow-step">
             <span class="sfs-num">4</span>
-            <span class="sfs-title">MR — Project Baseline</span>
-            <span class="sfs-desc">RM allocation per project (Assigned Qty, Ratio %, 80% Alert). Verified by Production.</span>
+            <span class="sfs-title">Costing Approved → Released ⛔</span>
+            <span class="sfs-desc">Costing approves TOTAL project cost. Critical gate passed — MIS can proceed.</span>
           </div>
           <div class="step-flow-arrow">→</div>
           <div class="step-flow-step">
             <span class="sfs-num">5</span>
-            <span class="sfs-title">Costing Approval Gate</span>
-            <span class="sfs-desc">Costing approves the verified MR → status changes to Released. Project baseline locked.</span>
+            <span class="sfs-title">MIS → Production</span>
+            <span class="sfs-desc">Store issues RM via MIS. Production: Planning → BMR → RM Consumption → Packing.</span>
           </div>
           <div class="step-flow-arrow">→</div>
           <div class="step-flow-step">
             <span class="sfs-num">6</span>
-            <span class="sfs-title">MIS → Production/FG</span>
-            <span class="sfs-desc">Material issued (MIS). Production: Planning → BMR → RM Consumption → Packing → FGHM.</span>
+            <span class="sfs-title">FGHM → FG Stock</span>
+            <span class="sfs-desc">FG Handover with inline acceptance. FG stock updated automatically.</span>
           </div>
         </div>
-
-        <div class="step-flow-row">
+        <div class="step-flow-row" style="border:2px dashed #3b82f6;border-radius:8px;padding:16px;background:rgba(59,130,246,0.04)">
           <div class="step-flow-step">
-            <span class="sfs-num">7</span>
-            <span class="sfs-title">Logistics → Project Execution</span>
-            <span class="sfs-desc">Delivery Challan → Outward Invoice. Site work: Area → Custody → Final Invoice.</span>
-          </div>
-          <div class="step-flow-arrow">→</div>
-          <div class="step-flow-step">
-            <span class="sfs-num">8</span>
-            <span class="sfs-title">Finance → Closure</span>
-            <span class="sfs-desc">Customer Invoice / AR / Supplier CN. P&amp;L auto-computed on Project Close.</span>
+            <span class="sfs-num" style="background:#3b82f6">S</span>
+            <span class="sfs-title">Side: Procurement (as needed)</span>
+            <span class="sfs-desc">PR → PO → GRN → QC. Runs when inventory is insufficient. No Project ID.</span>
           </div>
         </div>
       </div>
@@ -590,181 +358,58 @@
         </table>
       </div>
 
-      <!-- ── Department Modules Table ── -->
-      <h2>All 40 Modules — By Department</h2>
-      <p>Every form listed below is a Zoho Creator form (or Report/Dashboard). <strong>Stream A (Procurement) forms do NOT carry Project ID.</strong> Stream B (Project onward) forms carry <strong>Project ID lookup</strong>. Production acts as the direct costing arm for SO — materials consumed against project-assigned RM allocations, enabling real-time P&amp;L tracking without manual cost re-entry.</p>
+      <!-- ── Implementation Phases ── -->
+      <h2>Implementation Roadmap — 6 Phases</h2>
+      <p>Phased rollout across all departments. Each phase corresponds to a vertical functional slice.</p>
 
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr><th>Dept</th><th>#</th><th>Module</th><th>Phase</th><th>Type</th><th>Key Flow</th></tr>
-          </thead>
-          <tbody>
-            <tr><td rowspan="9"><strong>Master Data</strong></td><td>1</td><td>Purchase Item Muster</td><td>1A</td><td>Form</td><td>Global item repository (6 categories)</td></tr>
-            <tr><td>2</td><td>System Master</td><td>1B</td><td>Form</td><td>System codes (EP/PU/DEM)</td></tr>
-            <tr><td>3</td><td>System Composition</td><td>1C</td><td>Form</td><td>System→FG mapping</td></tr>
-            <tr><td>4</td><td>BOM / FG Formulation</td><td>1D</td><td>Form</td><td>FG→RM formulation</td></tr>
-            <tr><td>5</td><td>Supplier Master</td><td>1E</td><td>Form</td><td>Vendor management</td></tr>
-            <tr><td>6</td><td>Customer/Site Master</td><td>1F</td><td>Form</td><td>Client &amp; site data</td></tr>
-            <tr><td>7</td><td>Store Master</td><td>1G</td><td>Form</td><td>Warehouse configuration</td></tr>
-            <tr><td>8</td><td>User Access / Approval Matrix</td><td>1H</td><td>Form</td><td>Roles &amp; approval tiers</td></tr>
-            <tr><td>9</td><td>Rate Comparison</td><td>1I</td><td>Form</td><td>Standalone record form (like master data)</td></tr>
-            <tr><td rowspan="4"><strong>Procurement (Stream A — No Project ID)</strong></td><td>10</td><td>PO — Purchase Order</td><td>2C</td><td>Form</td><td>RM vs Non-coding series</td></tr>
-            <tr><td>11</td><td>GRN — Goods Receipt</td><td>2D</td><td>Form</td><td>Partial GRN via checkbox</td></tr>
-            <tr><td>12</td><td>QC/QA — Quality Check</td><td>2E</td><td>Form</td><td>Inspection results</td></tr>
-            <tr><td>13</td><td>Material Handover</td><td>2F</td><td>Form</td><td>Purchase→Store (Coding/Non)</td></tr>
-            <tr><td rowspan="3"><strong>Inventory</strong></td><td>14</td><td>MR — Material Requisition (RM only)</td><td>3A</td><td>Form</td><td>MR (Project baseline = SO + MR) — verified by Production → Costing approves → Released</td></tr>
-            <tr><td>15</td><td>MIS — Material Issue Slip</td><td>3B</td><td>Form</td><td>Stock deduction on posting</td></tr>
-            <tr><td>16</td><td>Material Return</td><td>3C</td><td>Form</td><td>Return to supplier</td></tr>
-            <tr><td rowspan="6"><strong>Production</strong></td><td>17</td><td>PR — Purchase Requisition</td><td>6A</td><td>Form</td><td>Production material requisition (costing arm for SO)</td></tr>
-            <tr><td>18</td><td>Production Planning</td><td>4A</td><td>Form</td><td>FG breakdown from System Comp</td></tr>
-            <tr><td>19</td><td>Production Order</td><td>4B</td><td>Form</td><td>Per FG to produce</td></tr>
-            <tr><td>20</td><td>BMR — Batch MR</td><td>4C</td><td>Form</td><td>Consume RM → Produce FG</td></tr>
-            <tr><td>21</td><td>RM Consumption / Packing</td><td>4D</td><td>Form</td><td>Variance + FG packing</td></tr>
-            <tr><td>22</td><td>Rework Register</td><td>4E</td><td>Form</td><td>QC revalidation</td></tr>
-            <tr><td rowspan="3"><strong>FG &amp; Logistics</strong></td><td>23</td><td>FGHM — FG Handover / Prod GRN</td><td>5A</td><td>Form</td><td>Inline acceptance (no separate FGAN)</td></tr>
-            <tr><td>24</td><td>Costing Approval</td><td>5B</td><td>Form</td><td>Costing gate sign-off</td></tr>
-            <tr><td>25</td><td>Vehicle &amp; Transport</td><td>5C</td><td>Form</td><td>Logistics tracking</td></tr>
-            <tr><td rowspan="4"><strong>Service Team</strong></td><td>26</td><td>Area Measurement</td><td>7A</td><td>Form</td><td>Site measurement</td></tr>
-            <tr><td>27</td><td>Material Custody</td><td>7B</td><td>Form</td><td>Service takes custody</td></tr>
-            <tr><td>28</td><td>Work Start / Daily Progress</td><td>7C</td><td>Form</td><td>Daily site progress</td></tr>
-            <tr><td>29</td><td>Final Invoice Submission</td><td>7D</td><td>Form</td><td>Triggers Finance invoice</td></tr>
-            <tr><td rowspan="3"><strong>Sales</strong></td><td>30</td><td>SO — Sales Order (+ Client PO ref)</td><td>6A</td><td>Form</td><td>Sells Systems, auto-creates Project</td></tr>
-            <tr><td>31</td><td>Project (Root Entity)</td><td>6B</td><td>Form</td><td>Systems subform, dates</td></tr>
-            <tr><td>32</td><td>Task Budget</td><td>6C</td><td>Form</td><td>5 categories, Actual columns</td></tr>
-            <tr><td rowspan="2"><strong>Finance</strong></td><td>33</td><td>Supplier Credit Note</td><td>8A</td><td>Form</td><td>Supplier credit for QC rejects</td></tr>
-            <tr><td>34</td><td>Customer Invoice / AR</td><td>8B</td><td>Form</td><td>AR posting</td></tr>
-            <tr><td rowspan="2"><strong>Logistics</strong></td><td>35</td><td>Delivery Challan (DC)</td><td>9C</td><td>Form</td><td>FG dispatch to customer</td></tr>
-            <tr><td>36</td><td>Outward Invoice</td><td>9D</td><td>Form</td><td>Outward qty updated</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- ── Flow Visuals ── -->
-      <h2>Core Process Flows</h2>
-
-      <h3>Procurement Flow (Stream A — Pre-Project)</h3>
-      <div class="flow-visual">
-        <span class="fv-node fv-amber">PO <span class="fv-icon">📄</span></span>
-        <span class="fv-arrow">→</span>
-        <span class="fv-node fv-green">GRN <span class="fv-icon">📦</span></span>
-        <span class="fv-arrow">→</span>
-        <span class="fv-node fv-purple">QC <span class="fv-icon">🔬</span></span>
-        <span class="fv-arrow">→</span>
-        <span class="fv-node fv-green">Stock + <span class="fv-icon">📈</span></span>
-      </div>
-      <p class="flow-note" style="font-size:13px;color:var(--gray-500);margin-top:4px">Note: Rate Comparison is maintained as standalone master data (no longer part of flow).</p>
-
-      <h3>MR → MIS Flow (Stream B — Project ID)</h3>
-      <div class="flow-visual">
-        <span class="fv-node fv-blue">MR <span class="fv-icon">📋</span></span>
-        <span class="fv-arrow">→</span>
-        <span class="fv-node fv-amber">Approval <span class="fv-icon">✅</span></span>
-        <span class="fv-arrow">→</span>
-        <span class="fv-node fv-blue">MIS <span class="fv-icon">📝</span></span>
-        <span class="fv-arrow">→</span>
-        <span class="fv-node fv-red">Stock − <span class="fv-icon">📉</span></span>
-      </div>
-
-      <h3>Production &amp; FG Flow (Phases 4–5)</h3>
-      <div class="flow-visual">
-        <span class="fv-node fv-blue">Planning <span class="fv-icon">📋</span></span>
-        <span class="fv-arrow">→</span>
-        <span class="fv-node fv-purple">BMR <span class="fv-icon">⚙️</span></span>
-        <span class="fv-arrow">→</span>
-        <span class="fv-node fv-amber">MR Baseline <span class="fv-icon">📋</span></span>
-        <span class="fv-arrow">→</span>
-        <span class="fv-node fv-blue">Production Verify <span class="fv-icon">🔍</span></span>
-        <span class="fv-arrow">→</span>
-        <span class="fv-node fv-green">Costing Approve <span class="fv-icon">✅</span></span>
-        <span class="fv-arrow">→</span>
-        <span class="fv-node fv-purple">MIS → FG <span class="fv-icon">📦</span></span>
-        <span class="fv-arrow">→</span>
-        <span class="fv-node fv-green">Logistics <span class="fv-icon">🚚</span></span>
-      </div>
-
-
-
-      <!-- ── Key Metrics Dashboard ── -->
-      <h2>Key Metrics</h2>
-      <div class="dashboard-grid">
-        <div class="dash-card theme-teal">
-          <div class="dash-card-header">
-            <div class="dash-card-icon">📦</div>
-            <div class="dash-card-title">Master Data</div>
+      <div class="phase-container">
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">1</span>
+            <span class="phase-title">Master Data Foundation</span>
+            <span class="phase-tag">Item Muster · System · Supplier · BOM · Store</span>
           </div>
-          <div class="dash-card-stats">
-            <span class="dash-card-stat"><strong>6</strong> modules</span>
-          </div>
-          <div class="dash-card-progress">
-            <div class="dash-progress-bar"><div class="dash-progress-fill" style="width:85%"></div></div>
-            <span class="dash-progress-label">85%</span>
-          </div>
+          <p>Global shared data — Item Muster (6 categories), System Master (EP/PU/DEM codes), System Composition (System→FG mapping), BOM Formulation (FG→RM with ratios), Supplier Master, Store Master (6 warehouses), User Access &amp; Approval Matrix.</p>
         </div>
-        <div class="dash-card theme-blue">
-          <div class="dash-card-header">
-            <div class="dash-card-icon">🏗️</div>
-            <div class="dash-card-title">Procurement</div>
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">2</span>
+            <span class="phase-title">Sales &amp; Project</span>
+            <span class="phase-tag">SO · Project · Task Budget</span>
           </div>
-          <div class="dash-card-stats">
-            <span class="dash-card-stat"><strong>5</strong> modules</span>
-          </div>
-          <div class="dash-card-progress">
-            <div class="dash-progress-bar"><div class="dash-progress-fill" style="width:75%"></div></div>
-            <span class="dash-progress-label">75%</span>
-          </div>
+          <p>Sales Order with conditional subforms (System Lines / FG Lines), Project auto-created from SO (Supply+Apply mode).</p>
         </div>
-        <div class="dash-card theme-green">
-          <div class="dash-card-header">
-            <div class="dash-card-icon">📋</div>
-            <div class="dash-card-title">Inventory</div>
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">3</span>
+            <span class="phase-title">Costing &amp; MR (Critical Gate)</span>
+            <span class="phase-tag">MR · Costing Approval</span>
           </div>
-          <div class="dash-card-stats">
-            <span class="dash-card-stat"><strong>3</strong> modules</span>
-          </div>
-          <div class="dash-card-progress">
-            <div class="dash-progress-bar"><div class="dash-progress-fill" style="width:65%"></div></div>
-            <span class="dash-progress-label">65%</span>
-          </div>
+          <p>MR with 4 cost components (Material, Application, Transportation, Tools), Material Allocation subform with 80% Alert, MR Status workflow: Draft → Production Verified → Costing Approved → Released.</p>
         </div>
-        <div class="dash-card theme-amber">
-          <div class="dash-card-header">
-            <div class="dash-card-icon">🏭</div>
-            <div class="dash-card-title">Production</div>
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">4</span>
+            <span class="phase-title">Procurement (As Needed)</span>
+            <span class="phase-tag">PR · PO · GRN · QC</span>
           </div>
-          <div class="dash-card-stats">
-            <span class="dash-card-stat"><strong>4</strong> modules</span>
-          </div>
-          <div class="dash-card-progress">
-            <div class="dash-progress-bar"><div class="dash-progress-fill" style="width:55%"></div></div>
-            <span class="dash-progress-label">55%</span>
-          </div>
+          <p>Purchase Requisition, Purchase Order with dual numbering (RM/RMWAD) and GST split, Goods Receipt Note with partial checkbox, QC/QA linked to GRN.</p>
         </div>
-        <div class="dash-card theme-purple">
-          <div class="dash-card-header">
-            <div class="dash-card-icon">💰</div>
-            <div class="dash-card-title">Finance</div>
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">5</span>
+            <span class="phase-title">Production &amp; Inventory</span>
+            <span class="phase-tag">MIS · Planning · BMR · Pack · FGHM</span>
           </div>
-          <div class="dash-card-stats">
-            <span class="dash-card-stat"><strong>7</strong> modules</span>
-          </div>
-          <div class="dash-card-progress">
-            <div class="dash-progress-bar"><div class="dash-progress-fill" style="width:45%"></div></div>
-            <span class="dash-progress-label">45%</span>
-          </div>
+          <p>MIS linked to MR (only Released MRs), Production Planning, BMR, RM Consumption, Packing Entry, FGHM with inline acceptance, RM + FG inventory management.</p>
         </div>
-        <div class="dash-card theme-indigo">
-          <div class="dash-card-header">
-            <div class="dash-card-icon">📊</div>
-            <div class="dash-card-title">Reports</div>
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">6</span>
+            <span class="phase-title">Reports &amp; Dashboards</span>
+            <span class="phase-tag">Purchase · Store · Production · MR Status</span>
           </div>
-          <div class="dash-card-stats">
-            <span class="dash-card-stat"><strong>4</strong> modules</span>
-          </div>
-          <div class="dash-card-progress">
-            <div class="dash-progress-bar"><div class="dash-progress-fill" style="width:60%"></div></div>
-            <span class="dash-progress-label">60%</span>
-          </div>
+          <p>Purchase Dept dashboard, Store Dept inventory dashboard, Production Dept dashboard, MR Status tracking report, 80% Consumption Alert dashboard, Project Material Allocation report.</p>
         </div>
       </div>
 
@@ -783,85 +428,6 @@
             <tr><td>6</td><td>Client Site</td><td>Project Location</td></tr>
           </tbody>
         </table>
-      </div>
-
-      <!-- ── Implementation Phases ── -->
-      <h2>Implementation Roadmap — 13 Phases (1A → 1L)</h2>
-      <p>Phased rollout across all departments. Each phase corresponds to a vertical functional slice.</p>
-
-      <div class="phase-container">
-        <div class="phase">
-          <div class="phase-header">
-            <span class="phase-number">1A–1F</span>
-            <span class="phase-title">Master Data Foundation</span>
-            <span class="phase-tag">Item Muster · Supplier · System · System Comp. · BOM · Customer · Store</span>
-          </div>
-          <p>Global shared data — Item Muster (6 categories), Supplier Master (16 fields), System Master (EP/PU/DEM codes), System Composition (System→FG mapping), BOM Formulation (FG→RM with ratios), Customer/Site Master, Store Master (6 warehouses).</p>
-        </div>
-        <div class="phase">
-          <div class="phase-header">
-            <span class="phase-number">2A–2E</span>
-            <span class="phase-title">Procurement Suite</span>
-            <span class="phase-tag">PR · Rate Comp · PO · GRN · QC</span>
-          </div>
-          <p>Full procurement flow with Approval Matrix at PR stage, 5-supplier Rate Comparison, dual PO series (RM/RMWAD), partial GRN with checkbox, QC inspection with viscosity/density/color tests.</p>
-        </div>
-        <div class="phase">
-          <div class="phase-header">
-            <span class="phase-number">3A–3C</span>
-            <span class="phase-title">Inventory Management</span>
-            <span class="phase-tag">MR · MIS · Return</span>
-          </div>
-          <p>Project-tagged Material Requisition, Material Issue Slip with balance tracking, Material Return processing. Stock auto-deducted on MIS posting.</p>
-        </div>
-        <div class="phase">
-          <div class="phase-header">
-            <span class="phase-number">4A–4D</span>
-            <span class="phase-title">Production</span>
-            <span class="phase-tag">Planning · BMR · RM Consume · Packing</span>
-          </div>
-          <p>Production Planning with SO/WO autofetch, Batch Manufacturing Record, RM Consumption Entry, Packing Entry with FG stock update.</p>
-        </div>
-        <div class="phase">
-          <div class="phase-header">
-            <span class="phase-number">5A–5C</span>
-            <span class="phase-title">FG &amp; Logistics</span>
-            <span class="phase-tag">FGHM · Transport</span>
-          </div>
-          <p>FG Handover to client with QC data and inline acceptance, Vehicle &amp; Transport tracking. Pop-up notifications on FGHM submission.</p>
-        </div>
-        <div class="phase">
-          <div class="phase-header">
-            <span class="phase-number">6A–6B</span>
-            <span class="phase-title">Sales &amp; Project Hub</span>
-            <span class="phase-tag">Sales Order · Project</span>
-          </div>
-          <p>Sales Order with system-code subtable (thickness, area, rate), auto-creates Project on Supply+Apply. Project is root entity — all downstream forms look up to it.</p>
-        </div>
-        <div class="phase">
-          <div class="phase-header">
-            <span class="phase-number">7A–7D</span>
-            <span class="phase-title">Billing &amp; Revenue</span>
-            <span class="phase-tag">Budget · Invoice · CCN · AR</span>
-          </div>
-          <p>Task Budget with 5 categories (Transport/Execution/Manpower/Tools/Overhead) + Actual columns for P&amp;L. Customer Invoice, Credit Note, AR posting.</p>
-        </div>
-        <div class="phase">
-          <div class="phase-header">
-            <span class="phase-number">8A</span>
-            <span class="phase-title">Supplier Credit Note</span>
-            <span class="phase-tag">QC Defect · Short Delivery · Rate Diff</span>
-          </div>
-          <p>Supplier Credit Note manually initiated by Account &amp; Finance for QC defects, GRN short deliveries, and rate/invoice discrepancies. P&amp;L auto-computed on Project Close.</p>
-        </div>
-        <div class="phase">
-          <div class="phase-header">
-            <span class="phase-number">8B</span>
-            <span class="phase-title">Customer Invoice / AR</span>
-            <span class="phase-tag">Revenue Recognition</span>
-          </div>
-          <p>Customer invoices created against Sales Orders with auto-fetched line items, GST split, and AR posting. Credit Notes for returns/adjustments.</p>
-        </div>
       </div>
 
       <div class="footer">
