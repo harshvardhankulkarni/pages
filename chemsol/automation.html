@@ -235,22 +235,6 @@ if(zoho.login.department != "Purchase" && zoho.login.department != "Store") {
       </div>
     </div>
 
-    <div class="auto-card">
-      <div class="auto-card-header" style="background:var(--primary-light)">
-        <span class="auto-tag tag-numbering">Numbering</span>
-        1G &middot; User Access &amp; Approval Matrix
-      </div>
-      <div class="auto-card-body">
-        <div class="auto-sub-title">User Access: Auto-generate ID</div>
-        <div class="auto-step"><span class="auto-step-num">1</span><div>Field Properties -> User ID -> Auto Numbering: <code>USR-{XXXX}</code></div></div>
-        <div class="auto-step"><span class="auto-step-num">2</span><div><strong>Configuration form</strong> — No complex automation. Manually define Role &amp; Department per user.</div></div>
-
-        <div class="auto-sub-title">Approval Matrix: Auto-generate ID</div>
-        <div class="auto-step"><span class="auto-step-num">1</span><div>Field Properties -> Matrix ID -> Auto Numbering: <code>AM-{XXXX}</code></div></div>
-        <div class="auto-step"><span class="auto-step-num">2</span><div><strong>Configuration form</strong> — Define approval limits per Department + Document Type (PR/PO/MR). Manual setup.</div></div>
-      </div>
-    </div>
-
     <!-- ============================================================ -->
     <!-- PHASE 2: SALES & PROJECT -->
     <!-- ============================================================ -->
@@ -1090,8 +1074,6 @@ return 0;  // Item not found
           <tr><td>BOM</td><td><span class="auto-tag tag-blueprint">Blueprint</span></td><td>On Submit</td><td>Status: Draft -> Approved -> Released</td><td>Pending</td></tr>
           <tr><td>Supplier Master</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: SUP-YYYY-XXXX</td><td>Pending</td></tr>
           <tr><td>Store Master</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: ST-XXXX</td><td>Pending</td></tr>
-          <tr><td>User Access</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: USR-XXXX (config form)</td><td>Pending</td></tr>
-          <tr><td>Approval Matrix</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: AM-XXXX (config form)</td><td>Pending</td></tr>
 
           <tr><td colspan="5"><strong>Sales &amp; Project</strong></td></tr>
           <tr><td>SO</td><td><span class="auto-tag tag-formrule">Form Rule</span></td><td>On Sales Type change</td><td>Toggle Subform A (System) / Subform B (FG)</td><td>Pending</td></tr>
