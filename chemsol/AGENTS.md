@@ -130,7 +130,7 @@ Master Data (Item Muster, Suppliers, Customers, Store Master) is global — used
 - Autofetch patterns: Item Code⇄Item Name, Supplier details on code selection, UOM from item, Project ID→Project Name/Manager.
 - Departments: Purchase, Sales, Store & Logistics, Account & Finance, Admin, Project Coordinator, Project Manager 1/2/3.
 - Warehouse options: Wadki, Main, Neelo, Gurgaon, Bangalore, Client Site.
-- Approval Matrix: separate form defining PR/PO limits and approvers per dept.
+- Approval routing uses Zoho Creator's native approval features (Blueprint/Approval processes).
 
 ## Reports (not an exhaustive list)
 

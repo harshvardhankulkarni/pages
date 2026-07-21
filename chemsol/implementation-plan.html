@@ -325,32 +325,7 @@
         <div class="impl-info-box"><strong>Bin Location</strong> — inline subform: Rack No, Shelf No, Bin No, Status</div>
       </div>
 
-      <div class="impl-card">
-        <h3>2.7 User Access &amp; Approval Matrix <span class="badge badge-red">System</span></h3>
-        <p><strong>Purpose:</strong> Define roles, departments, approval limits</p>
-        <div class="impl-two-col">
-          <div>
-            <h5 style="margin-top:0">User Access</h5>
-            <table class="impl-field-table">
-              <tr><th>Field</th><th>Type</th><th>Req</th></tr>
-              <tr><td>User Name</td><td>User lookup</td><td class="impl-mand">*</td></tr>
-              <tr><td>Department</td><td>Dropdown</td><td class="impl-mand">*</td></tr>
-              <tr><td>Role</td><td>Entry / Review / Approve / Admin</td><td class="impl-mand">*</td></tr>
-              <tr><td>Status</td><td>Active / Inactive</td><td class="impl-mand">*</td></tr>
-            </table>
-          </div>
-          <div>
-            <h5 style="margin-top:0">Approval Matrix</h5>
-            <table class="impl-field-table">
-              <tr><th>Field</th><th>Type</th><th>Req</th></tr>
-              <tr><td>Department</td><td>Dropdown</td><td class="impl-mand">*</td></tr>
-              <tr><td>Document Type</td><td>PR / PO / MR</td><td class="impl-mand">*</td></tr>
-              <tr><td>Min Amount / Max Amount</td><td>Currency</td><td class="impl-mand">*</td></tr>
-              <tr><td>Approver 1 / 2 / 3</td><td>User lookup</td><td class="impl-mand">*</td></tr>
-            </table>
-          </div>
-        </div>
-      </div>
+
     </section>
 
     <section id="phase2">
@@ -952,7 +927,7 @@
           <div class="impl-flow-step"><div class="impl-flow-box impl-fb-gray">Wk 10-11<br>UAT + Go-Live</div></div>
         </div>
         <ol style="margin-top:16px">
-          <li><strong>Week 1-2 (Master Data Foundation):</strong> Purchase Item Muster, System Master, Supplier Master, Store Master, System Composition, BOM Formulation, User Access &amp; Approval Matrix</li>
+          <li><strong>Week 1-2 (Master Data Foundation):</strong> Purchase Item Muster, System Master, Supplier Master, Store Master, System Composition, BOM Formulation</li>
           <li><strong>Week 3-4 (Sales &amp; Project):</strong> Sales Order with conditional subforms (System Lines / FG Lines), Project (auto-created from SO), SO → Project automation</li>
           <li><strong>Week 5-6 (Costing &amp; MR — Critical Gate):</strong> MR with 4 cost components (Material, Application, Transportation, Tools), Material Allocation subform, MR Status workflow, 80% Consumption Alert</li>
           <li><strong>Week 7-8 (Procurement):</strong> PR with Project tagging, PO with dual numbering (RM/RMWAD) + GST split, GRN with partial checkbox + transport subform, QC/QA linked to GRN</li>
