@@ -103,4 +103,14 @@
     this.classList.toggle('open');
     document.getElementById('sidebarNav')?.classList.toggle('open');
   });
+
+  // ── Set data-width on progress bars for animation ──
+  var progressFills = document.querySelectorAll('.dash-progress-fill');
+  for (var p = 0; p < progressFills.length; p++) {
+    var w = progressFills[p].style.width;
+    if (w) {
+      progressFills[p].setAttribute('data-width', w);
+      progressFills[p].style.width = '0%';
+    }
+  }
 })();
