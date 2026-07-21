@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Budget Tracking — Developer Handoff</title>
+  <style>
+    :root {
+      --color-bg: #0f172a;
+      --color-surface: #1e293b;
+      --color-surface-2: #334155;
+      --color-border: #475569;
+      --color-text: #f1f5f9;
+      --color-text-muted: #94a3b8;
+      --color-accent: #38bdf8;
+      --color-green: #4ade80;
+      --color-yellow: #fbbf24;
+      --color-red: #f87171;
+      --color-purple: #a78bfa;
+      --color-orange: #fb923c;
+      --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
+      --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--color-bg);
+      color: var(--color-text);
+      font-family: var(--font-sans);
+      line-height: 1.6;
+    }
+
+    /* Layout */
+    .container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+    /* Hero */
+    .hero {
+      padding: 80px 0 60px;
+      border-bottom: 1px solid var(--color-border);
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    }
+    .hero h1 { font-size: 2.75rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; }
+    .hero h1 span { color: var(--color-accent); }
+    .hero .subtitle { font-size: 1.15rem; color: var(--color-text-muted); margin-top: 12px; max-width: 640px; }
+    .hero .meta {
+      display: flex; gap: 24px; margin-top: 24px; flex-wrap: wrap;
+      font-size: 0.875rem; color: var(--color-text-muted);
+    }
+    .hero .meta strong { color: var(--color-text); }
+
+    /* Nav */
+    .nav-bar {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(15,23,42,0.92); backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--color-border);
+      padding: 8px 0;
+    }
+    .nav-bar .container { display: flex; gap: 8px; flex-wrap: wrap; }
+    .nav-bar a {
+      color: var(--color-text-muted); text-decoration: none; font-size: 0.8rem;
+      padding: 4px 12px; border-radius: 6px; transition: 0.15s;
+      font-family: var(--font-mono);
+    }
+    .nav-bar a:hover { color: var(--color-accent); background: var(--color-surface); }
+
+    /* Sections */
+    section { padding: 48px 0; border-bottom: 1px solid var(--color-surface-2); }
+    section:last-of-type { border-bottom: none; }
+    h2 { font-size: 1.5rem; font-weight: 700; margin-bottom: 24px; display: flex; align-items: center; gap: 10px; }
+    h2 .badge {
+      font-size: 0.7rem; font-family: var(--font-mono);
+      background: var(--color-surface-2); color: var(--color-text-muted);
+      padding: 2px 10px; border-radius: 20px; font-weight: 500;
+    }
+    h3 { font-size: 1.1rem; font-weight: 600; margin: 24px 0 12px; color: var(--color-accent); }
+    p, li { color: var(--color-text-muted); }
+
+    /* Module Grid */
+    .module-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+    }
+    .module-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 10px;
+      padding: 20px;
+      transition: 0.15s;
+    }
+    .module-card:hover { border-color: var(--color-accent); }
+    .module-card .num {
+      font-family: var(--font-mono); font-size: 0.75rem;
+      color: var(--color-text-muted); margin-bottom: 4px;
+    }
+    .module-card h4 { font-size: 1rem; font-weight: 600; margin-bottom: 6px; }
+    .module-card .desc { font-size: 0.85rem; color: var(--color-text-muted); line-height: 1.5; }
+    .module-card .tags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 10px; }
+    .module-card .tags span {
+      font-size: 0.7rem; font-family: var(--font-mono);
+      padding: 2px 8px; border-radius: 4px; background: var(--color-surface-2);
+    }
+
+    /* Tables */
+    .spec-table {
+      width: 100%; border-collapse: collapse;
+      font-size: 0.85rem; margin-top: 8px;
+    }
+    .spec-table th {
+      text-align: left; padding: 8px 12px;
+      background: var(--color-surface); color: var(--color-text-muted);
+      font-weight: 600; font-size: 0.75rem; text-transform: uppercase;
+      letter-spacing: 0.04em; border-bottom: 1px solid var(--color-border);
+    }
+    .spec-table td {
+      padding: 8px 12px; border-bottom: 1px solid var(--color-surface-2);
+      vertical-align: top;
+    }
+    .spec-table tr:hover td { background: rgba(56,189,248,0.04); }
+
+    .tag {
+      display: inline-block; font-size: 0.7rem; font-family: var(--font-mono);
+      padding: 1px 8px; border-radius: 4px; margin: 1px;
+    }
+    .tag-lookup { background: #1e3a5f; color: #93c5fd; }
+    .tag-deluge { background: #3b2f1e; color: #fde68a; }
+    .tag-formula { background: #1f3b2a; color: #86efac; }
+    .tag-critical { background: #4a1c1c; color: #fca5a5; }
+    .tag-notify { background: #2e1f3b; color: #d8b4fe; }
+
+    /* Workflow */
+    .workflow-steps {
+      display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+      padding: 16px; background: var(--color-surface); border-radius: 8px;
+      margin: 12px 0;
+    }
+    .workflow-steps .step {
+      font-size: 0.8rem; font-family: var(--font-mono);
+      padding: 4px 12px; border-radius: 6px;
+      background: var(--color-surface-2); white-space: nowrap;
+    }
+    .workflow-steps .arrow { color: var(--color-text-muted); font-family: var(--font-mono); }
+
+    /* Status badges */
+    .status-draft { background: #475569; color: #fff; }
+    .status-open { background: #2563eb; color: #fff; }
+    .status-approved { background: #16a34a; color: #fff; }
+    .status-rejected { background: #dc2626; color: #fff; }
+    .status-closed { background: #6b7280; color: #fff; }
+    .status-pending { background: #d97706; color: #fff; }
+
+    /* Alert boxes */
+    .alert {
+      padding: 12px 16px; border-radius: 8px; font-size: 0.85rem; margin: 16px 0; border-left: 4px solid;
+    }
+    .alert-warning { background: #3b2f1e; border-color: var(--color-yellow); color: #fef3c7; }
+    .alert-info { background: #1e3a5f; border-color: var(--color-accent); color: #bae6fd; }
+    .alert-error { background: #4a1c1c; border-color: var(--color-red); color: #fecaca; }
+
+    /* Code */
+    code {
+      font-family: var(--font-mono); font-size: 0.8rem;
+      background: var(--color-surface); padding: 1px 6px; border-radius: 4px;
+    }
+    pre {
+      background: var(--color-surface); padding: 16px; border-radius: 8px;
+      overflow-x: auto; font-size: 0.8rem; line-height: 1.5;
+      border: 1px solid var(--color-border); margin: 12px 0;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center; padding: 32px 0;
+      color: var(--color-text-muted); font-size: 0.8rem;
+    }
+
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 1.75rem; }
+      .module-grid { grid-template-columns: 1fr; }
+      .nav-bar { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="container">
+    <h1>Project Budget Tracking<br>&amp; Inventory Management <span>Handoff Spec</span></h1>
+    <p class="subtitle">Comprehensive developer handoff for building a Project Budget Tracking, Inventory Management, and Procurement system in Zoho Creator.</p>
+    <div class="meta">
+      <span><strong>Platform:</strong> Zoho Creator + Deluge</span>
+      <span><strong>Modules:</strong> 27 Modules (27 primary forms + embedded subforms, Reports &amp; Dashboards)</span>
+      <span><strong>Automations:</strong> ~58+ Deluge workflows</span>
+      <span><strong>Phase:</strong> 1 of 2</span>
+    </div>
+  </div>
+</header>
+
+<nav class="nav-bar">
+  <div class="container">
+    <a href="#overview">Overview</a>
+    <a href="#modules">Modules</a>
+    <a href="#vendors">Vendors</a>
+    <a href="#accounts">Accounts</a>
+    <a href="#inventory">Inventory</a>
+    <a href="#budget">Budget</a>
+    <a href="#expenses">Expenses</a>
+    <a href="#procurement">Procurement</a>
+    <a href="#workflows">Workflows</a>
+    <a href="#roles">Roles</a>
+    <a href="#sequence">Build Order</a>
+  </div>
+</nav>
+
+<div class="container">
+
+<!-- OVERVIEW -->
+<section id="overview">
+  <h2>Overview <span class="badge">handoff</span></h2>
+  <p>This document is the formal handoff from design to implementation. It specifies every form, field, lookup, Deluge workflow, validation rule, report, and role permission needed to build the system in Zoho Creator.</p>
+  <p style="margin-top:10px"><strong>Who should read this:</strong> Zoho Creator developer / implementation partner building the application in the Zoho Creator console.</p>
+
+  <div class="alert alert-info">
+    <strong>Key design principle:</strong> All modules live in a <strong>single Zoho Creator application</strong>. Phase 1 handles everything in-platform. Phase 2 adds Zoho Projects API integration and Zoho Analytics dashboards.
+  </div>
+
+  <div class="alert alert-warning" style="margin-top:12px">
+    <strong>Single most important performance decision:</strong> Maintain <code>Item_Warehouse_Stock.Current_Stock</code> via Deluge on every transaction — never aggregate stock on demand across thousands of rows.
+  </div>
+</section>
+
+<!-- MODULES -->
+<section id="modules">
+  <h2>27 Modules <span class="badge">form inventory</span></h2>
+  <div class="module-grid">
+    <div class="module-card">
+      <div class="num">#1</div>
+      <h4>Project Master</h4>
+      <div class="desc">Central hub. All other modules reference this form via lookups. One project maps to one budget plan.</div>
+      <div class="tags"><span>Lookup target</span><span>P0</span></div>
+    </div>
+    <div class="module-card">
+      <div class="num">#2</div>
+      <h4>Vendor Management</h4>
+      <div class="desc">Vendor master with embedded subforms for contacts (<code>Vendor_Contacts</code>) and documents (<code>Vendor_Documents</code>), tax IDs, payment terms, and currency.</div>
+      <div class="tags"><span>Vendor master</span></div>
+    </div>
+    <div class="module-card">
+      <div class="num">#3</div>
+      <h4>Account Management</h4>
+      <div class="desc">Customer/client master with embedded subforms for contacts (<code>Account_Contacts</code>) and documents (<code>Account_Documents</code>), billing/shipping addresses, and tax IDs.</div>
+      <div class="tags"><span>Customer master</span></div>
+    </div>
+    <div class="module-card">
+      <div class="num">#4</div>
+      <h4>Warehouses</h4>
+      <div class="desc">Multi-warehouse tracking. Every inventory transaction references a warehouse. A default warehouse is seeded on app creation.</div>
+      <div class="tags"><span>New in v2</span></div>
+    </div>
+    <div class="module-card">
+      <div class="num">#5</div>
+      <h4>Inventory Master (Items)</h4>
+      <div class="desc">SKU-based item master with goods/services type, HSN/SAC, and embedded subform <code>Item_Warehouse_Stock</code> for per-warehouse tracking.</div>
+      <div class="tags"><span>Item master</span></div>
+    </div>
+    <div class="module-card">
+      <div class="num">#6</div>
+      <h4>Budget Planning</h4>
+      <div class="desc">One active budget plan per project. Links to dynamic Budget Components (embedded subform) which are defined per-project.</div>
+      <div class="tags"><span>Validation heavy</span></div>
+    </div>
+    <div class="module-card">
+      <div class="num">#7</div>
+      <h4>Budget Components</h4>
+      <div class="desc">Dynamic cost categories per project (Labour, Materials, Travel, etc.). Tracks allocated vs spent via Deluge aggregation.</div>
+      <div class="tags"><span>Pivot form</span></div>
+    </div>
+    <div class="module-card">
+      <div class="num">#8</div>
+      <h4>Expense Management</h4>
+      <div class="desc">Record actual expenses against budget components. Triggers overrun workflow if budget exceeded.</div>
+      <div class="tags"><span>High volume</span></div>
+    </div>
+    <div class="module-card">
+      <div class="num">#9</div>
+      <h4>Budget Approval Workflow</h4>
+      <div class="desc">Captures overrun approval/rejection with full audit trail: approver, date, comments, original vs exceeded amounts.</div>
+      <div class="tags"><span>Audit</span></div>
+    </div>
+    <div class="module-card">
+      <div class="num">#10</div>
+      <h4>Inventory Transactions</h4>
+      <div class="desc">Stock In/Out/Adjustment/Return, per-warehouse. Stock Out on a project auto-creates an Expense record.</div>
+      <div class="tags"><span>Auto-Deluge</span></div>
+    </div>
+    <div class="module-card">
+      <div class="num">#11</div>
+      <h4>Transfer Orders</h4>
+      <div class="desc">Inter-warehouse stock movement with embedded line items (<code>TO_Line_Items</code>). Completing a transfer auto-generates paired Stock Out + Stock In transactions.</div>
+      <div class="tags"><span>Paired txns</span></div>
+    </div>
+    <div class="module-card">
+      <div class="num">#12</div>
+      <h4>Purchase Requisition</h4>
+      <div class="desc">Internal requests with embedded line items (<code>PR_Line_Items</code>) and multi-stage approval (Dept Manager → Finance → Procurement).</div>
+      <div class="tags"><span>3-stage approval</span></div>
+    </div>
+    <div class="module-card">
+      <div class="num">#13</div>
+      <h4>Purchase Orders</h4>
+      <div class="desc">Full PO with embedded line items (<code>PO_Line_Items</code>), line-level discount/tax, status lifecycle from Draft to Closed.</div>
+      <div class="tags"><span>Procurement</span></div>
+    </div>
+    <div class="module-card">
+      <div class="num">#14</div>
+      <h4>Goods Receipt</h4>
+      <div class="desc">GRN with embedded line items (<code>GRN_Line_Items</code>) for accepted/rejected quantities. Accepted qty auto-creates Stock In.</div>
+      <div class="tags"><span>Auto inventory</span></div>
+    </div>
+    <div class="module-card">
+      <div class="num">#15</div>
+      <h4>Supplier Credit Notes</h4>
+      <div class="desc">Finance-initiated credit/debit notes against suppliers for defective/rejected items found during QA/QC. Links to PO and GRN, tracks stock disposition, auto-creates Return to Vendor inventory transaction. <strong>Manually created by finance only.</strong></div>
+      <div class="tags"><span>Finance</span><span class="tag tag-critical">P0</span></div>
+    </div>
+    <div class="module-card">
+      <div class="num">#16</div>
+      <h4>Reports &amp; Dashboards</h4>
+      <div class="desc">Executive dashboard KPIs, Budget vs Actual pivot, Open POs, Stock Availability, Inventory Valuation, Outstanding Supplier Credits.</div>
+      <div class="tags"><span>20+ reports</span></div>
+    </div>
+    <div class="module-card">
+      <div class="num">#17</div>
+      <h4>Invoicing</h4>
+      <div class="desc">Revenue tracking per project with embedded line items (<code>Invoice_Line_Items</code>), aging, and P&amp;L contribution.</div>
+      <div class="tags"><span>Revenue</span></div>
+    </div>
+    <div class="module-card">
+      <div class="num">#18</div>
+      <h4>Delivery Challan</h4>
+      <div class="desc">Goods dispatch tracking with embedded line items (<code>DC_Line_Items</code>). Shipped status auto-creates Stock Out.</div>
+      <div class="tags"><span>Logistics</span></div>
+    </div>
+    <div class="module-card">
+      <div class="num">#19</div>
+      <h4>BOM (Bill of Materials)</h4>
+      <div class="desc">Manufacturing recipe with embedded component line items (<code>BOM_Line_Items</code>), auto cost calculation.</div>
+      <div class="tags"><span>Manufacturing</span></div>
+    </div>
+    <div class="module-card">
+      <div class="num">#20</div>
+      <h4>Vendor Bills (AP Sub-ledger)</h4>
+      <div class="desc">Records vendor invoices against Purchase Orders. Embedded <code>Bill_Line_Items</code> subform. 3-way match validation (PO × GRN × Bill) on Status = "Matched". Tracks PPV (Purchase Price Variance) per line item. Balance Due auto-updated by Payments.</div>
+      <div class="tags"><span>AP</span><span class="tag tag-critical">P0</span></div>
+    </div>
+    <div class="module-card">
+      <div class="num">#21</div>
+      <h4>Payments (Unified AP/AR)</h4>
+      <div class="desc">Unified module for outgoing vendor payments (AP) and incoming customer receipts (AR). Auto-updates linked Bill/Invoice Amount Paid, Balance Due, and Status. Overpayment prevention via Deluge validation. Supports reversal with rollback.</div>
+      <div class="tags"><span>Finance</span><span class="tag tag-critical">P0</span></div>
+    </div>
+    <div class="module-card">
+      <div class="num">#22</div>
+      <h4>Currency Exchange Rates</h4>
+      <div class="desc">FX rate management for multi-currency support. Auto-populates rate on Bills, Invoices, Payments. Tracks FX Gain/Loss per payment.</div>
+      <div class="tags"><span>Multi-currency</span><span class="tag tag-critical">P0</span></div>
+    </div>
+    <div class="module-card">
+      <div class="num">#23</div>
+      <h4>Accounting Periods</h4>
+      <div class="desc">Month-end and year-end close management. Period-lock prevents posting to closed periods. GRNI accrual reporting for goods received not invoiced.</div>
+      <div class="tags"><span>Period close</span><span class="tag tag-critical">P0</span></div>
+    </div>
+    <div class="module-card">
+      <div class="num">#24</div>
+      <h4>Audit Log</h4>
+      <div class="desc">Immutable audit trail for all P0 financial forms. Captures status changes, amount edits, creation events. Write-only via Deluge — no manual edits.</div>
+      <div class="tags"><span>Audit</span><span class="tag tag-critical">P0</span></div>
+    </div>
+    <div class="module-card">
+      <div class="num">#25</div>
+      <h4>Customer Credit Notes</h4>
+      <div class="desc">Customer returns/credit — CCN reduces Invoice Balance Due when issued. For goods returns, auto-creates Stock In (Return to Customer) inventory transaction.</div>
+      <div class="tags"><span>AR</span><span class="tag-deluge">Auto inventory</span></div>
+    </div>
+    <div class="module-card">
+      <div class="num">#26</div>
+      <h4>Manufacturing Orders</h4>
+      <div class="desc">Production lifecycle from Draft to Completed. On Release: reserves component stock. On Complete: issues components via Stock Out, receives finished goods via Stock In.</div>
+      <div class="tags"><span>Production</span><span class="tag-deluge">Auto inventory</span></div>
+    </div>
+    <div class="module-card">
+      <div class="num">#27</div>
+      <h4>Sales Orders</h4>
+      <div class="desc">Customer order management with embedded SO_Line_Items. Custom buttons: Create Invoice (uninvoiced items), Create DC (undelivered items). On Ship: auto Stock Out.</div>
+      <div class="tags"><span>Sales</span><span class="tag-notify">Custom buttons</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <h2>Project Master <span class="badge">form spec</span></h2>
+
+  <div class="alert alert-info">Central hub. All other modules reference this form. One project maps to one budget plan.</div>
+
+  <h3>Primary Form: Projects</h3>
+  <table class="spec-table">
+    <tr><th>Field</th><th>Type</th><th>Validation / Notes</th></tr>
+    <tr><td>Project Name</td><td>Text</td><td>Required</td></tr>
+    <tr><td>Project Code</td><td>Auto-number</td><td>PROJ-0001</td></tr>
+    <tr><td>Client / Account</td><td>Lookup → Accounts</td><td></td></tr>
+    <tr><td>Project Manager</td><td>User picker</td><td></td></tr>
+    <tr><td>Start Date / End Date</td><td>Date ×2</td><td></td></tr>
+    <tr><td>Budget Amount</td><td>Currency</td><td>Copied to Budget Plan</td></tr>
+    <tr><td>Status</td><td>Dropdown</td><td>Not Started, In Progress, On Hold, Completed, Cancelled</td></tr>
+    <tr><td>Description</td><td>Multi-line</td><td></td></tr>
+  </table>
+
+  <div class="alert alert-warning"><strong>Deluge:</strong> On Status = "Completed" → check no open Expenses or POs. If clear, optionally auto-create final Invoice for unbilled items.</div>
+</section>
+
+<!-- VENDORS -->
+<section id="vendors">
+  <h2>Vendor Management <span class="badge">form spec</span></h2>
+
+  <div class="alert alert-info">Multi-contact, multi-address vendor master with tax IDs and payment terms.</div>
+
+  <h3>Primary Form: Vendors</h3>
+  <table class="spec-table">
+    <tr><th>Field</th><th>Type</th><th>Validation / Notes</th></tr>
+    <tr><td>Vendor Name</td><td>Text</td><td>Required</td></tr>
+    <tr><td>Company Name</td><td>Text</td><td>Legal entity name</td></tr>
+    <tr><td>Email</td><td>Email</td><td></td></tr>
+    <tr><td>Phone / Mobile / Website</td><td>Phone / URL</td><td></td></tr>
+    <tr><td>Currency</td><td>Dropdown</td><td>USD, EUR, INR — affects PO totals</td></tr>
+    <tr><td>Payment Terms</td><td>Dropdown</td><td>Due on Receipt, Net 15, Net 30, Net 45, Net 60</td></tr>
+    <tr><td>Tax ID / PAN</td><td>Text</td><td>GSTIN / VAT / HST / PAN</td></tr>
+    <tr><td>Billing Address</td><td>Address (Zoho Creator type)</td><td>Multi-field composite</td></tr>
+    <tr><td>Shipping Address</td><td>Address (Zoho Creator type)</td><td>Multi-field composite</td></tr>
+    <tr><td>Status</td><td>Dropdown</td><td>Active, Inactive</td></tr>
+  </table>
+
+  <h3>Embedded Subform: Vendor Contacts</h3>
+  <table class="spec-table">
+    <tr><th>Field</th><th>Type</th></tr>
+    <tr><td>Salutation</td><td>Dropdown: Mr, Ms, Mrs, Dr</td></tr>
+    <tr><td>First Name / Last Name</td><td>Text</td></tr>
+    <tr><td>Email / Phone / Mobile</td><td>Email / Phone</td></tr>
+    <tr><td>Designation / Department</td><td>Text</td></tr>
+    <tr><td>Is Primary</td><td>Checkbox</td></tr>
+  </table>
+
+  <h3>Embedded Subform: Vendor Documents</h3>
+  <table class="spec-table">
+    <tr><th>Field</th><th>Type</th></tr>
+    <tr><td>Document Name</td><td>Text</td></tr>
+    <tr><td>File</td><td>Upload</td></tr>
+    <tr><td>Expiry Date</td><td>Date</td></tr>
+    <tr><td>Notes</td><td>Text</td></tr>
+  </table>
+  <p style="margin-top:8px;"><strong>Deluge:</strong> None required — pure data capture form.</p>
+</section>
+
+<!-- ACCOUNTS -->
+<section id="accounts">
+  <h2>Account Management <span class="badge">form spec</span></h2>
+
+  <div class="alert alert-info">Multi-contact, multi-address customer master with tax IDs and payment terms.</div>
+
+  <h3>Primary Form: Accounts</h3>
+  <table class="spec-table">
+    <tr><th>Field</th><th>Type</th><th>Validation / Notes</th></tr>
+    <tr><td>Account Name</td><td>Text</td><td>Required</td></tr>
+    <tr><td>Company Name</td><td>Text</td><td>Legal entity name</td></tr>
+    <tr><td>Email</td><td>Email</td><td></td></tr>
+    <tr><td>Phone / Mobile / Website</td><td>Phone / URL</td><td></td></tr>
+    <tr><td>Currency</td><td>Dropdown</td><td>USD, EUR, INR — affects invoice totals</td></tr>
+    <tr><td>Payment Terms</td><td>Dropdown</td><td>Due on Receipt, Net 15, Net 30, Net 45, Net 60</td></tr>
+    <tr><td>Tax ID / PAN</td><td>Text</td><td>GSTIN / VAT / PAN</td></tr>
+    <tr><td>Billing Address</td><td>Address (Zoho Creator type)</td><td>Multi-field composite</td></tr>
+    <tr><td>Shipping Address</td><td>Address (Zoho Creator type)</td><td>Multi-field composite</td></tr>
+    <tr><td>Status</td><td>Dropdown</td><td>Active, Inactive</td></tr>
+    <tr><td>Remarks</td><td>Multi-line</td><td></td></tr>
+  </table>
+
+  <h3>Embedded Subform: Account Contacts</h3>
+  <table class="spec-table">
+    <tr><th>Field</th><th>Type</th></tr>
+    <tr><td>Salutation</td><td>Dropdown: Mr, Ms, Mrs, Dr</td></tr>
+    <tr><td>First Name / Last Name</td><td>Text</td></tr>
+    <tr><td>Email / Phone / Mobile</td><td>Email / Phone</td></tr>
+    <tr><td>Designation / Department</td><td>Text</td></tr>
+    <tr><td>Is Primary</td><td>Checkbox</td></tr>
+  </table>
+
+  <h3>Embedded Subform: Account Documents</h3>
+  <table class="spec-table">
+    <tr><th>Field</th><th>Type</th></tr>
+    <tr><td>Document Name</td><td>Text</td></tr>
+    <tr><td>File</td><td>Upload</td></tr>
+    <tr><td>Expiry Date</td><td>Date</td></tr>
+    <tr><td>Notes</td><td>Text</td></tr>
+  </table>
+  <p style="margin-top:8px;"><strong>Deluge:</strong> None required — pure data capture form.</p>
+</section>
+
+<!-- INVENTORY -->
+<section id="inventory">
+  <h2>Inventory &amp; Warehouses <span class="badge">form spec</span></h2>
+
+  <div class="alert alert-info">SKU-based item master with goods/services types, HSN/SAC, and multi-warehouse stock tracking.</div>
+
+  <h3>Warehouses</h3>
+  <table class="spec-table">
+    <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+    <tr><td>Warehouse Name / Code</td><td>Text / Auto-number</td><td>Code: WH-0001</td></tr>
+    <tr><td>Address / City / State / Country</td><td>Multi-line / Text</td><td></td></tr>
+    <tr><td>Contact Person / Phone</td><td>Text / Phone</td><td></td></tr>
+    <tr><td>Status</td><td>Dropdown</td><td>Active, Inactive</td></tr>
+  </table>
+  <p><strong>Seed data:</strong> Create "Main Warehouse" record on app initialization so single-warehouse users never notice the warehouse field.</p>
+
+  <h3>Inventory Items</h3>
+  <table class="spec-table">
+    <tr><th>Field</th><th>Type</th><th>Validation / Notes</th></tr>
+    <tr><td>Item Name</td><td>Text</td><td>Required</td></tr>
+    <tr><td>SKU</td><td>Auto-number</td><td>SKU-0001</td></tr>
+    <tr><td>Item Type</td><td>Dropdown</td><td>Goods, Services — services skip stock</td></tr>
+    <tr><td>Category</td><td>Dropdown</td><td>Raw Material, Component, Consumable, Equipment, Service, Subcontract</td></tr>
+    <tr><td>Unit</td><td>Dropdown</td><td>Pcs, Kg, Ltr, Box, Meter, Hour, Day, Set, Pair</td></tr>
+    <tr><td>HSN / SAC Code</td><td>Text</td><td>Tax classification</td></tr>
+    <tr><td>Taxability / Tax Rate</td><td>Dropdown / Decimal</td><td>Taxable / Non-Taxable / Zero-Rated; default %</td></tr>
+    <tr><td>Purchase Price</td><td>Currency</td><td>Default unit cost</td></tr>
+    <tr><td>Reorder Level</td><td>Decimal</td><td>Low stock threshold</td></tr>
+    <tr><td>Preferred Vendor</td><td>Lookup → Vendors</td><td></td></tr>
+    <tr><td>Current Stock</td><td>Decimal</td><td>Maintained by Deluge — aggregated across all Item_Warehouse_Stock records</td></tr>
+    <tr><td>Stock Value</td><td>Formula</td><td>Current_Stock × Purchase_Price</td></tr>
+    <tr><td>Status</td><td>Dropdown</td><td>Active, Inactive</td></tr>
+  </table>
+
+  <h3>Embedded Subform: Item_Warehouse_Stock</h3>
+  <table class="spec-table">
+    <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+    <tr><td>Warehouse</td><td>Lookup → Warehouses</td><td></td></tr>
+    <tr><td>Current Stock</td><td>Decimal</td><td>Maintained by Deluge — never manual</td></tr>
+    <tr><td>Reorder Level</td><td>Decimal</td><td>Overrides item default if set</td></tr>
+  </table>
+  <p style="font-size:0.8rem;color:var(--color-text-muted)"><strong>Note:</strong> Item lookup is implicit — embedded subform is automatically linked to parent Inventory Item.</p>
+  <div class="alert alert-warning"><strong>CRITICAL:</strong> <code>Item_Warehouse_Stock.Current_Stock</code> is the source of truth. Every Inventory Transaction updates it via Deluge. The Item-level <code>Inventory_Items.Current_Stock</code> is a Decimal maintained by Deluge (SUM rollup on each transaction). Never aggregate on demand.</div>
+
+  <h3>Inventory Transactions</h3>
+  <table class="spec-table">
+    <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+    <tr><td>Transaction No</td><td>Auto-number</td><td>TXN-0001</td></tr>
+    <tr><td>Type</td><td>Dropdown</td><td>Stock In, Stock Out, Stock Adjustment, Return to Vendor</td></tr>
+    <tr><td>Item</td><td>Lookup → Items</td><td></td></tr>
+    <tr><td>Warehouse</td><td>Lookup → Warehouses</td><td><span class="tag tag-critical">Required</span></td></tr>
+    <tr><td>Quantity / Rate / Total</td><td>Decimal / Currency / Formula</td><td>Qty always positive; direction by Type</td></tr>
+    <tr><td>Project</td><td>Lookup → Projects</td><td>Required only for Stock Out</td></tr>
+    <tr><td>Reference / Notes</td><td>Text / Multi-line</td><td>PO# / GRN# / reason</td></tr>
+  </table>
+  <div class="alert alert-warning"><strong>Deluge (on submit):</strong> (1) Locate <code>Item_Warehouse_Stock[Item, Warehouse]</code>. (2) Update <code>Current_Stock</code> ± Quantity. (3) Validate no negative stock. (4) Recompute <code>Inventory_Items.Current_Stock</code> via Deluge (SUM of all warehouse stock). (5) If Stock Out + Project set → auto-create Expense record.</div>
+
+  <h3>Transfer Orders</h3>
+  <table class="spec-table">
+    <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+    <tr><td>TO Number</td><td>Auto-number</td><td>TO-0001</td></tr>
+    <tr><td>From / To Warehouse</td><td>Lookup → Warehouses ×2</td><td>Must differ</td></tr>
+    <tr><td>Status</td><td>Dropdown</td><td>Draft, In Transit, Completed, Cancelled</td></tr>
+    <tr><td>Line Items</td><td>Embedded subform: Item, Qty, Rate, Total</td><td></td></tr>
+  </table>
+  <p><strong>Deluge (on Status = "Completed"):</strong> For each line item, generate a Stock Out (from-warehouse) + Stock In (to-warehouse) transaction. Both trigger the Inventory Transactions workflow.</p>
+</section>
+
+<!-- BUDGET -->
+<section id="budget">
+  <h2>Budget Planning &amp; Components <span class="badge">form spec</span></h2>
+
+  <h3>Budget Plans</h3>
+  <table class="spec-table">
+    <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+    <tr><td>Plan Name</td><td>Auto-generated</td><td></td></tr>
+    <tr><td>Project</td><td>Lookup → Projects</td><td>One active plan per project</td></tr>
+    <tr><td>Total Budget Amount</td><td>Currency</td><td>Copied from Project or entered</td></tr>
+    <tr><td>Status</td><td>Dropdown</td><td>Draft, Active, Revised, Closed</td></tr>
+    <tr><td>Approval Status</td><td>Dropdown</td><td>Pending, Approved, Rejected</td></tr>
+  </table>
+  <p><strong>Validation (Deluge on submit):</strong> No duplicate active plan per project. Sum of Budget Components ≤ Total Budget Amount.</p>
+
+  <h3>Budget Components</h3>
+  <table class="spec-table">
+    <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+    <tr><td>Component Name</td><td>Text</td><td>e.g. Labour, Materials, Travel</td></tr>
+    <tr><td>Project</td><td>Lookup → Projects</td><td>Denormalized for reporting</td></tr>
+    <tr><td>Allocated Amount</td><td>Currency</td><td></td></tr>
+    <tr><td>Spent Amount</td><td>Formula / Deluge</td><td>Aggregated from Expenses</td></tr>
+    <tr><td>Remaining</td><td>Formula</td><td>Allocated − Spent Amount</td></tr>
+    <tr><td>Consumption %</td><td>Formula</td><td>(Spent Amount / Allocated) × 100</td></tr>
+    <tr><td>Status</td><td>Dropdown (auto)</td><td>Within Budget, 80% Alert, 90% Alert, Exceeded</td></tr>
+  </table>
+  <p style="font-size:0.8rem;color:var(--color-text-muted)"><strong>Note:</strong> Budget Plan lookup is implicit — Budget Components is an embedded subform of Budget Plans.</p>
+  <div class="alert alert-warning"><strong>This is the central pivot form.</strong> Expenses reference it. Reports group by it. The 80/90/100% alert logic runs in Deluge each time an expense is submitted.</div>
+</section>
+
+<!-- EXPENSES -->
+<section id="expenses">
+  <h2>Expense Management &amp; Overrun Approval <span class="badge">form spec</span></h2>
+
+  <h3>Expenses</h3>
+  <table class="spec-table">
+    <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+    <tr><td>Expense No</td><td>Auto-number</td><td>EXP-0001</td></tr>
+    <tr><td>Project</td><td>Lookup → Projects</td><td></td></tr>
+    <tr><td>Budget Component</td><td>Lookup → Budget_Components</td><td>Filtered by selected Project</td></tr>
+    <tr><td>Date / Amount</td><td>Date / Currency</td><td></td></tr>
+    <tr><td>Vendor</td><td>Lookup → Vendors</td><td>Optional</td></tr>
+    <tr><td>Description / Supporting Doc</td><td>Multi-line / Upload</td><td></td></tr>
+    <tr><td>Status</td><td>Dropdown</td><td>Draft, Submitted, Approved, Overrun-Pending Approval, Rejected, Modified</td></tr>
+  </table>
+  <div class="alert alert-warning"><strong>Critical Deluge (on submit):</strong> Compare new total (Spent_Amount + Amount) vs Allocated_Amount. If within budget → auto-approve, update Budget_Component.Spent_Amount, update Status based on %. If over → Status = "Overrun-Pending Approval", create Budget_Approval record, notify PM + Finance Manager.</div>
+
+  <h3>Budget Approvals (Audit Trail)</h3>
+  <table class="spec-table">
+    <tr><th>Field</th><th>Type</th></tr>
+    <tr><td>Expense / Project / Budget Component</td><td>Lookup ×3 (denormalized)</td></tr>
+    <tr><td>Original Budget Amount / Expense Amount / Exceeded Amount</td><td>Currency ×3</td></tr>
+    <tr><td>Approval Status</td><td>Dropdown: Pending, Approved, Rejected, Request Modification</td></tr>
+    <tr><td>Approver / Approval Date / Comments</td><td>User picker / DateTime / Multi-line</td></tr>
+    <tr><td>Modified Budget Amount</td><td>Currency (if approver increases budget)</td></tr>
+  </table>
+  <p><strong>Deluge:</strong> On Approved → update Budget Component allocated amount (if modified), approve Expense. On Rejected → mark Expense rejected. On Request Modification → notify submitter.</p>
+</section>
+
+<!-- PROCUREMENT -->
+<section id="procurement">
+  <h2>Procurement &amp; Purchase Orders <span class="badge">form spec</span></h2>
+
+  <h3>Purchase Requisitions</h3>
+  <table class="spec-table">
+    <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+    <tr><td>Requisition No</td><td>Auto-number</td><td>REQ-0001</td></tr>
+    <tr><td>Request Type</td><td>Dropdown</td><td>General, Part Repair, Service</td></tr>
+    <tr><td>Subject / Project</td><td>Text / Lookup → Projects</td><td></td></tr>
+    <tr><td>Requested By / Date / Delivery Date</td><td>User picker / Date ×2</td><td></td></tr>
+    <tr><td>Urgency / Justification</td><td>Dropdown / Multi-line</td><td>Low, Medium, High, Critical</td></tr>
+    <tr><td>Status / Approval Stage</td><td>Dropdown ×2</td><td>Draft→Open→Approved→Rejected→Closed + 3-stage</td></tr>
+    <tr><td>PR Line Items</td><td>Embedded subform</td><td>Item lookup, Unit, Qty, Rate, Total</td></tr>
+  </table>
+  <p><strong>Approval flow:</strong> Each stage transition sends email to next approver. On final approval → auto-create PO (Draft).</p>
+
+  <h3>Purchase Orders</h3>
+  <table class="spec-table">
+    <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+    <tr><td>PO Number</td><td>Auto-number</td><td>PO-0001</td></tr>
+    <tr><td>Vendor</td><td>Lookup → Vendors</td><td>Required</td></tr>
+    <tr><td>Requisition / Project</td><td>Lookup ×2</td><td>PR linked on auto-create</td></tr>
+    <tr><td>PO Date / Delivery Date / Due Date</td><td>Date ×3</td><td></td></tr>
+    <tr><td>Reference Number</td><td>Text</td><td>Vendor contract ref</td></tr>
+    <tr><td>Status</td><td>Dropdown</td><td>Draft, Open, Partially Invoiced, Invoiced, Closed, Cancelled</td></tr>
+    <tr><td>Discount %</td><td>Decimal</td><td>PO-level discount</td></tr>
+    <tr><td>Subtotal / Tax Total / Total</td><td>Currency / Formula</td><td>Financial rollup</td></tr>
+    <tr><td>Terms / Notes</td><td>Multi-line ×2</td><td></td></tr>
+    <tr><td>Attachment</td><td>Upload</td><td>PO document</td></tr>
+  </table>
+
+  <h4>PO Line Item Spec</h4>
+  <table class="spec-table">
+    <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+    <tr><td>Item</td><td>Lookup → Inventory_Items</td><td></td></tr>
+    <tr><td>Description / Unit / HSN/SAC</td><td>Text ×3</td><td></td></tr>
+    <tr><td>Quantity / Rate</td><td>Decimal / Currency</td><td></td></tr>
+    <tr><td>Discount % / Discount Amount</td><td>Decimal / Formula</td><td>Line-level</td></tr>
+    <tr><td>Tax % / Tax Amount</td><td>Decimal / Formula</td><td>Defaults from Item's Tax Rate</td></tr>
+    <tr><td>Item Total</td><td>Formula</td><td><code>(Qty × Rate) + Tax Amount − Discount Amount</code></td></tr>
+  </table>
+
+  <div class="workflow-steps">
+    <span class="step status-draft">Draft</span>
+    <span class="arrow">→</span>
+    <span class="step status-open">Open</span>
+    <span class="arrow">→</span>
+    <span class="step status-pending">Partially Invoiced</span>
+    <span class="arrow">→</span>
+    <span class="step status-approved">Invoiced</span>
+    <span class="arrow">→</span>
+    <span class="step status-closed">Closed</span>
+    <span class="arrow">|</span>
+    <span class="step status-rejected">Cancelled</span>
+  </div>
+  <p><strong>Deluge:</strong> On Status = "Open" → email PO PDF to vendor. POs are closed manually — GRN does not auto-update PO status.</p>
+
+  <h3>Goods Receipt (GRN)</h3>
+  <table class="spec-table">
+    <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+    <tr><td>GRN Number</td><td>Auto-number</td><td>GRN-0001</td></tr>
+    <tr><td>PO</td><td>Lookup → Purchase_Orders</td><td></td></tr>
+    <tr><td>Receipt Date / Received By</td><td>DateTime / User picker</td><td></td></tr>
+    <tr><td>Status</td><td>Dropdown</td><td>Draft, Open, Closed</td></tr>
+    <tr><td>GRN Line Items</td><td>Embedded subform</td><td>See below</td></tr>
+  </table>
+
+  <h4>GRN Line Item Spec</h4>
+  <table class="spec-table">
+    <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+    <tr><td>Item</td><td>Lookup → Items</td><td>Auto-filled from PO</td></tr>
+    <tr><td>PO Qty / Accepted Qty / Rejected Qty</td><td>Decimal ×3</td><td>Accepted + Rejected ≤ PO Qty</td></tr>
+    <tr><td>Rejection Reason</td><td>Text</td><td>Required if Rejected &gt; 0</td></tr>
+    <tr><td>Actual Unit Cost</td><td>Currency</td><td>Editable — may differ from PO</td></tr>
+    <tr><td>Warehouse</td><td>Lookup → Warehouses</td><td>Where accepted items go</td></tr>
+  </table>
+  <div class="alert alert-warning"><strong>Deluge (on Status = "Open"):</strong> For each line with Accepted_Qty &gt; 0 → create Stock In transaction → triggers inventory workflow → updates Item_Warehouse_Stock. Update PO_Line_Item.Received_Qty and PO.Receipt_Status per line item. If all items fully received → flag for manual close.</div>
+
+  <h3>Supplier Credit Notes</h3>
+  <p>Finance-initiated credit/debit notes against suppliers for defective, rejected, or disputed items discovered during QA/QC after goods receipt. <strong>Always manually created by finance.</strong></p>
+  <table class="spec-table">
+    <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+    <tr><td>Credit Note No</td><td>Auto-number</td><td>SCN-{0000}</td></tr>
+    <tr><td>Type</td><td>Dropdown</td><td>Credit Note (Supplier owes us), Debit Note (We charge supplier)</td></tr>
+    <tr><td>Vendor</td><td>Lookup → Vendors</td><td>Required</td></tr>
+    <tr><td>PO Reference</td><td>Lookup → Purchase_Orders</td><td>Required — links credit to original PO</td></tr>
+    <tr><td>GRN Reference</td><td>Lookup → Goods_Receipts</td><td>Links to receipt where defect found</td></tr>
+    <tr><td>Credit Note Date</td><td>Date</td><td>Default today</td></tr>
+    <tr><td>Total Amount</td><td>Currency</td><td>Sum of line items</td></tr>
+    <tr><td>Status</td><td>Dropdown</td><td>Draft, Issued, Partially Settled, Settled, Cancelled</td></tr>
+    <tr><td>Reason</td><td>Dropdown</td><td>Defective Item, Damaged in Transit, Wrong Item, Shortage, Quality Issue, Price Discrepancy, Other</td></tr>
+    <tr><td>QA/QC Reference</td><td>Text</td><td>Inspection report number</td></tr>
+    <tr><td>Payment Adjustment Ref</td><td>Text</td><td>How settled (adjusted against payment, refund, etc.)</td></tr>
+    <tr><td>Attachment</td><td>Upload</td><td>Scanned CN/DN document</td></tr>
+  </table>
+
+  <h4>SCN Line Item Spec</h4>
+  <table class="spec-table">
+    <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+    <tr><td>Item</td><td>Lookup → Inventory_Items</td><td></td></tr>
+    <tr><td>PO Line Reference</td><td>Text</td><td>Optional</td></tr>
+    <tr><td>Quantity Returned / Rate per Unit</td><td>Decimal / Currency</td><td></td></tr>
+    <tr><td>Total Amount</td><td>Formula</td><td>Qty × Rate</td></tr>
+    <tr><td>Defect Reason</td><td>Text</td><td></td></tr>
+    <tr><td>Stock Disposition</td><td>Dropdown</td><td>Returned to Supplier, Scrapped, Reworked, Under Inspection</td></tr>
+  </table>
+
+  <div class="alert alert-warning"><strong>Deluge (on Status = "Issued"):</strong> Validate total &gt; 0 + line items exist → update PO_Line_Items.Credited_Qty → set PO.Has_Outstanding_Credit = true → mark GRN_Line_Items as credited → if Stock Disposition = "Returned to Supplier" → auto-create Return to Vendor inventory transaction → notify finance + procurement.</div>
+  <div class="alert alert-info"><strong>Deluge (on Status = "Settled"):</strong> Clear PO.Has_Outstanding_Credit if no other outstanding SCNs exist for this PO.</div>
+  <div class="alert alert-error"><strong>Deluge (on Status = "Cancelled"):</strong> Reverse Credited_Qty on PO line items, clear GRN Is_Credited flags, clear PO.Has_Outstanding_Credit.</div>
+</section>
+
+<!-- INVOICING -->
+<section id="invoicing">
+  <h2>Invoicing <span class="badge">form spec</span></h2>
+
+  <div class="alert alert-info">Revenue tracking per project with embedded line items, aging, and P&amp;L contribution.</div>
+
+  <h3>Primary Form: Invoices</h3>
+  <table class="spec-table">
+    <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+    <tr><td>Invoice Number</td><td>Auto-number</td><td>INV-0001</td></tr>
+    <tr><td>Project</td><td>Lookup → Projects</td><td>Required</td></tr>
+    <tr><td>Account</td><td>Lookup → Accounts</td><td>Denormalized from Project</td></tr>
+    <tr><td>Invoice Date / Due Date</td><td>Date ×2</td><td></td></tr>
+    <tr><td>Status</td><td>Dropdown</td><td>Draft, Sent, Paid, Overdue, Cancelled</td></tr>
+    <tr><td>Subtotal / Tax Total / Total</td><td>Currency / Formula</td><td></td></tr>
+    <tr><td>Balance Due</td><td>Currency</td><td>Updated on payment</td></tr>
+    <tr><td>Notes / Terms</td><td>Multi-line ×2</td><td></td></tr>
+  </table>
+
+  <h4>Invoice Line Item Spec</h4>
+  <table class="spec-table">
+    <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+    <tr><td>Item / Description</td><td>Lookup → Items / Text</td><td></td></tr>
+    <tr><td>Quantity / Rate / Total</td><td>Decimal / Currency / Formula</td><td></td></tr>
+  </table>
+
+  <div class="alert alert-warning"><strong>Deluge:</strong> On Status = "Sent" → update Project.Total_Invoiced. On Status = "Paid" → update Balance Due. Custom button to create Delivery Challan from Invoice line items.</div>
+</section>
+
+<!-- DELIVERY CHALLAN -->
+<section id="delivery-challan">
+  <h2>Delivery Challan <span class="badge">form spec</span></h2>
+
+  <div class="alert alert-info">Goods dispatch tracking. Shipped status auto-creates Stock Out.</div>
+
+  <h3>Primary Form: Delivery Challans</h3>
+  <table class="spec-table">
+    <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+    <tr><td>DC Number</td><td>Auto-number</td><td>DC-0001</td></tr>
+    <tr><td>Project</td><td>Lookup → Projects</td><td></td></tr>
+    <tr><td>Account</td><td>Lookup → Accounts</td><td>Denormalized</td></tr>
+    <tr><td>Invoice</td><td>Lookup → Invoices</td><td>Optional — link to source invoice</td></tr>
+    <tr><td>DC Date</td><td>Date</td><td></td></tr>
+    <tr><td>Status</td><td>Dropdown</td><td>Draft, Packed, Shipped, Delivered, Cancelled</td></tr>
+  </table>
+
+  <h4>DC Line Item Spec</h4>
+  <table class="spec-table">
+    <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+    <tr><td>Item</td><td>Lookup → Items</td><td></td></tr>
+    <tr><td>Quantity / Rate / Total</td><td>Decimal / Currency / Formula</td><td></td></tr>
+    <tr><td>Warehouse</td><td>Lookup → Warehouses</td><td>Where items are dispatched from</td></tr>
+  </table>
+
+  <div class="alert alert-warning"><strong>Deluge:</strong> On Status = "Shipped" → for each line item, auto-create Stock Out transaction → triggers inventory workflow → updates Item_Warehouse_Stock.</div>
+</section>
+
+<!-- BOM -->
+<section id="bom">
+  <h2>BOM (Bill of Materials) <span class="badge">form spec</span></h2>
+
+  <div class="alert alert-info">Manufacturing recipe with embedded component line items and auto cost calculation.</div>
+
+  <h3>Primary Form: BOM</h3>
+  <table class="spec-table">
+    <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+    <tr><td>BOM Number</td><td>Auto-number</td><td>BOM-0001</td></tr>
+    <tr><td>Product Item</td><td>Lookup → Items</td><td>The manufactured item</td></tr>
+    <tr><td>Project</td><td>Lookup → Projects</td><td>Optional link</td></tr>
+    <tr><td>Total Mfg Cost</td><td>Currency</td><td>Calculated by Deluge on submit</td></tr>
+    <tr><td>Labour Cost / Overhead Cost</td><td>Currency</td><td>Entered manually</td></tr>
+    <tr><td>Status</td><td>Dropdown</td><td>Draft, Active, Revised, Inactive</td></tr>
+  </table>
+
+  <h4>BOM Line Item Spec</h4>
+  <table class="spec-table">
+    <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+    <tr><td>Component Item</td><td>Lookup → Items</td><td>Raw material / sub-component</td></tr>
+    <tr><td>Quantity / Unit Cost</td><td>Decimal / Currency</td><td></td></tr>
+    <tr><td>Line Total</td><td>Formula</td><td>Qty × Unit Cost</td></tr>
+  </table>
+
+  <div class="alert alert-warning"><strong>Deluge (On Submit):</strong> Sum all component line totals + Labour_Cost + Overhead_Cost → Total_Mfg_Cost.</div>
+</section>
+
+<!-- WORKFLOWS -->
+<section id="workflows">
+  <h2>Deluge Workflow Catalog <span class="badge">58+ automations</span></h2>
+
+  <table class="spec-table">
+    <tr><th>#</th><th>Trigger</th><th>Event</th><th>Action</th><th>Critical?</th></tr>
+    <tr><td>1</td><td>Project Create</td><td>On Submit</td><td>Generate Project Code (PROJ-0001)</td><td>No</td></tr>
+    <tr><td>2</td><td>Budget Plan Submit</td><td>On Submit</td><td>Validate sum of components ≤ Total Budget; prevent duplicate active plans</td><td><span class="tag tag-critical">Yes</span></td></tr>
+    <tr><td>3</td><td>Expense Submit</td><td>On Submit</td><td>Budget check → auto-approve or trigger overrun</td><td><span class="tag tag-critical">Yes</span></td></tr>
+    <tr><td>4</td><td>Expense Overrun</td><td>On Submit</td><td>Create Budget_Approval record; email PM + Finance Manager</td><td><span class="tag tag-notify">Yes</span></td></tr>
+    <tr><td>5</td><td>Budget Approval — Approved</td><td>On Submit</td><td>Update Budget Component allocated amount; approve Expense</td><td><span class="tag tag-critical">Yes</span></td></tr>
+    <tr><td>6</td><td>Budget Approval — Rejected</td><td>On Submit</td><td>Set Expense Status = "Rejected"; notify submitter</td><td><span class="tag tag-notify">Yes</span></td></tr>
+    <tr><td>7</td><td>Inventory Transaction Submit</td><td>On Submit</td><td>Update Item_Warehouse_Stock; recompute Item.Current_Stock via Deluge</td><td><span class="tag tag-critical">Yes</span></td></tr>
+    <tr><td>8</td><td>Stock Out + Project set</td><td>On Submit</td><td>Auto-create Expense record (Amount = Qty × Rate)</td><td><span class="tag tag-critical">Yes</span></td></tr>
+    <tr><td>9</td><td>Inventory Transaction</td><td>Validation</td><td>Prevent negative stock</td><td><span class="tag tag-critical">Yes</span></td></tr>
+    <tr><td>10</td><td>Transfer Order = Completed</td><td>On Submit</td><td>Generate paired Stock Out / Stock In</td><td><span class="tag tag-critical">Yes</span></td></tr>
+    <tr><td>11</td><td>GRN Status = "Open"</td><td>On Submit</td><td>Create Stock In for accepted qty; update PO line</td><td><span class="tag tag-critical">Yes</span></td></tr>
+    <tr><td>12</td><td>GRN — all items received</td><td>On Submit</td><td>PO is closed manually — no auto-close logic</td><td>No</td></tr>
+    <tr><td>13</td><td>PO Status = "Open"</td><td>On Submit</td><td>Send PO PDF to vendor email</td><td><span class="tag tag-notify">Yes</span></td></tr>
+    <tr><td>14</td><td>PO Status = "Cancelled"</td><td>Validation</td><td>Validate no GRN linked</td><td><span class="tag tag-critical">Yes</span></td></tr>
+    <tr><td>15</td><td>PR Approval Stage change</td><td>On Submit</td><td>Email next approver in chain</td><td><span class="tag tag-notify">Yes</span></td></tr>
+    <tr><td>16</td><td>Scheduled (daily midnight)</td><td>Cron</td><td>Budget alerts (80/90/100%); low stock alerts; KPI refresh</td><td><span class="tag tag-notify">Yes</span></td></tr>
+    <tr><td>17</td><td>Project Status = "Completed"</td><td>Validation</td><td>Check no open Expenses or POs</td><td>No</td></tr>
+    <tr><td>18</td><td>Manual PO close tracking</td><td>Scheduled</td><td>Flag POs fully received + 30 days old for manual close</td><td>No</td></tr>
+    <tr><td>19</td><td>Invoice Status = "Sent"</td><td>On Submit</td><td>Update Project.Total_Invoiced (sum of all sent invoices)</td><td><span class="tag tag-critical">Yes</span></td></tr>
+    <tr><td>20</td><td>Invoice Status = "Paid"</td><td>On Submit</td><td>Update Balance Due = Total - Amount_Paid</td><td><span class="tag tag-critical">Yes</span></td></tr>
+    <tr><td>21</td><td>DC Status = "Shipped"</td><td>On Submit</td><td>Auto-create Stock Out for each line item</td><td><span class="tag tag-critical">Yes</span></td></tr>
+    <tr><td>22</td><td>BOM Submit</td><td>On Submit</td><td>Calculate Total Mfg Cost = sum of line totals + Labour + Overhead</td><td><span class="tag tag-critical">Yes</span></td></tr>
+    <tr><td>23</td><td>PR final approval</td><td>On Submit</td><td>Auto-create Purchase Order (Draft) with PR line items</td><td><span class="tag tag-critical">Yes</span></td></tr>
+    <tr><td>24</td><td>Stock Reservation transaction</td><td>On Submit</td><td>Update Item_Warehouse_Stock.Reserved_Qty; Stock Out checks unreserved stock</td><td><span class="tag tag-critical">Yes</span></td></tr>
+    <tr><td>25</td><td>Project Status = "Completed"</td><td>On Submit</td><td>Auto-create Invoice for any unbilled items</td><td>No</td></tr>
+    <tr><td>26</td><td>PO Pending Approval</td><td>On Submit</td><td>Budget check — validate available budget; commit on Open</td><td><span class="tag tag-critical">Yes</span></td></tr>
+    <tr><td>27</td><td>Bill Matched</td><td>On Submit</td><td>Route to Pending Approval (Finance Manager review)</td><td><span class="tag tag-critical">Yes</span></td></tr>
+    <tr><td>28</td><td>Payment Pending Approval</td><td>On Submit</td><td>Threshold-based approval routing (auto-approve below $5K)</td><td><span class="tag tag-critical">Yes</span></td></tr>
+    <tr><td>29</td><td>PR Final Approval</td><td>On Submit</td><td>Budget check before auto-creating PO</td><td><span class="tag tag-critical">Yes</span></td></tr>
+    <tr><td>30</td><td>CCN Issued</td><td>On Submit</td><td>Reduce Invoice Balance Due; auto Stock In for goods returns</td><td><span class="tag tag-critical">Yes</span></td></tr>
+    <tr><td>31</td><td>CCN Cancelled</td><td>On Submit</td><td>Reverse Invoice Balance Due adjustment</td><td>No</td></tr>
+    <tr><td>32</td><td>MO Released</td><td>On Submit</td><td>Reserve component stock; validate availability</td><td><span class="tag tag-critical">Yes</span></td></tr>
+    <tr><td>33</td><td>MO Completed</td><td>On Submit</td><td>Issue components (Stock Out); receive finished goods (Stock In)</td><td><span class="tag tag-critical">Yes</span></td></tr>
+    <tr><td>34</td><td>MO Cancelled</td><td>On Submit</td><td>Release reserved component stock</td><td>No</td></tr>
+    <tr><td>35</td><td>SO → Create Invoice</td><td>Custom Button</td><td>Create Invoice from uninvoiced SO line items</td><td>No</td></tr>
+    <tr><td>36</td><td>SO → Create DC</td><td>Custom Button</td><td>Create Delivery Challan from undelivered SO line items</td><td>No</td></tr>
+  </table>
+</section>
+
+<!-- ROLES -->
+<section id="roles">
+  <h2>Role Permissions Matrix <span class="badge">10 roles</span></h2>
+
+  <table class="spec-table">
+    <tr><th>Module / Form</th><th>Admin</th><th>Project Manager</th><th>Finance Manager</th><th>Procurement</th><th>Inventory Manager</th><th>Employee</th></tr>
+    <tr><td>Projects</td><td>CRUD</td><td>CRUD</td><td>R</td><td>R</td><td>R</td><td>R</td></tr>
+    <tr><td>Vendors</td><td>CRUD</td><td>R</td><td>R</td><td>CRUD</td><td>R</td><td>-</td></tr>
+    <tr><td>Warehouses</td><td>CRUD</td><td>-</td><td>-</td><td>R</td><td>CRUD</td><td>-</td></tr>
+    <tr><td>Inventory Items</td><td>CRUD</td><td>R</td><td>R</td><td>R</td><td>CRUD</td><td>-</td></tr>
+    <tr><td>Budget Plans</td><td>CRUD</td><td>CRUD</td><td>CRUD</td><td>-</td><td>-</td><td>-</td></tr>
+    <tr><td>Budget Components</td><td>CRUD</td><td>CRUD</td><td>CRUD</td><td>-</td><td>-</td><td>-</td></tr>
+    <tr><td>Expenses</td><td>CRUD</td><td>CRUD</td><td>R</td><td>-</td><td>R</td><td>C (own)</td></tr>
+    <tr><td>Budget Approvals</td><td>CRUD</td><td>U (approve/reject)</td><td>U (approve/reject)</td><td>-</td><td>-</td><td>R (own)</td></tr>
+    <tr><td>Inventory Transactions</td><td>CRUD</td><td>R</td><td>R</td><td>R</td><td>CRUD</td><td>-</td></tr>
+    <tr><td>Transfer Orders</td><td>CRUD</td><td>-</td><td>-</td><td>-</td><td>CRUD</td><td>-</td></tr>
+    <tr><td>Purchase Requisitions</td><td>CRUD</td><td>U (approve stage 1)</td><td>U (approve stage 2)</td><td>CRUD</td><td>-</td><td>C (own)</td></tr>
+    <tr><td>Purchase Orders</td><td>CRUD</td><td>R</td><td>U (approve)</td><td>CRUD</td><td>R</td><td>-</td></tr>
+    <tr><td>Goods Receipts</td><td>CRUD</td><td>R</td><td>R</td><td>CRUD</td><td>CRUD</td><td>-</td></tr>
+    <tr><td>Vendor Bills</td><td>CRUD</td><td>R</td><td>U (Approve)</td><td>R</td><td>-</td><td>-</td></tr>
+    <tr><td>Payments</td><td>CRUD</td><td>R</td><td>U (Approve)</td><td>-</td><td>-</td><td>-</td></tr>
+    <tr><td>Customer Credit Notes</td><td>CRUD</td><td>R</td><td>U (Approve)</td><td>-</td><td>-</td><td>-</td></tr>
+    <tr><td>Manufacturing Orders</td><td>CRUD</td><td>R</td><td>-</td><td>-</td><td>CRUD</td><td>-</td></tr>
+    <tr><td>Sales Orders</td><td>CRUD</td><td>R</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+    <tr><td>Reports &amp; Dashboards</td><td>All</td><td>Budget + Project</td><td>Financial</td><td>Procurement</td><td>Inventory</td><td>Own expenses</td></tr>
+  </table>
+  <p style="margin-top:8px;"><small>C=Create, R=Read, U=Update, D=Delete. "C (own)" = create own records only.</small></p>
+</section>
+
+<!-- BUILD SEQUENCE -->
+<section id="sequence">
+  <h2>Build Sequence <span class="badge">8 phases</span></h2>
+
+  <div class="module-grid">
+    <div style="background:var(--color-surface);padding:16px;border-radius:8px;border:1px solid var(--color-border)">
+      <h4 style="color:var(--color-green)">Phase 1A — Foundation</h4>
+      <ul style="font-size:0.85rem;margin-top:8px;list-style:none">
+        <li>✓ Project Master</li>
+        <li>✓ Vendors (with embedded Contacts &amp; Docs subforms)</li>
+        <li>✓ Accounts (with embedded Contacts &amp; Docs subforms)</li>
+        <li>✓ Warehouses</li>
+        <li>✓ Inventory Items (with embedded Stock subform)</li>
+      </ul>
+    </div>
+    <div style="background:var(--color-surface);padding:16px;border-radius:8px;border:1px solid var(--color-border)">
+      <h4 style="color:var(--color-accent)">Phase 1B — Budget</h4>
+      <ul style="font-size:0.85rem;margin-top:8px;list-style:none">
+        <li>✓ Budget Planning (with embedded Budget Components subform)</li>
+        <li>✓ Inventory Transactions</li>
+      </ul>
+    </div>
+    <div style="background:var(--color-surface);padding:16px;border-radius:8px;border:1px solid var(--color-border)">
+      <h4 style="color:var(--color-purple)">Phase 1C — Expenses + PR</h4>
+      <ul style="font-size:0.85rem;margin-top:8px;list-style:none">
+        <li>✓ Expense Management</li>
+        <li>✓ Purchase Requisitions</li>
+        <li>✓ Budget Alerts (80/90/100%)</li>
+      </ul>
+    </div>
+    <div style="background:var(--color-surface);padding:16px;border-radius:8px;border:1px solid var(--color-border)">
+      <h4 style="color:var(--color-orange)">Phase 1D — Procurement</h4>
+      <ul style="font-size:0.85rem;margin-top:8px;list-style:none">
+        <li>✓ Budget Approval Workflow</li>
+        <li>✓ Purchase Orders (with embedded Line Items subform)</li>
+        <li>✓ Transfer Orders (with embedded Line Items subform)</li>
+        <li>✓ Goods Receipt (with embedded Line Items subform)</li>
+      </ul>
+    </div>
+    <div style="background:var(--color-surface);padding:16px;border-radius:8px;border:1px solid var(--color-border)">
+      <h4 style="color:var(--color-yellow)">Phase 1E — Revenue &amp; Mfg</h4>
+      <ul style="font-size:0.85rem;margin-top:8px;list-style:none">
+        <li>✓ BOM (with embedded Line Items subform)</li>
+        <li>✓ Delivery Challans (with embedded Line Items subform)</li>
+        <li>✓ Invoicing (with embedded Line Items subform)</li>
+      </ul>
+    </div>
+    <div style="background:var(--color-surface);padding:16px;border-radius:8px;border:1px solid var(--color-border)">
+      <h4 style="color:var(--color-green)">Phase 1F — Reports &amp; Dashboards</h4>
+      <ul style="font-size:0.85rem;margin-top:8px;list-style:none">
+        <li>✓ All Reports (14 total)</li>
+        <li>✓ Executive Dashboard</li>
+        <li>✓ Scheduled KPI Refresh</li>
+      </ul>
+    </div>
+    <div style="background:var(--color-surface);padding:16px;border-radius:8px;border:1px solid var(--color-border)">
+      <h4 style="color:var(--color-red)">Phase 1J — Approvals &amp; Controls</h4>
+      <ul style="font-size:0.85rem;margin-top:8px;list-style:none">
+        <li>✓ PO approval workflow (threshold routing)</li>
+        <li>✓ Bill manual approval step</li>
+        <li>✓ Payment approval (threshold-based)</li>
+        <li>✓ Committed budget tracking</li>
+        <li>✓ Segregation of Duties (10 roles)</li>
+      </ul>
+    </div>
+    <div style="background:var(--color-surface);padding:16px;border-radius:8px;border:1px solid var(--color-border)">
+      <h4 style="color:var(--color-pink)">Phase 1K — Gaps Closure</h4>
+      <ul style="font-size:0.85rem;margin-top:8px;list-style:none">
+        <li>✓ Customer Credit Notes (#25)</li>
+        <li>✓ Manufacturing Orders (#26)</li>
+        <li>✓ Sales Orders (#27)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="alert alert-info" style="margin-top:16px">
+    <strong>Dependency rule:</strong> Each phase depends on the previous. Don't start Phase 1C until Phase 1B forms (Budget Components) exist — Expense Management references them.
+  </div>
+</section>
+
+<!-- EDGE CASES -->
+<section>
+  <h2>Edge Cases &amp; Failure States <span class="badge">developer notes</span></h2>
+
+  <div class="alert alert-error"><strong>Negative stock:</strong> Deluge must validate <code>Item_Warehouse_Stock.Current_Stock >= Quantity</code> before any Stock Out. Reject the transaction with a user-visible error if insufficient stock.</div>
+
+  <div class="alert alert-warning"><strong>Partial Deluge failure:</strong> If a multi-step workflow (e.g. create Stock Out + create Expense) fails mid-way, partial data persists. Add safety checks: verify state before each write. Log failures to a <code>Deluge_Error_Log</code> form (text fields for Form Name, Record ID, Error Message, Timestamp).</div>
+
+  <div class="alert alert-warning"><strong>Concurrent expense submissions:</strong> Two users submitting expenses against the same Budget Component simultaneously could both pass the budget check if it runs at the same moment. Zoho Creator's record-level locking mitigates this, but add a retry pattern: re-read Spent_Amount inside the workflow, re-check, and fail with "Budget exceeded by another transaction — please resubmit" if needed.</div>
+
+  <div class="alert alert-warning"><strong>Stale lookup values:</strong> Lookup fields cache the value at the time the record was created. For live stock counts, use a <strong>Formula Lookup</strong> field (recalculated on every form load) instead of a regular Lookup.</div>
+
+  <div class="alert alert-info"><strong>Empty states:</strong> Every report should show a friendly "No data yet" message when the source module has zero records. Dashboard KPI cards should show ₹0.00 / 0% / 0 instead of blank.</div>
+
+  <div class="alert alert-info"><strong>Deleting referenced records:</strong> Zoho Creator prevents deleting a record that is referenced by a Lookup in another form. Plan for <strong>archiving</strong> (Status = "Inactive") instead of deletion for Projects, Vendors, Items, and Warehouses.</div>
+</section>
+
+</div>
+
+<footer>
+  <div class="container">
+    <p>Developer Handoff — Project Budget Tracking &amp; Inventory Management (Zoho Creator)</p>
+    <p style="font-size:0.75rem;margin-top:4px">Generated from design specifications. For questions contact the project owner.</p>
+  </div>
+</footer>
+
+</body>
+</html>

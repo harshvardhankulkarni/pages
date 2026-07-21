@@ -1,0 +1,999 @@
+﻿<!DOCTYPE html>
+<html lang="en" data-implementation-complete="true">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chemsol — Implementation Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<nav class="sidebar">
+  <h1>Chemsol<span class="client-badge">Zoho Creator ERP</span></h1>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation menu">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="sidebar-nav" id="sidebarNav">
+
+      <!-- Zone 1: Flow Progress Bar -->
+      <div class="flow-progress">
+        <div class="fp-step" data-step="1"><span class="fp-circle">1</span></div>
+        <span class="fp-connector"></span>
+        <div class="fp-step" data-step="2"><span class="fp-circle">2</span></div>
+        <span class="fp-connector"></span>
+        <div class="fp-step" data-step="3"><span class="fp-circle">3</span></div>
+        <span class="fp-connector"></span>
+        <div class="fp-step" data-step="4"><span class="fp-circle">4</span></div>
+        <span class="fp-connector"></span>
+        <div class="fp-step" data-step="5"><span class="fp-circle">5</span></div>
+        <span class="fp-connector"></span>
+        <div class="fp-step" data-step="6"><span class="fp-circle">6</span></div>
+      </div>
+
+      <!-- Zone 2: Accordion Steps -->
+
+      <!-- STREAM A: Stock Procurement -->
+      <div class="accordion-stream-label">STREAM A — STOCK PROCUREMENT</div>
+
+      <!-- Stage 1: Procurement -->
+      <div class="accordion-section">
+        <div class="accordion-header">
+          <span class="ah-num">1</span>
+          Procurement
+          <span class="ah-arrow">▶</span>
+        </div>
+        <div class="accordion-body">
+          <a class="ab-link" href="forms.html#procurement"><span class="al-type type-forms">Forms</span>PR→PO→GRN→QC</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Stock Reports</a>
+          <a class="ab-link" href="flow.html#pr-pr"><span class="al-type type-flow">Flow</span>Purchase Flow</a>
+        </div>
+      </div>
+
+      <div class="accordion-stream-label">STREAM B — PROJECT-CENTRIC</div>
+
+      <!-- Stage 2: Master Data -->
+      <div class="accordion-section">
+        <div class="accordion-header">
+          <span class="ah-num">2</span>
+          Master Data
+          <span class="ah-arrow">▶</span>
+        </div>
+        <div class="accordion-body">
+          <a class="ab-link" href="forms.html#master-data"><span class="al-type type-forms">Forms</span>Item Muster → BOM → Supplier</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Item Reports</a>
+          <a class="ab-link" href="data-model.html"><span class="al-type type-flow">Flow</span>Master Data</a>
+        </div>
+      </div>
+
+      <!-- Stage 3: SO → Project -->
+      <div class="accordion-section">
+        <div class="accordion-header">
+          <span class="ah-num">3</span>
+          SO → Project
+          <span class="ah-arrow">▶</span>
+        </div>
+        <div class="accordion-body">
+          <a class="ab-link" href="forms.html#sales"><span class="al-type type-forms">Forms</span>Sales Order + Project</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Sales Register</a>
+          <a class="ab-link" href="flow.html#so-so"><span class="al-type type-flow">Flow</span>SO Flow</a>
+        </div>
+      </div>
+
+      <!-- Stage 4: MR — Costing Gate -->
+      <div class="accordion-section">
+        <div class="accordion-header">
+          <span class="ah-num">4</span>
+          MR — Costing Gate
+          <span class="ah-arrow">▶</span>
+        </div>
+        <div class="accordion-body">
+          <a class="ab-link" href="forms.html#inventory"><span class="al-type type-forms">Forms</span>MR + Costing Approval</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Cost Reports</a>
+          <a class="ab-link" href="flow.html#inv-mr"><span class="al-type type-flow">Flow</span>MR Flow</a>
+        </div>
+      </div>
+
+      <!-- Stage 5: Production -->
+      <div class="accordion-section">
+        <div class="accordion-header">
+          <span class="ah-num">5</span>
+          Production
+          <span class="ah-arrow">▶</span>
+        </div>
+        <div class="accordion-body">
+          <a class="ab-link" href="forms.html#production"><span class="al-type type-forms">Forms</span>MIS→Planning→BMR→Pack→FGHM</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Production Reports</a>
+          <a class="ab-link" href="flow.html#prod-plan"><span class="al-type type-flow">Flow</span>Production Flow</a>
+        </div>
+      </div>
+
+      <!-- Stage 6: Inventory -->
+      <div class="accordion-section">
+        <div class="accordion-header">
+          <span class="ah-num">6</span>
+          Inventory
+          <span class="ah-arrow">▶</span>
+        </div>
+        <div class="accordion-body">
+          <a class="ab-link" href="forms.html#inventory"><span class="al-type type-forms">Forms</span>RM + FG Stock</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Stock Reports</a>
+          <a class="ab-link" href="flow.html#inv-mr"><span class="al-type type-flow">Flow</span>Inventory Flow</a>
+        </div>
+      </div>
+
+      <!-- Zone 3: System Links -->
+      <div class="nav-divider">━━━━ QUICK NAV ━━━━</div>
+      <a href="index.html" class="sidebar-flat-link">🏠 Overview</a>
+      <a href="forms.html" class="sidebar-flat-link">📝 Forms</a>
+      <a href="flow.html" class="sidebar-flat-link">🔄 Flow Demo</a>
+      <a href="reports.html" class="sidebar-flat-link">📊 Reports</a>
+      <div class="nav-divider">━━━━ SYSTEM ━━━━</div>
+      <a href="automation.html" class="sidebar-flat-link">⚙ Automation Guide</a>
+      <a href="security.html" class="sidebar-flat-link">🔒 Security &amp; Roles</a>
+      <a href="data-model.html" class="sidebar-flat-link">📐 Data Model</a>
+      <a href="implementation-plan.html" class="sidebar-flat-link">📋 Implementation Plan</a>
+      <a href="BRD_PRD_RFP.md" class="sidebar-flat-link">📄 BRD / PRD / RFP</a>
+      <a href="../index.html" class="sidebar-flat-link">← Back to Hub</a>
+    </div>
+</nav>
+<div class="main">
+  <section class="hero">
+    <div class="hero-eyebrow">Project-Centric ERP &middot; Two-Stream Architecture</div>
+    <h1>Implementation Plan</h1>
+      <p><strong>Stream A (Stock Procurement):</strong> PR → PO → GRN → QC — procurement for stock, no Project ID. <strong>Stream B (Project-Centric):</strong> SO (creates Project) → MR (cost baseline: Material + Application + Transportation + Tools) → Production Verified → Costing Approved → Released → MIS → Production (BMR → Pack → FGHM) → Inventory. <strong>MR is the critical gate</strong> — without Released MR, no downstream execution.</p>
+  </section>
+
+  <div class="content">
+
+    <section id="core-flow">
+      <h2>Core Process Flow</h2>
+      <div class="impl-card">
+        <h3>Process Flow Diagram</h3>
+        <div class="impl-flow-row" style="justify-content:center">
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-teal">SO<br><small>Sales Order</small></div></div><span class="impl-flow-arr">&rarr;</span>
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-orange">Costing Team<br><small>RM + Cost check</small></div></div><span class="impl-flow-arr">&rarr;</span>
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-orange">MR Draft<br><small>Project Cost Baseline</small></div></div><span class="impl-flow-arr">&rarr;</span>
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-yellow" style="background:#fef3c7;border-color:#f59e0b;color:#92400e">Prod Verified<br><small>MR qty vs SO req via BOM</small></div></div><span class="impl-flow-arr">&rarr;</span>
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-purple">Costing Approved<br><small>TOTAL project cost</small></div></div><span class="impl-flow-arr">&rarr;</span>
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-red">MR Released<br><small>⛔ CRITICAL GATE</small></div></div>
+        </div>
+        <div class="impl-flow-row" style="justify-content:center;margin-top:8px">
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-green">MIS<br><small>Store issues RM</small></div></div><span class="impl-flow-arr">&rarr;</span>
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-orange">Production<br><small>Plan → BMR → RM Cons → Pack</small></div></div><span class="impl-flow-arr">&rarr;</span>
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-purple">FGHM<br><small>FG Handover + Inline Accept</small></div></div><span class="impl-flow-arr">&rarr;</span>
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-green">FG Stock Updated</div></div>
+        </div>
+        <div class="impl-info-box" style="margin-top:12px">
+          <strong>Side flows:</strong> Procurement (PR → PO → GRN → QC) runs when inventory is insufficient. Inventory Management tracks RM stock + FG stock with Min/Max alerts.
+        </div>
+      </div>
+    </section>
+
+    <section id="overview">
+      <h2>1. Overview</h2>
+      <div class="impl-card">
+        <h3>System Overview</h3>
+        <div class="impl-two-col">
+          <div>
+            <h5 style="margin-top:0">Project Details</h5>
+            <table class="impl-field-table">
+              <tr><td><strong>Client</strong></td><td>Chemsol — Flooring/construction materials (Epoxy, PU, Demarcation)</td></tr>
+              <tr><td><strong>Platform</strong></td><td>Zoho Creator</td></tr>
+              <tr><td><strong>Core Modules</strong></td><td>15 modules across 6 phases</td></tr>
+              <tr><td><strong>Departments</strong></td><td>Sales, Costing, Purchase, Store, Production, QC, Project Manager</td></tr>
+              <tr><td><strong>Warehouses</strong></td><td>Wadki, Main, Neelo, Gurgaon, Bangalore, Client Site</td></tr>
+            </table>
+          </div>
+          <div>
+            <h5 style="margin-top:0">System Code Prefixes</h5>
+            <table class="impl-field-table">
+              <tr><th>Code</th><th>Meaning</th><th>Example</th></tr>
+              <tr><td>EP</td><td>Epoxy Flooring</td><td>EP01 (1mm), EP02 (2mm)</td></tr>
+              <tr><td>PU</td><td>PU Flooring</td><td>PU01 (1mm)</td></tr>
+              <tr><td>DEM</td><td>Demarcation Line</td><td>—</td></tr>
+              <tr><td>ANTI</td><td>Anti Static</td><td>—</td></tr>
+              <tr><td>ESD</td><td>ESD Flooring</td><td>—</td></tr>
+              <tr><td>FIL</td><td>Filling</td><td>—</td></tr>
+              <tr><td>COV</td><td>Coving</td><td>—</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="phase1">
+      <h2>2. Phase 1 — Master Data (Foundation)</h2>
+
+      <div class="impl-card">
+        <h3>2.1 Purchase Item Muster <span class="badge badge-blue">Master</span></h3>
+        <p><strong>Purpose:</strong> Central item repository — RM, FG, Packaging, Tools, Consumable. Referenced by every transactional form.</p>
+        <table class="impl-field-table">
+          <tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr>
+          <tr><td>1</td><td>Category</td><td><span class="impl-tag impl-tag-dd">Dropdown</span></td><td class="impl-mand">*</td><td>1.RM, 2.Packaging, 3.Tools &amp; Consumable, 4.FG, 5.Maintenance, 6.Capital</td></tr>
+          <tr><td>2</td><td>Item Code</td><td><span class="impl-tag impl-tag-ag">Autogen</span></td><td class="impl-mand">*</td><td>Auto based on category</td></tr>
+          <tr><td>3</td><td>Item Name</td><td><span class="impl-tag impl-tag-text">Text</span></td><td class="impl-mand">*</td><td>—</td></tr>
+          <tr><td>4</td><td>UOM</td><td><span class="impl-tag impl-tag-dd">Dropdown</span></td><td class="impl-mand">*</td><td>Nos / Kg / Ltr / Mtr / Kit</td></tr>
+          <tr><td>5</td><td>HSN Code</td><td><span class="impl-tag impl-tag-text">Text</span></td><td class="impl-mand">*</td><td>For GST</td></tr>
+          <tr><td>6</td><td>GST %</td><td><span class="impl-tag impl-tag-n">Number</span></td><td class="impl-opt">—</td><td>—</td></tr>
+          <tr><td>7</td><td>Min Stock</td><td><span class="impl-tag impl-tag-n">Number</span></td><td class="impl-mand">*</td><td>Reorder threshold</td></tr>
+          <tr><td>8</td><td>Max Stock</td><td><span class="impl-tag impl-tag-n">Number</span></td><td class="impl-opt">—</td><td>—</td></tr>
+          <tr><td>9</td><td>Standard Rate</td><td><span class="impl-tag impl-tag-n">Currency</span></td><td class="impl-opt">—</td><td>Hidden from non-Purchase/Store</td></tr>
+          <tr><td>10</td><td>Preferred Supplier</td><td><span class="impl-tag impl-tag-lookup">Multi-lookup</span></td><td class="impl-opt">—</td><td>From Supplier Master</td></tr>
+          <tr><td>11</td><td>Lead Time</td><td><span class="impl-tag impl-tag-n">Number (Days)</span></td><td class="impl-opt">—</td><td>—</td></tr>
+          <tr><td>12</td><td>Status</td><td><span class="impl-tag impl-tag-dd">Dropdown</span></td><td class="impl-mand">*</td><td>Active / Inactive</td></tr>
+        </table>
+        <div class="impl-info-box"><strong>AutoFetch target:</strong> PR, PO, MR, MIS, GRN, FGHM, BOM, QC</div>
+      </div>
+
+      <div class="impl-card">
+        <h3>2.2 System Master <span class="badge badge-slate">Master</span></h3>
+        <p><strong>Purpose:</strong> Flooring system definitions (EP01, PU01, DEM, etc.)</p>
+        <table class="impl-field-table">
+          <tr><th>#</th><th>Field</th><th>Type</th><th>Req</th></tr>
+          <tr><td>1</td><td>System Code</td><td><span class="impl-tag impl-tag-ag">Autogen</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>2</td><td>System Name</td><td><span class="impl-tag impl-tag-text">Text</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>3</td><td>Description</td><td><span class="impl-tag impl-tag-text">Multi-line</span></td><td class="impl-opt">—</td></tr>
+          <tr><td>4</td><td>Status</td><td><span class="impl-tag impl-tag-dd">Dropdown</span></td><td class="impl-mand">*</td><td>Active / Inactive</td></tr>
+        </table>
+      </div>
+
+      <div class="impl-card">
+        <h3>2.3 System Composition (System → FG Mapping) <span class="badge badge-blue">Master</span></h3>
+        <p><strong>Purpose:</strong> Defines which FGs make up each System (e.g., EP01 = FG-001 + FG-002)</p>
+        <h4>Header</h4>
+        <table class="impl-field-table">
+          <tr><th>#</th><th>Field</th><th>Type</th><th>Req</th></tr>
+          <tr><td>1</td><td>Comp No</td><td><span class="impl-tag impl-tag-ag">Autogen (SC-YYYY-XXXX)</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>2</td><td>System Code</td><td><span class="impl-tag impl-tag-lookup">Lookup (System Master)</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>3</td><td>System Name</td><td><span class="impl-tag impl-tag-af">AutoFetch (from System Code)</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>4</td><td>Revision No</td><td><span class="impl-tag impl-tag-text">Text</span></td><td class="impl-opt">—</td></tr>
+          <tr><td>5</td><td>Date</td><td><span class="impl-tag impl-tag-d">Date (Today)</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>6</td><td>Status</td><td><span class="impl-tag impl-tag-dd">Dropdown</span></td><td class="impl-mand">*</td><td>Draft / Approved / Released</td></tr>
+        </table>
+        <div class="impl-line-items">
+          <h5>Line Items — N FGs per System</h5>
+          <table class="impl-field-table">
+            <tr><th>#</th><th>Field</th><th>Type</th><th>Req</th></tr>
+            <tr><td>1</td><td>FG Product Code</td><td>Lookup (Item Muster - FG)</td><td class="impl-mand">*</td></tr>
+            <tr><td>2</td><td>FG Name</td><td>AutoFetch (from FG Product Code)</td><td class="impl-mand">*</td></tr>
+            <tr><td>3</td><td>Qty per System Unit</td><td>Number</td><td class="impl-mand">*</td></tr>
+            <tr><td>4</td><td>UOM</td><td>AutoFetch (from Item Muster via FG Code)</td><td class="impl-mand">*</td></tr>
+            <tr><td>5</td><td>Rate per FG Unit</td><td>Currency</td><td class="impl-opt">—</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="impl-card">
+        <h3>2.4 BOM / FG Formulation (FG → RM Mapping) <span class="badge badge-yellow">Master</span></h3>
+        <p><strong>Purpose:</strong> Defines which RMs make up each FG with ratios</p>
+        <h4>Header</h4>
+        <table class="impl-field-table">
+          <tr><th>#</th><th>Field</th><th>Type</th><th>Req</th></tr>
+          <tr><td>1</td><td>BOM No</td><td><span class="impl-tag impl-tag-ag">Autogen</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>2</td><td>FG Code</td><td><span class="impl-tag impl-tag-lookup">Lookup (Item Muster - FG)</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>3</td><td>FG Name</td><td><span class="impl-tag impl-tag-af">AutoFetch (from FG Code)</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>4</td><td>Date</td><td><span class="impl-tag impl-tag-d">Date (Today)</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>5</td><td>Status</td><td><span class="impl-tag impl-tag-dd">Dropdown</span></td><td class="impl-mand">*</td><td>Draft / Approved / Released</td></tr>
+        </table>
+        <div class="impl-line-items">
+          <h5>Line Items — N RMs per FG</h5>
+          <table class="impl-field-table">
+            <tr><th>#</th><th>Field</th><th>Type</th><th>Req</th></tr>
+            <tr><td>1</td><td>RM Item Code</td><td>Lookup (Item Muster - RM)</td><td class="impl-mand">*</td></tr>
+            <tr><td>2</td><td>RM Name</td><td>AutoFetch (from RM Item Code)</td><td class="impl-mand">*</td></tr>
+            <tr><td>3</td><td>UOM</td><td>AutoFetch (from Item Muster via RM Code)</td><td class="impl-mand">*</td></tr>
+            <tr><td>4</td><td>Qty per FG Unit</td><td>Number</td><td class="impl-mand">*</td></tr>
+            <tr><td>5</td><td>Waste %</td><td>Number</td><td class="impl-opt">—</td></tr>
+            <tr><td>6</td><td>Total Qty</td><td>Formula</td><td class="impl-mand">*</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="impl-card">
+        <h3>2.5 Supplier Master <span class="badge badge-blue">Master</span></h3>
+        <p><strong>Purpose:</strong> Vendor database referenced by PO, GRN, Rate Comparison</p>
+        <table class="impl-field-table">
+          <tr><th>#</th><th>Field</th><th>Type</th><th>Req</th></tr>
+          <tr><td>1</td><td>Supplier Code</td><td><span class="impl-tag impl-tag-ag">Autogen</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>2</td><td>Supplier Name</td><td><span class="impl-tag impl-tag-text">Text</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>3</td><td>GSTIN</td><td><span class="impl-tag impl-tag-text">Text</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>4</td><td>PAN No</td><td><span class="impl-tag impl-tag-text">Text</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>5</td><td>Contact Person</td><td><span class="impl-tag impl-tag-text">Text</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>6</td><td>Mobile No</td><td><span class="impl-tag impl-tag-ph">Phone</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>7</td><td>Email</td><td><span class="impl-tag impl-tag-em">Email</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>8</td><td>Address</td><td><span class="impl-tag impl-tag-text">Multi-line</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>9</td><td>Bank Name / Account No / IFSC</td><td><span class="impl-tag impl-tag-text">Text</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>10</td><td>Payment Terms</td><td><span class="impl-tag impl-tag-text">Text</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>11</td><td>Credit Days</td><td><span class="impl-tag impl-tag-n">Number</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>12</td><td>Status</td><td><span class="impl-tag impl-tag-dd">Dropdown</span></td><td class="impl-mand">*</td><td>Active / Inactive</td></tr>
+        </table>
+      </div>
+
+      <div class="impl-card">
+        <h3>2.6 Store Master <span class="badge badge-slate">Master</span></h3>
+        <p><strong>Purpose:</strong> Warehouse definitions</p>
+        <table class="impl-field-table">
+          <tr><th>#</th><th>Field</th><th>Type</th><th>Req</th></tr>
+          <tr><td>1</td><td>Store Code</td><td><span class="impl-tag impl-tag-ag">Autogen</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>2</td><td>Store Name</td><td><span class="impl-tag impl-tag-text">Text</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>3</td><td>Store Type</td><td><span class="impl-tag impl-tag-dd">Dropdown</span></td><td class="impl-mand">*</td><td>RM Store / FG Store / QC Store / Site Store</td></tr>
+          <tr><td>4</td><td>Location</td><td><span class="impl-tag impl-tag-text">Text</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>5</td><td>Status</td><td><span class="impl-tag impl-tag-dd">Dropdown</span></td><td class="impl-mand">*</td><td>Active / Inactive</td></tr>
+        </table>
+        <div class="impl-info-box"><strong>Bin Location</strong> — inline subform: Rack No, Shelf No, Bin No, Status</div>
+      </div>
+
+
+    </section>
+
+    <section id="phase2">
+      <h2>3. Phase 2 — Sales &amp; Project</h2>
+
+      <div class="impl-card">
+        <h3>3.1 Sales Order (SO) <span class="badge badge-purple">Hub</span></h3>
+        <p><strong>Purpose:</strong> Create customer orders. On acceptance (Supply+Apply), auto-creates Project.</p>
+        <p><strong>Department:</strong> Sales</p>
+        <h4>Header</h4>
+        <table class="impl-field-table">
+          <tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr>
+          <tr><td>1</td><td>Sales Type</td><td><span class="impl-tag impl-tag-dd">Dropdown</span></td><td class="impl-mand">*</td><td>Supply+Apply (creates Project) / Supply Only (direct FG sale)</td></tr>
+          <tr><td>2</td><td>SO No</td><td><span class="impl-tag impl-tag-ag">Autogen</span></td><td class="impl-mand">*</td><td>—</td></tr>
+          <tr><td>3</td><td>SO Date</td><td><span class="impl-tag impl-tag-d">Date (Today)</span></td><td class="impl-mand">*</td><td>—</td></tr>
+          <tr><td>4</td><td>Employee Name</td><td><span class="impl-tag impl-tag-text">Text</span></td><td class="impl-mand">*</td><td>—</td></tr>
+          <tr><td>5</td><td>Customer Code</td><td><span class="impl-tag impl-tag-lookup">Lookup (Customer/Site Master) → AutoFetch: Org Name, GST, Contact</span></td><td class="impl-opt">—</td><td>—</td></tr>
+          <tr><td>6</td><td>Client Org / Contact / GST / PAN</td><td><span class="impl-tag impl-tag-text">Text</span></td><td class="impl-mand">*</td><td>—</td></tr>
+          <tr><td>7</td><td>Regd Address</td><td><span class="impl-tag impl-tag-text">Multi-line</span></td><td class="impl-mand">*</td><td>—</td></tr>
+          <tr><td>8</td><td>Site Name / Address</td><td>Text / Multi-line</td><td class="impl-mand">*</td><td>—</td></tr>
+          <tr><td>9</td><td>Project Type</td><td><span class="impl-tag impl-tag-dd">Dropdown</span></td><td class="impl-opt">—</td><td>Industrial / Commercial</td></tr>
+          <tr><td>10</td><td>Total Amount</td><td><span class="impl-tag impl-tag-f">Formula</span></td><td class="impl-mand">*</td><td>—</td></tr>
+          <tr><td>11</td><td>Payment Terms</td><td><span class="impl-tag impl-tag-text">Text</span></td><td class="impl-opt">—</td><td>—</td></tr>
+          <tr><td>12</td><td>Transportation Scope / Amount</td><td>Dropdown / Currency</td><td class="impl-opt">—</td><td>—</td></tr>
+          <tr><td>13</td><td>Lead Time</td><td><span class="impl-tag impl-tag-n">Number (Days)</span></td><td class="impl-opt">—</td><td>—</td></tr>
+          <tr><td>14</td><td>PO/BOQ Attachment</td><td>File upload</td><td class="impl-opt">—</td><td>—</td></tr>
+          <tr><td>15</td><td>Warranty</td><td><span class="impl-tag impl-tag-text">Text</span></td><td class="impl-opt">—</td><td>—</td></tr>
+          <tr><td>16</td><td>Commission</td><td><span class="impl-tag impl-tag-chk">Checkbox</span></td><td class="impl-opt">—</td><td>→ % or Fix Amount</td></tr>
+        </table>
+
+        <div class="impl-line-items">
+          <h5>Subform A — System Lines (when Sales Type = Supply+Apply)</h5>
+          <table class="impl-field-table">
+            <tr><th>#</th><th>Field</th><th>Type</th></tr>
+            <tr><td>1</td><td>System Code</td><td>Lookup (System Master) → AutoFetch Name</td></tr>
+            <tr><td>2</td><td>Thickness</td><td>Text</td></tr>
+            <tr><td>3</td><td>Area</td><td>Number</td></tr>
+            <tr><td>4</td><td>UOM</td><td>Dropdown</td></tr>
+            <tr><td>5</td><td>Rate</td><td>Currency</td></tr>
+            <tr><td>6</td><td>Amount</td><td>Formula = Area × Rate</td></tr>
+          </table>
+        </div>
+
+        <div class="impl-line-items">
+          <h5>Subform B — FG Lines (when Sales Type = Supply Only)</h5>
+          <table class="impl-field-table">
+            <tr><th>#</th><th>Field</th><th>Type</th></tr>
+            <tr><td>1</td><td>FG Code</td><td>Lookup (Item Muster - FG) → AutoFetch: Name, UOM</td></tr>
+            <tr><td>2</td><td>Qty</td><td>Number</td></tr>
+            <tr><td>3</td><td>UOM</td><td>AutoFetch (from FG Code via Item Muster)</td></tr>
+            <tr><td>4</td><td>Rate</td><td>Currency</td></tr>
+            <tr><td>5</td><td>Amount</td><td>Formula = Qty × Rate</td></tr>
+          </table>
+        </div>
+
+        <div class="impl-info-box">
+          <strong>Automation:</strong> Sales Type controls subform visibility (show/hide rule). Supply+Apply on acceptance → auto-create Project (Stream B root). Supply Only → NO Project, direct FG dispatch only. System lines define System→FG→RM composition that drives backend consumption.
+        </div>
+      </div>
+
+      <div class="impl-card">
+        <h3>3.2 Project <span class="badge badge-green">Hub</span></h3>
+        <p><strong>Purpose:</strong> Root entity — every downstream form links here. Auto-created from SO (Supply+Apply).</p>
+        <p><strong>Department:</strong> Project Manager / Coordinator</p>
+        <table class="impl-field-table">
+          <tr><th>#</th><th>Field</th><th>Type</th><th>Req</th></tr>
+          <tr><td>1</td><td>Project ID</td><td><span class="impl-tag impl-tag-ag">Autogen</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>2</td><td>SO Reference</td><td><span class="impl-tag impl-tag-lookup">Lookup (Sales Order Master) → AutoFetch: SO No, Customer, Amount</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>3</td><td>Project Name</td><td><span class="impl-tag impl-tag-text">Text</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>4</td><td>Address</td><td><span class="impl-tag impl-tag-text">Multi-line</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>5</td><td>Project Manager</td><td><span class="impl-tag impl-tag-lookup">User lookup</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>6</td><td>Execution Base</td><td><span class="impl-tag impl-tag-dd">Dropdown</span></td><td class="impl-mand">*</td><td>Area Basis / Day Basis</td></tr>
+          <tr><td>7</td><td>Start Date / End Date</td><td><span class="impl-tag impl-tag-d">Date</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>8</td><td>Project Cost</td><td><span class="impl-tag impl-tag-n">Currency</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>9</td><td>Status</td><td><span class="impl-tag impl-tag-dd">Dropdown</span></td><td class="impl-mand">*</td><td>Planned / In Progress / Completed / On Hold</td></tr>
+        </table>
+
+        <div class="impl-line-items">
+          <h5>Systems Subform</h5>
+          <table class="impl-field-table">
+            <tr><th>#</th><th>Field</th><th>Type</th></tr>
+            <tr><td>1</td><td>System Code</td><td>Lookup (System Master)</td></tr>
+            <tr><td>2</td><td>Area</td><td>Number</td></tr>
+            <tr><td>3</td><td>UOM</td><td>Dropdown</td></tr>
+            <tr><td>4</td><td>Description</td><td>Text</td></tr>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="phase3">
+      <h2>4. Phase 3 — Costing &amp; Material Requisition (MR)</h2>
+
+      <div class="impl-card">
+        <h3>4.1 MR — Material Requisition <span class="badge badge-red">Critical Gate</span></h3>
+        <p><strong>Purpose:</strong> MR is the <strong>complete project implementation cost baseline</strong> — four cost components (Material + Application + Transportation + Tools &amp; Tackles) summing to Total MR Cost. Costing approves this TOTAL cost. MR is NOT just RM allocation.</p>
+        <p><strong>Department:</strong> Production / R&amp;D</p>
+
+        <h4>MR Status Workflow (The Critical Approval Gate)</h4>
+        <div class="impl-flow-row" style="justify-content:flex-start;margin-bottom:16px">
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-orange">Draft</div></div><span class="impl-flow-arr">&rarr;</span>
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-yellow" style="background:#fef3c7;border-color:#f59e0b;color:#92400e">Production Verified<br><small>MR qty vs SO sys req</small></div></div><span class="impl-flow-arr">&rarr;</span>
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-purple">Costing Approved<br><small>TOTAL project cost</small></div></div><span class="impl-flow-arr">&rarr;</span>
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-green">Released<br><small>⛔ Gate passed</small></div></div>
+        </div>
+
+        <h4>Header</h4>
+        <table class="impl-field-table">
+          <tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr>
+          <tr><td>1</td><td>MR Number</td><td><span class="impl-tag impl-tag-ag">Autogen (MR-YYYY-XXXX)</span></td><td class="impl-mand">*</td><td>—</td></tr>
+          <tr><td>2</td><td>MR Date</td><td><span class="impl-tag impl-tag-d">Date (Today)</span></td><td class="impl-mand">*</td><td>—</td></tr>
+          <tr><td>3</td><td><strong>Project ID</strong></td><td><strong>Lookup (Project Master)</strong></td><td class="impl-mand">*</td><td>Links MR to Project</td></tr>
+          <tr><td>4</td><td>Requisition Type</td><td><span class="impl-tag impl-tag-dd">Dropdown</span></td><td class="impl-mand">*</td><td>Production / R&amp;D</td></tr>
+          <tr><td>5</td><td>Batch Number</td><td><span class="impl-tag impl-tag-text">Text</span></td><td class="impl-opt">—</td><td>—</td></tr>
+          <tr><td>6</td><td>Department</td><td><span class="impl-tag impl-tag-af">AutoFetch from login</span></td><td class="impl-mand">*</td><td>—</td></tr>
+          <tr><td>7</td><td>Requested By</td><td><span class="impl-tag impl-tag-text">Text (Employee Name)</span></td><td class="impl-mand">*</td><td>—</td></tr>
+          <tr><td>8</td><td>Priority</td><td><span class="impl-tag impl-tag-dd">Dropdown</span></td><td class="impl-mand">*</td><td>Low / Medium / High / Urgent</td></tr>
+          <tr><td>9</td><td><strong>MR Status</strong></td><td><strong>Dropdown</strong></td><td class="impl-mand">*</td><td><strong>Draft / Pending Production Verification / Production Verified / Costing Approved / Released</strong></td></tr>
+        </table>
+
+        <div class="impl-line-items">
+          <h5>Line Items (N items)</h5>
+          <table class="impl-field-table">
+            <tr><th>#</th><th>Field</th><th>Type</th></tr>
+            <tr><td>1</td><td>Item Code</td><td>Lookup (Item Muster - RM only via filter)</td></tr>
+            <tr><td>2</td><td>Item Name</td><td>AutoFetch (from Item Code)</td></tr>
+            <tr><td>3</td><td>Category</td><td>AutoFetch (from Item Code)</td></tr>
+            <tr><td>4</td><td>UOM</td><td>AutoFetch (from Item Code)</td></tr>
+            <tr><td>5</td><td>Available Stock</td><td>AutoFetch from RM Inventory (real-time via stock summary)</td></tr>
+            <tr><td>6</td><td>Required Qty</td><td>Number</td></tr>
+            <tr><td>7</td><td>Remarks</td><td>Multi-line</td></tr>
+          </table>
+        </div>
+
+        <div class="impl-info-box">
+          <strong>MR = Complete Project Implementation Cost Baseline:</strong> MR carries <strong>four cost components</strong> that sum to <strong>Total MR Cost</strong> — the project implementation cost baseline that <strong>Costing approves</strong>:
+        </div>
+
+        <h4>Material Allocation Subform (feeds Material Cost — per-project RM allocation)</h4>
+        <div class="impl-line-items">
+          <table class="impl-field-table">
+            <tr><th>#</th><th>Field</th><th>Type</th><th>Notes</th></tr>
+            <tr><td>1</td><td>Item Code</td><td>Lookup (Item Muster - RM)</td><td>Auto-populated from MR line items</td></tr>
+            <tr><td>2</td><td>Item Name</td><td>AutoFetch (from Item Code)</td><td>—</td></tr>
+            <tr><td>3</td><td>UOM</td><td>AutoFetch (from Item Code)</td><td>—</td></tr>
+            <tr><td>4</td><td>Assigned Qty</td><td>Number</td><td>Allocation baseline, defaults from Required Qty</td></tr>
+            <tr><td>5</td><td>Rate</td><td>Currency</td><td>Per-unit RM rate</td></tr>
+            <tr><td>6</td><td>Material Cost</td><td>Formula</td><td>= Assigned Qty × Rate</td></tr>
+            <tr><td>7</td><td>Allocation Ratio %</td><td>Formula</td><td>= Assigned Qty ÷ Σ Assigned Qty × 100</td></tr>
+            <tr><td>8</td><td>80% Threshold Alert Flag</td><td>Checkbox</td><td>Default ON</td></tr>
+            <tr><td>9</td><td>Consumed Qty</td><td>Number (auto)</td><td>Incremented by BMR/RM Consumption</td></tr>
+            <tr><td>10</td><td>Consumption %</td><td>Formula</td><td>= Consumed Qty ÷ Assigned Qty × 100</td></tr>
+            <tr><td>11</td><td>Alert Triggered</td><td>Checkbox (readonly)</td><td>Auto-set at Consumption % ≥ 80%</td></tr>
+          </table>
+        </div>
+
+        <h4>Application Cost Subform (labour/execution on site)</h4>
+        <div class="impl-line-items">
+          <table class="impl-field-table">
+            <tr><th>#</th><th>Field</th><th>Type</th></tr>
+            <tr><td>1</td><td>Activity</td><td>Text (e.g., surface prep, laying)</td></tr>
+            <tr><td>2</td><td>UOM</td><td>Dropdown</td></tr>
+            <tr><td>3</td><td>Qty / Area</td><td>Number</td></tr>
+            <tr><td>4</td><td>Rate</td><td>Currency</td></tr>
+            <tr><td>5</td><td>Amount</td><td>Formula = Qty × Rate</td></tr>
+          </table>
+        </div>
+
+        <h4>Transportation Cost Subform (material to site)</h4>
+        <div class="impl-line-items">
+          <table class="impl-field-table">
+            <tr><th>#</th><th>Field</th><th>Type</th></tr>
+            <tr><td>1</td><td>From</td><td>Text (warehouse)</td></tr>
+            <tr><td>2</td><td>To</td><td>Text (site)</td></tr>
+            <tr><td>3</td><td>Vehicle / Trips</td><td>Text / Number</td></tr>
+            <tr><td>4</td><td>Rate</td><td>Currency</td></tr>
+            <tr><td>5</td><td>Amount</td><td>Formula = Trips × Rate</td></tr>
+          </table>
+        </div>
+
+        <h4>Tools &amp; Tackles Subform (equipment needed)</h4>
+        <div class="impl-line-items">
+          <table class="impl-field-table">
+            <tr><th>#</th><th>Field</th><th>Type</th></tr>
+            <tr><td>1</td><td>Item</td><td>Text/Lookup</td></tr>
+            <tr><td>2</td><td>Qty</td><td>Number</td></tr>
+            <tr><td>3</td><td>Rate</td><td>Currency</td></tr>
+            <tr><td>4</td><td>Amount</td><td>Formula = Qty × Rate</td></tr>
+          </table>
+        </div>
+
+        <div class="impl-info-box">
+          <strong>Total MR Cost = Material Cost + Application Cost + Transportation Cost + Tools &amp; Tackles.</strong> This total is the project implementation cost baseline presented to Costing for approval.
+        </div>
+      </div>
+    </section>
+
+    <section id="phase4">
+      <h2>5. Phase 4 — Procurement (As Needed)</h2>
+
+      <div class="impl-card">
+        <h3>5.1 PR — Purchase Requisition <span class="badge badge-blue">Procurement</span></h3>
+        <p><strong>Purpose:</strong> Request materials from Purchase when stock is insufficient.</p>
+        <p><strong>Department:</strong> Production</p>
+        <h4>Header</h4>
+        <table class="impl-field-table">
+          <tr><th>#</th><th>Field</th><th>Type</th><th>Req</th></tr>
+          <tr><td>1</td><td>PR Number</td><td><span class="impl-tag impl-tag-ag">Autogen (PR-YYYY-XXXX)</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>2</td><td>PR Date</td><td><span class="impl-tag impl-tag-d">Date (Today)</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>3</td><td><strong>Project ID</strong></td><td><strong>Lookup (Project Master)</strong></td><td></td><td>Optional — for project-linked procurement only; stock procurement has no Project ID</td></tr>
+          <tr><td>4</td><td>Reference</td><td><span class="impl-tag impl-tag-text">Text</span></td><td class="impl-opt">—</td></tr>
+          <tr><td>5</td><td>Department</td><td><span class="impl-tag impl-tag-af">AutoFetch from login</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>6</td><td>Status</td><td><span class="impl-tag impl-tag-dd">Dropdown</span></td><td class="impl-mand">*</td><td>Draft / Pending Approval / Approved / Rejected</td></tr>
+        </table>
+        <div class="impl-line-items">
+          <h5>Line Items</h5>
+          <table class="impl-field-table">
+            <tr><th>#</th><th>Field</th><th>Type</th></tr>
+            <tr><td>1</td><td>Item Code</td><td>Lookup (Item Muster) ↔ bidirectional autofill: Name</td></tr>
+            <tr><td>2</td><td>Item Name</td><td>AutoFetch (from Item Code)</td></tr>
+            <tr><td>3</td><td>Qty</td><td>Number</td></tr>
+            <tr><td>4</td><td>UOM</td><td>AutoFetch (from Item Code via Item Muster)</td></tr>
+            <tr><td>5</td><td>Lead Time</td><td>AutoFetch (from Item Muster via Item Code)</td></tr>
+          </table>
+        </div>
+        <div class="impl-info-box"><strong>Automation:</strong> Status = Draft → Pending Approval (on submit) → Approved. Notification to Purchase dept.</div>
+      </div>
+
+      <div class="impl-card">
+        <h3>5.2 PO — Purchase Order <span class="badge badge-blue">Procurement</span></h3>
+        <p><strong>Purpose:</strong> Official order to supplier with GST split.</p>
+        <p><strong>Department:</strong> Purchase</p>
+        <h4>Header</h4>
+        <table class="impl-field-table">
+          <tr><th>#</th><th>Field</th><th>Type</th><th>Req</th></tr>
+          <tr><td>1</td><td>RM Type</td><td><span class="impl-tag impl-tag-dd">Dropdown</span></td><td class="impl-mand">*</td><td>Coding / Non Coding</td></tr>
+          <tr><td>2</td><td>PO Number</td><td><span class="impl-tag impl-tag-ag">Autogen</span></td><td class="impl-mand">*</td><td>RM-YYYY-XXXX / RMWAD-YYYY-XXXX</td></tr>
+          <tr><td>3</td><td>PO Date</td><td><span class="impl-tag impl-tag-d">Date (Today)</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>4</td><td>Supplier Code</td><td><span class="impl-tag impl-tag-lookup">Lookup (Supplier Master) → AutoFetch: Name, GSTIN, Address</span></td><td class="impl-mand">*</td><td>—</td></tr>
+          <tr><td>5</td><td><strong>Project ID</strong></td><td><strong>Lookup (Project Master)</strong></td><td class="impl-mand">*</td></tr>
+          <tr><td>6</td><td>PR Reference</td><td><span class="impl-tag impl-tag-lookup">Lookup (PR Master) → AutoFetch: Items, Qty</span></td><td class="impl-opt">—</td></tr>
+          <tr><td>7</td><td>Bill To / Ship To</td><td><span class="impl-tag impl-tag-dd">Dropdown</span></td><td class="impl-mand">*</td></tr>
+        </table>
+
+        <div class="impl-line-items">
+          <h5>Line Items (N items — each with full GST calculation)</h5>
+          <table class="impl-field-table">
+            <tr><th>#</th><th>Field</th><th>Type</th></tr>
+            <tr><td>1</td><td>Item Code</td><td>Lookup (Item Muster) → AutoFetch: Name, HSN, GST%, UOM</td></tr>
+            <tr><td>2</td><td>Item Name / HSN</td><td>AutoFetch (from Item Code)</td></tr>
+            <tr><td>3</td><td>Quantity / Rate</td><td>Number / Currency</td></tr>
+            <tr><td>4</td><td>Basic Amount</td><td>Formula = Qty × Rate</td></tr>
+            <tr><td>5</td><td>GST %</td><td>AutoFetch (from Item Muster)</td></tr>
+            <tr><td>6</td><td>GST Amount</td><td>Formula = Basic × GST%</td></tr>
+            <tr><td>7</td><td>Total Amount</td><td>Formula = Basic + GST</td></tr>
+          </table>
+        </div>
+
+        <h4>Footer (Auto-calculated)</h4>
+        <table class="impl-field-table">
+          <tr><th>Field</th><th>Formula</th></tr>
+          <tr><td>Basic Total</td><td>SUM of line Basic Amounts</td></tr>
+          <tr><td>CGST / SGST</td><td>Each = GST/2 (intra-state)</td></tr>
+          <tr><td>IGST</td><td>Full GST (inter-state)</td></tr>
+          <tr><td>Total Amount (Words)</td><td>Auto-convert</td></tr>
+          <tr><td>Delivery Date / Payment Terms</td><td>Mandatory</td></tr>
+          <tr><td>Scope of Transport</td><td>Supplier / Own</td></tr>
+        </table>
+        <div class="impl-info-box"><strong>Printable PO</strong> with T&amp;C, company logo, total in words.</div>
+      </div>
+
+      <div class="impl-card">
+        <h3>5.3 GRN — Goods Receipt Note <span class="badge badge-green">Procurement</span></h3>
+        <p><strong>Purpose:</strong> Record goods received against PO. Stock updated only after posting.</p>
+        <p><strong>Department:</strong> Store / Purchase</p>
+        <h4>Header</h4>
+        <table class="impl-field-table">
+          <tr><th>#</th><th>Field</th><th>Type</th><th>Req</th></tr>
+          <tr><td>1</td><td>GRN Number</td><td><span class="impl-tag impl-tag-ag">Autogen (after posting)</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>2</td><td>GRN Date</td><td><span class="impl-tag impl-tag-d">Date (Today)</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>3</td><td>PO Number</td><td><span class="impl-tag impl-tag-lookup">Lookup (PO Master) → AutoFetch: Supplier Name, Items, Ordered Qty, Project ID</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>4</td><td><strong>Project ID</strong></td><td><strong>AutoFetch from PO</strong></td><td class="impl-mand">*</td></tr>
+          <tr><td>5</td><td>Vehicle Number</td><td><span class="impl-tag impl-tag-text">Text</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>6</td><td>Warehouse</td><td><span class="impl-tag impl-tag-dd">Dropdown</span></td><td class="impl-mand">*</td><td>Wadki / Main / Neelo / Gurgaon / Bangalore / Client Site</td></tr>
+          <tr><td>7</td><td>Invoice Number / Date</td><td><span class="impl-tag impl-tag-text">Text / Date</span></td><td class="impl-mand">*</td></tr>
+        </table>
+
+        <div class="impl-line-items">
+          <h5>Line Items — Checkbox for partial GRN</h5>
+          <table class="impl-field-table">
+            <tr><th>#</th><th>Field</th><th>Type</th><th>Source</th></tr>
+            <tr><td>1</td><td>✅ Checkbox</td><td>Checkbox (select items for partial GRN)</td><td></td></tr>
+            <tr><td>2</td><td>Item Code / Name</td><td>AutoFetch (from PO via PO Number)</td><td>PO Master</td></tr>
+            <tr><td>3</td><td>Ordered Qty</td><td>AutoFetch (from PO via PO Number)</td><td>PO Master</td></tr>
+            <tr><td>4</td><td>Received Qty</td><td>Number</td><td></td></tr>
+            <tr><td>5</td><td>QC Status</td><td>Pending / Pass / Fail</td><td></td></tr>
+            <tr><td>6</td><td>Packing Quality</td><td>Good / Damaged / Partial</td><td></td></tr>
+          </table>
+        </div>
+
+        <div class="impl-line-items">
+          <h5>Transport Subform (visible when PO Scope = Own)</h5>
+          <table class="impl-field-table">
+            <tr><th>Field</th><th>Type</th></tr>
+            <tr><td>Transporter</td><td>Text</td></tr>
+            <tr><td>Charges / Local Transport / Loading-Unloading</td><td>Currency</td></tr>
+          </table>
+        </div>
+
+        <div class="impl-info-box"><strong>Stock Rule:</strong> Qty added to stock <strong>only after posting</strong>. Timestamp logged. Partial GRN via checkbox — unchecked items stay open on PO.</div>
+      </div>
+
+      <div class="impl-card">
+        <h3>5.4 QC / QA <span class="badge badge-yellow">Procurement</span></h3>
+        <p><strong>Purpose:</strong> Quality inspection of received RM.</p>
+        <p><strong>Department:</strong> QC</p>
+        <table class="impl-field-table">
+          <tr><th>#</th><th>Field</th><th>Type</th><th>Req</th></tr>
+          <tr><td>1</td><td>QC Number</td><td><span class="impl-tag impl-tag-ag">Autogen</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>2</td><td>Date</td><td><span class="impl-tag impl-tag-d">Date (Today)</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>3</td><td>GRN Number</td><td><span class="impl-tag impl-tag-lookup">Lookup (GRN Master) → AutoFetch: Item No, Name, Received Qty</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>4</td><td>Item No / Name</td><td><span class="impl-tag impl-tag-af">AutoFetch from GRN</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>5</td><td>Inspection Date</td><td><span class="impl-tag impl-tag-d">Date</span></td><td class="impl-opt">—</td></tr>
+          <tr><td>6</td><td>Viscosity / Density / Color / Moisture</td><td><span class="impl-tag impl-tag-text">Text (result)</span></td><td class="impl-opt">—</td></tr>
+          <tr><td>7</td><td>Accepted Qty / Rejected Qty</td><td><span class="impl-tag impl-tag-n">Number</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>8</td><td>QC Status</td><td><span class="impl-tag impl-tag-dd">Dropdown</span></td><td class="impl-mand">*</td><td>Pass / Fail / Hold</td></tr>
+          <tr><td>9</td><td>Remarks</td><td><span class="impl-tag impl-tag-text">Multi-line</span></td><td class="impl-mand">*</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <section id="phase5">
+      <h2>6. Phase 5 — Inventory &amp; Production</h2>
+
+      <div class="impl-card">
+        <h3>6.1 MIS — Material Issue Slip <span class="badge badge-green">Inventory</span></h3>
+        <p><strong>Purpose:</strong> Issue RM from Store to Production. Proceeds only after MR Released.</p>
+        <p><strong>Department:</strong> Store</p>
+        <table class="impl-field-table">
+          <tr><th>#</th><th>Field</th><th>Type</th><th>Req</th></tr>
+          <tr><td>1</td><td>MR No</td><td><span class="impl-tag impl-tag-lookup">Lookup (MR — only Released MRs shown)</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>2</td><td>MIS Number</td><td><span class="impl-tag impl-tag-ag">Autogen (against MR)</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>3</td><td>Date</td><td><span class="impl-tag impl-tag-d">Date (Today)</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>4</td><td>Batch Number</td><td><span class="impl-tag impl-tag-text">Text</span></td><td class="impl-opt">—</td></tr>
+        </table>
+
+        <div class="impl-line-items">
+          <h5>Line Items (auto-fetched from MR)</h5>
+          <table class="impl-field-table">
+            <tr><th>#</th><th>Field</th><th>Type</th><th>Source</th></tr>
+            <tr><td>1</td><td>Item Code / Name</td><td>AutoFetch (from MR line items via MR No)</td><td>MR</td></tr>
+            <tr><td>2</td><td>Category</td><td>AutoFetch (from MR line items)</td><td>MR</td></tr>
+            <tr><td>3</td><td>Required Qty</td><td>AutoFetch (from MR line items)</td><td>MR</td></tr>
+            <tr><td>4</td><td>Issued Qty</td><td>Number</td></tr>
+            <tr><td>5</td><td>Balance Qty</td><td>Formula = Required − Issued</td></tr>
+            <tr><td>6</td><td>Issued By / Handover To</td><td>Text (Supervisor Name)</td></tr>
+          </table>
+        </div>
+        <div class="impl-info-box"><strong>Automation:</strong> Stock deducted from inventory on MIS posting. Only creatable after MR Released.</div>
+      </div>
+
+      <div class="impl-card">
+        <h3>6.2 Production Planning <span class="badge badge-yellow">Production</span></h3>
+        <p><strong>Purpose:</strong> Plan FG production based on Project requirements.</p>
+        <p><strong>Department:</strong> Production</p>
+        <table class="impl-field-table">
+          <tr><th>#</th><th>Field</th><th>Type</th><th>Req</th></tr>
+          <tr><td>1</td><td>Planning No</td><td><span class="impl-tag impl-tag-ag">Autogen</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>2</td><td>Planning Date</td><td><span class="impl-tag impl-tag-d">Date</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>3</td><td><strong>Project ID</strong></td><td><strong>Lookup (Project Master) → AutoFetch: Project Name, Manager</strong></td><td class="impl-mand">*</td></tr>
+          <tr><td>4</td><td>MR Sheet No</td><td><span class="impl-tag impl-tag-lookup">Lookup (MR — only Released MRs) → AutoFetch: Items, Qty</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>5</td><td>Planning Period</td><td><span class="impl-tag impl-tag-dd">Dropdown</span></td><td class="impl-mand">*</td><td>Week / Month</td></tr>
+          <tr><td>6</td><td>Plant</td><td><span class="impl-tag impl-tag-dd">Dropdown</span></td><td class="impl-opt">—</td></tr>
+          <tr><td>7</td><td>Planner Name</td><td><span class="impl-tag impl-tag-lookup">User lookup</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>8</td><td>Status</td><td><span class="impl-tag impl-tag-dd">Dropdown</span></td><td class="impl-mand">*</td><td>Draft / Approved / Released</td></tr>
+        </table>
+        <div class="impl-info-box">
+          <strong>FGs Required for Project:</strong> Derived from SO System Lines × System Composition (System → FG). To Produce = Required Qty − FG Stock Available. BOM (FG → RM) drives underlying RM requisition.
+        </div>
+      </div>
+
+      <div class="impl-card">
+        <h3>6.3 BMR — Batch Manufacturing Record <span class="badge badge-yellow">Production</span></h3>
+        <p><strong>Purpose:</strong> Record actual batch production — consume RM to produce FG.</p>
+        <p><strong>Department:</strong> Production</p>
+        <table class="impl-field-table">
+          <tr><th>#</th><th>Field</th><th>Type</th><th>Req</th></tr>
+          <tr><td>1</td><td>BMR No</td><td><span class="impl-tag impl-tag-ag">Autogen</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>2</td><td>Production Order Ref</td><td><span class="impl-tag impl-tag-lookup">Lookup (Production Planning) → AutoFetch: Project ID, FG Code, Planned Qty</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>3</td><td>Project ID</td><td><span class="impl-tag impl-tag-af">AutoFetch (from Production Order Ref)</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>4</td><td>Batch No</td><td><span class="impl-tag impl-tag-text">Text</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>5</td><td>Date</td><td><span class="impl-tag impl-tag-d">Date</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>6</td><td>FG Code</td><td><span class="impl-tag impl-tag-lookup">Lookup (Item Muster - FG) → AutoFetch: FG Name, BOM RM list</span></td><td class="impl-mand">*</td></tr>
+        </table>
+        <div class="impl-line-items">
+          <h5>Line Items</h5>
+          <table class="impl-field-table">
+            <tr><th>#</th><th>Field</th><th>Type</th><th>Source</th></tr>
+            <tr><td>1</td><td>RM Item Code</td><td>Lookup (Item Muster - RM) → AutoFetch: Name, UOM</td><td>Item Muster</td></tr>
+            <tr><td>2</td><td>RM Item Name</td><td>AutoFetch (from RM Item Code)</td><td>Item Muster</td></tr>
+            <tr><td>3</td><td>Batch No (RM)</td><td>Text</td><td></td></tr>
+            <tr><td>4</td><td>Qty Consumed</td><td>Number</td><td></td></tr>
+            <tr><td>5</td><td>UOM</td><td>AutoFetch (from RM Item Code via Item Muster)</td><td>Item Muster</td></tr>
+            <tr><td>6</td><td>Yield / FG Output</td><td>Number</td><td></td></tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="impl-card">
+        <h3>6.4 RM Consumption Entry <span class="badge badge-yellow">Production</span></h3>
+        <table class="impl-field-table">
+          <tr><th>#</th><th>Field</th><th>Type</th><th>Source</th></tr>
+          <tr><td>1</td><td>Reference to BMR</td><td><span class="impl-tag impl-tag-lookup">Lookup (BMR Master) → AutoFetch: FG Code, Batch No, RM Items</span></td><td>BMR</td></tr>
+          <tr><td>2</td><td>Item-wise RM</td><td><span class="impl-tag impl-tag-lookup">Lookup (Item Muster - RM, filtered by BMR items)</span></td><td>Item Muster</td></tr>
+          <tr><td>3</td><td>Actual Qty</td><td><span class="impl-tag impl-tag-n">Number</span></td><td></td></tr>
+          <tr><td>4</td><td>Standard Qty</td><td><span class="impl-tag impl-tag-af">AutoFetch (from BOM via FG Code)</span></td><td>BOM / FG Formulation</td></tr>
+          <tr><td>5</td><td>Variance</td><td><span class="impl-tag impl-tag-f">Formula = Actual − Standard</span></td><td></td></tr>
+        </table>
+      </div>
+
+      <div class="impl-card">
+        <h3>6.5 Packing Entry <span class="badge badge-yellow">Production</span></h3>
+        <table class="impl-field-table">
+          <tr><th>#</th><th>Field</th><th>Type</th><th>Source</th></tr>
+          <tr><td>1</td><td>BMR Reference</td><td><span class="impl-tag impl-tag-lookup">Lookup (BMR Master) → AutoFetch: FG Code, Batch No</span></td><td>BMR</td></tr>
+          <tr><td>2</td><td>FG Product</td><td><span class="impl-tag impl-tag-lookup">Lookup (Item Muster - FG) → AutoFetch: FG Name, UOM</span></td><td>Item Muster</td></tr>
+          <tr><td>3</td><td>Packed Qty</td><td><span class="impl-tag impl-tag-n">Number</span></td><td></td></tr>
+          <tr><td>4</td><td>Packing Material Consumed</td><td><span class="impl-tag impl-tag-lookup">Lookup (Item Muster - Packaging)</span> + Qty</td><td>Item Muster</td></tr>
+          <tr><td>5</td><td>Batch No</td><td><span class="impl-tag impl-tag-af">AutoFetch (from BMR Reference)</span></td><td>BMR</td></tr>
+        </table>
+      </div>
+
+      <div class="impl-card">
+        <h3>6.6 FGHM — FG Handover Master <span class="badge badge-purple">Production</span></h3>
+        <p><strong>Purpose:</strong> Handover FG to store/site with inline acceptance.</p>
+        <p><strong>Department:</strong> Production</p>
+        <table class="impl-field-table">
+          <tr><th>#</th><th>Field</th><th>Type</th><th>Req</th></tr>
+          <tr><td>1</td><td>FGH No</td><td><span class="impl-tag impl-tag-ag">Autogen (FGH-YYYY-XXXX)</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>2</td><td><strong>Project ID</strong></td><td><strong>Lookup (Project Master)</strong></td><td class="impl-mand">*</td></tr>
+          <tr><td>3</td><td>Handover Date</td><td><span class="impl-tag impl-tag-d">Date (Today)</span></td><td class="impl-mand">*</td></tr>
+          <tr><td>4</td><td>Batch No</td><td><span class="impl-tag impl-tag-text">Text</span></td><td class="impl-mand">*</td></tr>
+        </table>
+        <div class="impl-line-items">
+          <h5>Line Items</h5>
+          <table class="impl-field-table">
+            <tr><th>#</th><th>Field</th><th>Type</th><th>Source</th></tr>
+            <tr><td>1</td><td>FG Product Code</td><td>Lookup (Item Muster - FG) → AutoFetch: Name, UOM</td><td>Item Muster</td></tr>
+            <tr><td>2</td><td>FG Product Name</td><td>AutoFetch (from FG Product Code)</td><td>Item Muster</td></tr>
+            <tr><td>3</td><td>FG Qty</td><td>Number</td><td></td></tr>
+            <tr><td>4</td><td>UOM</td><td>AutoFetch (from FG Product Code via Item Muster)</td><td>Item Muster</td></tr>
+            <tr><td>5</td><td>QC Status</td><td>Pass / Fail / Hold</td><td></td></tr>
+            <tr><td>6</td><td>Damaged Qty / Accepted Qty</td><td>Number (inline acceptance)</td><td></td></tr>
+            <tr><td>7</td><td>Handed Over By / Received By</td><td>Text</td><td></td></tr>
+            <tr><td>8</td><td>Remark</td><td>Multi-line</td><td></td></tr>
+          </table>
+        </div>
+        <div class="impl-info-box"><strong>Automation:</strong> On FGHM submission → Notification to Store. FG Stock updated on inline acceptance.</div>
+      </div>
+    </section>
+
+    <section id="phase6">
+      <h2>7. Phase 6 — Inventory Management</h2>
+
+      <div class="impl-card">
+        <h3>7.1 RM Inventory <span class="badge badge-green">Inventory</span></h3>
+        <ul>
+          <li>Stock increased on <strong>GRN posting</strong></li>
+          <li>Stock decreased on <strong>MIS posting</strong></li>
+          <li>Stock alerts at <strong>Min/Max thresholds</strong></li>
+        </ul>
+      </div>
+
+      <div class="impl-card">
+        <h3>7.2 FG Inventory <span class="badge badge-green">Inventory</span></h3>
+        <ul>
+          <li>Stock increased on <strong>FGHM inline acceptance</strong></li>
+          <li>Stock decreased on dispatch (Supply Only sales)</li>
+        </ul>
+      </div>
+
+      <div class="impl-card">
+        <h3>7.3 MR → MIS → FG Stock Flow</h3>
+        <div class="impl-flow-row" style="justify-content:flex-start">
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-red">MR Released</div></div><span class="impl-flow-arr">&rarr;</span>
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-orange">MIS Created<br><small>Items auto-fetched from MR</small></div></div><span class="impl-flow-arr">&rarr;</span>
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-green">MIS Posted<br><small>RM Stock −</small></div></div><span class="impl-flow-arr">&rarr;</span>
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-purple">Production<br><small>BMR → RM Cons → Pack</small></div></div><span class="impl-flow-arr">&rarr;</span>
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-blue">FGHM Created</div></div><span class="impl-flow-arr">&rarr;</span>
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-green">FGHM Inline Accepted<br><small>FG Stock +</small></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="auto">
+      <h2>8. Automation &amp; Business Rules</h2>
+
+      <div class="impl-card">
+        <h3>8.1 MR Status Workflow (Critical Approval Gate)</h3>
+        <div class="impl-flow-row" style="justify-content:flex-start;margin-bottom:16px">
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-gray">MR Draft</div></div><span class="impl-flow-arr">&rarr;</span>
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-yellow" style="background:#fef3c7;border-color:#f59e0b;color:#92400e">Production Verifies<br><small>Checks MR qty vs SO sys req via BOM</small></div></div><span class="impl-flow-arr">&rarr;</span>
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-purple">Costing Approves<br><small>Approves TOTAL project cost</small></div></div><span class="impl-flow-arr">&rarr;</span>
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-green">Released<br><small>⛔ Gate → MIS, Production, FGHM</small></div></div>
+        </div>
+        <p style="font-size:13px;color:var(--gray-500)"><strong>⛔ Gate:</strong> Without a <strong>Released MR</strong>, there is no MIS, no Production, no FGHM, no project execution.</p>
+      </div>
+
+      <div class="impl-card">
+        <h3>8.2 Consumption → Project-Assigned RM</h3>
+        <ul>
+          <li>Every consumption entry (BMR/RM Consumption) resolves to MR Allocation line matched by <code>Project ID + Item Code</code></li>
+          <li>No generic pool deduction for project-tagged consumption</li>
+          <li>Site consumption entries are expanded into RMs at BOM ratios, then increment <code>Consumed Qty</code></li>
+        </ul>
+      </div>
+
+      <div class="impl-card">
+        <h3>8.3 80% Consumption Alert</h3>
+        <ul>
+          <li>When Consumption % ≥ 80% AND 80% Threshold Alert Flag = ON</li>
+          <li>Pop-up + dashboard banner + email to Project Manager</li>
+          <li>At 100%: "Allocation Exhausted" alert fires to Project Manager + Purchase</li>
+        </ul>
+      </div>
+
+      <div class="impl-card">
+        <h3>8.4 Autofetch Rules (Complete Reference)</h3>
+        <table class="impl-field-table">
+          <tr><th>Source Lookup Field</th><th>Source Form</th><th>Target Forms</th><th>Fetched Fields</th></tr>
+          <tr><td>Item Code</td><td>Purchase Item Muster</td><td>PR, PO, MR, GRN, BMR, FGHM</td><td>Item Name, UOM, Category, HSN, GST%, Lead Time, Standard Rate</td></tr>
+          <tr><td>Supplier Code</td><td>Supplier Master</td><td>PO, GRN</td><td>Supplier Name, GSTIN, Address, Contact, Payment Terms</td></tr>
+          <tr><td>PO Number</td><td>PO Master</td><td>GRN</td><td>Supplier Name, Items List, Ordered Qty per Item, Project ID</td></tr>
+          <tr><td>MR Number</td><td>MR Master</td><td>MIS, Production Planning</td><td>Items List, Required Qty per Item, Category, Project ID</td></tr>
+          <tr><td>Project ID</td><td>Project Master</td><td>PR, PO, GRN, MR, MIS, Production Planning, FGHM</td><td>Project Name, Project Manager, SO Reference, Start/End Date</td></tr>
+          <tr><td>System Code</td><td>System Master</td><td>SO (Subform A), Project, System Composition</td><td>System Name</td></tr>
+          <tr><td>FG Code / FG Product Code</td><td>Item Muster (FG)</td><td>BOM, SO (Subform B), FGHM</td><td>FG Name, UOM</td></tr>
+          <tr><td>RM Item Code</td><td>Item Muster (RM)</td><td>BOM Line, MR Line, BMR Line</td><td>RM Name, UOM</td></tr>
+          <tr><td>BMR Reference</td><td>BMR Master</td><td>RM Consumption, Packing Entry</td><td>FG Code, Batch No, RM Items List</td></tr>
+          <tr><td>GRN Number</td><td>GRN Master</td><td>QC</td><td>Item Name, Received Qty</td></tr>
+          <tr><td>Production Order Ref</td><td>Production Planning</td><td>BMR</td><td>Project ID, FG Code, Planned Qty</td></tr>
+        </table>
+      </div>
+
+      <div class="impl-card">
+        <h3>8.5 Numbering Series</h3>
+        <table class="impl-field-table">
+          <tr><th>Document</th><th>Format</th></tr>
+          <tr><td>PR</td><td>PR-YYYY-XXXX</td></tr>
+          <tr><td>PO (Coding)</td><td>RMWAD-YYYY-XXXX</td></tr>
+          <tr><td>PO (Non-Coding)</td><td>RM-YYYY-XXXX</td></tr>
+          <tr><td>GRN</td><td>GRN-YYYY-XXXX</td></tr>
+          <tr><td>MR</td><td>MR-YYYY-XXXX</td></tr>
+          <tr><td>MIS</td><td>Auto against MR</td></tr>
+          <tr><td>FGH</td><td>FGH-YYYY-XXXX</td></tr>
+          <tr><td>QC</td><td>QC-YYYY-XXXX</td></tr>
+          <tr><td>SO</td><td>SO-YYYY-XXXX</td></tr>
+          <tr><td>Project</td><td>PRJ-YYYY-XXXX</td></tr>
+          <tr><td>System Composition</td><td>SC-YYYY-XXXX</td></tr>
+          <tr><td>BOM / FG Formulation</td><td>BOM-YYYY-XXXX</td></tr>
+          <tr><td>Production Planning</td><td>PLAN-YYYY-XXXX</td></tr>
+          <tr><td>BMR</td><td>BMR-YYYY-XXXX</td></tr>
+          <tr><td>Customer / Site Master</td><td>CUST-YYYY-XXXX</td></tr>
+        </table>
+      </div>
+
+      <div class="impl-card">
+        <h3>8.6 Stock Management Rules</h3>
+        <ul>
+          <li><strong>GRN posting:</strong> Qty added to stock only after posting; timestamp logged</li>
+          <li><strong>MIS posting:</strong> Qty deducted from stock</li>
+          <li><strong>FGHM inline acceptance:</strong> FG qty added to stock after inline acceptance</li>
+          <li><strong>Material Return:</strong> Qty added back to stock</li>
+          <li><strong>Min/Max stock:</strong> Alert when stock crosses thresholds</li>
+        </ul>
+      </div>
+
+      <div class="impl-card">
+        <h3>8.7 Notification Triggers</h3>
+        <table class="impl-field-table">
+          <tr><th>Event</th><th>Notifies</th><th>Type</th></tr>
+          <tr><td>PR Submitted</td><td>Purchase (pending approval)</td><td>In-app</td></tr>
+          <tr><td>PR Approved</td><td>Production user</td><td>In-app</td></tr>
+          <tr><td>PO Ready</td><td>Purchase dept</td><td>In-app</td></tr>
+          <tr><td>GRN Overdue</td><td>Purchase + Store</td><td>In-app</td></tr>
+          <tr><td>MR Submitted (Draft → Pending Verification)</td><td>Production dept</td><td>In-app</td></tr>
+          <tr><td>MR Production Verified (→ Pending Costing Approval)</td><td>Costing dept</td><td>In-app</td></tr>
+          <tr><td>MR Released</td><td>Store + Production</td><td>In-app + Email</td></tr>
+          <tr><td>FGHM Submitted</td><td>Store &amp; Logistics</td><td>Pop-up</td></tr>
+          <tr><td>80% Consumption Alert</td><td>Project Manager</td><td>Pop-up + Email</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <section id="timeline">
+      <h2>9. Implementation Timeline</h2>
+      <div class="impl-card">
+        <h3>Timeline — 11 Weeks</h3>
+        <div class="impl-flow-row" style="justify-content:center">
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-purple">Wk 1-2<br>Master Data</div></div><span class="impl-flow-arr">&rarr;</span>
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-blue">Wk 3-4<br>Sales + Project</div></div><span class="impl-flow-arr">&rarr;</span>
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-red">Wk 5-6<br>Costing + MR</div></div><span class="impl-flow-arr">&rarr;</span>
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-orange">Wk 7-8<br>Procurement</div></div><span class="impl-flow-arr">&rarr;</span>
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-green">Wk 8-9<br>Production</div></div><span class="impl-flow-arr">&rarr;</span>
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-teal">Wk 9-10<br>Reports</div></div><span class="impl-flow-arr">&rarr;</span>
+          <div class="impl-flow-step"><div class="impl-flow-box impl-fb-gray">Wk 10-11<br>UAT + Go-Live</div></div>
+        </div>
+        <ol style="margin-top:16px">
+          <li><strong>Week 1-2 (Master Data Foundation):</strong> Purchase Item Muster, System Master, Supplier Master, Store Master, System Composition, BOM Formulation</li>
+          <li><strong>Week 3-4 (Sales &amp; Project):</strong> Sales Order with conditional subforms (System Lines / FG Lines), Project (auto-created from SO), SO → Project automation</li>
+          <li><strong>Week 5-6 (Costing &amp; MR — Critical Gate):</strong> MR with 4 cost components (Material, Application, Transportation, Tools), Material Allocation subform, MR Status workflow, 80% Consumption Alert</li>
+          <li><strong>Week 7-8 (Procurement):</strong> PR with Project tagging, PO with dual numbering (RM/RMWAD) + GST split, GRN with partial checkbox + transport subform, QC/QA linked to GRN</li>
+          <li><strong>Week 8-9 (Production &amp; Inventory):</strong> MIS linked to MR (only Released MRs), Production Planning, BMR, RM Consumption, Packing, FGHM with inline acceptance, RM + FG inventory, Stock update automations</li>
+          <li><strong>Week 9-10 (Reports &amp; Dashboards):</strong> Purchase, Store, Production dashboards, MR Status tracking, 80% Alert dashboard, Project Material Allocation report</li>
+          <li><strong>Week 10-11 (Integration &amp; UAT):</strong> Test autofetch, MR workflow gates, stock updates, 80% alerts, partial GRN, UAT with departmental users, go-live</li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="roles">
+      <h2>10. Roles &amp; Permissions</h2>
+      <div class="impl-card">
+        <h3>Roles &amp; Permissions <span class="badge badge-slate">System</span></h3>
+        <table class="impl-field-table">
+          <tr><th>Role</th><th>Access</th></tr>
+          <tr><td>Admin</td><td>Full access — all forms, reports, settings</td></tr>
+          <tr><td>Sales - Entry</td><td>Create/Edit: SO, Customer Master</td></tr>
+          <tr><td>Costing</td><td>Approve MR (Costing Approved status). View: MR, reports</td></tr>
+          <tr><td>Production - Entry</td><td>Create/Edit: MR (Draft), BMR, Production Planning, RM Consumption, Packing, FGH, PR</td></tr>
+          <tr><td>Production - Verify MR</td><td>Verify MR — sets MR Status = Production Verified</td></tr>
+          <tr><td>Purchase - Entry</td><td>Create/Edit: PR, PO, GRN</td></tr>
+          <tr><td>Purchase - Approve</td><td>Approve: PR, PO within limits</td></tr>
+          <tr><td>Store - Entry</td><td>Create/Edit: GRN, MIS, FGHM</td></tr>
+          <tr><td>QC - Entry</td><td>Create/Edit: QC/QA</td></tr>
+          <tr><td>Store - Review</td><td>View: Inventory stock, GRN, PO</td></tr>
+          <tr><td>Project Manager</td><td>Create/Edit: Projects. View: Stock, PO status, MR status</td></tr>
+        </table>
+
+        <h4 style="margin-top:20px">MR Verification Flow</h4>
+        <div class="impl-info-box">
+          <strong>Production</strong> verifies MR quantities against SO system requirements (checks MR line item qty vs expected RM from BOM × SO system qty). Then <strong>Costing</strong> approves the MR cost baseline (all four cost components). MR is Released only after both gates pass.
+        </div>
+      </div>
+    </section>
+
+    <section id="excluded">
+      <h2>11. Forms Not in Core Loop (Removed)</h2>
+      <div class="impl-card">
+        <p>The following are <strong>excluded</strong> from this implementation as they fall outside the SO → Costing → Production → Procurement → Inventory → MR → MIS → FG Handover core loop:</p>
+        <ul>
+          <li>Service Team module (Area → Work → Invoice)</li>
+          <li>Service Invoice</li>
+          <li>Finance (Supplier Credit Note, Customer Invoice/AR)</li>
+          <li>Logistics (Delivery Challan, Outward)</li>
+          <li>Vehicle &amp; Transport</li>
+          <li>Rate Comparison (simplified — standalone reference only)</li>
+        </ul>
+      </div>
+    </section>
+
+    <div class="footer">
+      <p>Chemsol — Zoho Creator ERP &middot; ITOTCloud Systems Pvt. Ltd.</p>
+      <p>Two-Stream Architecture · Project-Centric · Built on Zoho Creator India (.in)</p>
+    </div>
+  </div>
+</div>
+
+  <script src="nav.js"></script>
+  <script src="interactive.js"></script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+Unnamed: 0,Unnamed: 1,Unnamed: 2,Unnamed: 3,Unnamed: 4,Unnamed: 5,Unnamed: 6,Unnamed: 7
+,,,,,,,
+,,Purchase Item Muster,,,,,
+,,,,,,,
+,*,Category of Purchase Item :,,,,,"1. RM, 2. Packaging Material, 3.Tools & Consumable, 4.Maintenance & Utility, 5.Capital & Assets, 6.Administation"
+,,,,,,,
+,*,Purchase Item Code :,,,,,
+,,,,,,,
+,*,Purchase Item Name :,,,,,
+,,,,,,,
+,*,UOM,,,,,"1. Nos, 2. Kg, 3. Ltr, 4. Mtr, 5. Kit"
+,,,,,,,
+,*,HSN Code,,,,,
+,,,,,,,
+,,GST %,,,,,
+,,,,,,,
+,*,Min Stock,,,,,
+,,,,,,,
+,,Max Stock,,,,,
+,,,,,,,
+,,Standard Rate,,,,,
+,,,,,,,
+,,Preferred Supplier,,,,,Multiselection
+,,,,,,,
+,,Lead Time,,,,,
+,,,,,,,
+,*,Status,,,,,Active/ Inactive

@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design C — Two-Level Accordion Navigation</title>
+<style>
+  :root {
+    --bg: #0b1120; --surface: #1a2435; --surface2: #253040;
+    --border: #2d3a4d; --text: #e8edf5; --muted: #8a9bb5;
+    --accent: #22d3ee; --green: #4ade80; --yellow: #fbbf24;
+    --red: #f87171; --purple: #a78bfa; --orange: #fb923c;
+    --pink: #f472b6; --blue: #60a5fa;
+    --font-mono: 'JetBrains Mono','Fira Code',Consolas,monospace;
+    --font-sans: system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+    --sidebar-w: 220px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: var(--font-sans); line-height: 1.6;
+    display: flex; min-height: 100vh;
+  }
+
+  /* ===== SIDEBAR ===== */
+  .sidebar {
+    width: var(--sidebar-w); min-width: var(--sidebar-w);
+    background: var(--surface); border-right: 1px solid var(--border);
+    position: fixed; top: 0; left: 0;
+    height: 100vh; overflow-y: auto; z-index: 100;
+    display: flex; flex-direction: column;
+  }
+  .sidebar h1 {
+    font-size: 0.85rem; font-weight: 700; color: var(--accent);
+    padding: 20px 16px 0; letter-spacing: -0.01em;
+  }
+  .sidebar .sub {
+    font-size: 0.62rem; color: var(--muted);
+    padding: 2px 16px 16px; border-bottom: 1px solid var(--border);
+    margin-bottom: 8px;
+  }
+  .sidebar nav { flex: 1; padding: 0 8px; }
+  .sidebar .sec-label {
+    font-size: 0.55rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--muted);
+    padding: 14px 8px 4px; opacity: 0.5;
+  }
+  .sidebar a {
+    display: block; color: var(--muted); text-decoration: none;
+    font-size: 0.72rem; padding: 5px 10px; border-radius: 5px;
+    margin-bottom: 1px; transition: 0.1s; cursor: pointer;
+    border-left: 2px solid transparent;
+  }
+  .sidebar a:hover { color: var(--accent); background: var(--surface2); }
+  .sidebar a.active {
+    color: var(--accent); background: var(--surface2);
+    border-left-color: var(--accent); font-weight: 600;
+  }
+  .sidebar .ftr {
+    padding: 12px 16px; border-top: 1px solid var(--border);
+    font-size: 0.55rem; color: var(--muted); margin-top: auto;
+  }
+
+  /* ===== MAIN ===== */
+  .main { margin-left: var(--sidebar-w); flex: 1; min-width: 0; }
+  .content { max-width: 960px; padding: 32px 32px 60px; }
+
+  .page-header { margin-bottom: 24px; }
+  .page-header h2 {
+    font-size: 1.3rem; font-weight: 700; display: flex;
+    align-items: center; gap: 10px;
+  }
+  .page-header .meta {
+    font-size: 0.76rem; color: var(--muted); margin-top: 4px;
+  }
+
+  /* ===== NESTED ACCORDION CARDS ===== */
+  .accordion-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; margin-bottom: 6px; overflow: hidden;
+  }
+  .accordion-card .hd {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; cursor: pointer; user-select: none;
+    transition: background 0.12s;
+  }
+  .accordion-card .hd:hover { background: var(--surface2); }
+  .accordion-card .hd .num {
+    font-family: var(--font-mono); font-size: 0.68rem;
+    color: var(--muted); min-width: 26px;
+  }
+  .accordion-card .hd h4 {
+    font-size: 0.85rem; font-weight: 600; flex: 1; color: var(--text);
+  }
+  .accordion-card .hd .arrow {
+    font-size: 0.68rem; color: var(--muted);
+    transition: transform 0.2s;
+  }
+  .accordion-card .hd .arrow.open { transform: rotate(90deg); }
+  .accordion-card .bd {
+    display: none; padding: 0 14px 14px;
+    border-top: 1px solid var(--border); padding-top: 10px;
+  }
+  .accordion-card .bd.open { display: block; }
+
+  .badge {
+    display: inline-block; font-size: 0.55rem; font-family: var(--font-mono);
+    padding: 1px 7px; border-radius: 3px; margin: 1px;
+  }
+  .badge-lk { background: #1e3a5f; color: #93c5fd; }
+  .badge-cr { background: #4a1c1c; color: #fca5a5; }
+  .badge-cg { background: #1f3b2a; color: #86efac; }
+
+  .tw { overflow-x: auto; margin: 6px 0 12px; }
+  .tbl { width: 100%; border-collapse: collapse; font-size: 0.76rem; min-width: 400px; }
+  .tbl th {
+    text-align: left; padding: 5px 8px; background: var(--surface2);
+    color: var(--muted); font-weight: 600; font-size: 0.62rem;
+    text-transform: uppercase; letter-spacing: 0.03em;
+    border-bottom: 1px solid var(--border); white-space: nowrap;
+  }
+  .tbl td { padding: 5px 8px; border-bottom: 1px solid var(--surface2); vertical-align: top; color: var(--text); }
+  .tbl .mu { color: var(--muted); }
+
+  .callout {
+    padding: 10px 14px; border-radius: 6px; font-size: 0.78rem;
+    margin: 10px 0; border-left: 3px solid;
+  }
+  .callout-i { background: #1e3a5f; border-color: var(--accent); color: #bae6fd; }
+  .callout-w { background: #3b2f1e; border-color: var(--yellow); color: #fef3c7; }
+  .callout-o { background: #1a3b2a; border-color: var(--green); color: #bbf7d0; }
+
+  pre {
+    background: #080e18; padding: 12px; border-radius: 6px;
+    overflow-x: auto; font-size: 0.72rem; line-height: 1.5;
+    border: 1px solid var(--border); margin: 8px 0;
+    color: #c8d0e0; font-family: var(--font-mono);
+  }
+
+  .steps { margin: 12px 0; padding: 0; list-style: none; }
+  .steps li {
+    padding: 6px 0 6px 22px; position: relative; font-size: 0.8rem; color: var(--muted);
+  }
+  .steps li::before {
+    content: ""; position: absolute; left: 0; top: 11px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--surface2); border: 2px solid var(--accent);
+  }
+
+  .tc-tag {
+    font-family: var(--font-mono); font-size: 0.65rem;
+    padding: 1px 6px; border-radius: 3px;
+  }
+  .tc-pass { background: #1a3b2a; color: var(--green); }
+  .tc-edge { background: #3b2f1e; color: var(--yellow); }
+
+  footer {
+    text-align: center; padding: 24px 0; color: var(--muted);
+    font-size: 0.68rem; border-top: 1px solid var(--border); margin-top: 32px;
+  }
+
+  @media (max-width: 768px) {
+    .sidebar { width: 100%; min-width: 0; position: relative; height: auto; }
+    .sidebar nav { display: block; max-height: 300px; overflow-y: auto; }
+    .main { margin-left: 0; }
+    .content { padding: 20px 14px 40px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR — same pattern reused for User Guide and Testing Guide -->
+<aside class="sidebar">
+  <h1>Budget Tracking</h1>
+  <div class="sub">Documentation Hub</div>
+  <nav id="sidebar-nav">
+    <!-- Section: User Guide (19 modules) -->
+    <div class="sec-label">User Guide — Modules</div>
+    <a class="active" data-page="user-vendors">1. Vendors</a>
+    <a data-page="user-accounts">2. Accounts</a>
+    <a data-page="user-warehouses">3. Warehouses</a>
+    <a data-page="user-items">4. Inventory Items</a>
+    <a data-page="user-projects">5. Projects</a>
+    <a data-page="user-budget">6. Budget Plans</a>
+    <a data-page="user-inv-trans">7. Inventory Transactions</a>
+    <a data-page="user-pr">8. Purchase Requisitions</a>
+    <a data-page="user-po">9. Purchase Orders</a>
+    <a data-page="user-grn">10. Goods Receipt</a>
+    <a data-page="user-scn">11. Supplier Credit Notes</a>
+    <a data-page="user-transfer">12. Transfer Orders</a>
+    <a data-page="user-expenses">13. Expenses</a>
+    <a data-page="user-approvals">14. Budget Approvals</a>
+    <a data-page="user-bom">15. BOM</a>
+    <a data-page="user-dc">16. Delivery Challans</a>
+    <a data-page="user-invoices">17. Invoices</a>
+    <a data-page="user-reports">18. Reports</a>
+
+    <div class="sec-label">Testing Guide — Phases</div>
+    <a data-page="test-1a">Phase 1A — Foundation</a>
+    <a data-page="test-1b">Phase 1B — Budget &amp; Stock</a>
+    <a data-page="test-1c">Phase 1C — Expenses &amp; PR</a>
+    <a data-page="test-1d">Phase 1D — PO, GRN, SCN, TO</a>
+    <a data-page="test-1e">Phase 1E — BOM, DC, Invoice</a>
+    <a data-page="test-1f">Phase 1F — Reports</a>
+  </nav>
+  <div class="ftr">v1.0 &middot; Click sidebar items to switch content</div>
+</aside>
+
+<!-- MAIN CONTENT AREA — replaced entirely on sidebar click -->
+<div class="main" id="main-area">
+  <div class="content" id="page-content">
+
+    <!-- ================================================================== -->
+    <!-- PAGE: User Guide — Vendors (Module #1)                             -->
+    <!-- Demonstrates nested accordion: fields, subforms, relationships     -->
+    <!-- ================================================================== -->
+    <div id="user-vendors" class="page active-page">
+      <div class="page-header">
+        <h2>Vendors <span style="font-size:0.65rem;font-family:var(--font-mono);color:var(--muted);font-weight:400">Form: Vendors</span></h2>
+        <div class="meta">Create vendors first — every PO and expense references a vendor.</div>
+      </div>
+
+      <!-- Accordion: Purpose & When-to-create -->
+      <div class="accordion-card">
+        <div class="hd" onclick="toggleCard(this)">
+          <span class="num">▸</span>
+          <h4>Overview &amp; Purpose</h4>
+          <span class="arrow open">▸</span>
+        </div>
+        <div class="bd open">
+          <p style="color:var(--muted);font-size:0.82rem">Vendors stores your suppliers — companies that sell materials, equipment, and services. Create before POs or expenses.</p>
+          <div class="callout callout-o"><strong>Rule:</strong> Create each vendor before recording a PO or expense against them.</div>
+        </div>
+      </div>
+
+      <!-- Accordion: Key Fields -->
+      <div class="accordion-card">
+        <div class="hd" onclick="toggleCard(this)">
+          <span class="num">▸</span>
+          <h4>Key Fields</h4>
+          <span class="arrow">▸</span>
+        </div>
+        <div class="bd">
+          <div class="tw">
+            <table class="tbl">
+              <tr><th>Field</th><th>Type</th><th>Notes</th></tr>
+              <tr><td>Vendor Name</td><td>Text</td><td><span class="badge badge-cr">Required</span></td></tr>
+              <tr><td>Company Name</td><td>Text</td><td>Legal entity</td></tr>
+              <tr><td>Email / Phone / Mobile</td><td>Email + Phone</td><td></td></tr>
+              <tr><td>Payment Terms</td><td>Dropdown</td><td>Due on Receipt, Net 15/30/45/60</td></tr>
+              <tr><td>Currency</td><td>Dropdown</td><td>USD, EUR, INR</td></tr>
+              <tr><td>Tax ID / PAN</td><td>Text</td><td>GSTIN / VAT</td></tr>
+              <tr><td>Status</td><td>Dropdown</td><td>Active / Inactive</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Accordion: Relationships -->
+      <div class="accordion-card">
+        <div class="hd" onclick="toggleCard(this)">
+          <span class="num">▸</span>
+          <h4>Relationships</h4>
+          <span class="arrow">▸</span>
+        </div>
+        <div class="bd">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div style="background:var(--surface2);border-radius:6px;padding:10px;font-size:0.76rem">
+              <span style="color:var(--muted);font-size:0.62rem">REFERENCED BY</span>
+              <div style="margin-top:4px"><span style="color:var(--accent);font-weight:600">Purchase Orders</span> — PO.Vendor lookup</div>
+              <div><span style="color:var(--accent);font-weight:600">Inventory Items</span> — Item.Preferred_Vendor</div>
+              <div><span style="color:var(--accent);font-weight:600">Expenses</span> — Expense.Vendor lookup</div>
+            </div>
+            <div style="background:var(--surface2);border-radius:6px;padding:10px;font-size:0.76rem">
+              <span style="color:var(--muted);font-size:0.62rem">EMBEDDED SUBFORMS</span>
+              <div style="margin-top:4px"><span style="color:var(--green);font-weight:600">Vendor_Contacts</span> — add contact persons</div>
+              <div><span style="color:var(--green);font-weight:600">Vendor_Documents</span> — upload contracts</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Accordion: Subforms Detail -->
+      <div class="accordion-card">
+        <div class="hd" onclick="toggleCard(this)">
+          <span class="num">▸</span>
+          <h4>Vendor_Contacts Subform</h4>
+          <span class="arrow">▸</span>
+        </div>
+        <div class="bd">
+          <div class="tw">
+            <table class="tbl">
+              <tr><th>Field</th><th>Type</th></tr>
+              <tr><td>Salutation</td><td>Dropdown</td></tr>
+              <tr><td>First Name / Last Name</td><td>Text</td></tr>
+              <tr><td>Email / Phone</td><td>Email + Phone</td></tr>
+              <tr><td>Designation</td><td>Text</td></tr>
+              <tr><td>Is Primary</td><td>Checkbox</td></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Accordion: Automation -->
+      <div class="accordion-card">
+        <div class="hd" onclick="toggleCard(this)">
+          <span class="num">▸</span>
+          <h4>Automations</h4>
+          <span class="arrow">▸</span>
+        </div>
+        <div class="bd">
+          <p style="color:var(--muted);font-size:0.8rem">None — Vendors is pure data capture.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================================== -->
+    <!-- PAGE: Testing Guide — Phase 1A (Vendors, Accounts, etc.)          -->
+    <!-- Demonstrates nested accordion: test scenarios within a phase       -->
+    <!-- ================================================================== -->
+    <div id="test-1a" class="page" style="display:none">
+      <div class="page-header">
+        <h2>Phase 1A — Foundation Forms</h2>
+        <div class="meta">Vendors, Accounts, Projects, Warehouses, Inventory Items</div>
+      </div>
+
+      <!-- Prerequisites accordion -->
+      <div class="accordion-card">
+        <div class="hd" onclick="toggleCard(this)">
+          <span class="num">▸</span>
+          <h4>Prerequisites</h4>
+          <span class="arrow open">▸</span>
+        </div>
+        <div class="bd open">
+          <p style="color:var(--muted);font-size:0.8rem">None — these are the foundation forms. Create three warehouses first:</p>
+          <pre>Warehouse 1: "Main Warehouse", Status: Active
+Warehouse 2: "Secondary Store", Status: Active
+Warehouse 3: "Returns Bay", Status: Active</pre>
+        </div>
+      </div>
+
+      <!-- Test scenario accordion cards -->
+      <div class="accordion-card">
+        <div class="hd" onclick="toggleCard(this)">
+          <span class="num">TC-1A-01</span>
+          <h4>Create Vendor with Contacts &amp; Documents</h4>
+          <span class="arrow open">▸</span>
+        </div>
+        <div class="bd open">
+          <div style="font-size:0.82rem;color:var(--muted);margin-bottom:8px;font-weight:600;color:var(--accent)">Steps:</div>
+          <ol class="steps">
+            <li>Open Vendors form</li>
+            <li>Enter: Vendor Name = TechSupply Co., Email = orders@techsupply.com, Payment Terms = Net 30</li>
+            <li>In Vendor_Contacts subform: add Raj Patel (Primary) and Priya Sharma</li>
+            <li>In Vendor_Documents: upload GST Certificate</li>
+            <li>Submit</li>
+          </ol>
+          <div class="callout callout-o"><strong>Expected:</strong> Record saved with auto-ID. Contacts and document visible.</div>
+          <div class="callout callout-w"><strong>Edge cases:</strong> Blank name → alert. 5+ contacts → all save. Large file → still uploads.</div>
+        </div>
+      </div>
+
+      <div class="accordion-card">
+        <div class="hd" onclick="toggleCard(this)">
+          <span class="num">TC-1A-03</span>
+          <h4>Create Account with Contacts &amp; Documents</h4>
+          <span class="arrow">▸</span>
+        </div>
+        <div class="bd">
+          <ol class="steps">
+            <li>Open Accounts form</li>
+            <li>Enter: Account Name = ABC Manufacturing, Payment Terms = Net 45</li>
+            <li>Add contact: Vikram Singh (Primary)</li>
+            <li>Upload Signed MSA document</li>
+            <li>Submit</li>
+          </ol>
+          <div class="callout callout-o"><strong>Expected:</strong> Record saved with contacts and document.</div>
+        </div>
+      </div>
+
+      <div class="accordion-card">
+        <div class="hd" onclick="toggleCard(this)">
+          <span class="num">TC-1A-05</span>
+          <h4>Create Project</h4>
+          <span class="arrow">▸</span>
+        </div>
+        <div class="bd">
+          <ol class="steps">
+            <li>Open Projects form</li>
+            <li>Project Name = Office Renovation 2026, Account = ABC Manufacturing</li>
+            <li>Start = 01-Jun-2026, End = 31-Dec-2026, Budget = 50000</li>
+            <li>Status = Active, Submit</li>
+          </ol>
+          <div class="callout callout-o"><strong>Expected:</strong> PROJ-0001 auto-generated.</div>
+          <div class="callout callout-w"><strong>Edge:</strong> End before Start → alert. Blank name → required.</div>
+        </div>
+      </div>
+
+      <div class="accordion-card">
+        <div class="hd" onclick="toggleCard(this)">
+          <span class="num">TC-1A-07</span>
+          <h4>Inventory Item — Goods with Stock</h4>
+          <span class="arrow">▸</span>
+        </div>
+        <div class="bd">
+          <ol class="steps">
+            <li>Open Inventory_Items form</li>
+            <li>Item Name = Cement Bag (50kg), Type = Goods, Category = Raw Material</li>
+            <li>Purchase Price = 8.50, Reorder Level = 100</li>
+            <li>In Item_Warehouse_Stock: Main WH → 500, Secondary Store → 200</li>
+            <li>Submit</li>
+          </ol>
+          <div class="callout callout-o"><strong>Expected:</strong> SKU-0001. Stock Value = 500 × 8.50 = 4250. Available = 500.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hidden placeholder pages for other modules -->
+    <div id="user-accounts" class="page" style="display:none"><div class="page-header"><h2>Accounts</h2><div class="meta">Customer/client records. Click another sidebar item.</div></div></div>
+    <div id="test-1b" class="page" style="display:none"><div class="page-header"><h2>Phase 1B — Budget &amp; Stock</h2><div class="meta">Budget Plans, Inventory Transactions. Click another sidebar item.</div></div></div>
+
+    <footer>
+      ITOTCloud &middot; Project Budget Tracking Documentation
+    </footer>
+  </div>
+</div>
+
+<script>
+// Accordion toggle (Level 2: nested cards within a page)
+function toggleCard(headerEl) {
+  const card = headerEl.closest('.accordion-card');
+  const body = card.querySelector('.bd');
+  const arrow = card.querySelector('.arrow');
+  body.classList.toggle('open');
+  arrow.classList.toggle('open');
+}
+
+// Sidebar navigation (Level 1: replace entire main content)
+(function() {
+  const links = document.querySelectorAll('#sidebar-nav a');
+  const pages = document.querySelectorAll('.page');
+
+  links.forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+
+      // Deactivate all links
+      links.forEach(l => l.classList.remove('active'));
+
+      // Hide all pages
+      pages.forEach(p => p.style.display = 'none');
+
+      // Activate clicked link
+      this.classList.add('active');
+
+      // Show target page
+      const pageId = this.dataset.page;
+      const target = document.getElementById(pageId);
+      if (target) {
+        target.style.display = 'block';
+        // Scroll main area to top
+        document.getElementById('main-area').scrollTop = 0;
+        document.querySelector('.main').scrollTop = 0;
+      }
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

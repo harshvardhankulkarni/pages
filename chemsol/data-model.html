@@ -1,0 +1,678 @@
+﻿<!DOCTYPE html>
+<html lang="en" data-implementation-complete="true">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chemsol — Data Model</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="sidebar">
+    <h1>Chemsol<span class="client-badge">Zoho Creator ERP</span></h1>
+    <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="sidebar-nav" id="sidebarNav">
+
+      <!-- Zone 1: Flow Progress Bar -->
+      <div class="flow-progress">
+        <div class="fp-step" data-step="1"><span class="fp-circle">1</span></div>
+        <span class="fp-connector"></span>
+        <div class="fp-step" data-step="2"><span class="fp-circle">2</span></div>
+        <span class="fp-connector"></span>
+        <div class="fp-step" data-step="3"><span class="fp-circle">3</span></div>
+        <span class="fp-connector"></span>
+        <div class="fp-step" data-step="4"><span class="fp-circle">4</span></div>
+        <span class="fp-connector"></span>
+        <div class="fp-step" data-step="5"><span class="fp-circle">5</span></div>
+        <span class="fp-connector"></span>
+        <div class="fp-step" data-step="6"><span class="fp-circle">6</span></div>
+        <span class="fp-connector"></span>
+        <div class="fp-step" data-step="7"><span class="fp-circle">7</span></div>
+        <span class="fp-connector"></span>
+        <div class="fp-step" data-step="8"><span class="fp-circle">8</span></div>
+      </div>
+
+      <!-- Zone 2: Accordion Steps — Organization Cycle -->
+
+      <!-- STREAM A: Pre-Project / Stock Procurement (No Project ID) -->
+      <div class="accordion-stream-label">STREAM A — PRE-PROJECT</div>
+
+      <!-- Stage 1: Purchase + Stock (Pre-Project) -->
+      <div class="accordion-section">
+        <div class="accordion-header">
+          <span class="ah-num">1</span>
+          Purchase + Stock
+          <span class="ah-arrow">▶</span>
+        </div>
+        <div class="accordion-body">
+          <a class="ab-link" href="forms.html#procurement"><span class="al-type type-forms">Forms</span>PR→PO→GRN→QC</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Stock Reports</a>
+          <a class="ab-link" href="flow.html#pr-pr"><span class="al-type type-flow">Flow</span>Purchase Flow</a>
+          <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>Procure Model</a>
+        </div>
+      </div>
+
+      <div class="accordion-stream-label">STREAM B — PROJECT-CENTRIC</div>
+
+      <!-- Stage 2: Sales → Project (Root) -->
+      <div class="accordion-section">
+        <div class="accordion-header">
+          <span class="ah-num">2</span>
+          Sales → Project
+          <span class="ah-arrow">▶</span>
+        </div>
+        <div class="accordion-body">
+          <a class="ab-link" href="forms.html#sales"><span class="al-type type-forms">Forms</span>Sales Order + Project</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Sales Register</a>
+          <a class="ab-link" href="flow.html#so-so"><span class="al-type type-flow">Flow</span>SO Flow</a>
+          <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>SO Model</a>
+        </div>
+      </div>
+
+      <!-- Stage 3: MR → MIS (Bridge) -->
+      <div class="accordion-section">
+        <div class="accordion-header">
+          <span class="ah-num">3</span>
+          MR → MIS
+          <span class="ah-arrow">▶</span>
+        </div>
+        <div class="accordion-body">
+          <a class="ab-link" href="forms.html#inventory"><span class="al-type type-forms">Forms</span>MR→MIS→FG</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Stock Reports</a>
+          <a class="ab-link" href="flow.html#inv-mr"><span class="al-type type-flow">Flow</span>Inventory Flow</a>
+          <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>Inventory Model</a>
+        </div>
+      </div>
+
+      <!-- Stage 4: Production -->
+      <div class="accordion-section">
+        <div class="accordion-header">
+          <span class="ah-num">4</span>
+          Production
+          <span class="ah-arrow">▶</span>
+        </div>
+        <div class="accordion-body">
+          <a class="ab-link" href="forms.html#production"><span class="al-type type-forms">Forms</span>BOM→MO→FG</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Production Reports</a>
+          <a class="ab-link" href="flow.html#prod-plan"><span class="al-type type-flow">Flow</span>Production Flow</a>
+          <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>Production Model</a>
+        </div>
+      </div>
+
+      <!-- Stage 5: Costing -->
+      <div class="accordion-section">
+        <div class="accordion-header">
+          <span class="ah-num">5</span>
+          Costing
+          <span class="ah-arrow">▶</span>
+        </div>
+        <div class="accordion-body">
+          <a class="ab-link" href="forms.html#costing"><span class="al-type type-forms">Forms</span>Costing Approval</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Cost Reports</a>
+          <a class="ab-link" href="flow.html#org-costing"><span class="al-type type-flow">Flow</span>Costing Flow</a>
+          <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>Cost Model</a>
+        </div>
+      </div>
+
+      <!-- Stage 6: Service -->
+      <div class="accordion-section">
+        <div class="accordion-header">
+          <span class="ah-num">6</span>
+          Service
+          <span class="ah-arrow">▶</span>
+        </div>
+        <div class="accordion-body">
+          <a class="ab-link" href="forms.html#service-team"><span class="al-type type-forms">Forms</span>Area→Work→Invoice</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Service Reports</a>
+          <a class="ab-link" href="flow.html#org-service"><span class="al-type type-flow">Flow</span>Service Flow</a>
+          <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>Service Model</a>
+        </div>
+      </div>
+
+      <!-- Stage 7: Finance -->
+      <div class="accordion-section">
+        <div class="accordion-header">
+          <span class="ah-num">7</span>
+          Finance
+          <span class="ah-arrow">▶</span>
+        </div>
+        <div class="accordion-body">
+          <a class="ab-link" href="forms.html#finance"><span class="al-type type-forms">Forms</span>AP/AR / GL</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>P&amp;L / Reports</a>
+          <a class="ab-link" href="flow.html#gl"><span class="al-type type-flow">Flow</span>Close Flow</a>
+          <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>Finance Model</a>
+        </div>
+      </div>
+
+      <!-- Stage 8: Logistics → Closure -->
+      <div class="accordion-section">
+        <div class="accordion-header">
+          <span class="ah-num">8</span>
+          Logistics → Closure
+          <span class="ah-arrow">▶</span>
+        </div>
+        <div class="accordion-body">
+          <a class="ab-link" href="forms.html#logistics"><span class="al-type type-forms">Forms</span>DC / Outward</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Logistics Reports</a>
+          <a class="ab-link" href="flow.html#org-logistics"><span class="al-type type-flow">Flow</span>Logistics Flow</a>
+          <a class="ab-link" href="data-model.html"><span class="al-type type-data">Data</span>Logistics Model</a>
+        </div>
+      </div>
+
+      <!-- Zone 3: System Links -->
+      <div class="nav-divider">━━━━ QUICK NAV ━━━━</div>
+      <a href="index.html" class="sidebar-flat-link">🏠 Overview</a>
+      <a href="forms.html" class="sidebar-flat-link">📝 Forms</a>
+      <a href="flow.html" class="sidebar-flat-link">🔄 Flow Demo</a>
+      <a href="reports.html" class="sidebar-flat-link">📊 Reports</a>
+      <div class="nav-divider">━━━━ SYSTEM ━━━━</div>
+      <a href="security.html" class="sidebar-flat-link">🔒 Security &amp; Roles</a>
+      <a href="data-model.html" class="sidebar-flat-link">📐 Data Model</a>
+      <a href="implementation-plan.html" class="sidebar-flat-link">📋 Implementation Plan</a>
+      <a href="BRD_PRD_RFP.md" class="sidebar-flat-link">📄 BRD / PRD / RFP</a>
+      <a href="../index.html" class="sidebar-flat-link">← Back to Hub</a>
+    </div>
+  </nav>
+  <div class="main">
+    <section class="hero">
+      <div class="hero-eyebrow">Architecture · Relationships · Flow</div>
+      <h1>Data Model &amp; System Architecture</h1>
+      <p><strong>Two-stream architecture:</strong> Stream A (Pre-Project) — procurement for stock, no Project ID. Stream B (Project-Centric) — <strong>Project baseline = SO + MR</strong> (SO = revenue side, MR = complete project implementation cost baseline — total project cost: Material + Application + Transportation + Tools &amp; Tackles — that Costing approves). SO→Project, Project ID flows through MR→MIS→Production→Service→Finance→Logistics. MR must be <strong>Production Verified → Costing Approved → Released</strong> before any downstream action.</p>
+    </section>
+
+    <div class="content">
+      <h2>System Architecture — Two-Stream Hub</h2>
+      <div class="hub-arch">
+        <div class="hub-arch-inner">
+          <div class="hub-bottom-bar" style="border-style:solid;margin-top:0">
+            <span class="hbb-item" style="font-weight:600;color:var(--gray-700)">MASTER DATA (Global — Phase 1)</span>
+            <span class="hbb-item">📦 Item Muster</span>
+            <span class="hbb-item">🏢 Supplier Master</span>
+            <span class="hbb-item">🔧 System Master</span>
+            <span class="hbb-item">📐 System Composition</span>
+            <span class="hbb-item">📐 BOM Formulation</span>
+            <span class="hbb-item">👥 Customer/Site Master</span>
+            <span class="hbb-item">🏪 Store Master</span>
+          </div>
+
+          <div class="hub-top-connector"></div>
+
+          <!-- Stream A: Pre-Project Procurement -->
+          <div class="hub-row" style="border:2px dashed #3b82f6;border-radius:12px;padding:16px;margin:8px 0;background:rgba(59,130,246,0.04)">
+            <div class="hub-module green" style="flex:1">
+              <span class="hm-icon">📦</span>
+              <span class="hm-name">STREAM A — Pre-Project Procurement</span>
+              <span class="hm-desc">No Project ID · PR→PO→GRN→QC→Material Handover→Store Inventory</span>
+            </div>
+          </div>
+
+          <div class="hub-top-connector"></div>
+
+          <div class="hub-center">
+            <div class="hub-module amber" style="padding:10px 24px;flex-direction:row">
+              <span style="font-size:13px;font-weight:600">SALES ORDER (Phase 6)</span>
+              <span class="tree-tag green" style="font-size:10px;padding:2px 10px;border-radius:999px;background:var(--green-light);color:var(--green)">Supply+Apply → auto-creates Project</span>
+            </div>
+          </div>
+
+          <div class="hub-top-connector"></div>
+
+          <div class="hub-center">
+            <div class="hub-node">
+              <strong>[ PROJECT ]</strong>
+              <span class="hub-badge">Root Entity (Stream B)</span>
+              <span style="font-size:11px;font-weight:400;opacity:0.7">ID · Name · SO Ref · Manager · Cost · Dates · Systems</span>
+            </div>
+          </div>
+
+          <div class="hub-top-connector"></div>
+
+          <div class="hub-row">
+            <div class="hub-module" style="border-color:#059669;background:rgba(5,150,105,0.08)">
+              <span class="hm-icon">📦</span>
+               <span class="hm-name">MR (Project Cost Baseline)</span>
+              <span class="hm-desc">Draft → Pending Production Verification → Production Verified → Costing Approved → Released</span>
+            </div>
+            <div class="hub-module blue">
+              <span class="hm-icon">📋</span>
+              <span class="hm-name">MIS</span>
+              <span class="hm-desc">Stock issued against Released MR</span>
+            </div>
+            <div class="hub-module purple">
+              <span class="hm-icon">⚙️</span>
+              <span class="hm-name">Production</span>
+              <span class="hm-desc">Plan→BMR→Pack</span>
+            </div>
+            <div class="hub-module amber">
+              <span class="hm-icon">💰</span>
+              <span class="hm-name">Costing</span>
+              <span class="hm-desc">Valuation Gate</span>
+            </div>
+            <div class="hub-module" style="border-color:#f59e0b">
+              <span class="hm-icon">👷</span>
+              <span class="hm-name">Service</span>
+              <span class="hm-desc">Area→Work→Invoice</span>
+            </div>
+            <div class="hub-module" style="border-color:#8b5cf6">
+              <span class="hm-icon">💰</span>
+              <span class="hm-name">Finance</span>
+              <span class="hm-desc">AP/AR / GL</span>
+            </div>
+            <div class="hub-module slate">
+              <span class="hm-icon">🚚</span>
+              <span class="hm-name">Logistics</span>
+              <span class="hm-desc">DC→Outward→Close</span>
+            </div>
+          </div>
+
+          <div class="hub-bottom-bar" style="margin-top:0">
+            <span class="hbb-item" style="font-weight:600;color:var(--primary)">Stream A: No Project ID · Stream B: Project ID on all forms</span>
+          </div>
+        </div>
+      </div>
+
+      <h3>Flow · Procurement (Stream A — Pre-Project) — PO → GRN → QC</h3>
+      <div class="tree">
+        <ul class="tree-list">
+          <li class="tree-item root"><span class="tree-label">Purchase Dept <span class="tree-tag blue">Initiate PO</span></span>
+            <ul class="tree-children">
+              <li class="tree-item"><span class="tree-label">PO <span class="tree-tag amber">RM/RMWAD, GST split, N line items</span></span>
+                <ul class="tree-children">
+                  <li class="tree-item"><span class="tree-label">GRN <span class="tree-tag green">Partial via checkbox</span></span>
+                    <ul class="tree-children">
+                      <li class="tree-item"><span class="tree-label">QC/QA <span class="tree-tag purple">Test results</span></span>
+                        <ul class="tree-children">
+                          <li class="tree-item"><span class="tree-label">Stock Updated <span class="tree-tag green">After posting</span></span></li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+
+      <h3>Flow · Rate Comparison (Standalone)</h3>
+      <div class="tree">
+        <ul class="tree-list">
+          <li class="tree-item root"><span class="tree-label">Rate Comparison <span class="tree-tag blue">Standalone Record</span></span>
+            <ul class="tree-children">
+              <li class="tree-item"><span class="tree-label">Supplier Rate Entry <span class="tree-tag blue">5 supplier comparison</span></span>
+                <ul class="tree-children">
+                  <li class="tree-item"><span class="tree-label">Finalised Rate &amp; Supplier <span class="tree-tag green">Linked to PO</span></span></li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+
+      <h3>Flow 2 · Material Requisition &amp; Issue (MR Cost Baseline)</h3>
+      <div class="callout callout-warning" style="font-size:13px;margin-bottom:16px">
+        <strong>Project baseline = SO + MR:</strong> SO defines System/FG scope (revenue). MR defines the complete project implementation cost baseline (total project cost: Material + Application + Transportation + Tools &amp; Tackles) that Costing approves. Without a <strong>Released MR</strong>, there is no MIS, no Production, no Logistics, no project execution. MR Status flow: <strong>Draft → Pending Production Verification → Production Verified → Costing Approved (TOTAL cost) → Released</strong>.
+      </div>
+      <div class="tree">
+        <ul class="tree-list">
+          <li class="tree-item root"><span class="tree-label">Project <span class="tree-tag blue">Root</span></span>
+            <ul class="tree-children">
+              <li class="tree-item"><span class="tree-label">MR (Production/R&amp;D) <span class="tree-tag blue">Project ID lookup · Cost baseline</span></span>
+                <ul class="tree-children">
+                  <li class="tree-item"><span class="tree-label">MR Status: Draft <span class="tree-tag amber">Initial</span></span>
+                    <ul class="tree-children">
+                      <li class="tree-item"><span class="tree-label">Production Verifies <span class="tree-tag amber">Checks MR qty vs SO system req</span></span>
+                        <ul class="tree-children">
+                          <li class="tree-item"><span class="tree-label">Costing Approves <span class="tree-tag purple">Approves TOTAL project cost</span></span>
+                            <ul class="tree-children">
+                              <li class="tree-item"><span class="tree-label">MR Released <span class="tree-tag green">⛔ Gate passed</span></span>
+                                <ul class="tree-children">
+                                  <li class="tree-item"><span class="tree-label">MIS <span class="tree-tag amber">Store issues — N items</span></span>
+                                    <ul class="tree-children">
+                                      <li class="tree-item"><span class="tree-label">Stock − <span class="tree-tag red">Deduction on posting</span></span></li>
+                                    </ul>
+                                  </li>
+                                </ul>
+                              </li>
+                            </ul>
+                          </li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+
+      <h3>Flow 3 · FG Handover (Phase 4)</h3>
+      <div class="tree">
+        <ul class="tree-list">
+          <li class="tree-item root"><span class="tree-label">Project <span class="tree-tag blue">Root</span></span>
+            <ul class="tree-children">
+              <li class="tree-item"><span class="tree-label">Production <span class="tree-tag blue">Project ID lookup</span></span>
+                <ul class="tree-children">
+                  <li class="tree-item"><span class="tree-label">FGHM <span class="tree-tag purple">FG Handover — N items</span></span>
+                    <ul class="tree-children">
+                      <li class="tree-item"><span class="tree-label">Pop-up Notification <span class="tree-tag amber">Store/Logistics</span></span>
+                        <ul class="tree-children">
+                          <li class="tree-item"><span class="tree-label">FG Stock + <span class="tree-tag green">After inline acceptance</span></span></li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+
+      <h3>Flow 4 · PO Receipt Status (Auto-calculated per Line Item)</h3>
+      <div class="tree">
+        <ul class="tree-list">
+          <li class="tree-item root"><span class="tree-label">PO Line Item <span class="tree-tag blue">Ordered Qty</span></span>
+            <ul class="tree-children">
+              <li class="tree-item"><span class="tree-label">GRN Posted <span class="tree-tag green">Received Qty recorded</span></span>
+                <ul class="tree-children">
+                  <li class="tree-item"><span class="tree-label">Receipt Status <span class="tree-tag amber">Formula</span></span>
+                    <ul class="tree-children">
+                      <li class="tree-item"><span class="tree-label">0 Received → <span class="tree-tag red">Pending</span></span></li>
+                      <li class="tree-item"><span class="tree-label">0 &lt; Received &lt; Ordered → <span class="tree-tag amber">Partial</span></span></li>
+                      <li class="tree-item"><span class="tree-label">Received ≥ Ordered → <span class="tree-tag green">Complete ✓</span></span></li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+
+      <h3>Flow 5 · Supplier Credit Note (Finance — Phase 8, Manually Initiated)</h3>
+      <p>The Supplier Credit Note is <strong>always manually initiated by Account &amp; Finance</strong>. It can originate from three trigger scenarios:</p>
+      <div class="tree">
+        <ul class="tree-list">
+          <li class="tree-item root"><span class="tree-label">Trigger Events <span class="tree-tag amber">3 Scenarios</span></span>
+            <ul class="tree-children">
+              <li class="tree-item"><span class="tree-label">Scenario 1: QC Rejected Items <span class="tree-tag red">Defective</span></span>
+                <ul class="tree-children">
+                  <li class="tree-item"><span class="tree-label">Finance manually creates Credit Note <span class="tree-tag amber">QC Reference</span></span></li>
+                </ul>
+              </li>
+              <li class="tree-item"><span class="tree-label">Scenario 2: GRN Short Delivery <span class="tree-tag amber">Shortage</span></span>
+                <ul class="tree-children">
+                  <li class="tree-item"><span class="tree-label">Finance manually creates Credit Note <span class="tree-tag amber">GRN Reference</span></span></li>
+                </ul>
+              </li>
+              <li class="tree-item"><span class="tree-label">Scenario 3: Rate/Invoice Discrepancy <span class="tree-tag blue">Invoice</span></span>
+                <ul class="tree-children">
+                  <li class="tree-item"><span class="tree-label">Finance manually creates Credit Note <span class="tree-tag amber">PO Reference</span></span></li>
+                </ul>
+              </li>
+              <li class="tree-item"><span class="tree-label" style="font-weight:700">→ Supplier Credit Note</span>
+                <ul class="tree-children">
+                  <li class="tree-item"><span class="tree-label">Draft <span class="tree-tag amber">Finance Working</span></span></li>
+                  <li class="tree-item"><span class="tree-label">Approved <span class="tree-tag blue">Finance Senior</span></span></li>
+                  <li class="tree-item"><span class="tree-label">Credited <span class="tree-tag green">Supplier Balance Updated</span></span></li>
+                  <li class="tree-item"><span class="tree-label">Cancelled <span class="tree-tag red">No Impact</span></span></li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+
+      <h3>Flow 6 · Cross-Form Finance References</h3>
+      <div class="tree">
+        <ul class="tree-list">
+          <li class="tree-item root"><span class="tree-label">PO <span class="tree-tag blue">Central Audit Hub</span></span>
+            <ul class="tree-children">
+              <li class="tree-item"><span class="tree-label">Line Items: Receipt Status <span class="tree-tag green">Auto from GRN</span></span></li>
+              <li class="tree-item"><span class="tree-label">Footer: Total Credited Amount <span class="tree-tag amber">Auto from Credit Notes</span></span></li>
+              <li class="tree-item"><span class="tree-label">Footer: Credit Note Ref List <span class="tree-tag amber">Auto-linked</span></span></li>
+              <li class="tree-item"><span class="tree-label">Footer: Net Payable <span class="tree-tag green">Formula</span></span></li>
+            </ul>
+          </li>
+          <li class="tree-item root" style="margin-top:12px"><span class="tree-label">QC <span class="tree-tag purple">Quality Hub</span></span>
+            <ul class="tree-children">
+              <li class="tree-item"><span class="tree-label">Line Items: Credit Initiated <span class="tree-tag amber">Readonly — set after Finance creates Credit Note</span></span></li>
+              <li class="tree-item"><span class="tree-label">Line Items: Credit Note Ref <span class="tree-tag amber">Auto-fetched</span></span></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+
+      <h3>Flow 7 · Sales → Project (Phases 5–6)</h3>
+
+
+
+
+      <h3 id="cost-flow">Cost Flow Diagram — Material Cost Recognition</h3>
+      <div class="callout callout-warning" style="font-size:13px;margin-bottom:16px">
+        <strong>CR-03 Fix Applied:</strong> Material cost is recognized at consumption, NOT at GRN receipt.
+        Updated all P&amp;L computations accordingly.
+      </div>
+      <div style="border:1px solid var(--gray-200);border-radius:12px;padding:24px;margin:16px 0;text-align:center;font-family:var(--font-mono);font-size:14px;line-height:2">
+        <strong style="color:var(--primary)">PO</strong> → <strong style="color:var(--green)">GRN</strong> → <strong style="color:var(--accent);font-weight:700">Inventory (Asset on Balance Sheet)</strong>
+        <br>⤷ <span style="color:var(--gray-300)">│</span> GRN cost flows to Balance Sheet as asset
+        <br>
+        <br>⤷ <strong style="color:var(--gray-600)">MIS/BMR</strong> → <strong style="color:var(--red);font-weight:700">P&amp;L (Cost of Materials)</strong>
+        <br>⤷ <span style="color:var(--gray-300)">│</span> Only consumption flows to P&amp;L
+        <br>
+        <br>═══════════════════════════
+        <br>
+        <br><strong>Material in Inventory</strong> = Σ(GRN Costs) − Σ(MIS/BMR Consumption Costs)
+        <br><span style="color:var(--gray-500);font-size:12px">This line appears on the Balance Sheet — GRN costs NOT yet consumed</span>
+      </div>
+        <ul class="tree-list">
+          <li class="tree-item root"><span class="tree-label">SO/Work Order <span class="tree-tag amber">Single Mode</span></span>
+            <ul class="tree-children">
+              <li class="tree-item"><span class="tree-label">Supply+Apply <span class="tree-tag green">Auto-creates Project</span></span>
+                <ul class="tree-children">
+                  <li class="tree-item"><span class="tree-label">Task Budget Table</span>
+                    <ul class="tree-children">
+                      <li class="tree-item"><span class="tree-label">Transport</span></li>
+                      <li class="tree-item"><span class="tree-label">Execution</span></li>
+                      <li class="tree-item"><span class="tree-label">Manpower</span></li>
+                      <li class="tree-item"><span class="tree-label">Tools</span></li>
+                      <li class="tree-item"><span class="tree-label">Overhead</span></li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+
+      <h3>Flow · Production (Costing Arm for SO)</h3>
+      <div style="display:flex;gap:32px;flex-wrap:wrap">
+        <div style="flex:1;min-width:280px">
+          <p><strong>Procurement Arm</strong> — Production Dept initiates purchase for project materials</p>
+          <div class="tree">
+            <ul class="tree-list">
+              <li class="tree-item root"><span class="tree-label">Production Dept <span class="tree-tag blue">PR Initiate</span></span>
+                <ul class="tree-children">
+                  <li class="tree-item"><span class="tree-label">PR <span class="tree-tag blue">Project ID lookup</span></span>
+                    <ul class="tree-children">
+                      <li class="tree-item"><span class="tree-label">PO <span class="tree-tag amber">RM/RMWAD</span></span>
+                        <ul class="tree-children">
+                          <li class="tree-item"><span class="tree-label">GRN <span class="tree-tag green">Partial</span></span>
+                            <ul class="tree-children">
+                              <li class="tree-item"><span class="tree-label">QC/QA <span class="tree-tag purple">Test</span></span></li>
+                            </ul>
+                          </li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div style="flex:1;min-width:280px">
+          <p><strong>Manufacturing Arm</strong> — Production planning to FG output</p>
+          <div class="tree">
+            <ul class="tree-list">
+              <li class="tree-item root"><span class="tree-label">Production <span class="tree-tag blue">Project ID</span></span>
+                <ul class="tree-children">
+                  <li class="tree-item"><span class="tree-label">Production Planning <span class="tree-tag blue">Schedule</span></span>
+                    <ul class="tree-children">
+                      <li class="tree-item"><span class="tree-label">BMR <span class="tree-tag purple">Batch Record</span></span>
+                        <ul class="tree-children">
+                          <li class="tree-item"><span class="tree-label">RM Consumption <span class="tree-tag amber">Deduct stock</span></span>
+                            <ul class="tree-children">
+                              <li class="tree-item"><span class="tree-label">Packing Entry <span class="tree-tag green">FG output</span></span>
+                                <ul class="tree-children">
+                                  <li class="tree-item"><span class="tree-label">FGHM <span class="tree-tag green">Inline acceptance</span></span></li>
+                                </ul>
+                              </li>
+                            </ul>
+                          </li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout callout-info">
+        <strong>Production Planning — FGs Required for Project:</strong> Production Planning must show which FGs to manufacture for the project, derived from the SO <strong>System Lines</strong> × <strong>System Composition</strong> (System → FG), with <strong>To Produce = Required Qty − FG Stock Available</strong>. The BOM (FG → RM) drives the underlying RM requisition for each FG. <em>Example:</em> SO sells EP01 over 500 SqM; System Composition maps EP01 → FG "FG-EP01" at 1.2 Kg/SqM → Required Qty = 600 Kg. (Supply+Apply projects only — Supply Only FG sales bypass Production planning.)
+      </div>
+
+      <h3>Project ID Lookup Chain</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Stream</th><th>Form</th><th>Project ID Source</th><th>Flow</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Production</strong></td><td>PR</td><td><span style="color:#8b5cf6;font-weight:600">Project ID lookup</span></td><td>Production → PR</td></tr>
+            <tr><td><strong>Standalone</strong></td><td>Rate Comparison</td><td><span style="color:#3b82f6;font-weight:600">No Project ID</span></td><td>Standalone entry</td></tr>
+            <tr><td><strong>A</strong></td><td>PO</td><td><span style="color:#3b82f6;font-weight:600">No Project ID</span></td><td>Direct PO</td></tr>
+            <tr><td><strong>A</strong></td><td>GRN</td><td><span style="color:#3b82f6;font-weight:600">No Project ID</span></td><td>PO → GRN</td></tr>
+            <tr><td><strong>A</strong></td><td>QC</td><td><span style="color:#3b82f6;font-weight:600">No Project ID</span></td><td>GRN → QC</td></tr>
+            <tr><td><strong>B (Cost)</strong></td><td>MR</td><td>Direct lookup from Project Master</td><td>Project → MR (project cost baseline with 4 components: Material + Application + Transportation + Tools &amp; Tackles; Draft → Prod Verified → Costing Approved (TOTAL cost) → Released)</td></tr>
+            <tr><td>3</td><td>MIS</td><td>AutoFetch from MR</td><td>Project → MR (Released) → MIS (⛔ Only after MR Released)</td></tr>
+            <tr><td>3</td><td>FGHM</td><td>Direct lookup from Project Master</td><td>Project → FGHM (inline acceptance)</td></tr>
+            <tr><td>4</td><td>Production Planning</td><td>Direct lookup from Project Master</td><td>Project → Production</td></tr>
+            <tr><td>4</td><td>BMR</td><td>AutoFetch from Production Order (via Project)</td><td>Project → Production → BMR</td></tr>
+            <tr><td>4</td><td>RM Consumption</td><td>AutoFetch from BMR</td><td>Project → Production → BMR → RM Cons.</td></tr>
+            <tr><td>4</td><td>Packing Entry</td><td>AutoFetch from BMR</td><td>Project → Production → BMR → Packing</td></tr>
+            <tr><td>4</td><td>Rework Register</td><td>AutoFetch from BMR</td><td>Project → Production → BMR → Rework</td></tr>
+            <tr><td>5–6</td><td>Sales/Work Order</td><td>Supply+Apply → auto-creates Project</td><td>SO → Project</td></tr>
+            <tr><td>8</td><td>Supplier Credit Note</td><td>AutoFetch from PO</td><td>Project → PO → Supplier Credit</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Stock Update Matrix</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Transaction</th><th>Effect</th><th>Direction</th><th>Project Impact</th></tr></thead>
+          <tbody>
+            <tr><td>GRN Posted</td><td>Add Received Qty</td><td style="color: var(--green)">Stock In +</td><td>Store inventory updated (no Project ID)</td></tr>
+            <tr><td>MIS Posted</td><td>Deduct Issued Qty</td><td style="color: var(--accent)">Stock Out −</td><td>Project consumption tracked</td></tr>
+            <tr><td>FGHM Inline Acceptance</td><td>Add FG Qty</td><td style="color: var(--green)">Stock In +</td><td>Project production output tracked</td></tr>
+            <tr><td>Material Return</td><td>Add back to RM store</td><td style="color: var(--green)">Stock In +</td><td>Project cost adjusted</td></tr>
+            <tr><td>Material Handover</td><td>Deduct source, Add destination</td><td style="color: var(--primary)">Transfer</td><td>Project unaffected</td></tr>
+            <tr><td>Supplier Credit Note — Credited</td><td>Financial adjustment (no stock impact)</td><td style="color: var(--accent)">Financial —</td><td>Supplier outstanding reduced by credit amount</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Material Allocation &amp; Consumption Tracking</h3>
+      <div class="callout callout-info">
+        <strong>MR = Complete Project Implementation Cost Baseline (four cost components):</strong>
+        MR is NOT just RM allocation. It carries four cost components that sum to the <strong>Total MR Cost</strong> — the project implementation cost baseline that <strong>Costing approves</strong>:
+        <ul>
+          <li><strong>Material Cost</strong> — from the per-project <strong>Material Allocation</strong> subform (one record per RM): Item Code, Item Name, UOM, <strong>Assigned Qty</strong> (allocation baseline), <strong>Rate</strong>, Material Cost (= Assigned Qty &times; Rate), <strong>Allocation Ratio %</strong> (share of total, sums to 100%), <strong>80% Threshold Alert Flag</strong> (default ON), <strong>Consumed Qty</strong> (running total), <strong>Consumption %</strong> (= Consumed Qty &divide; Assigned Qty &times; 100), <strong>Alert Triggered</strong> (auto-set at 80%). This establishes the project's material consumption budget.</li>
+          <li><strong>Application Cost</strong> — labour/execution cost to apply material on site (Activity, UOM, Qty/Area, Rate, Amount).</li>
+          <li><strong>Transportation Cost</strong> — transport of material to site (From, To, Vehicle/Trips, Rate, Amount).</li>
+          <li><strong>Tools &amp; Tackles</strong> — tools/equipment needed (Item, Qty, Rate, Amount).</li>
+        </ul>
+        <strong>Total MR Cost = Material Cost + Application Cost + Transportation Cost + Tools &amp; Tackles.</strong> Costing approves the <strong>TOTAL</strong> cost — not just the material portion.
+      </div>
+
+      <div class="callout callout-info">
+        <strong>Project Profitability Summary — for Sales / Actual Team:</strong> Costing must give the sales/actual team a clear profitability view: <strong>SO Revenue − Total Cost = Gross Margin / Margin %</strong>.
+        <ul>
+          <li><strong>SO Revenue</strong> — from SO System Lines (Σ Area × Rate) + SO Transportation.</li>
+          <li><strong>Total Cost</strong> = Material Cost + Application Cost + Transportation Cost + Tools &amp; Tackles (the four MR cost components) + Production Cost (BMR RM Consumption + Packing).</li>
+          <li><strong>Gross Margin</strong> = Revenue − Total Cost; <strong>Margin %</strong> = (Gross Margin / Revenue) × 100.</li>
+        </ul>
+        If Margin % falls below the set threshold, Costing flags the project before approval.
+      </div>
+      <div class="callout callout-warning">
+        <strong>MR Status Workflow (Critical Gate):</strong>
+        The MR carries a <strong>MR Status</strong> field with four states:
+        <strong>Draft</strong> (initial) → <strong>Pending Production Verification</strong> → <strong>Production Verified</strong> (Production checks MR quantities against SO system requirements via BOM) → <strong>Costing Approved</strong> (Costing approves the TOTAL project cost — all four components) → <strong>Released</strong> (MR is actionable).
+        Without <strong>Released</strong> status, MIS cannot issue stock, Production cannot start, and Logistics cannot dispatch.
+      </div>
+      <div class="callout callout-warning">
+        <strong>Consumption Resolution Rule:</strong>
+        Both <strong>FG production (BMR / RM Consumption)</strong> and <strong>Site Manager consumption entries</strong>
+        increment <code>Consumed Qty</code> on the MR Allocation line matched by
+        <code>Project ID + Item Code</code> — they never deduct from a generic stock pool for project-tagged material.
+        Site Manager entries against the SO System/FG are first expanded into RMs at BOM ratios
+        (System Composition → BOM), then each increment is applied to the matching Allocation line.
+      </div>
+      <div class="callout callout-danger">
+        <strong>80% Consumption Alert:</strong>
+        When any allocated RM's <code>Consumption % ≥ 80%</code> and the <code>80% Threshold Alert Flag</code> is ON,
+        the system fires three simultaneous notifications:
+        <ul>
+          <li><strong>Pop-up</strong> to the user saving the consumption entry</li>
+          <li><strong>Dashboard banner</strong> on the Project dashboard</li>
+          <li><strong>Email</strong> to Project Manager + Coordinator</li>
+        </ul>
+        At 100% consumption, the status escalates to <strong>"Allocation Exhausted"</strong> with a secondary alert.
+      </div>
+
+      <h3>Design Decisions</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Decision</th><th>Choice</th><th>Rationale</th></tr></thead>
+          <tbody>
+            <tr><td>Architecture</td><td>Project-Centric Hub</td><td>All modules tagged via Project ID lookup — like Zoho CRM Deals as parent</td></tr>
+            <tr><td>PO Line Items</td><td>N items + GST split</td><td>Like Zoho Books — CGST/SGST/IGST at line level</td></tr>
+            <tr><td>Warehouse</td><td>6 fixed + Client Site</td><td>Like Zoho Inventory warehouse tracking</td></tr>
+            <tr><td>Task Budget</td><td>Single table with Category dropdown</td><td>Simpler than 5 nested conditional sections</td></tr>
+            <tr><td>SO Mode</td><td>Supply+Apply → Project</td><td>Each SO creates a Project automatically</td></tr>
+            <tr><td>GRN Posting</td><td>Post = stock update + timestamp</td><td>Prevents accidental stock updates</td></tr>
+            <tr><td>Partial GRN</td><td>Checkbox per line item</td><td>Real-world partial deliveries</td></tr>
+            <tr><td>PO Series</td><td>RMWAD (Coding) / RM (Non-Coding)</td><td>Coding materials require stricter control</td></tr>
+            <tr><td>Bidirectional autofetch</td><td>Item Code ↔ Item Name</td><td>Like Zoho CRM lookup behavior</td></tr>
+            <tr><td>Supplier Credit — PO Link</td><td>Mandatory PO Reference</td><td>Every credit note MUST reference the original PO for audit trail — like Zoho Books Credit Note linked to Purchase Invoice</td></tr>
+            <tr><td>Supplier Credit — Source</td><td>QC/QA inspection results</td><td>Auto-fetch rejected qty from QC to minimize manual entry errors</td></tr>
+            <tr><td>Supplier Credit — Status</td><td>Draft → Approved → Credited → Cancelled</td><td>Finance workflow ensures proper approval before supplier balance adjustment</td></tr>
+            <tr><td>MR Material Allocation</td><td>Per-project RM budget subform (one of 4 MR cost components)</td><td>Assigned Qty + Rate + 80% Alert Flag + Consumed Qty → tracks consumption vs allocation at RM level (Material Cost component of the cost baseline)</td></tr>
+            <tr><td>MR Status Workflow</td><td>Draft → Pending Production Verification → Production Verified → Costing Approved → Released</td><td>Production verifies MR qty against SO system req; Costing approves the TOTAL project cost (all four components). No MIS/Production/Logistics without Released MR.</td></tr>
+            <tr><td>Project Baseline</td><td>SO + MR</td><td>SO = revenue side (System/FG scope). MR = complete project implementation cost baseline (Material + Application + Transportation + Tools &amp; Tackles) that Costing approves. Both anchor the project.</td></tr>
+            <tr><td>Consumption Resolution</td><td>Project ID + Item Code match</td><td>BMR/RM Consumption and Site Manager entries resolve to project-assigned RM, never generic pool</td></tr>
+            <tr><td>80% Consumption Alert</td><td>Pop-up + banner + email</td><td>Three-channel alert when any allocated RM hits 80% of Assigned Qty; escalates to "Allocation Exhausted" at 100%</td></tr>
+            <tr><td>Site Manager Consumption</td><td>BOM ratio expansion</td><td>Entries against SO System/FG are expanded to RMs at BOM ratios, then consumed from MR Allocation</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="footer">
+        <p>Chemsol — Zoho Creator ERP &middot; ITOTCloud Systems Pvt. Ltd.</p>
+        <p>Two-Stream Architecture · Project-Centric · Built on Zoho Creator India (.in)</p>
+      </div>
+    </div>
+  </div>
+  <script src="nav.js"></script>
+  <script src="interactive.js"></script>
+</body>
+</html>

@@ -1,0 +1,534 @@
+﻿<!DOCTYPE html>
+<html lang="en" data-implementation-complete="true">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chemsol — Reports &amp; Automation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="sidebar">
+    <h1>Chemsol<span class="client-badge">Zoho Creator ERP</span></h1>
+    <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="sidebar-nav" id="sidebarNav">
+
+      <!-- Zone 1: Flow Progress Bar -->
+      <div class="flow-progress">
+        <div class="fp-step" data-step="1"><span class="fp-circle">1</span></div>
+        <span class="fp-connector"></span>
+        <div class="fp-step" data-step="2"><span class="fp-circle">2</span></div>
+        <span class="fp-connector"></span>
+        <div class="fp-step" data-step="3"><span class="fp-circle">3</span></div>
+        <span class="fp-connector"></span>
+        <div class="fp-step" data-step="4"><span class="fp-circle">4</span></div>
+        <span class="fp-connector"></span>
+        <div class="fp-step" data-step="5"><span class="fp-circle">5</span></div>
+        <span class="fp-connector"></span>
+        <div class="fp-step" data-step="6"><span class="fp-circle">6</span></div>
+      </div>
+
+      <!-- Zone 2: Accordion Steps -->
+      <div class="accordion-stream-label">STREAM A — STOCK PROCUREMENT</div>
+
+      <div class="accordion-section">
+        <div class="accordion-header">
+          <span class="ah-num">1</span>
+          Procurement
+          <span class="ah-arrow">▶</span>
+        </div>
+        <div class="accordion-body">
+          <a class="ab-link" href="forms.html#procurement"><span class="al-type type-forms">Forms</span>PR→PO→GRN→QC</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Stock Reports</a>
+          <a class="ab-link" href="flow.html#pr-pr"><span class="al-type type-flow">Flow</span>Purchase Flow</a>
+        </div>
+      </div>
+
+      <div class="accordion-stream-label">STREAM B — PROJECT-CENTRIC</div>
+
+      <div class="accordion-section">
+        <div class="accordion-header">
+          <span class="ah-num">2</span>
+          Master Data
+          <span class="ah-arrow">▶</span>
+        </div>
+        <div class="accordion-body">
+          <a class="ab-link" href="forms.html#master-data"><span class="al-type type-forms">Forms</span>Item Muster → BOM → Supplier</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Item Reports</a>
+          <a class="ab-link" href="flow.html#master-data"><span class="al-type type-flow">Flow</span>Master Data</a>
+        </div>
+      </div>
+
+      <div class="accordion-section">
+        <div class="accordion-header">
+          <span class="ah-num">3</span>
+          SO → Project
+          <span class="ah-arrow">▶</span>
+        </div>
+        <div class="accordion-body">
+          <a class="ab-link" href="forms.html#sales"><span class="al-type type-forms">Forms</span>Sales Order + Project</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Sales Register</a>
+          <a class="ab-link" href="flow.html#so-so"><span class="al-type type-flow">Flow</span>SO Flow</a>
+        </div>
+      </div>
+
+      <div class="accordion-section">
+        <div class="accordion-header">
+          <span class="ah-num">4</span>
+          MR — Costing Gate
+          <span class="ah-arrow">▶</span>
+        </div>
+        <div class="accordion-body">
+          <a class="ab-link" href="forms.html#costing"><span class="al-type type-forms">Forms</span>MR + Costing Approval</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Cost Reports</a>
+          <a class="ab-link" href="flow.html#mr-flow"><span class="al-type type-flow">Flow</span>MR Flow</a>
+        </div>
+      </div>
+
+      <div class="accordion-section">
+        <div class="accordion-header">
+          <span class="ah-num">5</span>
+          Production
+          <span class="ah-arrow">▶</span>
+        </div>
+        <div class="accordion-body">
+          <a class="ab-link" href="forms.html#production"><span class="al-type type-forms">Forms</span>MIS→Planning→BMR→Pack→FGHM</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Production Reports</a>
+          <a class="ab-link" href="flow.html#prod-plan"><span class="al-type type-flow">Flow</span>Production Flow</a>
+        </div>
+      </div>
+
+      <div class="accordion-section">
+        <div class="accordion-header">
+          <span class="ah-num">6</span>
+          Inventory
+          <span class="ah-arrow">▶</span>
+        </div>
+        <div class="accordion-body">
+          <a class="ab-link" href="forms.html#inventory"><span class="al-type type-forms">Forms</span>RM + FG Stock</a>
+          <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Stock Reports</a>
+          <a class="ab-link" href="flow.html#inv-mr"><span class="al-type type-flow">Flow</span>Inventory Flow</a>
+        </div>
+      </div>
+
+      <!-- Zone 3: System Links -->
+      <div class="nav-divider">━━━━ QUICK NAV ━━━━</div>
+      <a href="index.html" class="sidebar-flat-link">🏠 Overview</a>
+      <a href="forms.html" class="sidebar-flat-link">📝 Forms</a>
+      <a href="flow.html" class="sidebar-flat-link">🔄 Flow Demo</a>
+      <a href="reports.html" class="sidebar-flat-link">📊 Reports</a>
+      <div class="nav-divider">━━━━ SYSTEM ━━━━</div>
+      <a href="automation.html" class="sidebar-flat-link">⚙ Automation Guide</a>
+      <a href="security.html" class="sidebar-flat-link">🔒 Security &amp; Roles</a>
+      <a href="data-model.html" class="sidebar-flat-link">📐 Data Model</a>
+      <a href="implementation-plan.html" class="sidebar-flat-link">📋 Implementation Plan</a>
+      <a href="BRD_PRD_RFP.md" class="sidebar-flat-link">📄 BRD / PRD / RFP</a>
+      <a href="../index.html" class="sidebar-flat-link">← Back to Hub</a>
+    </div>
+  </nav>
+  <div class="main">
+    <section class="hero">
+      <div class="hero-eyebrow">Dashboards · Reports · Automation</div>
+      <h1>Reports &amp; Business Rules</h1>
+      <p><strong>Stream A (Stock Procurement):</strong> Procurement reports — no Project ID filter. <strong>Stream B (Project-Centric):</strong> All project reports filterable by <strong>Project ID</strong>. Department dashboards cover Purchase, Store, Production, Sales, and MR/Costing.</p>
+    </section>
+
+    <div class="content">
+      <h2 id="reports">Department Dashboards</h2>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">1</span>
+          <span class="phase-title">Purchase Dept Dashboard</span>
+          <span class="phase-tag">Stream A — No Project ID</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Widget</th><th>Source</th><th>Key Reports</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Total Purchase This Month</strong></td><td>PO line items</td><td>Purchase by Item Group</td></tr>
+              <tr><td><strong>Open PO's</strong></td><td>PO header (Status ≠ Complete)</td><td>Open PO Register</td></tr>
+              <tr><td><strong>Pending PR Approvals</strong></td><td>PR (Status = Pending Approval)</td><td>PR Status Report</td></tr>
+              <tr><td><strong>PO vs GRN Reconciliation</strong></td><td>PO line items vs Σ GRN</td><td>PO vs GRN Pending Report</td></tr>
+              <tr><td><strong>Vendor Delivery Performance</strong></td><td>PO dates vs GRN dates</td><td>Vendor Performance Report</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p><strong>Core Reports:</strong> Open PO Register · PO vs GRN Pending · Vendor Performance · Purchase by Item Group</p>
+        <p><strong>Notifications:</strong> Pending PR Approval · PO Awaiting Release · Pending GRN · Overdue Delivery</p>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">2</span>
+          <span class="phase-title">Sales Dashboard</span>
+          <span class="phase-tag">Filtered by Project</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Widget</th><th>Source</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Sales Register</strong></td><td>SO Master</td><td>All SOs filterable by date, customer, status, Sales Type</td></tr>
+              <tr><td><strong>Project Status</strong></td><td>Project Master</td><td>Active projects per SO, completion %, stage tracking</td></tr>
+              <tr><td><strong>SO — Supply+Apply</strong></td><td>SO System Lines</td><td>Orders that auto-create projects — area, rate, amount</td></tr>
+              <tr><td><strong>SO — Supply Only</strong></td><td>SO FG Lines</td><td>Direct FG sale orders — qty, rate, amount</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p><strong>Core Reports:</strong> Sales Register · Project Status Report · SO Type-wise Summary</p>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">3</span>
+          <span class="phase-title">MR / Costing Dashboard</span>
+          <span class="phase-tag">Critical Gate — Project Cost Baseline</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Widget</th><th>Source</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><strong>MR Status Tracking</strong></td><td>MR Status</td><td>Count by stage: Draft / Verified / Approved / Released</td></tr>
+              <tr><td><strong>Project Cost Baseline</strong></td><td>MR total (4 components)</td><td>Material + Application + Transportation + Tools &amp; Tackles</td></tr>
+              <tr><td><strong>80% Consumption Alerts</strong></td><td>MR Allocation subform</td><td>RMs where Consumed % ≥ 80% — flagged for Project Manager</td></tr>
+              <tr><td><strong>Material Allocation vs Consumption</strong></td><td>MR Allocation subform</td><td>Per-project: Assigned Qty vs Consumed Qty per RM</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p><strong>Core Reports:</strong> MR Status Tracking · Project Cost Baseline · 80% Consumption Alert Dashboard · Material Allocation vs Consumption</p>
+        <p><strong>Notifications:</strong> MR stuck in Draft &gt; 7 days · MR in Production Verified &gt; 3 days (escalate to Costing) · MR Released → Store + Production · 80% Consumption Alert → Project Manager</p>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">4</span>
+          <span class="phase-title">Store Dept Dashboard</span>
+          <span class="phase-tag">Filtered by Project</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Widget</th><th>Source</th><th>Key Reports</th></tr></thead>
+            <tbody>
+              <tr><td><strong>RM Inventory Status</strong></td><td>Stock balance per RM item</td><td>RM Stock Status Report</td></tr>
+              <tr><td><strong>FG Inventory Stock</strong></td><td>Stock balance per FG item</td><td>FG Stock Report</td></tr>
+              <tr><td><strong>Reorder Alerts</strong></td><td>Min/Max thresholds</td><td>Items below reorder level</td></tr>
+              <tr><td><strong>Inventory Valuation</strong></td><td>Stock Qty × Standard Rate</td><td>Valuation summary by category</td></tr>
+              <tr><td><strong>Dispatch Planning</strong></td><td>PO, GRN, MIS, Return, Handover, FG</td><td>Pending issues and receipts</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p><strong>Core Reports:</strong> RM Inventory Status · FG Inventory Stock · Reorder Alerts · Inventory Valuation</p>
+        <p><strong>Notifications:</strong> MR Sheet from Costing · Pending Material Req · Pending FG Receiving · Stock below Min threshold</p>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">5</span>
+          <span class="phase-title">Production Dept Dashboard</span>
+          <span class="phase-tag">Filtered by Project</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Widget</th><th>Report Source</th></tr></thead>
+            <tbody>
+              <tr><td>Today's Production</td><td>Production Planning</td></tr>
+              <tr><td>Open Production Orders</td><td>Production Order</td></tr>
+              <tr><td>Planned / Completed Batches</td><td>BOM Formulation / RM Consumption</td></tr>
+              <tr><td>Material Consumption vs BOM</td><td>BMR vs BOM variance</td></tr>
+              <tr><td>Production Efficiency</td><td>Packing Entry</td></tr>
+              <tr><td>Pending FG Handover</td><td>FGHM / Rework Register</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p><strong>Core Reports:</strong> Daily Production Report · BOM vs Actual Consumption · FG Handover Pending</p>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">6</span>
+          <span class="phase-title">Project Management Dashboard</span>
+          <span class="phase-tag">Root Entity</span>
+        </div>
+        <div class="card-grid">
+          <div class="card"><h4>Open Projects</h4><p>Active projects with status</p></div>
+          <div class="card"><h4>Active PO's per Project</h4><p>Procurement tracking</p></div>
+          <div class="card"><h4>Running Status</h4><p>Task completion %</p></div>
+          <div class="card"><h4>MR Status per Project</h4><p>Cost baseline approval stage</p></div>
+          <div class="card"><h4>Material Allocation vs Consumption</h4><p>RM usage tracking</p></div>
+          <div class="card"><h4>80% Consumption Alerts</h4><p>Items nearing allocation limit</p></div>
+          <div class="card"><h4>Issues per Project</h4><p>Issue tracking</p></div>
+          <div class="card"><h4>Execution vs Achievement</h4><p>Target tracking</p></div>
+        </div>
+
+        <h3>Project Reports</h3>
+        <div class="card-grid">
+          <div class="card">Project Report (Overall)</div>
+          <div class="card">Monthly / Annual Report</div>
+          <div class="card">Sitewise Costing</div>
+          <div class="card">Manpower Report</div>
+          <div class="card">Machinery Report</div>
+          <div class="card">Tools Report</div>
+          <div class="card">Issues Report</div>
+          <div class="card">Material vs Work Completion</div>
+          <div class="card">Manpower vs Work Completion</div>
+          <div class="card">Transportation Report</div>
+          <div class="card">Loading/Unloading Report</div>
+          <div class="card">Consumable Report</div>
+          <div class="card">Task Report</div>
+        </div>
+      </div>
+
+      <h2>Automation &amp; Business Rules</h2>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">A</span>
+          <span class="phase-title">PO Receipt Status Report</span>
+          <span class="phase-tag">Per Line Item — PO vs GRN Reconciliation</span>
+        </div>
+        <p>Shows all PO line items with current receipt status. Tracks ordered vs received quantities for purchase follow-up.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Field</th><th>Source</th></tr></thead>
+            <tbody>
+              <tr><td>PO Number, Supplier, Project</td><td>PO header</td></tr>
+              <tr><td>Item Code, Item Name, Ordered Qty</td><td>PO line item</td></tr>
+              <tr><td>Total Received Qty</td><td>Σ GRN Received Qty per PO item</td></tr>
+              <tr><td>Balance Qty</td><td>Ordered − Received</td></tr>
+              <tr><td><strong>Receipt Status</strong></td><td>Pending / Partial / Complete — auto-formula</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p><strong>Filters:</strong> Receipt Status, Supplier, Project, PO Date Range. <strong>Export:</strong> PDF / CSV.</p>
+        <p><strong>Notification:</strong> Daily alert for PO items with "Partial" receipt status older than 15 days.</p>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">B</span>
+          <span class="phase-title">Procurement Flow</span>
+          <span class="phase-tag">PR→PO→GRN→QC</span>
+        </div>
+        <div class="tree">
+          <ul class="tree-list">
+            <li class="tree-item root"><span class="tree-label">SO <span class="tree-tag amber">Supply+Apply</span></span>
+              <ul class="tree-children">
+                <li class="tree-item"><span class="tree-label">Project Created <span class="tree-tag green">Auto</span></span>
+                  <ul class="tree-children">
+                    <li class="tree-item"><span class="tree-label">PR <span class="tree-tag blue">Tagged to Project</span></span>
+                      <ul class="tree-children">
+                        <li class="tree-item"><span class="tree-label">Approval <span class="tree-tag amber">Approval</span></span>
+                          <ul class="tree-children">
+                            <li class="tree-item"><span class="tree-label">PO <span class="tree-tag amber">RM/RMWAD, GST split</span></span>
+                              <ul class="tree-children">
+                                <li class="tree-item"><span class="tree-label">GRN <span class="tree-tag green">Partial via checkbox</span></span>
+                                  <ul class="tree-children">
+                                    <li class="tree-item"><span class="tree-label">QC/QA <span class="tree-tag purple">QC dept</span></span>
+                                      <ul class="tree-children">
+                                        <li class="tree-item"><span class="tree-label">Stock Updated <span class="tree-tag green">After posting</span></span></li>
+                                      </ul>
+                                    </li>
+                                  </ul>
+                                </li>
+                              </ul>
+                            </li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">C</span>
+          <span class="phase-title">Material Requisition (Cost Baseline) + Issue + FG Flow</span>
+          <span class="phase-tag">MR (Draft→Verified→Approved→Released) → MIS · FGHM</span>
+        </div>
+        <div class="callout callout-warning" style="font-size:13px;margin-bottom:16px">
+          <strong>⛔ Critical Gate:</strong> MR is the <strong>complete project implementation cost baseline</strong> — four cost components (Material + Application + Transportation + Tools &amp; Tackles) summing to the Total MR Cost that Costing approves. MR must be <strong>Released</strong> before MIS can issue stock. Status flow: <strong>Draft → Pending Production Verification → Production Verified → Costing Approved (TOTAL cost) → Released</strong>. Without a Released MR, there is no MIS, no Production, no project execution.
+        </div>
+        <div class="tree">
+          <ul class="tree-list">
+            <li class="tree-item root"><span class="tree-label">MR (Project Cost Baseline — 4 components) <span class="tree-tag blue">Tagged to Project</span></span>
+              <ul class="tree-children">
+                <li class="tree-item"><span class="tree-label">Draft <span class="tree-tag amber">Initial state</span></span>
+                  <ul class="tree-children">
+                    <li class="tree-item"><span class="tree-label">Production Verified <span class="tree-tag amber">Qty vs SO checked</span></span>
+                      <ul class="tree-children">
+                        <li class="tree-item"><span class="tree-label">Costing Approved <span class="tree-tag purple">Approves TOTAL project cost</span></span>
+                          <ul class="tree-children">
+                            <li class="tree-item"><span class="tree-label">Released <span class="tree-tag green">Gate passed</span></span>
+                              <ul class="tree-children">
+                                <li class="tree-item"><span class="tree-label">MIS <span class="tree-tag amber">Store issues — N items</span></span>
+                                  <ul class="tree-children">
+                                    <li class="tree-item"><span class="tree-label">Stock − <span class="tree-tag red">Deducted</span></span></li>
+                                  </ul>
+                                </li>
+                                <li class="tree-item"><span class="tree-label">Production <span class="tree-tag blue">Tagged to Project</span></span>
+                                  <ul class="tree-children">
+                                    <li class="tree-item"><span class="tree-label">FGHM <span class="tree-tag purple">Handover + Inline Acceptance</span></span>
+                                      <ul class="tree-children">
+                                        <li class="tree-item"><span class="tree-label">Notify Store</span>
+                                          <ul class="tree-children">
+                                            <li class="tree-item"><span class="tree-label">FG Stock + <span class="tree-tag green">Updated</span></span></li>
+                                          </ul>
+                                        </li>
+                                      </ul>
+                                    </li>
+                                  </ul>
+                                </li>
+                              </ul>
+                            </li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">D</span>
+          <span class="phase-title">MR Status &amp; Verification Report</span>
+          <span class="phase-tag">MR Workflow Tracking</span>
+        </div>
+        <p>Tracks all MRs across their lifecycle — from Draft through Production Verification and Costing Approval to Released. Shows current status, verification dates, and approvers.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Field</th><th>Source</th></tr></thead>
+            <tbody>
+              <tr><td>MR Number, Date, Project ID</td><td>MR header</td></tr>
+              <tr><td>MR Status</td><td>Draft / Pending Production Verification / Production Verified / Costing Approved / Released</td></tr>
+              <tr><td>Production Verified By / Date</td><td>Production user + timestamp</td></tr>
+              <tr><td>Costing Approved By / Date</td><td>Costing user + timestamp</td></tr>
+              <tr><td>Released By / Date</td><td>Costing user + timestamp (Released = Costing approval auto-releases)</td></tr>
+              <tr><td>Total Items / Total Qty</td><td>Sum of Required Qty per MR line</td></tr>
+              <tr><td>Total MR Cost</td><td>Material Cost + Application Cost + Transportation Cost + Tools &amp; Tackles</td></tr>
+              <tr><td>SO Reference (via Project)</td><td>AutoFetch from Project → SO</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p><strong>Filters:</strong> MR Status, Project ID, Date Range. <strong>Export:</strong> PDF / CSV.</p>
+        <p><strong>Business Rule:</strong> MRs stuck in "Draft" for &gt; 7 days trigger a reminder notification. MRs in "Production Verified" for &gt; 3 days trigger escalation to Costing.</p>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">E</span>
+          <span class="phase-title">Notification Triggers</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Event</th><th>Notifies</th><th>Type</th></tr></thead>
+            <tbody>
+              <tr><td>PR Submitted</td><td>Purchase (pending approval)</td><td>In-app</td></tr>
+              <tr><td>PR Approved</td><td>Production/R&amp;D user</td><td>In-app</td></tr>
+              <tr><td>PO Ready</td><td>Purchase dept</td><td>In-app</td></tr>
+              <tr><td>GRN Overdue</td><td>Purchase + Store</td><td>In-app</td></tr>
+              <tr><td>FGHM Submitted</td><td>Store &amp; Logistics</td><td>Pop-up</td></tr>
+              <tr><td>MR Submitted (Draft → Pending Verification)</td><td>Production dept</td><td>In-app</td></tr>
+              <tr><td>MR Production Verified (→ Pending Costing Approval)</td><td>Costing dept</td><td>In-app</td></tr>
+              <tr><td>MR Released</td><td>Store + Production</td><td>In-app + Email</td></tr>
+              <tr><td>80% Consumption Alert</td><td>Project Manager</td><td>Pop-up + Dashboard + Email</td></tr>
+              <tr><td>Allocation Exhausted (100%)</td><td>Project Manager + Purchase</td><td>Alert</td></tr>
+              <tr><td>Stock below Min threshold</td><td>Store + Purchase</td><td>Alert</td></tr>
+              <tr><td>Project Close</td><td>Project Manager</td><td>In-app + Email</td></tr>
+              <tr><td>Task Budget Actuals pending</td><td>Project Coordinator</td><td>Alert</td></tr>
+              <tr><td>MR stuck in Draft &gt; 7 days</td><td>Production dept</td><td>Reminder</td></tr>
+              <tr><td>MR in Production Verified &gt; 3 days</td><td>Costing dept</td><td>Escalation</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">F</span>
+          <span class="phase-title">AutoFetch Rules</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Source Field</th><th>Target Forms</th><th>Auto-fetched</th></tr></thead>
+            <tbody>
+              <tr><td>Item Code</td><td>PR, PO, MR, MIS, GRN, FGHM, BOM, QC</td><td>Name, UOM, Category, HSN, GST%, Lead Time</td></tr>
+              <tr><td>Supplier Code</td><td>PO, GRN</td><td>Name, GSTIN, Address, Contact</td></tr>
+              <tr><td>PR No</td><td>PO</td><td>Items, Product Details</td></tr>
+              <tr><td>PO No</td><td>GRN</td><td>Supplier, Items, Ordered Qty, Project</td></tr>
+              <tr><td>MR No</td><td>MIS</td><td>Items, Required Qty, Project</td></tr>
+              <tr><td>Project ID</td><td>PR, PO, GRN, MR, MIS, Production, FGHM</td><td>Project Name, Manager</td></tr>
+              <tr><td>System Code</td><td>SO, BOM, Project</td><td>System Name</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">G</span>
+          <span class="phase-title">Numbering Series</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Document</th><th>Format</th></tr></thead>
+            <tbody>
+              <tr><td>PR</td><td>PR-YYYY-XXXX</td></tr>
+              <tr><td>PO (Non-Coding)</td><td>RM-YYYY-XXXX</td></tr>
+              <tr><td>PO (Coding)</td><td>RMWAD-YYYY-XXXX</td></tr>
+              <tr><td>GRN</td><td>GRN-YYYY-XXXX (after posting)</td></tr>
+              <tr><td>MR</td><td>MR-YYYY-XXXX</td></tr>
+              <tr><td>MIS</td><td>Auto against MR</td></tr>
+              <tr><td>FGH</td><td>FGH-YYYY-XXXX</td></tr>
+              <tr><td>QC</td><td>QC-YYYY-XXXX</td></tr>
+              <tr><td>SO</td><td>SO-YYYY-XXXX</td></tr>
+              <tr><td>Project</td><td>PRJ-YYYY-XXXX</td></tr>
+              <tr><td>System Composition</td><td>SC-YYYY-XXXX</td></tr>
+              <tr><td>BOM / FG Formulation</td><td>BOM-YYYY-XXXX</td></tr>
+              <tr><td>Production Planning</td><td>PLAN-YYYY-XXXX</td></tr>
+              <tr><td>BMR</td><td>BMR-YYYY-XXXX</td></tr>
+              <tr><td>Customer / Site Master</td><td>CUST-YYYY-XXXX</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">H</span>
+          <span class="phase-title">Stock Management Rules</span>
+        </div>
+        <ul style="color: var(--gray-600); margin: 12px 0; padding-left: 20px;">
+          <li style="margin-bottom: 6px;"><strong>GRN posting</strong> — Qty added to stock only after posting; timestamp logged</li>
+          <li style="margin-bottom: 6px;"><strong>MIS posting</strong> — Qty deducted from stock</li>
+          <li style="margin-bottom: 6px;"><strong>FGHM inline acceptance</strong> — FG qty added to stock after inline acceptance</li>
+          <li style="margin-bottom: 6px;"><strong>Material Return</strong> — Qty added back to stock</li>
+          <li style="margin-bottom: 6px;"><strong>Min/Max stock</strong> — Alert when stock crosses thresholds</li>
+          <li style="margin-bottom: 6px;"><strong>Consumption → Project-Assigned RM</strong> — Every consumption entry (BMR/RM Consumption) resolves to MR Allocation line matched by Project ID + Item Code</li>
+          <li style="margin-bottom: 6px;"><strong>80% Alert</strong> — When Consumption % ≥ 80% and Alert Flag = ON → pop-up + dashboard banner + email to Project Manager</li>
+        </ul>
+      </div>
+
+      <div class="footer">
+        <p>Chemsol — Zoho Creator ERP &middot; ITOTCloud Systems Pvt. Ltd.</p>
+        <p>Two-Stream Architecture · Project-Centric · Built on Zoho Creator India (.in)</p>
+      </div>
+    </div>
+  </div>
+  <script src="nav.js"></script>
+  <script src="interactive.js"></script>
+</body>
+</html>
