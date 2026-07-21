@@ -232,10 +232,10 @@
             <table>
               <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
               <tbody>
-                <tr><td>1</td><td>FG Product Code</td><td>Lookup</td><td>*</td><td>From Purchase Item Muster (FG items)</td></tr>
-                <tr><td>2</td><td>FG Product Name</td><td>AutoFetch</td><td>*</td><td>—</td></tr>
+                <tr><td>1</td><td>FG Product Code</td><td>Lookup (Item Muster - FG)</td><td>*</td><td>—</td></tr>
+                <tr><td>2</td><td>FG Product Name</td><td>AutoFetch (from FG Product Code)</td><td>*</td><td>—</td></tr>
                 <tr><td>3</td><td>Qty per System Unit</td><td>Number</td><td>*</td><td>How much FG needed per 1 unit of System</td></tr>
-                <tr><td>4</td><td>UOM</td><td>AutoFetch</td><td>*</td><td>From Item Muster</td></tr>
+                <tr><td>4</td><td>UOM</td><td>AutoFetch (from Item Muster via FG Code)</td><td>*</td><td>—</td></tr>
                 <tr><td>5</td><td>Rate per FG Unit</td><td>Currency</td><td></td><td>For costing</td></tr>
               </tbody>
             </table>
@@ -256,8 +256,8 @@
               <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
               <tbody>
                 <tr><td>1</td><td>BOM No</td><td>Autogen</td><td>*</td><td>—</td></tr>
-                <tr><td>2</td><td>FG Code</td><td>Lookup</td><td>*</td><td>From Purchase Item Muster (FG)</td></tr>
-                <tr><td>3</td><td>FG Name</td><td>AutoFetch</td><td>*</td><td>—</td></tr>
+                <tr><td>2</td><td>FG Code</td><td>Lookup (Item Muster - FG)</td><td>*</td><td>—</td></tr>
+                <tr><td>3</td><td>FG Name</td><td>AutoFetch (from FG Code)</td><td>*</td><td>—</td></tr>
                 <tr><td>4</td><td>Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
                 <tr><td>5</td><td>Status</td><td>Dropdown</td><td>*</td><td>Draft / Approved / Released</td></tr>
               </tbody>
@@ -268,9 +268,9 @@
             <table>
               <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
               <tbody>
-                <tr><td>1</td><td>RM Item Code</td><td>Lookup</td><td>*</td><td>From Purchase Item Muster (RM items)</td></tr>
-                <tr><td>2</td><td>RM Name</td><td>AutoFetch</td><td>*</td><td>—</td></tr>
-                <tr><td>3</td><td>UOM</td><td>AutoFetch</td><td>*</td><td>From Item Muster</td></tr>
+                <tr><td>1</td><td>RM Item Code</td><td>Lookup (Item Muster - RM)</td><td>*</td><td>—</td></tr>
+                <tr><td>2</td><td>RM Name</td><td>AutoFetch (from RM Item Code)</td><td>*</td><td>—</td></tr>
+                <tr><td>3</td><td>UOM</td><td>AutoFetch (from Item Muster via RM Code)</td><td>*</td><td>—</td></tr>
                 <tr><td>4</td><td>Qty per FG Unit</td><td>Number</td><td>*</td><td>RM consumption per 1 FG unit</td></tr>
                 <tr><td>5</td><td>Waste %</td><td>Number</td><td></td><td>—</td></tr>
                 <tr><td>6</td><td>Total Qty</td><td>Formula</td><td>*</td><td>Qty + Waste%</td></tr>
@@ -410,7 +410,7 @@
                 <tr><td>2</td><td>SO No</td><td>Autogen</td><td>*</td><td>—</td></tr>
                 <tr><td>3</td><td>SO Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
                 <tr><td>4</td><td>Employee Name</td><td>Text</td><td>*</td><td>—</td></tr>
-                <tr><td>5</td><td>Customer Code</td><td>Lookup</td><td></td><td>From Customer Master</td></tr>
+                <tr><td>5</td><td>Customer Code</td><td>Lookup (Customer/Site Master) → AutoFetch: Org Name, GST, Contact</td><td></td><td>—</td></tr>
                 <tr><td>6</td><td>Client Org / Contact / GST / PAN</td><td>Text</td><td>*</td><td>—</td></tr>
                 <tr><td>7</td><td>Regd Address</td><td>Multi-line</td><td>*</td><td>—</td></tr>
                 <tr><td>8</td><td>Site Name / Address</td><td>Text / Multi-line</td><td>*</td><td>—</td></tr>
@@ -451,10 +451,10 @@
             <table>
               <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
               <tbody>
-                <tr><td>1</td><td>FG Code</td><td>Lookup (Item Muster — FG)</td><td>AutoFetch Name</td></tr>
-                <tr><td>2</td><td>FG Name</td><td>AutoFetch</td><td>—</td></tr>
+                <tr><td>1</td><td>FG Code</td><td>Lookup (Item Muster - FG) → AutoFetch: Name, UOM</td><td>—</td></tr>
+                <tr><td>2</td><td>FG Name</td><td>AutoFetch (from FG Code)</td><td>—</td></tr>
                 <tr><td>3</td><td>Qty</td><td>Number</td><td>FG quantity sold</td></tr>
-                <tr><td>4</td><td>UOM</td><td>AutoFetch</td><td>From Item Muster</td></tr>
+                <tr><td>4</td><td>UOM</td><td>AutoFetch (from FG Code via Item Muster)</td><td>—</td></tr>
                 <tr><td>5</td><td>Rate</td><td>Currency</td><td>FG unit rate</td></tr>
                 <tr><td>6</td><td>Amount</td><td>Formula</td><td>Qty × Rate</td></tr>
               </tbody>
@@ -478,7 +478,7 @@
               <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
               <tbody>
                 <tr><td>1</td><td>Project ID</td><td>Autogen</td><td>*</td><td>—</td></tr>
-                <tr><td>2</td><td>SO Reference</td><td>Lookup</td><td>*</td><td>Auto-filled from SO acceptance</td></tr>
+                <tr><td>2</td><td>SO Reference</td><td>Lookup (Sales Order Master) → AutoFetch: SO No, Customer, Amount</td><td>*</td><td>Auto-filled from SO acceptance</td></tr>
                 <tr><td>3</td><td>Project Name</td><td>Text</td><td>*</td><td>—</td></tr>
                 <tr><td>4</td><td>Address</td><td>Multi-line</td><td>*</td><td>—</td></tr>
                 <tr><td>5</td><td>Project Manager</td><td>User lookup</td><td>*</td><td>—</td></tr>
@@ -557,11 +557,11 @@
             <table>
               <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
               <tbody>
-                <tr><td>1</td><td>Item Code</td><td>Lookup (Item Muster)</td><td>*</td><td>—</td></tr>
-                <tr><td>2</td><td>Item Name</td><td>AutoFetch</td><td>*</td><td>—</td></tr>
+                <tr><td>1</td><td>Item Code</td><td>Lookup (Item Muster - RM only via filter)</td><td>*</td><td>—</td></tr>
+                <tr><td>2</td><td>Item Name</td><td>AutoFetch (from Item Code)</td><td>*</td><td>—</td></tr>
                 <tr><td>3</td><td>Category</td><td>AutoFetch</td><td>*</td><td>From Item Muster</td></tr>
                 <tr><td>4</td><td>UOM</td><td>AutoFetch</td><td>*</td><td>From Item Muster</td></tr>
-                <tr><td>5</td><td>Available Stock</td><td>AutoFetch (real-time)</td><td>*</td><td>From inventory</td></tr>
+                <tr><td>5</td><td>Available Stock</td><td>AutoFetch from RM Inventory (real-time via stock summary)</td><td>*</td><td>—</td></tr>
                 <tr><td>6</td><td>Required Qty</td><td>Number</td><td>*</td><td>—</td></tr>
                 <tr><td>7</td><td>Remarks</td><td>Multi-line</td><td></td><td>—</td></tr>
               </tbody>
@@ -576,7 +576,7 @@
             <table>
               <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
               <tbody>
-                <tr><td>1</td><td>Item Code</td><td>Lookup (RM)</td><td>Auto-populated from MR lines</td></tr>
+                <tr><td>1</td><td>Item Code</td><td>Lookup (Item Muster - RM)</td><td>Auto-populated from MR lines</td></tr>
                 <tr><td>2</td><td>Item Name</td><td>AutoFetch</td><td>—</td></tr>
                 <tr><td>3</td><td>UOM</td><td>AutoFetch</td><td>—</td></tr>
                 <tr><td>4</td><td>Assigned Qty</td><td>Number</td><td>Allocation baseline — defaults from Required Qty</td></tr>
@@ -675,7 +675,7 @@
               <tbody>
                 <tr><td>1</td><td>PR Number</td><td>Autogen</td><td>*</td><td>PR-YYYY-XXXX</td></tr>
                 <tr><td>2</td><td>PR Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
-                <tr><td>3</td><td>Project ID</td><td>Lookup</td><td>*</td><td>From Project Master</td></tr>
+                <tr><td>3</td><td>Project ID</td><td>Lookup (Project Master)</td><td>*</td><td>From Project Master</td></tr>
                 <tr><td>4</td><td>Reference</td><td>Text</td><td></td><td>Manual reference</td></tr>
                 <tr><td>5</td><td>Department</td><td>AutoFetch from login</td><td>*</td><td>—</td></tr>
                 <tr><td>6</td><td>Status</td><td>Dropdown</td><td>*</td><td>Draft / Pending Approval / Approved / Rejected</td></tr>
@@ -688,10 +688,10 @@
               <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
               <tbody>
                 <tr><td>1</td><td>Item Code</td><td>Lookup (Item Muster)</td><td>*</td><td>Bidirectional autofill with Name</td></tr>
-                <tr><td>2</td><td>Item Name</td><td>AutoFetch</td><td>*</td><td>—</td></tr>
+                <tr><td>2</td><td>Item Name</td><td>AutoFetch (from Item Code)</td><td>*</td><td>—</td></tr>
                 <tr><td>3</td><td>Qty</td><td>Number</td><td>*</td><td>—</td></tr>
-                <tr><td>4</td><td>UOM</td><td>AutoFetch</td><td>*</td><td>From Item Muster</td></tr>
-                <tr><td>5</td><td>Lead Time</td><td>AutoFetch (Days)</td><td></td><td>From Item Muster</td></tr>
+                <tr><td>4</td><td>UOM</td><td>AutoFetch (from Item Code via Item Muster)</td><td>*</td><td>—</td></tr>
+                <tr><td>5</td><td>Lead Time</td><td>AutoFetch (from Item Muster via Item Code)</td><td></td><td>—</td></tr>
               </tbody>
             </table>
           </div>
@@ -717,7 +717,7 @@
                 <tr><td>4</td><td>Supplier Code</td><td>Lookup (Supplier Master)</td><td>*</td><td>AutoFetch Name, GSTIN, Address</td></tr>
                 <tr><td>5</td><td>Supplier Name / GSTIN</td><td>AutoFetch</td><td>*</td><td>—</td></tr>
                 <tr><td>6</td><td>Project ID</td><td>Lookup (Project Master)</td><td></td><td>For project-tagged procurement</td></tr>
-                <tr><td>7</td><td>PR Reference</td><td>Lookup</td><td></td><td>From PR</td></tr>
+                <tr><td>7</td><td>PR Reference</td><td>Lookup (PR Master) → AutoFetch: Items, Qty</td><td></td><td>—</td></tr>
                 <tr><td>8</td><td>Bill To / Ship To</td><td>Dropdown</td><td>*</td><td>Address list</td></tr>
               </tbody>
             </table>
@@ -727,8 +727,8 @@
             <table>
               <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
               <tbody>
-                <tr><td>1</td><td>Item Code</td><td>Lookup (Item Muster)</td><td>*</td><td>—</td></tr>
-                <tr><td>2</td><td>Item Name / HSN</td><td>AutoFetch</td><td>*</td><td>From Item Muster</td></tr>
+                <tr><td>1</td><td>Item Code</td><td>Lookup (Item Muster) → AutoFetch: Name, HSN, GST%, UOM</td><td>*</td><td>—</td></tr>
+                <tr><td>2</td><td>Item Name / HSN</td><td>AutoFetch (from Item Code)</td><td>*</td><td>—</td></tr>
                 <tr><td>3</td><td>Quantity</td><td>Number</td><td>*</td><td>Ordered quantity</td></tr>
                 <tr><td>4</td><td>Rate</td><td>Currency</td><td>*</td><td>—</td></tr>
                 <tr><td>5</td><td>Basic Amount</td><td>Formula</td><td>*</td><td>Qty × Rate</td></tr>
@@ -772,7 +772,7 @@
               <tbody>
                 <tr><td>1</td><td>GRN Number</td><td>Autogen (after posting)</td><td>*</td><td>GRN-YYYY-XXXX</td></tr>
                 <tr><td>2</td><td>GRN Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
-                <tr><td>3</td><td>PO Number</td><td>Lookup</td><td>*</td><td>AutoFetch Supplier, Items, Qty</td></tr>
+                <tr><td>3</td><td>PO Number</td><td>Lookup (PO Master) → AutoFetch: Supplier Name, Items, Ordered Qty, Project ID</td><td>*</td><td>—</td></tr>
                 <tr><td>4</td><td>Project ID</td><td>AutoFetch from PO</td><td>*</td><td>—</td></tr>
                 <tr><td>5</td><td>Vehicle Number</td><td>Text</td><td>*</td><td>—</td></tr>
                 <tr><td>6</td><td>Warehouse</td><td>Dropdown</td><td>*</td><td>Wadki / Main / Neelo / Gurgaon / Bangalore / Client Site</td></tr>
@@ -783,14 +783,14 @@
           <h4>Line Items (Checkbox for partial GRN)</h4>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Source</th><th>Notes</th></tr></thead>
               <tbody>
-                <tr><td>1</td><td>✅ Checkbox</td><td>Checkbox</td><td></td><td>Select items for partial GRN</td></tr>
-                <tr><td>2</td><td>Item Code / Name</td><td>AutoFetch</td><td>*</td><td>From PO</td></tr>
-                <tr><td>3</td><td>Ordered Qty</td><td>AutoFetch</td><td>*</td><td>From PO</td></tr>
-                <tr><td>4</td><td>Received Qty</td><td>Number</td><td>*</td><td>—</td></tr>
-                <tr><td>5</td><td>QC Status</td><td>Dropdown</td><td></td><td>Pending / Pass / Fail</td></tr>
-                <tr><td>6</td><td>Packing Quality</td><td>Dropdown</td><td></td><td>Good / Damaged / Partial</td></tr>
+                <tr><td>1</td><td>✅ Checkbox</td><td>Checkbox</td><td></td><td></td><td>Select items for partial GRN</td></tr>
+                <tr><td>2</td><td>Item Code / Name</td><td>AutoFetch (from PO via PO Number)</td><td>*</td><td>PO Master</td><td>—</td></tr>
+                <tr><td>3</td><td>Ordered Qty</td><td>AutoFetch (from PO via PO Number)</td><td>*</td><td>PO Master</td><td>—</td></tr>
+                <tr><td>4</td><td>Received Qty</td><td>Number</td><td>*</td><td></td><td>—</td></tr>
+                <tr><td>5</td><td>QC Status</td><td>Dropdown</td><td></td><td></td><td>Pending / Pass / Fail</td></tr>
+                <tr><td>6</td><td>Packing Quality</td><td>Dropdown</td><td></td><td></td><td>Good / Damaged / Partial</td></tr>
               </tbody>
             </table>
           </div>
@@ -824,7 +824,7 @@
               <tbody>
                 <tr><td>1</td><td>QC Number</td><td>Autogen</td><td>*</td><td>QC-YYYY-XXXX</td></tr>
                 <tr><td>2</td><td>Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
-                <tr><td>3</td><td>GRN Number</td><td>Lookup</td><td>*</td><td>From GRN</td></tr>
+                <tr><td>3</td><td>GRN Number</td><td>Lookup (GRN Master) → AutoFetch: Item No, Name, Received Qty</td><td>*</td><td>From GRN</td></tr>
                 <tr><td>4</td><td>Item No / Name</td><td>AutoFetch from GRN</td><td>*</td><td>—</td></tr>
               </tbody>
             </table>
@@ -880,13 +880,13 @@
           <h4>Line Items (auto-fetched from MR)</h4>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Source</th><th>Notes</th></tr></thead>
               <tbody>
-                <tr><td>1</td><td>Item Code / Name</td><td>AutoFetch</td><td>*</td><td>From MR</td></tr>
-                <tr><td>2</td><td>Category</td><td>AutoFetch</td><td>*</td><td>From MR</td></tr>
-                <tr><td>3</td><td>Required Qty</td><td>AutoFetch</td><td>*</td><td>From MR</td></tr>
-                <tr><td>4</td><td>Issued Qty</td><td>Number</td><td>*</td><td>—</td></tr>
-                <tr><td>5</td><td>Balance Qty</td><td>Formula</td><td></td><td>Required − Issued</td></tr>
+                <tr><td>1</td><td>Item Code / Name</td><td>AutoFetch (from MR line items via MR No)</td><td>*</td><td>MR</td><td>—</td></tr>
+                <tr><td>2</td><td>Category</td><td>AutoFetch</td><td>*</td><td>MR</td><td>—</td></tr>
+                <tr><td>3</td><td>Required Qty</td><td>AutoFetch</td><td>*</td><td>MR</td><td>—</td></tr>
+                <tr><td>4</td><td>Issued Qty</td><td>Number</td><td>*</td><td></td><td>—</td></tr>
+                <tr><td>5</td><td>Balance Qty</td><td>Formula</td><td></td><td></td><td>Required − Issued</td></tr>
               </tbody>
             </table>
           </div>
@@ -908,8 +908,8 @@
               <tbody>
                 <tr><td>1</td><td>Planning No</td><td>Autogen</td><td>*</td><td>—</td></tr>
                 <tr><td>2</td><td>Planning Date</td><td>Date</td><td>*</td><td>—</td></tr>
-                <tr><td>3</td><td>Project ID</td><td>Lookup</td><td>*</td><td>From Project Master</td></tr>
-                <tr><td>4</td><td>MR Sheet No</td><td>Lookup</td><td>*</td><td>From MR</td></tr>
+                <tr><td>3</td><td>Project ID</td><td>Lookup (Project Master) → AutoFetch: Project Name, Manager</td><td>*</td><td>From Project Master</td></tr>
+                <tr><td>4</td><td>MR Sheet No</td><td>Lookup (MR — Released only) → AutoFetch: Items, Qty</td><td>*</td><td>From MR</td></tr>
                 <tr><td>5</td><td>Planning Period</td><td>Dropdown</td><td>*</td><td>Week / Month</td></tr>
                 <tr><td>6</td><td>Plant</td><td>Dropdown</td><td></td><td>—</td></tr>
                 <tr><td>7</td><td>Planner Name</td><td>User lookup</td><td>*</td><td>—</td></tr>
@@ -933,25 +933,25 @@
               <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
               <tbody>
                 <tr><td>1</td><td>BMR No</td><td>Autogen</td><td>*</td><td>BMR-YYYY-XXXX</td></tr>
-                <tr><td>2</td><td>Production Order Ref</td><td>Lookup</td><td>*</td><td>From Production Planning</td></tr>
-                <tr><td>3</td><td>Project ID</td><td>Lookup</td><td>*</td><td>From Project Master</td></tr>
+                <tr><td>2</td><td>Production Order Ref</td><td>Lookup (Production Planning) → AutoFetch: Project ID, FG Code, Planned Qty</td><td>*</td><td>—</td></tr>
+                <tr><td>3</td><td>Project ID</td><td>AutoFetch (from Production Order Ref)</td><td>*</td><td>—</td></tr>
                 <tr><td>4</td><td>Batch No</td><td>Text</td><td>*</td><td>—</td></tr>
                 <tr><td>5</td><td>Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
-                <tr><td>6</td><td>System Code / FG Code</td><td>Lookup</td><td>*</td><td>From System Master or Item Muster</td></tr>
+                <tr><td>6</td><td>FG Code</td><td>Lookup (Item Muster - FG) → AutoFetch: FG Name, BOM RM list</td><td>*</td><td>—</td></tr>
               </tbody>
             </table>
           </div>
           <h4>Line Items</h4>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Source</th><th>Notes</th></tr></thead>
               <tbody>
-                <tr><td>1</td><td>RM Item Code</td><td>Lookup (Item Muster — RM)</td><td>*</td><td>—</td></tr>
-                <tr><td>2</td><td>RM Item Name</td><td>AutoFetch</td><td>*</td><td>—</td></tr>
-                <tr><td>3</td><td>Batch No (RM)</td><td>Text</td><td></td><td>—</td></tr>
-                <tr><td>4</td><td>Qty Consumed</td><td>Number</td><td>*</td><td>—</td></tr>
-                <tr><td>5</td><td>UOM</td><td>AutoFetch</td><td>*</td><td>—</td></tr>
-                <tr><td>6</td><td>Yield / FG Output</td><td>Number</td><td></td><td>—</td></tr>
+                <tr><td>1</td><td>RM Item Code</td><td>Lookup (Item Muster - RM) → AutoFetch: Name, UOM</td><td>*</td><td>Item Muster</td><td>—</td></tr>
+                <tr><td>2</td><td>RM Item Name</td><td>AutoFetch (from RM Item Code)</td><td>*</td><td>Item Muster</td><td>—</td></tr>
+                <tr><td>3</td><td>Batch No (RM)</td><td>Text</td><td></td><td></td><td>—</td></tr>
+                <tr><td>4</td><td>Qty Consumed</td><td>Number</td><td>*</td><td></td><td>—</td></tr>
+                <tr><td>5</td><td>UOM</td><td>AutoFetch (from RM Item Code via Item Muster)</td><td>*</td><td>Item Muster</td><td>—</td></tr>
+                <tr><td>6</td><td>Yield / FG Output</td><td>Number</td><td></td><td></td><td>—</td></tr>
               </tbody>
             </table>
           </div>
@@ -967,13 +967,13 @@
           <p>Reference to BMR. Item-wise consumption tracking with variance against BOM standard.</p>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Source</th><th>Notes</th></tr></thead>
               <tbody>
-                <tr><td>1</td><td>Reference to BMR</td><td>Lookup</td><td>*</td><td>From BMR</td></tr>
-                <tr><td>2</td><td>Item-wise RM</td><td>Lookup</td><td>*</td><td>From Item Muster (RM)</td></tr>
-                <tr><td>3</td><td>Actual Qty</td><td>Number</td><td>*</td><td>—</td></tr>
-                <tr><td>4</td><td>Standard Qty</td><td>AutoFetch</td><td>*</td><td>From BOM</td></tr>
-                <tr><td>5</td><td>Variance</td><td>Formula</td><td></td><td>Actual − Standard</td></tr>
+                <tr><td>1</td><td>Reference to BMR</td><td>Lookup (BMR Master) → AutoFetch: FG Code, Batch No, RM Items</td><td>*</td><td>BMR</td><td>—</td></tr>
+                <tr><td>2</td><td>Item-wise RM</td><td>Lookup (Item Muster - RM, filtered by BMR items)</td><td>*</td><td>Item Muster</td><td>—</td></tr>
+                <tr><td>3</td><td>Actual Qty</td><td>Number</td><td>*</td><td></td><td>—</td></tr>
+                <tr><td>4</td><td>Standard Qty</td><td>AutoFetch (from BOM via FG Code)</td><td>*</td><td>BOM / FG Formulation</td><td>—</td></tr>
+                <tr><td>5</td><td>Variance</td><td>Formula</td><td></td><td></td><td>Actual − Standard</td></tr>
               </tbody>
             </table>
           </div>
@@ -989,13 +989,13 @@
           <p>FG product packing with material consumption tracking.</p>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Source</th><th>Notes</th></tr></thead>
               <tbody>
-                <tr><td>1</td><td>BMR Reference</td><td>Lookup</td><td>*</td><td>From BMR</td></tr>
-                <tr><td>2</td><td>FG Product</td><td>Lookup</td><td>*</td><td>From Item Muster (FG)</td></tr>
-                <tr><td>3</td><td>Packed Qty</td><td>Number</td><td>*</td><td>—</td></tr>
-                <tr><td>4</td><td>Packing Material Consumed</td><td>Lookup + Qty</td><td></td><td>Item Code, Qty</td></tr>
-                <tr><td>5</td><td>Batch No</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>1</td><td>BMR Reference</td><td>Lookup (BMR Master) → AutoFetch: FG Code, Batch No</td><td>*</td><td>BMR</td><td>—</td></tr>
+                <tr><td>2</td><td>FG Product</td><td>Lookup (Item Muster - FG) → AutoFetch: FG Name, UOM</td><td>*</td><td>Item Muster</td><td>—</td></tr>
+                <tr><td>3</td><td>Packed Qty</td><td>Number</td><td>*</td><td></td><td>—</td></tr>
+                <tr><td>4</td><td>Packing Material Consumed</td><td>Lookup (Item Muster - Packaging) + Qty</td><td></td><td>Item Muster</td><td>Item Code, Qty</td></tr>
+                <tr><td>5</td><td>Batch No</td><td>AutoFetch (from BMR Reference)</td><td>*</td><td>BMR</td><td>—</td></tr>
               </tbody>
             </table>
           </div>
@@ -1023,17 +1023,17 @@
           <h4>Line Items</h4>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Source</th><th>Notes</th></tr></thead>
               <tbody>
-                <tr><td>1</td><td>FG Product Code</td><td>Lookup (Item Muster — FG)</td><td>*</td><td>—</td></tr>
-                <tr><td>2</td><td>FG Product Name</td><td>AutoFetch</td><td>*</td><td>—</td></tr>
-                <tr><td>3</td><td>FG Qty</td><td>Number</td><td>*</td><td>Handover quantity</td></tr>
-                <tr><td>4</td><td>UOM</td><td>AutoFetch</td><td>*</td><td>—</td></tr>
-                <tr><td>5</td><td>QC Status</td><td>Dropdown</td><td>*</td><td>Pass / Fail / Hold</td></tr>
-                <tr><td>6</td><td>Damaged Qty</td><td>Number</td><td></td><td>Inline acceptance</td></tr>
-                <tr><td>7</td><td>Accepted Qty</td><td>Formula</td><td>*</td><td>FG Qty − Damaged Qty</td></tr>
-                <tr><td>8</td><td>Handed Over By</td><td>Text</td><td>*</td><td>—</td></tr>
-                <tr><td>9</td><td>Received By</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>1</td><td>FG Product Code</td><td>Lookup (Item Muster - FG) → AutoFetch: Name, UOM</td><td>*</td><td>Item Muster</td><td>—</td></tr>
+                <tr><td>2</td><td>FG Product Name</td><td>AutoFetch (from FG Product Code)</td><td>*</td><td>Item Muster</td><td>—</td></tr>
+                <tr><td>3</td><td>FG Qty</td><td>Number</td><td>*</td><td></td><td>Handover quantity</td></tr>
+                <tr><td>4</td><td>UOM</td><td>AutoFetch (from FG Product Code via Item Muster)</td><td>*</td><td>Item Muster</td><td>—</td></tr>
+                <tr><td>5</td><td>QC Status</td><td>Dropdown</td><td>*</td><td></td><td>Pass / Fail / Hold</td></tr>
+                <tr><td>6</td><td>Damaged Qty</td><td>Number</td><td></td><td></td><td>Inline acceptance</td></tr>
+                <tr><td>7</td><td>Accepted Qty</td><td>Formula</td><td>*</td><td></td><td>FG Qty − Damaged Qty</td></tr>
+                <tr><td>8</td><td>Handed Over By</td><td>Text</td><td>*</td><td></td><td>—</td></tr>
+                <tr><td>9</td><td>Received By</td><td>Text</td><td>*</td><td></td><td>—</td></tr>
               </tbody>
             </table>
           </div>

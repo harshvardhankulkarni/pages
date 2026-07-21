@@ -80,7 +80,7 @@ Build first — all transactional forms depend on these.
 |---|-------|------|-----|
 | 1 | Comp No | Autogen (SC-YYYY-XXXX) | * |
 | 2 | System Code | Lookup (System Master) | * |
-| 3 | System Name | AutoFetch | * |
+| 3 | System Name | AutoFetch (from System Code) | * |
 | 4 | Revision No | Text | |
 | 5 | Date | Date (Today) | * |
 | 6 | Status | Draft / Approved / Released | * |
@@ -89,9 +89,9 @@ Build first — all transactional forms depend on these.
 | # | Field | Type | Req |
 |---|-------|------|-----|
 | 1 | FG Product Code | Lookup (Item Muster - FG) | * |
-| 2 | FG Name | AutoFetch | * |
+| 2 | FG Name | AutoFetch (from FG Product Code) | * |
 | 3 | Qty per System Unit | Number | * |
-| 4 | UOM | AutoFetch | * |
+| 4 | UOM | AutoFetch (from Item Muster via FG Code) | * |
 | 5 | Rate per FG Unit | Currency | |
 
 ### 2.4 BOM / FG Formulation (FG → RM Mapping)
@@ -102,7 +102,7 @@ Build first — all transactional forms depend on these.
 |---|-------|------|-----|
 | 1 | BOM No | Autogen | * |
 | 2 | FG Code | Lookup (Item Muster - FG) | * |
-| 3 | FG Name | AutoFetch | * |
+| 3 | FG Name | AutoFetch (from FG Code) | * |
 | 4 | Date | Date (Today) | * |
 | 5 | Status | Draft / Approved / Released | * |
 
@@ -110,8 +110,8 @@ Build first — all transactional forms depend on these.
 | # | Field | Type | Req |
 |---|-------|------|-----|
 | 1 | RM Item Code | Lookup (Item Muster - RM) | * |
-| 2 | RM Name | AutoFetch | * |
-| 3 | UOM | AutoFetch | * |
+| 2 | RM Name | AutoFetch (from RM Item Code) | * |
+| 3 | UOM | AutoFetch (from Item Muster via RM Code) | * |
 | 4 | Qty per FG Unit | Number | * |
 | 5 | Waste % | Number | |
 | 6 | Total Qty | Formula | * |
@@ -181,7 +181,7 @@ Build first — all transactional forms depend on these.
 | 2 | SO No | Autogen | * |
 | 3 | SO Date | Date (Today) | * |
 | 4 | Employee Name | Text | * |
-| 5 | Customer Code | Lookup | |
+| 5 | Customer Code | Lookup (Customer/Site Master) → AutoFetch: Org Name, GST, Contact | |
 | 6 | Client Org / Contact / GST / PAN | Text | * |
 | 7 | Regd Address | Multi-line | * |
 | 8 | Site Name / Address | Text / Multi-line | * |
@@ -208,9 +208,9 @@ Build first — all transactional forms depend on these.
 **Subform B — FG Lines** (when Sales Type = Supply Only):
 | # | Field | Type |
 |---|-------|------|
-| 1 | FG Code | Lookup (Item Muster - FG) → AutoFetch Name |
+| 1 | FG Code | Lookup (Item Muster - FG) → AutoFetch: Name, UOM |
 | 2 | Qty | Number |
-| 3 | UOM | AutoFetch |
+| 3 | UOM | AutoFetch (from FG Code via Item Muster) |
 | 4 | Rate | Currency |
 | 5 | Amount | Formula = Qty × Rate |
 
@@ -227,7 +227,7 @@ Build first — all transactional forms depend on these.
 | # | Field | Type | Req |
 |---|-------|------|-----|
 | 1 | Project ID | Autogen | * |
-| 2 | SO Reference | Lookup | * |
+| 2 | SO Reference | Lookup (Sales Order Master) → AutoFetch: SO No, Customer, Amount | * |
 | 3 | Project Name | Text | * |
 | 4 | Address | Multi-line | * |
 | 5 | Project Manager | User lookup | * |
@@ -277,11 +277,11 @@ Draft → Production Verified → Costing Approved → Released
 **Line Items (N items):**
 | # | Field | Type |
 |---|-------|------|
-| 1 | Item Code | Lookup (Item Muster) |
-| 2 | Item Name | AutoFetch |
-| 3 | Category | AutoFetch |
-| 4 | UOM | AutoFetch |
-| 5 | Available Stock | AutoFetch (real-time) |
+| 1 | Item Code | Lookup (Item Muster - RM only via filter) |
+| 2 | Item Name | AutoFetch (from Item Code) |
+| 3 | Category | AutoFetch (from Item Code) |
+| 4 | UOM | AutoFetch (from Item Code) |
+| 5 | Available Stock | AutoFetch from RM Inventory (real-time via stock summary) |
 | 6 | Required Qty | Number |
 | 7 | Remarks | Multi-line |
 
@@ -299,9 +299,9 @@ MR carries **four cost components** that sum to **Total MR Cost** — the projec
 **Material Allocation Subform (feeds Material Cost — per-project RM allocation):**
 | # | Field | Type | Notes |
 |---|-------|------|-------|
-| 1 | Item Code | Lookup (RM) | Auto-populated from MR lines |
-| 2 | Item Name | AutoFetch | — |
-| 3 | UOM | AutoFetch | — |
+| 1 | Item Code | Lookup (Item Muster - RM) | Auto-populated from MR line items |
+| 2 | Item Name | AutoFetch (from Item Code) | — |
+| 3 | UOM | AutoFetch (from Item Code) | — |
 | 4 | Assigned Qty | Number | Allocation baseline, defaults from Required Qty |
 | 5 | Rate | Currency | Per-unit RM rate |
 | 6 | Material Cost | Formula | = Assigned Qty × Rate |
@@ -332,9 +332,9 @@ MR carries **four cost components** that sum to **Total MR Cost** — the projec
 **Tools & Tackles Subform:**
 | # | Field | Type |
 |---|-------|------|
-| 1 | Item | Text/Lookup |
-| 2 | Qty | Number |
-| 3 | Rate | Currency |
+| 1 | Item | Text / Lookup (Item Muster - Tools & Consumable) | |
+| 2 | Qty | Number | |
+| 3 | Rate | Currency | |
 | 4 | Amount | Formula = Qty × Rate |
 
 **Automation Rules:**
@@ -359,19 +359,19 @@ Procurement runs when production needs materials not in stock.
 |---|-------|------|-----|
 | 1 | PR Number | Autogen | * |
 | 2 | PR Date | Date (Today) | * |
-| 3 | Project ID | Lookup | * |
+| 3 | Project ID | Lookup (Project Master) | * | Only for project-linked procurement; optional for stock procurement |
 | 4 | Reference | Text | |
-| 5 | Department | AutoFetch from login | * |
+| 5 | Department | AutoFetch from login user | * |
 | 6 | Status | Draft / Pending Approval / Approved / Rejected | * |
 
 **Line Items:**
 | # | Field | Type |
 |---|-------|------|
-| 1 | Item Code | Lookup (Item Muster) ↔ bidirectional autofill with Name |
-| 2 | Item Name | AutoFetch |
+| 1 | Item Code | Lookup (Item Muster) ↔ bidirectional autofill: Name |
+| 2 | Item Name | AutoFetch (from Item Code) |
 | 3 | Qty | Number |
-| 4 | UOM | AutoFetch |
-| 5 | Lead Time | AutoFetch (Days, from Item Muster) |
+| 4 | UOM | AutoFetch (from Item Code via Item Muster) |
+| 5 | Lead Time | AutoFetch (from Item Muster via Item Code) |
 
 **Automation:** Status = Draft → Pending Approval (on submit) → Approved. Notification to Purchase dept.
 
@@ -387,14 +387,14 @@ Procurement runs when production needs materials not in stock.
 | 3 | PO Date | Date (Today) | * |
 | 4 | Supplier Code | Lookup (Supplier Master) → AutoFetch Name, GSTIN, Address | * |
 | 5 | Project ID | Lookup (Project Master) | * |
-| 6 | PR Reference | Lookup | |
+| 6 | PR Reference | Lookup (PR Master) → AutoFetch: Items, Qty | |
 | 7 | Bill To / Ship To | Dropdown | * |
 
 **Line Items:**
 | # | Field | Type |
 |---|-------|------|
-| 1 | Item Code | Lookup (Item Muster) |
-| 2 | Item Name / HSN | AutoFetch |
+| 1 | Item Code | Lookup (Item Muster) → AutoFetch: Name, HSN, GST%, UOM |
+| 2 | Item Name / HSN | AutoFetch (from Item Code) |
 | 3 | Quantity / Rate | Number / Currency |
 | 4 | Basic Amount | Formula = Qty × Rate |
 | 5 | GST % | AutoFetch from Item Muster |
@@ -421,20 +421,21 @@ Procurement runs when production needs materials not in stock.
 |---|-------|------|-----|
 | 1 | GRN Number | Autogen (after posting) | * |
 | 2 | GRN Date | Date (Today) | * |
-| 3 | PO Number | Lookup → AutoFetch Supplier, Items, Qty | * |
+| 3 | PO Number | Lookup (PO Master) → AutoFetch: Supplier Name, Items, Ordered Qty, Project ID | * |
 | 4 | Project ID | AutoFetch from PO | * |
 | 5 | Vehicle Number | Text | * |
 | 6 | Warehouse | Dropdown | * | Wadki / Main / Neelo / Gurgaon / Bangalore / Client Site |
 | 7 | Invoice Number / Date | Text / Date | * |
 
 **Line Items (Checkbox for partial GRN):**
-| # | Field | Type |
-|---|-------|------|
-| 1 | ✅ Checkbox | Checkbox (select items for partial GRN) |
-| 2 | Item Code / Name | AutoFetch from PO |
-| 3 | Ordered Qty / Received Qty | AutoFetch / Number |
-| 4 | QC Status | Pending / Pass / Fail |
-| 5 | Packing Quality | Good / Damaged / Partial |
+| # | Field | Type | Source |
+|---|-------|------|--------|
+| 1 | ✅ Checkbox | Checkbox (select items for partial GRN) | |
+| 2 | Item Code / Name | AutoFetch (from PO via PO Number) | PO Master |
+| 3 | Ordered Qty | AutoFetch (from PO via PO Number) | PO Master |
+| 4 | Received Qty | Number | |
+| 5 | QC Status | Pending / Pass / Fail | |
+| 6 | Packing Quality | Good / Damaged / Partial | |
 
 **Transport Subform** (visible when PO Scope = Own): Transporter, Charges, Local Transport, Loading/Unloading
 
@@ -447,7 +448,7 @@ Procurement runs when production needs materials not in stock.
 |---|-------|------|-----|
 | 1 | QC Number | Autogen | * |
 | 2 | Date | Date (Today) | * |
-| 3 | GRN Number | Lookup | * |
+| 3 | GRN Number | Lookup (GRN Master) → AutoFetch: Item No, Name, Received Qty | * |
 | 4 | Item No / Name | AutoFetch from GRN | * |
 | 5 | Inspection Date | Date | |
 | 6 | Viscosity / Density / Color / Moisture | Text (result) | |
@@ -471,11 +472,11 @@ Procurement runs when production needs materials not in stock.
 | 4 | Batch Number | Text | |
 
 **Line Items** (auto-fetched from MR):
-| # | Field | Type |
-|---|-------|------|
-| 1 | Item Code / Name | AutoFetch |
-| 2 | Category | AutoFetch |
-| 3 | Required Qty | AutoFetch |
+| # | Field | Type | Source |
+|---|-------|------|--------|
+| 1 | Item Code / Name | AutoFetch (from MR line items via MR No) | MR |
+| 2 | Category | AutoFetch (from MR line items) | MR |
+| 3 | Required Qty | AutoFetch (from MR line items) | MR |
 | 4 | Issued Qty | Number |
 | 5 | Balance Qty | Formula = Required − Issued |
 | 6 | Issued By / Handover To | Text (Supervisor Name) |
@@ -490,8 +491,8 @@ Procurement runs when production needs materials not in stock.
 |---|-------|------|-----|
 | 1 | Planning No | Autogen | * |
 | 2 | Planning Date | Date | * |
-| 3 | Project ID | Lookup | * |
-| 4 | MR Sheet No | Lookup | * |
+| 3 | Project ID | Lookup (Project Master) → AutoFetch: Project Name, Manager | * |
+| 4 | MR Sheet No | Lookup (MR — only Released MRs) → AutoFetch: Items, Qty | * |
 | 5 | Planning Period | Week / Month | * |
 | 6 | Plant | Dropdown | |
 | 7 | Planner Name | User lookup | * |
@@ -504,41 +505,41 @@ Procurement runs when production needs materials not in stock.
 | # | Field | Type | Req |
 |---|-------|------|-----|
 | 1 | BMR No | Autogen | * |
-| 2 | Production Order Ref | Lookup | * |
-| 3 | Project ID | Lookup (from Production Order) | * |
+| 2 | Production Order Ref | Lookup (Production Planning) → AutoFetch: Project ID, FG Code, Planned Qty | * |
+| 3 | Project ID | AutoFetch (from Production Order Ref) | * |
 | 4 | Batch No | Text | * |
 | 5 | Date | Date | * |
-| 6 | System Code / FG Code | Lookup | * |
+| 6 | FG Code | Lookup (Item Muster - FG) → AutoFetch: FG Name, BOM RM list | * |
 
-**Line Items:**
-| # | Field | Type |
-|---|-------|------|
-| 1 | RM Item Code | Lookup (Item Muster - RM) |
-| 2 | RM Item Name | AutoFetch |
-| 3 | Batch No (RM) | Text |
-| 4 | Qty Consumed | Number |
-| 5 | UOM | AutoFetch |
-| 6 | Yield / FG Output | Number |
+**Line Items (RM consumed to produce FG):**
+| # | Field | Type | Source |
+|---|-------|------|--------|
+| 1 | RM Item Code | Lookup (Item Muster - RM) → AutoFetch: Name, UOM | Item Muster |
+| 2 | RM Item Name | AutoFetch (from RM Item Code) | Item Muster |
+| 3 | Batch No (RM) | Text | |
+| 4 | Qty Consumed | Number | |
+| 5 | UOM | AutoFetch (from RM Item Code via Item Muster) | Item Muster |
+| 6 | Yield / FG Output | Number | |
 
 ### 6.4 RM Consumption Entry
 
-| # | Field | Type |
-|---|-------|------|
-| 1 | Reference to BMR | Lookup |
-| 2 | Item-wise RM | Lookup |
-| 3 | Actual Qty | Number |
-| 4 | Standard Qty | AutoFetch (from BOM) |
-| 5 | Variance | Formula = Actual − Standard |
+| # | Field | Type | Source |
+|---|-------|------|--------|
+| 1 | Reference to BMR | Lookup (BMR Master) → AutoFetch: FG Code, Batch No, RM Items | BMR |
+| 2 | Item-wise RM | Lookup (Item Muster - RM, filtered by BMR items) | Item Muster |
+| 3 | Actual Qty | Number | |
+| 4 | Standard Qty | AutoFetch (from BOM via FG Code) | BOM / FG Formulation |
+| 5 | Variance | Formula = Actual − Standard | |
 
 ### 6.5 Packing Entry
 
-| # | Field | Type |
-|---|-------|------|
-| 1 | BMR Reference | Lookup |
-| 2 | FG Product | Lookup |
-| 3 | Packed Qty | Number |
-| 4 | Packing Material Consumed | Lookup + Qty |
-| 5 | Batch No | Text |
+| # | Field | Type | Source |
+|---|-------|------|--------|
+| 1 | BMR Reference | Lookup (BMR Master) → AutoFetch: FG Code, Batch No | BMR |
+| 2 | FG Product | Lookup (Item Muster - FG) → AutoFetch: FG Name, UOM | Item Muster |
+| 3 | Packed Qty | Number | |
+| 4 | Packing Material Consumed | Lookup (Item Muster - Packaging) + Qty | Item Muster |
+| 5 | Batch No | AutoFetch (from BMR Reference) | BMR |
 
 ### 6.6 FGHM — FG Handover Master
 **Department**: Production
@@ -552,12 +553,12 @@ Procurement runs when production needs materials not in stock.
 | 4 | Batch No | Text | * |
 
 **Line Items:**
-| # | Field | Type |
-|---|-------|------|
-| 1 | FG Product Code | Lookup (Item Muster - FG) |
-| 2 | FG Product Name | AutoFetch |
-| 3 | FG Qty | Number |
-| 4 | UOM | AutoFetch |
+| # | Field | Type | Source |
+|---|-------|------|--------|
+| 1 | FG Product Code | Lookup (Item Muster - FG) → AutoFetch: Name, UOM | Item Muster |
+| 2 | FG Product Name | AutoFetch (from FG Product Code) | Item Muster |
+| 3 | FG Qty | Number | |
+| 4 | UOM | AutoFetch (from FG Product Code via Item Muster) | Item Muster |
 | 5 | QC Status | Pass / Fail / Hold |
 | 6 | Damaged Qty / Accepted Qty | Number (inline acceptance) |
 | 7 | Handed Over By / Received By | Text |
@@ -610,15 +611,20 @@ MR Draft → [Production Verifies: checks MR qty vs SO system req via BOM]
 - Pop-up + dashboard banner + email to Project Manager
 - At 100%: "Allocation Exhausted" alert fires to Project Manager + Purchase
 
-### 8.4 Autofetch Rules
-| Source | Target Forms | Fetched Fields |
-|--------|-------------|----------------|
-| Item Code | PR, PO, MR, MIS, GRN, FGHM, BOM, QC | Name, UOM, Category, HSN, GST%, Lead Time |
-| Supplier Code | PO, GRN | Name, GSTIN, Address, Contact |
-| PO No | GRN | Supplier, Items, Ordered Qty |
-| MR No | MIS | Items, Required Qty |
-| Project ID | PR, PO, GRN, MR, MIS, Production, FGHM | Project Name, Manager |
-| System Code | SO, BOM, Project | System Name |
+### 8.4 Autofetch Rules (Complete Reference)
+| Source Lookup Field | Source Form | Target Forms | Fetched Fields |
+|---------------------|-------------|-------------|----------------|
+| Item Code | Purchase Item Muster | PR, PO, MR, GRN, BMR, FGHM | Item Name, UOM, Category, HSN, GST%, Lead Time, Standard Rate |
+| Supplier Code | Supplier Master | PO, GRN | Supplier Name, GSTIN, Address, Contact, Payment Terms |
+| PO Number | PO Master | GRN | Supplier Name, Items List, Ordered Qty per Item, Project ID |
+| MR Number | MR Master | MIS, Production Planning | Items List, Required Qty per Item, Category, Project ID |
+| Project ID | Project Master | PR, PO, GRN, MR, MIS, Production Planning, FGHM | Project Name, Project Manager, SO Reference, Start/End Date |
+| System Code | System Master | SO (Subform A), Project, System Composition | System Name |
+| FG Code / FG Product Code | Item Muster (FG) | BOM, SO (Subform B), FGHM | FG Name, UOM |
+| RM Item Code | Item Muster (RM) | BOM Line, MR Line, BMR Line | RM Name, UOM |
+| BMR Reference | BMR Master | RM Consumption, Packing Entry | FG Code, Batch No, RM Items List |
+| GRN Number | GRN Master | QC | Item Name, Received Qty |
+| Production Order Ref | Production Planning | BMR | Project ID, FG Code, Planned Qty |
 
 ### 8.5 Numbering Series
 | Document | Format |

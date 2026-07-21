@@ -22,6 +22,14 @@
   .fp-node.gate { background:#fce7f3; color:#9d174d; border:2px solid #f9a8d4; }
   .fp-arrow { color:var(--gray-400); font-size:16px; font-weight:700; }
   .fp-label { font-size:10px; color:var(--gray-500); font-weight:600; text-transform:uppercase; letter-spacing:0.3px; }
+  .lookup-badge { display:inline-block; padding:2px 10px; border-radius:999px; font-size:10px; font-weight:600; background:#f3e8ff; color:#6b21a8; margin-left:6px; white-space:nowrap; }
+  .lookup-badge-off { display:inline-block; padding:2px 10px; border-radius:999px; font-size:10px; font-weight:600; background:#f3f4f6; color:#9ca3af; margin-left:6px; white-space:nowrap; }
+  .bom-ref-callout { padding:8px 12px; background:#f0fdf4; border:1px solid #86efac; border-radius:6px; font-size:12px; color:#065f46; margin-top:8px; font-family:var(--font-mono); }
+  .dsr-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin:12px 0; }
+  .dsr-item { padding:8px 12px; background:#f8fafc; border:1px solid var(--gray-200); border-radius:6px; font-size:12px; border-left:4px solid var(--primary); }
+  .dsr-item strong { color:var(--gray-800); }
+  .dsr-item .dsr-target { color:var(--gray-600); font-size:11px; }
+  .dsr-item .dsr-fields { color:#6b21a8; font-size:11px; font-weight:500; }
 </style>
 </head>
 <body>
@@ -267,6 +275,7 @@
         <div class="fc-flow">
           <span class="fc-flow-key">No dependencies</span>
           <span class="fc-flow-out">Used by: PR, PO, GRN, MR, MIS, BMR</span>
+          <span class="lookup-badge-off">🔍 Lookups: None (Master Data source)</span>
         </div>
         <div class="form-demo">
           <div class="form-row-3">
@@ -294,6 +303,7 @@
         <div class="fc-flow">
           <span class="fc-flow-key">No dependencies</span>
           <span class="fc-flow-out">Used by: SO, Project, BOM, BMR</span>
+          <span class="lookup-badge-off">🔍 Lookups: None (Master Data source)</span>
         </div>
         <div class="form-demo">
           <div class="form-row-4">
@@ -317,6 +327,7 @@
           <span class="fc-flow-in">From: FG Product (Item Muster)</span>
           <span class="fc-flow-key">Maps which RMs make up each FG with ratios</span>
           <span class="fc-flow-out">Used by: BMR, Production, Costing</span>
+          <span class="lookup-badge">🔍 Lookups: Item Muster (FG → FG Name, UOM; RM → RM Name, UOM)</span>
         </div>
         <div class="form-demo">
           <div class="form-row">
@@ -365,6 +376,7 @@
         <div class="fc-flow">
           <span class="fc-flow-key">No dependencies</span>
           <span class="fc-flow-out">Used by: PO</span>
+          <span class="lookup-badge-off">🔍 Lookups: None (Master Data source)</span>
         </div>
         <div class="form-demo">
           <div class="form-row-4">
@@ -392,6 +404,7 @@
         <div class="fc-flow">
           <span class="fc-flow-key">No dependencies</span>
           <span class="fc-flow-out">Used by: SO, FGHM</span>
+          <span class="lookup-badge-off">🔍 Lookups: None (Master Data source)</span>
         </div>
         <div class="form-demo">
           <div class="form-row-4">
@@ -419,6 +432,7 @@
         <div class="fc-flow">
           <span class="fc-flow-key">No dependencies</span>
           <span class="fc-flow-out">Used by: GRN, MIS</span>
+          <span class="lookup-badge-off">🔍 Lookups: None (Master Data source)</span>
         </div>
         <div class="form-demo">
           <div class="form-row-4">
@@ -448,6 +462,7 @@
           <span class="fc-flow-in">From: Customer Master</span>
           <span class="fc-flow-key">Sales Type toggle &rarr; Subform A (System) or B (FG)</span>
           <span class="fc-flow-out">Supply+Apply: Creates Project · Supply Only: FG dispatch only</span>
+          <span class="lookup-badge">🔍 Lookups: Customer/Site Master (Org Name, GST, Contact), System Master (System Name)</span>
         </div>
         <div class="form-demo">
           <div class="form-row-4">
@@ -543,6 +558,7 @@
           <span class="fc-flow-in">From: SO (auto-created)</span>
           <span class="fc-flow-key">Project ID links ALL downstream forms</span>
           <span class="fc-flow-out">To: MR, Production, FGHM</span>
+          <span class="lookup-badge">🔍 Lookups: SO Master (SO No, Customer, Amount)</span>
         </div>
         <div class="form-demo">
           <div class="form-row-4">
@@ -585,6 +601,7 @@
           <span class="fc-flow-in">From: PR (Purchase Requisition)</span>
           <span class="fc-flow-key">Supplier, Items from PR</span>
           <span class="fc-flow-out">To: GRN</span>
+          <span class="lookup-badge">🔍 Lookups: Supplier Master (Name, GSTIN, Address), Item Muster (Name, HSN, GST%, UOM), PR Master (Items, Qty)</span>
         </div>
         <div class="form-demo">
           <div class="form-row-4">
@@ -643,6 +660,7 @@
           <span class="fc-flow-in">From: PO (autofetch items)</span>
           <span class="fc-flow-key">Checkbox per item for partial GRN</span>
           <span class="fc-flow-out">To: QC, Stock Update</span>
+          <span class="lookup-badge">🔍 Lookups: PO Master (Supplier Name, Items, Ordered Qty, Project ID)</span>
         </div>
         <div class="form-demo">
           <div class="form-row-4">
@@ -702,6 +720,7 @@
           <span class="fc-flow-in">From: GRN (items to inspect)</span>
           <span class="fc-flow-key">Test results per parameter</span>
           <span class="fc-flow-out">Status: Accepted / Rejected / Rework</span>
+          <span class="lookup-badge">🔍 Lookups: GRN Master (Item Name, Received Qty)</span>
         </div>
         <div class="form-demo">
           <div class="form-row-3">
@@ -774,6 +793,7 @@
           <span class="fc-flow-in">From: Project ID + Production Plan</span>
           <span class="fc-flow-key">Request <strong>RM only</strong> from store. Status: Draft &rarr; Production Verified &rarr; Costing Approved &rarr; Released</span>
           <span class="fc-flow-out">To: <strong>MIS (only when Released)</strong></span>
+          <span class="lookup-badge">🔍 Lookups: Project Master (Name, Manager), Item Muster (Name, UOM, Category, Available Stock)</span>
         </div>
         <div class="form-demo">
           <div class="form-row-4">
@@ -953,6 +973,7 @@
           <span class="fc-flow-in">From: MR (only Released MR allowed)</span>
           <span class="fc-flow-key">Actual Qty issued, Balance tracked</span>
           <span class="fc-flow-out">Stock deducted on posting</span>
+          <span class="lookup-badge">🔍 Lookups: MR Master (Items, Required Qty, Category, Project ID)</span>
         </div>
         <div class="form-demo">
           <div class="form-row-4">
@@ -999,6 +1020,7 @@
           <span class="fc-flow-in">From: Project ID + System Composition</span>
           <span class="fc-flow-key">System qty from SO &rarr; FG qty from System Composition &rarr; RM from BOM</span>
           <span class="fc-flow-out">To: Production Order (per FG)</span>
+          <span class="lookup-badge">🔍 Lookups: Project Master (Name, Manager), MR Master (Items, Qty), System Master</span>
         </div>
         <div class="form-demo">
           <div class="form-row-4">
@@ -1043,6 +1065,7 @@
           <span class="fc-flow-in">From: Production Order</span>
           <span class="fc-flow-key">Consumes RM &rarr; Produces FG. RM from MR.</span>
           <span class="fc-flow-out">To: RM Consumption, Packing &rarr; FGHM</span>
+          <span class="lookup-badge">🔍 Lookups: Item Muster (FG → FG Name, UOM, BOM RM List), Production Planning (Project ID, FG Code, Planned Qty)</span>
         </div>
         <div class="form-demo">
           <div class="form-row-4">
@@ -1053,6 +1076,9 @@
           </div>
 
           <!-- BOM Reference: Standard RM quantities for this FG -->
+          <div class="bom-ref-callout">
+            <strong>BOM Reference:</strong> BOM-001 defines FG-EP-001 = 85 Kg Epoxy Resin + 12 Kg Hardener + 3 Kg Pigment per 100 Kg FG
+          </div>
           <div class="subtable-demo" style="border:1px solid #93c5fd;background:#eff6ff">
             <div class="st-hint">BOM Reference — Standard RM quantities for FG-EP-001 (per 100 Kg FG)</div>
             <table style="width:100%;border-collapse:collapse;font-size:12px">
@@ -1163,6 +1189,7 @@
           <span class="fc-flow-in">From: BMR</span>
           <span class="fc-flow-key">Pack FG, track packing material used</span>
           <span class="fc-flow-out">To: FGHM</span>
+          <span class="lookup-badge">🔍 Lookups: BMR Master (FG Code, Batch No), Item Muster (FG → Name, UOM; Packaging)</span>
         </div>
         <div class="form-demo">
           <div class="form-row-3">
@@ -1204,6 +1231,7 @@
           <span class="fc-flow-in">From: Production (Packing)</span>
           <span class="fc-flow-key">Production hands FG to Store with inline acceptance status</span>
           <span class="fc-flow-out">To: Inventory (FG stock)</span>
+          <span class="lookup-badge">🔍 Lookups: Project Master (Name, Manager), Item Muster (FG → Name, UOM)</span>
         </div>
         <div class="form-demo">
           <div class="form-row-4">
@@ -1404,34 +1432,34 @@
         <thead><tr><th>Stage</th><th>Form</th><th>Data Source</th><th>What It Creates</th><th>Next Form</th></tr></thead>
         <tbody>
           <tr style="background:#dbeafe"><td colspan="5"><strong>STAGE 1: Procurement (Stream A — No Project ID)</strong></td></tr>
-          <tr><td>1A</td><td>PR</td><td>Production Dept</td><td>Purchase Requisition</td><td>PO</td></tr>
-          <tr><td>1B</td><td>PO</td><td>Supplier Master</td><td>PO with GST split items</td><td>GRN</td></tr>
-          <tr><td>1C</td><td>GRN</td><td>PO items</td><td>Received qty, partial checkboxes</td><td>QC</td></tr>
-          <tr><td>1D</td><td>QC</td><td>GRN items</td><td>Test results, Pass/Fail</td><td>Stock update</td></tr>
+          <tr><td>1A</td><td>PR</td><td>Item Muster (Item Code⇄Name, UOM, Lead Time)</td><td>Purchase Requisition</td><td>PO</td></tr>
+          <tr><td>1B</td><td>PO</td><td>Supplier Master (Name, GSTIN, Address) + Item Muster (Name, HSN, GST%, UOM) + PR Master (Items, Qty)</td><td>PO with GST split items</td><td>GRN</td></tr>
+          <tr><td>1C</td><td>GRN</td><td>PO Master (Supplier Name, Items, Ordered Qty, Project ID)</td><td>Received qty, partial checkboxes</td><td>QC</td></tr>
+          <tr><td>1D</td><td>QC</td><td>GRN Master (Item Name, Received Qty)</td><td>Test results, Pass/Fail</td><td>Stock update</td></tr>
 
           <tr style="background:#fef3c7"><td colspan="5"><strong>STAGE 2: Master Data (Stream B — Global Reference)</strong></td></tr>
-          <tr><td>2A</td><td>Item Muster</td><td>—</td><td>Item codes, categories</td><td>All forms</td></tr>
-          <tr><td>2B</td><td>System Master</td><td>—</td><td>System definitions (EP01)</td><td>SO, BOM</td></tr>
-          <tr><td>2C</td><td>BOM / FG Formulation</td><td>Item Muster (FG)</td><td>FG &rarr; RM mapping with ratios</td><td>BMR, Costing</td></tr>
-          <tr><td>2D</td><td>Supplier Master</td><td>—</td><td>Vendor database</td><td>PO</td></tr>
+          <tr><td>2A</td><td>Item Muster</td><td>— (Master Data — supplies all forms: Name, UOM, Category, HSN, GST%)</td><td>Item codes, categories</td><td>All forms</td></tr>
+          <tr><td>2B</td><td>System Master</td><td>— (Master Data — supplies System Code, Name)</td><td>System definitions (EP01)</td><td>SO, BOM</td></tr>
+          <tr><td>2C</td><td>BOM / FG Formulation</td><td>Item Muster — FG (FG Code → FG Name, UOM); RM (RM Code → RM Name, UOM)</td><td>FG &rarr; RM mapping with ratios</td><td>BMR, Costing</td></tr>
+          <tr><td>2D</td><td>Supplier Master</td><td>— (Master Data — supplies Name, GSTIN, Address, Contact)</td><td>Vendor database</td><td>PO</td></tr>
 
           <tr style="background:#d1fae5"><td colspan="5"><strong>STAGE 3: SO &rarr; Project (Stream B)</strong></td></tr>
-          <tr><td>3A</td><td>SO</td><td>Customer Master</td><td>System line items, Client PO ref</td><td>Creates Project (Supply+Apply)</td></tr>
-          <tr><td>3B</td><td>Project</td><td>SO (auto)</td><td>Project ID, Manager, Dates</td><td>MR, Production, FGHM</td></tr>
+          <tr><td>3A</td><td>SO</td><td>Customer/Site Master (Org Name, GST, Contact); System Master (System Name)</td><td>System line items, Client PO ref</td><td>Creates Project (Supply+Apply)</td></tr>
+          <tr><td>3B</td><td>Project</td><td>SO Master (SO No, Customer, Amount) — auto-created</td><td>Project ID, Manager, Dates</td><td>MR, Production, FGHM</td></tr>
 
           <tr style="background:#fce7f3"><td colspan="5"><strong>STAGE 4: MR — Costing Gate (Stream B)</strong></td></tr>
-          <tr><td>4A</td><td>MR</td><td>Project + Prod Plan</td><td>RM request + 4 cost components</td><td>MIS (only when Released)</td></tr>
+          <tr><td>4A</td><td>MR</td><td>Project Master (Name, Manager) + Item Muster (Name, UOM, Category, Available Stock)</td><td>RM request + 4 cost components</td><td>MIS (only when Released)</td></tr>
 
           <tr style="background:#e8effd"><td colspan="5"><strong>STAGE 5: Production (Stream B)</strong></td></tr>
-          <tr><td>5A</td><td>MIS</td><td>MR (Released only)</td><td>Issued qty, balance tracking</td><td>Stock deduction</td></tr>
-          <tr><td>5B</td><td>Production Planning</td><td>System Composition &times; SO qty</td><td>FG breakdown per System</td><td>Production Order</td></tr>
-          <tr><td>5C</td><td>BMR</td><td>Production Order</td><td>Consume RM &rarr; Produce FG</td><td>Packing</td></tr>
-          <tr><td>5D</td><td>Packing</td><td>BMR</td><td>FG packed, packing material used</td><td>FGHM</td></tr>
-          <tr><td>5E</td><td>FGHM</td><td>Packing</td><td>FG handover with inline acceptance</td><td>FG stock</td></tr>
+          <tr><td>5A</td><td>MIS</td><td>MR Master (Items List, Required Qty, Category, Project ID) — only Released MRs</td><td>Issued qty, balance tracking</td><td>Stock deduction</td></tr>
+          <tr><td>5B</td><td>Production Planning</td><td>Project Master (Name, Manager) + MR Master (Items, Qty) + System Master</td><td>FG breakdown per System</td><td>Production Order</td></tr>
+          <tr><td>5C</td><td>BMR</td><td>Production Planning (Project ID, FG Code, Planned Qty) + Item Muster (FG → FG Name, UOM, BOM RM List)</td><td>Consume RM &rarr; Produce FG</td><td>Packing</td></tr>
+          <tr><td>5D</td><td>Packing</td><td>BMR Master (FG Code, Batch No) + Item Muster (FG → Name, UOM; Packaging)</td><td>FG packed, packing material used</td><td>FGHM</td></tr>
+          <tr><td>5E</td><td>FGHM</td><td>Project Master (Name, Manager) + Item Muster (FG → Name, UOM)</td><td>FG handover with inline acceptance</td><td>FG stock</td></tr>
 
           <tr style="background:#d1fae5"><td colspan="5"><strong>STAGE 6: Inventory (Stream B)</strong></td></tr>
-          <tr><td>6A</td><td>RM Stock</td><td>GRN / MIS</td><td>RM inventory view</td><td>—</td></tr>
-          <tr><td>6B</td><td>FG Stock</td><td>FGHM</td><td>FG inventory view</td><td>—</td></tr>
+          <tr><td>6A</td><td>RM Stock</td><td>GRN posting (RM +) / MIS posting (RM &minus;)</td><td>RM inventory view</td><td>—</td></tr>
+          <tr><td>6B</td><td>FG Stock</td><td>FGHM inline acceptance (FG +)</td><td>FG inventory view</td><td>—</td></tr>
         </tbody>
       </table>
     </div>
@@ -1458,6 +1486,24 @@
       <strong>FG</strong> (produced in production) &rarr;
       <strong>RM</strong> (raw materials via BOM — MR works at this level).
       MR requisitions <strong>RM only</strong>. BMR consumes RM to produce FG.
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- DATA SOURCE REFERENCE -->
+    <!-- ============================================================ -->
+    <div class="module-group">
+      <h3>Data Source Reference <span class="mg-badge">Lookup &amp; Autofetch Map</span></h3>
+      <p>Every master data source and the fields it supplies to each target form, aligned with the <a href="IMPLEMENTATION_PLAN.md">Implementation Plan §8.4</a>.</p>
+      <div class="dsr-grid">
+        <div class="dsr-item"><strong>Purchase Item Muster</strong> <span class="dsr-target">→ All forms (PR, PO, GRN, MR, MIS, BMR, FGHM, BOM)</span><br><span class="dsr-fields">Item Name, UOM, Category, HSN Code, GST%, Lead Time, Standard Rate</span></div>
+        <div class="dsr-item"><strong>Supplier Master</strong> <span class="dsr-target">→ PO, GRN</span><br><span class="dsr-fields">Supplier Name, GSTIN, Address, Contact, Payment Terms</span></div>
+        <div class="dsr-item"><strong>Project Master</strong> <span class="dsr-target">→ MR, PR, PO, GRN, MIS, Production Planning, FGHM</span><br><span class="dsr-fields">Project Name, Project Manager, SO Reference, Start/End Date</span></div>
+        <div class="dsr-item"><strong>MR Master</strong> <span class="dsr-target">→ MIS, Production Planning</span><br><span class="dsr-fields">Items List, Required Qty per Item, Category, Project ID</span></div>
+        <div class="dsr-item"><strong>BOM / FG Formulation</strong> <span class="dsr-target">→ BMR, RM Consumption</span><br><span class="dsr-fields">Standard Qty ratios per RM (e.g. FG-EP-001 = 85Kg Epoxy + 12Kg Hardener + 3Kg Pigment per 100Kg)</span></div>
+        <div class="dsr-item"><strong>PO Master</strong> <span class="dsr-target">→ GRN</span><br><span class="dsr-fields">Supplier Name, Items List, Ordered Qty per Item, Project ID</span></div>
+        <div class="dsr-item"><strong>BMR Master</strong> <span class="dsr-target">→ RM Consumption, Packing Entry</span><br><span class="dsr-fields">FG Code, Batch No, RM Items List</span></div>
+        <div class="dsr-item"><strong>Customer / Site Master</strong> <span class="dsr-target">→ SO, FGHM</span><br><span class="dsr-fields">Org Name, GST, Contact Person, Site Address</span></div>
+      </div>
     </div>
 
     <div class="footer">
