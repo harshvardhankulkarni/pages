@@ -254,7 +254,7 @@ Build first — all transactional forms depend on these.
 
 **MR Status Workflow (The Critical Approval Gate):**
 ```
-Draft → Production Verified → Costing Approved → Released
+Draft → Pending Production Verification → Production Verified → Costing Approved → Released
   │           │                      │              │
   │      Production checks       Costing           ⛔ Gate
   │      MR qty vs SO system     approves TOTAL    passed →
@@ -272,7 +272,7 @@ Draft → Production Verified → Costing Approved → Released
 | 6 | Department | AutoFetch from login | * | — |
 | 7 | Requested By | Text (Employee Name) | * | — |
 | 8 | Priority | Low / Medium / High / Urgent | * | — |
-| 9 | **MR Status** | **Draft / Production Verified / Costing Approved / Released** | * | **CRITICAL — controls downstream flow** |
+| 9 | **MR Status** | **Draft / Pending Production Verification / Production Verified / Costing Approved / Released** | * | **CRITICAL — controls downstream flow** |
 
 **Line Items (N items):**
 | # | Field | Type |
@@ -338,7 +338,7 @@ MR carries **four cost components** that sum to **Total MR Cost** — the projec
 | 4 | Amount | Formula = Qty × Rate |
 
 **Automation Rules:**
-- MR Status workflow: Draft (on create) → Production Verified → Costing Approved → Released
+- MR Status workflow: Draft (on create) → Pending Production Verification → Production Verified → Costing Approved → Released
 - **Without Released MR, there is no MIS, no Production, no project execution**
 - Consumption entries increment Consumed Qty on matching MR Allocation (matched by Project ID + Item Code)
 - **80% Alert**: When Consumption % ≥ 80% and Alert Flag is ON → pop-up + dashboard banner + email to Project Manager
@@ -359,7 +359,7 @@ Procurement runs when production needs materials not in stock.
 |---|-------|------|-----|
 | 1 | PR Number | Autogen | * |
 | 2 | PR Date | Date (Today) | * |
-| 3 | Project ID | Lookup (Project Master) | * | Only for project-linked procurement; optional for stock procurement |
+| 3 | Project ID | Lookup (Project Master) | | Optional — for project-linked procurement only; stock procurement has no Project ID |
 | 4 | Reference | Text | |
 | 5 | Department | AutoFetch from login user | * |
 | 6 | Status | Draft / Pending Approval / Approved / Rejected | * |
@@ -637,6 +637,13 @@ MR Draft → [Production Verifies: checks MR qty vs SO system req via BOM]
 | MIS | Auto against MR |
 | FGH | FGH-YYYY-XXXX |
 | QC | QC-YYYY-XXXX |
+| SO | SO-YYYY-XXXX |
+| Project | PRJ-YYYY-XXXX |
+| System Composition | SC-YYYY-XXXX |
+| BOM / FG Formulation | BOM-YYYY-XXXX |
+| Production Planning | PLAN-YYYY-XXXX |
+| BMR | BMR-YYYY-XXXX |
+| Customer | CUST-YYYY-XXXX |
 
 ### 8.6 Stock Management Rules
 - **GRN posting**: Qty added to stock only after posting; timestamp logged
@@ -676,7 +683,7 @@ MR Draft → [Production Verifies: checks MR qty vs SO system req via BOM]
 ### Week 5-6: Costing & MR (Critical Gate)
 - MR with 4 cost components (Material, Application, Transportation, Tools)
 - Material Allocation subform with Assigned Qty, Ratio %, 80% Alert
-- MR Status workflow: Draft → Production Verified → Costing Approved → Released
+- MR Status workflow: Draft → Pending Production Verification → Production Verified → Costing Approved → Released
 - Verification actions (Production Verify, Costing Approve)
 - 80% Consumption Alert automation
 

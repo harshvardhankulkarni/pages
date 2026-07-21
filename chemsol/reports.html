@@ -355,7 +355,7 @@
           <span class="phase-tag">MR (Draft→Verified→Approved→Released) → MIS · FGHM</span>
         </div>
         <div class="callout callout-warning" style="font-size:13px;margin-bottom:16px">
-          <strong>⛔ Critical Gate:</strong> MR is the <strong>complete project implementation cost baseline</strong> — four cost components (Material + Application + Transportation + Tools &amp; Tackles) summing to the Total MR Cost that Costing approves. MR must be <strong>Released</strong> before MIS can issue stock. Status flow: <strong>Draft → Production Verified → Costing Approved (TOTAL cost) → Released</strong>. Without a Released MR, there is no MIS, no Production, no project execution.
+          <strong>⛔ Critical Gate:</strong> MR is the <strong>complete project implementation cost baseline</strong> — four cost components (Material + Application + Transportation + Tools &amp; Tackles) summing to the Total MR Cost that Costing approves. MR must be <strong>Released</strong> before MIS can issue stock. Status flow: <strong>Draft → Pending Production Verification → Production Verified → Costing Approved (TOTAL cost) → Released</strong>. Without a Released MR, there is no MIS, no Production, no project execution.
         </div>
         <div class="tree">
           <ul class="tree-list">
@@ -413,7 +413,7 @@
             <thead><tr><th>Field</th><th>Source</th></tr></thead>
             <tbody>
               <tr><td>MR Number, Date, Project ID</td><td>MR header</td></tr>
-              <tr><td>MR Status</td><td>Draft / Production Verified / Costing Approved / Released</td></tr>
+              <tr><td>MR Status</td><td>Draft / Pending Production Verification / Production Verified / Costing Approved / Released</td></tr>
               <tr><td>Production Verified By / Date</td><td>Production user + timestamp</td></tr>
               <tr><td>Costing Approved By / Date</td><td>Costing user + timestamp</td></tr>
               <tr><td>Released By / Date</td><td>Costing user + timestamp (Released = Costing approval auto-releases)</td></tr>
@@ -494,6 +494,13 @@
               <tr><td>MIS</td><td>Auto against MR</td></tr>
               <tr><td>FGH</td><td>FGH-YYYY-XXXX</td></tr>
               <tr><td>QC</td><td>QC-YYYY-XXXX</td></tr>
+              <tr><td>SO</td><td>SO-YYYY-XXXX</td></tr>
+              <tr><td>Project</td><td>PRJ-YYYY-XXXX</td></tr>
+              <tr><td>System Composition</td><td>SC-YYYY-XXXX</td></tr>
+              <tr><td>BOM / FG Formulation</td><td>BOM-YYYY-XXXX</td></tr>
+              <tr><td>Production Planning</td><td>PLAN-YYYY-XXXX</td></tr>
+              <tr><td>BMR</td><td>BMR-YYYY-XXXX</td></tr>
+              <tr><td>Customer / Site Master</td><td>CUST-YYYY-XXXX</td></tr>
             </tbody>
           </table>
         </div>

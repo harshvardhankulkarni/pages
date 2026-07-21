@@ -443,7 +443,7 @@
           <tr><td>6</td><td>Department</td><td><span class="impl-tag impl-tag-af">AutoFetch from login</span></td><td class="impl-mand">*</td><td>—</td></tr>
           <tr><td>7</td><td>Requested By</td><td><span class="impl-tag impl-tag-text">Text (Employee Name)</span></td><td class="impl-mand">*</td><td>—</td></tr>
           <tr><td>8</td><td>Priority</td><td><span class="impl-tag impl-tag-dd">Dropdown</span></td><td class="impl-mand">*</td><td>Low / Medium / High / Urgent</td></tr>
-          <tr><td>9</td><td><strong>MR Status</strong></td><td><strong>Dropdown</strong></td><td class="impl-mand">*</td><td><strong>Draft / Production Verified / Costing Approved / Released</strong></td></tr>
+          <tr><td>9</td><td><strong>MR Status</strong></td><td><strong>Dropdown</strong></td><td class="impl-mand">*</td><td><strong>Draft / Pending Production Verification / Production Verified / Costing Approved / Released</strong></td></tr>
         </table>
 
         <div class="impl-line-items">
@@ -535,7 +535,7 @@
           <tr><th>#</th><th>Field</th><th>Type</th><th>Req</th></tr>
           <tr><td>1</td><td>PR Number</td><td><span class="impl-tag impl-tag-ag">Autogen (PR-YYYY-XXXX)</span></td><td class="impl-mand">*</td></tr>
           <tr><td>2</td><td>PR Date</td><td><span class="impl-tag impl-tag-d">Date (Today)</span></td><td class="impl-mand">*</td></tr>
-          <tr><td>3</td><td><strong>Project ID</strong></td><td><strong>Lookup (Project Master)</strong></td><td class="impl-mand">*</td></tr>
+          <tr><td>3</td><td><strong>Project ID</strong></td><td><strong>Lookup (Project Master)</strong></td><td></td><td>Optional — for project-linked procurement only; stock procurement has no Project ID</td></tr>
           <tr><td>4</td><td>Reference</td><td><span class="impl-tag impl-tag-text">Text</span></td><td class="impl-opt">—</td></tr>
           <tr><td>5</td><td>Department</td><td><span class="impl-tag impl-tag-af">AutoFetch from login</span></td><td class="impl-mand">*</td></tr>
           <tr><td>6</td><td>Status</td><td><span class="impl-tag impl-tag-dd">Dropdown</span></td><td class="impl-mand">*</td><td>Draft / Pending Approval / Approved / Rejected</td></tr>
@@ -882,6 +882,13 @@
           <tr><td>MIS</td><td>Auto against MR</td></tr>
           <tr><td>FGH</td><td>FGH-YYYY-XXXX</td></tr>
           <tr><td>QC</td><td>QC-YYYY-XXXX</td></tr>
+          <tr><td>SO</td><td>SO-YYYY-XXXX</td></tr>
+          <tr><td>Project</td><td>PRJ-YYYY-XXXX</td></tr>
+          <tr><td>System Composition</td><td>SC-YYYY-XXXX</td></tr>
+          <tr><td>BOM / FG Formulation</td><td>BOM-YYYY-XXXX</td></tr>
+          <tr><td>Production Planning</td><td>PLAN-YYYY-XXXX</td></tr>
+          <tr><td>BMR</td><td>BMR-YYYY-XXXX</td></tr>
+          <tr><td>Customer / Site Master</td><td>CUST-YYYY-XXXX</td></tr>
         </table>
       </div>
 

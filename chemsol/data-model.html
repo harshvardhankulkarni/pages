@@ -235,7 +235,7 @@
             <div class="hub-module" style="border-color:#059669;background:rgba(5,150,105,0.08)">
               <span class="hm-icon">📦</span>
                <span class="hm-name">MR (Project Cost Baseline)</span>
-              <span class="hm-desc">Draft → Production Verified → Costing Approved → Released</span>
+              <span class="hm-desc">Draft → Pending Production Verification → Production Verified → Costing Approved → Released</span>
             </div>
             <div class="hub-module blue">
               <span class="hm-icon">📋</span>
@@ -315,7 +315,7 @@
 
       <h3>Flow 2 · Material Requisition &amp; Issue (MR Cost Baseline)</h3>
       <div class="callout callout-warning" style="font-size:13px;margin-bottom:16px">
-        <strong>Project baseline = SO + MR:</strong> SO defines System/FG scope (revenue). MR defines the complete project implementation cost baseline (total project cost: Material + Application + Transportation + Tools &amp; Tackles) that Costing approves. Without a <strong>Released MR</strong>, there is no MIS, no Production, no Logistics, no project execution. MR Status flow: <strong>Draft → Production Verified → Costing Approved (TOTAL cost) → Released</strong>.
+        <strong>Project baseline = SO + MR:</strong> SO defines System/FG scope (revenue). MR defines the complete project implementation cost baseline (total project cost: Material + Application + Transportation + Tools &amp; Tackles) that Costing approves. Without a <strong>Released MR</strong>, there is no MIS, no Production, no Logistics, no project execution. MR Status flow: <strong>Draft → Pending Production Verification → Production Verified → Costing Approved (TOTAL cost) → Released</strong>.
       </div>
       <div class="tree">
         <ul class="tree-list">
@@ -616,7 +616,7 @@
       <div class="callout callout-warning">
         <strong>MR Status Workflow (Critical Gate):</strong>
         The MR carries a <strong>MR Status</strong> field with four states:
-        <strong>Draft</strong> (initial) → <strong>Production Verified</strong> (Production checks MR quantities against SO system requirements via BOM) → <strong>Costing Approved</strong> (Costing approves the TOTAL project cost — all four components) → <strong>Released</strong> (MR is actionable).
+        <strong>Draft</strong> (initial) → <strong>Pending Production Verification</strong> → <strong>Production Verified</strong> (Production checks MR quantities against SO system requirements via BOM) → <strong>Costing Approved</strong> (Costing approves the TOTAL project cost — all four components) → <strong>Released</strong> (MR is actionable).
         Without <strong>Released</strong> status, MIS cannot issue stock, Production cannot start, and Logistics cannot dispatch.
       </div>
       <div class="callout callout-warning">
@@ -657,7 +657,7 @@
             <tr><td>Supplier Credit — Source</td><td>QC/QA inspection results</td><td>Auto-fetch rejected qty from QC to minimize manual entry errors</td></tr>
             <tr><td>Supplier Credit — Status</td><td>Draft → Approved → Credited → Cancelled</td><td>Finance workflow ensures proper approval before supplier balance adjustment</td></tr>
             <tr><td>MR Material Allocation</td><td>Per-project RM budget subform (one of 4 MR cost components)</td><td>Assigned Qty + Rate + 80% Alert Flag + Consumed Qty → tracks consumption vs allocation at RM level (Material Cost component of the cost baseline)</td></tr>
-            <tr><td>MR Status Workflow</td><td>Draft → Production Verified → Costing Approved → Released</td><td>Production verifies MR qty against SO system req; Costing approves the TOTAL project cost (all four components). No MIS/Production/Logistics without Released MR.</td></tr>
+            <tr><td>MR Status Workflow</td><td>Draft → Pending Production Verification → Production Verified → Costing Approved → Released</td><td>Production verifies MR qty against SO system req; Costing approves the TOTAL project cost (all four components). No MIS/Production/Logistics without Released MR.</td></tr>
             <tr><td>Project Baseline</td><td>SO + MR</td><td>SO = revenue side (System/FG scope). MR = complete project implementation cost baseline (Material + Application + Transportation + Tools &amp; Tackles) that Costing approves. Both anchor the project.</td></tr>
             <tr><td>Consumption Resolution</td><td>Project ID + Item Code match</td><td>BMR/RM Consumption and Site Manager entries resolve to project-assigned RM, never generic pool</td></tr>
             <tr><td>80% Consumption Alert</td><td>Pop-up + banner + email</td><td>Three-channel alert when any allocated RM hits 80% of Assigned Qty; escalates to "Allocation Exhausted" at 100%</td></tr>

@@ -310,6 +310,35 @@
           </div>
         </div>
 
+        <!-- 1G Customer/Site Master -->
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">1G</span>
+            <span class="phase-title">Customer / Site Master</span>
+            <span class="phase-tag">Client Database</span>
+          </div>
+          <p>Client/site information — used by SO, Project, FGHM for customer lookups. AutoFetch target: SO.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Customer Code</td><td>Autogen</td><td>*</td><td>CUST-YYYY-XXXX</td></tr>
+                <tr><td>2</td><td>Client Org Name</td><td>Text</td><td>*</td><td>Company / Organization name</td></tr>
+                <tr><td>3</td><td>Contact Person</td><td>Text</td><td>*</td><td>Primary contact</td></tr>
+                <tr><td>4</td><td>Mobile No</td><td>Phone</td><td>*</td><td>—</td></tr>
+                <tr><td>5</td><td>Email</td><td>Email</td><td>*</td><td>—</td></tr>
+                <tr><td>6</td><td>GSTIN</td><td>Text</td><td>*</td><td>For invoicing</td></tr>
+                <tr><td>7</td><td>PAN No</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>8</td><td>Regd Address</td><td>Multi-line</td><td>*</td><td>Registered office address</td></tr>
+                <tr><td>9</td><td>Site Name</td><td>Text</td><td>*</td><td>Project site name</td></tr>
+                <tr><td>10</td><td>Site Address</td><td>Multi-line</td><td>*</td><td>Delivery / work site address</td></tr>
+                <tr><td>11</td><td>Site Manager / Contact</td><td>Text / Phone</td><td></td><td>On-site supervisor</td></tr>
+                <tr><td>12</td><td>Status</td><td>Dropdown</td><td>*</td><td>Active / Inactive</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
         <!-- 1F Store Master -->
         <div class="phase">
           <div class="phase-header">
@@ -521,7 +550,7 @@
                 <tr><td>6</td><td>Department</td><td>AutoFetch from login</td><td>*</td><td>—</td></tr>
                 <tr><td>7</td><td>Requested By</td><td>Text (Employee Name)</td><td>*</td><td>—</td></tr>
                 <tr><td>8</td><td>Priority</td><td>Dropdown</td><td>*</td><td>Low / Medium / High / Urgent</td></tr>
-                <tr><td>9</td><td>MR Status</td><td>Dropdown</td><td>*</td><td>Draft / Production Verified / Costing Approved / Released</td></tr>
+                <tr><td>9</td><td>MR Status</td><td>Dropdown</td><td>*</td><td>Draft / Pending Production Verification / Production Verified / Costing Approved / Released</td></tr>
               </tbody>
             </table>
           </div>
@@ -649,7 +678,7 @@
               <tbody>
                 <tr><td>1</td><td>PR Number</td><td>Autogen</td><td>*</td><td>PR-YYYY-XXXX</td></tr>
                 <tr><td>2</td><td>PR Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
-                <tr><td>3</td><td>Project ID</td><td>Lookup (Project Master)</td><td>*</td><td>From Project Master</td></tr>
+                <tr><td>3</td><td>Project ID</td><td>Lookup (Project Master)</td><td></td><td>Optional — for project-linked procurement only; stock procurement has no Project ID</td></tr>
                 <tr><td>4</td><td>Reference</td><td>Text</td><td></td><td>Manual reference</td></tr>
                 <tr><td>5</td><td>Department</td><td>AutoFetch from login</td><td>*</td><td>—</td></tr>
                 <tr><td>6</td><td>Status</td><td>Dropdown</td><td>*</td><td>Draft / Pending Approval / Approved / Rejected</td></tr>
@@ -1400,6 +1429,13 @@
                 <tr><td>MIS</td><td>Auto against MR</td></tr>
                 <tr><td>FGH</td><td>FGH-YYYY-XXXX</td></tr>
                 <tr><td>QC</td><td>QC-YYYY-XXXX</td></tr>
+                <tr><td>SO</td><td>SO-YYYY-XXXX</td></tr>
+                <tr><td>Project</td><td>PRJ-YYYY-XXXX</td></tr>
+                <tr><td>System Composition</td><td>SC-YYYY-XXXX</td></tr>
+                <tr><td>BOM / FG Formulation</td><td>BOM-YYYY-XXXX</td></tr>
+                <tr><td>Production Planning</td><td>PLAN-YYYY-XXXX</td></tr>
+                <tr><td>BMR</td><td>BMR-YYYY-XXXX</td></tr>
+                <tr><td>Customer / Site Master</td><td>CUST-YYYY-XXXX</td></tr>
               </tbody>
             </table>
           </div>

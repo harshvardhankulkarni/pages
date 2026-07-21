@@ -531,7 +531,7 @@ Every form uses a **single field table** with a **Section** column. The Section 
 
 **Purpose:** Request materials from store. Dept: Production & R&D. **MR is the project implementation cost baseline** — carries four cost components (Material, Application, Transportation, Tools & Tackles) summing to the Total MR Cost that Costing approves (alongside SO as revenue baseline). MR is NOT just RM allocation.  
 **Subforms:** Line Items (N rows), Material Allocation (N rows, feeds Material Cost), Application Cost (N rows), Transportation Cost (N rows), Tools & Tackles (N rows). All four cost components sum to the Total MR Cost.  
-**Status Workflow:** Draft → Production Verified → Costing Approved → Released
+**Status Workflow:** Draft → Pending Production Verification → Production Verified → Costing Approved → Released
 
 | # | Field Name | Field Type | Section | Req | Notes / Options |
 |---|---|---|---|---|---|
@@ -543,7 +543,7 @@ Every form uses a **single field table** with a **Section** column. The Section 
 | 6 | Department | AutoFetch | Header | * | As per user login |
 | 7 | Requested By | Text | Header | * | Employee Name |
 | 8 | Priority | Dropdown | Header | * | Normal / Urgent / Emergency |
-| 9 | **MR Status** | **Dropdown** | **Header** | * | **Draft / Production Verified / Costing Approved / Released** — governs downstream execution |
+| 9 | **MR Status** | **Dropdown** | **Header** | * | **Draft / Pending Production Verification / Production Verified / Costing Approved / Released** — governs downstream execution |
 | 10 | **Line Items** | **Subform (N rows)** | **Subform** | * | Materials requested (RM only) |
 |   | — Sr No | Number | Subform Column | * | Auto |
 |   | — Item Code | Lookup | Subform Column | * | From Purchase Item Muster |
@@ -904,7 +904,7 @@ Purchase Dept → PR → Rate Comparison → PO → GRN → QC → Material Hand
 
 === STREAM B (Project-Centric — Project ID on all forms) ===
 SO (Supply+Apply → creates Project; Supply Only → NO Project, FG sale only) → Project (root, Supply+Apply only)
-                ├── MR [Cost Baseline] (Draft → Production Verified → Costing Approved → Released)
+                ├── MR [Cost Baseline] (Draft → Pending Production Verification → Production Verified → Costing Approved → Released)
                 │       └── ⛔ Without Released MR → no further steps
                 ├── After MR Released: MIS (Project ID autofetched)
                 ├── Production Planning → Order → BMR → Packing → FGHM (inline acceptance)
@@ -935,6 +935,13 @@ The Project ID is passed from parent to child in Stream B only:
 | MIS | Auto against MR | On create |
 | FGH | FGH-YYYY-XXXX | On create |
 | QC | QC-YYYY-XXXX | On create |
+| SO | SO-YYYY-XXXX | On create |
+| Project | PRJ-YYYY-XXXX | On create |
+| System Composition | SC-YYYY-XXXX | On create |
+| BOM / FG Formulation | BOM-YYYY-XXXX | On create |
+| Production Planning | PLAN-YYYY-XXXX | On create |
+| BMR | BMR-YYYY-XXXX | On create |
+| Customer / Site Master | CUST-YYYY-XXXX | On create |
 
 ### 4.5 Notification Triggers
 
@@ -1050,7 +1057,7 @@ The Project ID is passed from parent to child in Stream B only:
               
         ▼
    [MR (Cost Baseline)]──→ MR Workflow:
-        │  Draft → Production Verified → Costing Approved → Released
+        │  Draft → Pending Production Verification → Production Verified → Costing Approved → Released
         │  ⛔ Without Released MR → STOP
         ▼
    [MIS] (Stock issued)    Inventory / Stores
