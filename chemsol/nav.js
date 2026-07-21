@@ -53,7 +53,8 @@
     'reports.html': 7,
     'security.html': 7,
     'data-model.html': 8,
-    'implementation-plan.html': 8
+    'implementation-plan.html': 8,
+    'automation.html': 8
     // Note: Sections 9-14 (Finance, Governance, etc.) now map to step 8 or 9
     // based on current page progress
   };

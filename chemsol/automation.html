@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chemsol — Automation Implementation Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .auto-card { background: #fff; border: 1px solid var(--gray-200); border-radius: 8px; margin-bottom: 16px; overflow: hidden; }
+    .auto-card-header { padding: 12px 16px; font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--gray-200); }
+    .auto-card-body { padding: 12px 16px; }
+    .auto-step { display: flex; gap: 8px; padding: 6px 0; align-items: flex-start; }
+    .auto-step-num { flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; margin-top: 2px; }
+    .auto-code { background: #1e293b; color: #e2e8f0; padding: 10px 14px; border-radius: 6px; font-family: var(--font-mono); font-size: 12px; overflow-x: auto; white-space: pre-wrap; margin: 6px 0; }
+    .auto-tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+    .tag-workflow { background: #dbeafe; color: #1d4ed8; }
+    .tag-deluge { background: #fef3c7; color: #d97706; }
+    .tag-blueprint { background: #d1fae5; color: #059669; }
+    .tag-formrule { background: #f3e8ff; color: #7c3aed; }
+    .tag-function { background: #fce7f3; color: #db2777; }
+    .tag-numbering { background: #e5e7eb; color: #374151; }
+    .auto-section-title { font-size: 18px; font-weight: 700; color: var(--primary); margin: 24px 0 12px; padding-bottom: 6px; border-bottom: 2px solid var(--primary-light); }
+    .auto-sub-title { font-size: 15px; font-weight: 600; color: var(--gray-700); margin: 16px 0 8px; }
+    .auto-trigger { display: inline-block; background: #f3f4f6; padding: 3px 10px; border-radius: 12px; font-size: 12px; color: var(--gray-600); font-family: var(--font-mono); }
+    .auto-note { padding: 8px 12px; background: #fffbeb; border-left: 3px solid var(--accent); border-radius: 4px; font-size: 12px; color: #92400e; margin: 6px 0; }
+    .auto-warn { padding: 8px 12px; background: #fee2e2; border-left: 3px solid var(--red); border-radius: 4px; font-size: 12px; color: #991b1b; margin: 6px 0; }
+    .auto-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 768px) { .auto-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+<nav class="sidebar">
+  <h1>Chemsol<span class="client-badge">Zoho Creator ERP</span></h1>
+  <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation menu">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="sidebar-nav" id="sidebarNav">
+    <div class="flow-progress">
+      <div class="fp-step" data-step="1"><span class="fp-circle">1</span></div>
+      <span class="fp-connector"></span>
+      <div class="fp-step" data-step="2"><span class="fp-circle">2</span></div>
+      <span class="fp-connector"></span>
+      <div class="fp-step" data-step="3"><span class="fp-circle">3</span></div>
+      <span class="fp-connector"></span>
+      <div class="fp-step" data-step="4"><span class="fp-circle">4</span></div>
+      <span class="fp-connector"></span>
+      <div class="fp-step" data-step="5"><span class="fp-circle">5</span></div>
+      <span class="fp-connector"></span>
+      <div class="fp-step" data-step="6"><span class="fp-circle">6</span></div>
+    </div>
+
+    <div class="accordion-stream-label">STREAM A — STOCK PROCUREMENT</div>
+    <div class="accordion-section">
+      <div class="accordion-header"><span class="ah-num">1</span> Procurement<span class="ah-arrow">&#x25B6;</span></div>
+      <div class="accordion-body">
+        <a class="ab-link" href="forms.html#procurement"><span class="al-type type-forms">Forms</span>PR->PO->GRN->QC</a>
+        <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Stock Reports</a>
+        <a class="ab-link" href="flow.html#procurement"><span class="al-type type-flow">Flow</span>Purchase Flow</a>
+      </div>
+    </div>
+
+    <div class="accordion-stream-label">STREAM B — PROJECT-CENTRIC</div>
+    <div class="accordion-section">
+      <div class="accordion-header"><span class="ah-num">2</span> Master Data<span class="ah-arrow">&#x25B6;</span></div>
+      <div class="accordion-body">
+        <a class="ab-link" href="forms.html#master-data"><span class="al-type type-forms">Forms</span>Item Muster -> BOM -> Supplier</a>
+        <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Item Reports</a>
+        <a class="ab-link" href="flow.html#master-data"><span class="al-type type-flow">Flow</span>Master Data Setup</a>
+      </div>
+    </div>
+    <div class="accordion-section">
+      <div class="accordion-header"><span class="ah-num">3</span> SO -> Project<span class="ah-arrow">&#x25B6;</span></div>
+      <div class="accordion-body">
+        <a class="ab-link" href="forms.html#sales"><span class="al-type type-forms">Forms</span>Sales Order + Project</a>
+        <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Sales Register</a>
+        <a class="ab-link" href="flow.html#so-flow"><span class="al-type type-flow">Flow</span>SO Flow</a>
+      </div>
+    </div>
+    <div class="accordion-section">
+      <div class="accordion-header"><span class="ah-num">4</span> MR - Costing Gate<span class="ah-arrow">&#x25B6;</span></div>
+      <div class="accordion-body">
+        <a class="ab-link" href="forms.html#mr"><span class="al-type type-forms">Forms</span>MR + Costing Approval</a>
+        <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Cost Reports</a>
+        <a class="ab-link" href="flow.html#mr-flow"><span class="al-type type-flow">Flow</span>MR Flow</a>
+      </div>
+    </div>
+    <div class="accordion-section">
+      <div class="accordion-header"><span class="ah-num">5</span> Production<span class="ah-arrow">&#x25B6;</span></div>
+      <div class="accordion-body">
+        <a class="ab-link" href="forms.html#production"><span class="al-type type-forms">Forms</span>MIS->Planning->BMR->Pack->FGHM</a>
+        <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Production Reports</a>
+        <a class="ab-link" href="flow.html#production-flow"><span class="al-type type-flow">Flow</span>Production Flow</a>
+      </div>
+    </div>
+    <div class="accordion-section">
+      <div class="accordion-header"><span class="ah-num">6</span> Inventory<span class="ah-arrow">&#x25B6;</span></div>
+      <div class="accordion-body">
+        <a class="ab-link" href="forms.html#inventory"><span class="al-type type-forms">Forms</span>RM + FG Stock</a>
+        <a class="ab-link" href="reports.html"><span class="al-type type-reports">Reports</span>Stock Reports</a>
+        <a class="ab-link" href="flow.html#inventory-flow"><span class="al-type type-flow">Flow</span>Inventory Flow</a>
+      </div>
+    </div>
+
+    <div class="nav-divider">&#x2501;&#x2501;&#x2501;&#x2501; QUICK NAV &#x2501;&#x2501;&#x2501;&#x2501;</div>
+    <a href="index.html" class="sidebar-flat-link">&#x1F3E0; Overview</a>
+    <a href="forms.html" class="sidebar-flat-link">&#x1F4DD; Forms</a>
+    <a href="flow.html" class="sidebar-flat-link">&#x1F504; Flow Demo</a>
+    <a href="reports.html" class="sidebar-flat-link">&#x1F4CA; Reports</a>
+    <div class="nav-divider">&#x2501;&#x2501;&#x2501;&#x2501; SYSTEM &#x2501;&#x2501;&#x2501;&#x2501;</div>
+    <a href="automation.html" class="sidebar-flat-link active">&#x2699; Automation Guide</a>
+    <a href="security.html" class="sidebar-flat-link">&#x1F512; Security &amp; Roles</a>
+    <a href="data-model.html" class="sidebar-flat-link">&#x1F4D0; Data Model</a>
+    <a href="implementation-plan.html" class="sidebar-flat-link">&#x1F4CB; Implementation Plan</a>
+    <a href="BRD_PRD_RFP.md" class="sidebar-flat-link">&#x1F4C4; BRD / PRD / RFP</a>
+    <a href="../index.html" class="sidebar-flat-link">&larr; Back to Hub</a>
+  </div>
+</nav>
+
+<div class="main">
+  <section class="hero">
+    <div class="hero-eyebrow">Implementation Reference</div>
+    <h1>Automation Implementation Guide</h1>
+    <p>Step-by-step instructions for implementing all automations in Zoho Creator. Covers Workflow Rules, Deluge Scripts, Blueprint/Approval Processes, Form Rules, Custom Functions, and Auto Numbering for every form in the system.</p>
+  </section>
+
+  <div class="content">
+
+    <h2>Zoho Creator Automation Types <span class="badge badge-blue">Quick Reference</span></h2>
+    <div class="auto-grid" style="margin-bottom:24px">
+      <div class="auto-card">
+        <div class="auto-card-header"><span class="auto-tag tag-workflow">Workflow Rule</span></div>
+        <div class="auto-card-body" style="font-size:12px;color:var(--gray-600)">
+          Triggered on form Submit/Update/Delete. Use for: status changes, stock updates, send email, create child records. Runs server-side.
+        </div>
+      </div>
+      <div class="auto-card">
+        <div class="auto-card-header"><span class="auto-tag tag-deluge">Deluge Script</span></div>
+        <div class="auto-card-body" style="font-size:12px;color:var(--gray-600)">
+          Custom script for complex logic: loops, conditions, API calls, data manipulation. Embedded in Workflow Rules or Custom Functions.
+        </div>
+      </div>
+      <div class="auto-card">
+        <div class="auto-card-header"><span class="auto-tag tag-blueprint">Blueprint / Approval</span></div>
+        <div class="auto-card-body" style="font-size:12px;color:var(--gray-600)">
+          Multi-step approval process. Use for: MR status workflow (Draft -> Production Verified -> Costing Approved -> Released). Supports conditional branching.
+        </div>
+      </div>
+      <div class="auto-card">
+        <div class="auto-card-header"><span class="auto-tag tag-formrule">Form Rule</span></div>
+        <div class="auto-card-body" style="font-size:12px;color:var(--gray-600)">
+          Client-side show/hide, validate, auto-populate. Use for: conditional subform visibility, field validation, dynamic dropdowns.
+        </div>
+      </div>
+      <div class="auto-card">
+        <div class="auto-card-header"><span class="auto-tag tag-function">Custom Function</span></div>
+        <div class="auto-card-body" style="font-size:12px;color:var(--gray-600)">
+          Reusable Deluge function. Call from Workflow Rules or Scheduler. Use for: stock recalculation, report generation.
+        </div>
+      </div>
+      <div class="auto-card">
+        <div class="auto-card-header"><span class="auto-tag tag-numbering">Auto Numbering</span></div>
+        <div class="auto-card-body" style="font-size:12px;color:var(--gray-600)">
+          Built-in field setting. Use for: sequential document numbers (PR-2026-0001, MR-2026-0001). Configure in field properties.
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- PHASE 1: MASTER DATA -->
+    <!-- ============================================================ -->
+    <div class="auto-section-title">1. Master Data — Automations</div>
+
+    <div class="auto-card">
+      <div class="auto-card-header" style="background:var(--primary-light)">
+        <span class="auto-tag tag-workflow">Workflow</span>
+        <span class="auto-tag tag-formrule">Form Rule</span>
+        1A &middot; Purchase Item Muster
+      </div>
+      <div class="auto-card-body">
+        <div class="auto-sub-title">Auto-generate Item Code</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Config:</strong> Field Properties -> Item Code -> Auto Numbering</div></div>
+        <div class="auto-step"><span class="auto-step-num">2</span><div><strong>Format:</strong> <code>CT-{Category}-{YYYY}-{XXXX}</code> where Category = RM/FG/PKG/TLS</div></div>
+        <div class="auto-step"><span class="auto-step-num">3</span><div><strong>Deluge:</strong> On form load, set prefix based on Category dropdown selection</div></div>
+        <div class="auto-code">
+// On Load - Form Rule
+if(input.Category == "RM")    { zoho.form.setValue("Item_Code", autogen("RM-YYYY-XXXX")); }
+if(input.Category == "FG")    { zoho.form.setValue("Item_Code", autogen("FG-YYYY-XXXX")); }
+if(input.Category == "Packaging") { zoho.form.setValue("Item_Code", autogen("PKG-YYYY-XXXX")); }
+if(input.Category == "Tools & Consumable") { zoho.form.setValue("Item_Code", autogen("TLS-YYYY-XXXX")); }
+        </div>
+
+        <div class="auto-sub-title">Standard Rate Visibility</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Form Rule:</strong> On form load, hide Standard Rate if logged-in user department is NOT Purchase or Store</div></div>
+        <div class="auto-code">
+// Form Rule - On Load
+if(zoho.login.department != "Purchase" && zoho.login.department != "Store") {
+  zoho.form.setFieldProperty("Standard_Rate", "visible", false);
+}
+        </div>
+      </div>
+    </div>
+
+    <div class="auto-card">
+      <div class="auto-card-header" style="background:var(--primary-light)">
+        <span class="auto-tag tag-workflow">Workflow</span>
+        1B-1D &middot; System Master / System Composition / BOM
+      </div>
+      <div class="auto-card-body">
+        <div class="auto-sub-title">System Master: Auto-generate Code</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div>Field Properties -> System Code -> Auto Numbering: <code>EP-{XXXX}</code>, <code>PU-{XXXX}</code></div></div>
+
+        <div class="auto-sub-title">System Composition & BOM: Status Workflow</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Blueprint/Approval:</strong> Create Approval Process for Status field</div></div>
+        <div class="auto-step"><span class="auto-step-num">2</span><div>States: Draft (initial) -> Approved (single approver) -> Released</div></div>
+        <div class="auto-step"><span class="auto-step-num">3</span><div>Approver: Admin user or Department Head</div></div>
+        <div class="auto-note">Only Released BOMs should appear as references in BMR and Costing lookups.</div>
+      </div>
+    </div>
+
+    <div class="auto-card">
+      <div class="auto-card-header" style="background:var(--primary-light)">
+        <span class="auto-tag tag-workflow">Workflow</span>
+        1E-1F &middot; Supplier Master / Store Master
+      </div>
+      <div class="auto-card-body">
+        <div class="auto-sub-title">Supplier Master: Auto-generate Code</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div>Field Properties -> Supplier Code -> Auto Numbering: <code>SUP-{YYYY}-{XXXX}</code></div></div>
+
+        <div class="auto-sub-title">Store Master: Auto-generate Code</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div>Field Properties -> Store Code -> Auto Numbering: <code>ST-{XXXX}</code></div></div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- PHASE 2: SALES & PROJECT -->
+    <!-- ============================================================ -->
+    <div class="auto-section-title">2. Sales &amp; Project — Automations</div>
+
+    <div class="auto-card">
+      <div class="auto-card-header" style="background:#fef3c7">
+        <span class="auto-tag tag-formrule">Form Rule</span>
+        <span class="auto-tag tag-workflow">Workflow</span>
+        <span class="auto-tag tag-numbering">Numbering</span>
+        2A &middot; Sales Order (SO)
+      </div>
+      <div class="auto-card-body">
+        <div class="auto-sub-title">Sales Type -> Conditional Subform Visibility</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Form Rule:</strong> On Sales Type change, toggle Subform A (System Lines) and Subform B (FG Lines)</div></div>
+        <div class="auto-code">
+// Form Rule - On User Input - "Sales_Type"
+if(input.Sales_Type == "Supply+Apply") {
+  zoho.form.showSubform("System_Lines");
+  zoho.form.hideSubform("FG_Lines");
+}
+if(input.Sales_Type == "Supply Only") {
+  zoho.form.hideSubform("System_Lines");
+  zoho.form.showSubform("FG_Lines");
+}
+        </div>
+
+        <div class="auto-sub-title">Auto-generate SO Number</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div>Field Properties -> SO No -> Auto Numbering: <code>SO-{YYYY}-{XXXX}</code></div></div>
+
+        <div class="auto-sub-title">Auto-create Project (Supply+Apply only)</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Workflow Rule:</strong> On Submit, check if Sales Type = "Supply+Apply"</div></div>
+        <div class="auto-step"><span class="auto-step-num">2</span><div>Criteria: <code>Sales_Type == "Supply+Apply"</code></div></div>
+        <div class="auto-step"><span class="auto-step-num">3</span><div>Action: Create new Project record</div></div>
+        <div class="auto-code">
+// Workflow Rule - On Submit (when Sales_Type == "Supply+Apply")
+createRecord
+{
+  "Form_Type": "Project_Master",
+  "SO_Reference": input.ID,
+  "Project_Name": input.Client_Org + " - " + input.Site_Name,
+  "Address": input.Regd_Address,
+  "Project_Manager": "",
+  "Execution_Base": "Area Basis",
+  "Start_Date": today(),
+  "End_Date": today().addDays(30),
+  "Status": "Planned",
+  "Project_Cost": input.Total_Amount
+};
+        </div>
+        <div class="auto-note"><strong>Important:</strong> The SO -> Project link is one-way. Project stores SO_Reference linking back. Do NOT allow editing Project after creation from SO without Admin access.</div>
+
+        <div class="auto-sub-title">Total Amount Formula</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div>Add a Formula field: <code>Total_Amount = SUM(System_Lines.Amount) + SUM(FG_Lines.Amount)</code></div></div>
+        <div class="auto-step"><span class="auto-step-num">2</span><div>In subforms, Amount is Formula: <code>Area * Rate</code> (System Lines) or <code>Qty * Rate</code> (FG Lines)</div></div>
+      </div>
+    </div>
+
+    <div class="auto-card">
+      <div class="auto-card-header" style="background:#fef3c7">
+        <span class="auto-tag tag-numbering">Numbering</span>
+        2B &middot; Project
+      </div>
+      <div class="auto-card-body">
+        <div class="auto-sub-title">Auto-generate Project ID</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div>Field Properties -> Project ID -> Auto Numbering: <code>PRJ-{YYYY}-{XXXX}</code></div></div>
+
+        <div class="auto-sub-title">Status Tracking</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div>No automations for status changes. Manual tracking by Project Manager. Statuses: Planned -> In Progress -> Completed -> On Hold</div></div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- PHASE 3: MR - COSTING GATE (CRITICAL) -->
+    <!-- ============================================================ -->
+    <div class="auto-section-title">3. MR — Costing Gate <span class="badge badge-red">CRITICAL AUTOMATIONS</span></div>
+
+    <div class="auto-card" style="border-left:4px solid var(--red)">
+      <div class="auto-card-header" style="background:#fee2e2">
+        <span class="auto-tag tag-blueprint">Blueprint</span>
+        <span class="auto-tag tag-workflow">Workflow</span>
+        <span class="auto-tag tag-deluge">Deluge</span>
+        3A &middot; MR — Material Requisition [CRITICAL GATE]
+      </div>
+      <div class="auto-card-body">
+        <div class="auto-sub-title">MR STATUS WORKFLOW (Blueprint / Approval Process)</div>
+        <p style="font-size:12px;color:var(--gray-600);margin-bottom:8px">This is the most critical automation in the system. The MR status gates all downstream activity.</p>
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:12px;margin-bottom:12px">
+          <span class="badge" style="background:#e5e7eb;color:#374151">Draft</span><span style="color:var(--gray-400)">&rarr;</span>
+          <span class="badge" style="background:#fef3c7;color:#d97706">Pending Verif</span><span style="color:var(--gray-400)">&rarr;</span>
+          <span class="badge" style="background:#dbeafe;color:#1d4ed8">Prod Verified</span><span style="color:var(--gray-400)">&rarr;</span>
+          <span class="badge" style="background:#d1fae5;color:#059669">Costing Approved</span><span style="color:var(--gray-400)">&rarr;</span>
+          <span class="badge" style="background:#a7f3d0;color:#065f46">Released</span>
+        </div>
+
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Create Blueprint:</strong> Zoho Creator -> Blueprint -> New Blueprint for MR form</div></div>
+        <div class="auto-step"><span class="auto-step-num">2</span><div><strong>States configuration:</strong></div></div>
+        <div class="auto-code">
+BLUEPRINT: MR Status Workflow
+
+STATE 1: "Draft" (Initial - on create)
+  -> Transition: "Submit for Production Verification"
+     -> Action: Set Status = "Pending Production Verification"
+     -> Condition: MR Line Items must have at least 1 item
+     -> Notification: Send alert to Production dept: "New MR submitted for verification"
+
+STATE 2: "Pending Production Verification"
+  -> Transition: "Verify (Production)"
+     -> Action: Set Status = "Production Verified"
+     -> Notification: Send alert to Costing dept: "MR verified by Production — pending Costing approval"
+  -> Transition: "Send Back to Draft"
+     -> Action: Set Status = "Draft"
+     -> Reason required
+
+STATE 3: "Production Verified"
+  -> Transition: "Approve (Costing)" 
+     -> Action: Set Status = "Costing Approved"
+     -> Action: Calculate Total MR Cost (Material + Application + Transport + Tools)
+     -> Notification: Send alert to Store + Production
+  -> Transition: "Send Back to Draft"
+     -> Action: Set Status = "Draft"
+     -> Reason required
+
+STATE 4: "Costing Approved"
+  -> Transition: "Release"
+     -> Action: Set Status = "Released"
+     -> Action: Lock all fields (read-only)
+     -> Notification: Send email to Store + Production: "MR Released - proceed with MIS"
+
+STATE 5: "Released" (Terminal)
+  -> No further transitions allowed
+  -> MR is now available for MIS form lookup
+        </div>
+
+        <div class="auto-sub-title">Auto-numbering</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div>Field Properties -> MR Number -> Auto Numbering: <code>MR-{YYYY}-{XXXX}</code></div></div>
+
+        <div class="auto-sub-title">Total MR Cost Calculation</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div>Add Formula fields at MR header level</div></div>
+        <div class="auto-code">
+// Formula field: Total_Material_Cost
+SUM(Material_Allocation.Material_Cost)
+
+// Formula field: Total_Application_Cost  
+SUM(Application_Cost.Amount)
+
+// Formula field: Total_Transportation_Cost
+SUM(Transportation_Cost.Amount)
+
+// Formula field: Total_Tools_Cost
+SUM(Tools_Tackles.Amount)
+
+// Formula field: Total_MR_Cost
+Total_Material_Cost + Total_Application_Cost + Total_Transportation_Cost + Total_Tools_Cost
+        </div>
+
+        <div class="auto-sub-title">Material Allocation Auto-populate from MR Lines</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Deluge Script:</strong> On MR form Submit, copy item details from MR Line Items to Material Allocation subform</div></div>
+        <div class="auto-code">
+// Workflow Rule - On Submit - "AutoPopulate Material Allocation"
+for each item in input.MR_Line_Items
+{
+  map criteria = {"MR_ID": input.ID, "Item_Code": item.Item_Code};
+  existing = lookupRecords(Material_Allocation, criteria);
+  if(isNull(existing))
+  {
+    createRecord
+    {
+      "Form_Type": "Material_Allocation",
+      "MR_ID": input.ID,
+      "Item_Code": item.Item_Code,
+      "Item_Name": item.Item_Name,
+      "UOM": item.UOM,
+      "Assigned_Qty": item.Required_Qty,
+      "Rate": item.Standard_Rate,  // from Item Muster
+      "Material_Cost": item.Required_Qty * item.Standard_Rate,
+      "80%_Alert_Flag": true
+    };
+  }
+}
+        </div>
+
+        <div class="auto-sub-title">Allocation Ratio % (Formula in subform)</div>
+        <div class="auto-code">
+// Formula field in Material_Allocation subform: Allocation_Ratio
+(Assigned_Qty / SUM(Material_Allocation.Assigned_Qty)) * 100
+        </div>
+
+        <div class="auto-sub-title">80% Consumption Alert</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Workflow Rule:</strong> On record update (when Consumed_Qty changes), check Consumption %</div></div>
+        <div class="auto-code">
+// Workflow Rule - On Record Update (Material_Allocation subform)
+// Trigger criteria: Consumption_Percentage >= 80 AND Alert_Flag == true
+
+consumptionPct = input.Consumption_Percentage;
+if(consumptionPct >= 80 && input.Alert_Flag == true)
+{
+  alertMsg = "ALERT: " + input.Item_Name + " consumed " + round(consumptionPct) 
+           + "% of allocated " + input.Assigned_Qty + " " + input.UOM 
+           + " for Project " + input.MR_ID.Project_ID.Project_Name;
+  
+  // Send alert to Project Manager
+  sendmail
+  [
+    from: zoho.login.email,
+    to: input.MR_ID.Project_ID.Project_Manager.email,
+    subject: "80% Consumption Alert - " + input.Item_Name,
+    message: alertMsg
+  ];
+  
+  // Set Alert Triggered flag
+  input.Alert_Triggered = true;
+  
+  if(consumptionPct >= 100)
+  {
+    // Escalate to Purchase dept for reorder
+    sendmail
+    [
+      from: zoho.login.email,
+      to: "purchase@chemsol.com",
+      subject: "ALLOCATION EXHAUSTED - " + input.Item_Name,
+      message: alertMsg + ". Please initiate reorder."
+    ];
+  }
+}
+        </div>
+
+        <div class="auto-sub-title">Escalation Reminders (Scheduled)</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Scheduled Workflow:</strong> Runs daily at 9 AM</div></div>
+        <div class="auto-code">
+// Scheduled Workflow - Daily 9 AM
+// Check MRs stuck in Draft > 7 days
+draftMRs = lookupRecords(MR_Master, "Status == 'Draft' && Created_Time < now().addDays(-7)");
+for each mr in draftMRs
+{
+  sendmail
+  [
+    from: "system@chemsol.com",
+    to: "production@chemsol.com",
+    subject: "MR " + mr.MR_Number + " stuck in Draft for " + mr.Created_Time.daysTill(now()) + " days",
+    message: "Please process MR " + mr.MR_Number + " for Project " + mr.Project_ID.Project_Name
+  ];
+}
+
+// Check MRs in Production Verified > 3 days
+verifiedMRs = lookupRecords(MR_Master, "Status == 'Production Verified' && Last_Modified_Time < now().addDays(-3)");
+for each mr in verifiedMRs
+{
+  sendmail
+  [
+    from: "system@chemsol.com",
+    to: "costing@chemsol.com",
+    subject: "MR " + mr.MR_Number + " pending Costing approval for " + mr.Last_Modified_Time.daysTill(now()) + " days",
+    message: "Please approve MR " + mr.MR_Number + " for Project " + mr.Project_ID.Project_Name
+  ];
+}
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- PHASE 4: PROCUREMENT -->
+    <!-- ============================================================ -->
+    <div class="auto-section-title">4. Procurement — Automations</div>
+
+    <div class="auto-card">
+      <div class="auto-card-header" style="background:var(--primary-light)">
+        <span class="auto-tag tag-workflow">Workflow</span>
+        <span class="auto-tag tag-numbering">Numbering</span>
+        4A &middot; Purchase Requisition (PR)
+      </div>
+      <div class="auto-card-body">
+        <div class="auto-sub-title">Auto-generate PR Number</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div>Field Properties -> PR Number -> Auto Numbering: <code>PR-{YYYY}-{XXXX}</code></div></div>
+
+        <div class="auto-sub-title">PR Status Workflow</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Workflow Rule:</strong> On Submit, change Status Draft -> Pending Approval, notify Purchase dept</div></div>
+        <div class="auto-step"><span class="auto-step-num">2</span><div><strong>Workflow Rule:</strong> On Approval, Status -> Approved. Notify Production user.</div></div>
+        <div class="auto-code">
+// Workflow 1: On Submit - auto change status + notify Purchase
+input.Status = "Pending Approval";
+
+sendmail
+[
+  from: "system@chemsol.com",
+  to: "purchase@chemsol.com",
+  subject: "PR " + input.PR_Number + " Submitted - Pending Approval",
+  message: "PR " + input.PR_Number + " has been submitted and requires Purchase dept approval."
+];
+
+// Workflow 2: On Status change to Approved - notify Production
+if(input.Status == "Approved" && oldValue.Status == "Pending Approval")
+{
+  sendmail
+  [
+    from: "system@chemsol.com",
+    to: zoho.login.email,    // Production user who created the PR
+    subject: "PR " + input.PR_Number + " Approved",
+    message: "PR " + input.PR_Number + " has been approved and is ready for PO creation."
+  ];
+}
+      </div>
+    </div>
+
+    <div class="auto-card">
+      <div class="auto-card-header" style="background:var(--primary-light)">
+        <span class="auto-tag tag-workflow">Workflow</span>
+        <span class="auto-tag tag-numbering">Numbering</span>
+        <span class="auto-tag tag-deluge">Deluge</span>
+        4B &middot; Purchase Order (PO)
+      </div>
+      <div class="auto-card-body">
+        <div class="auto-sub-title">Dual Auto-numbering based on RM Type</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Form Rule:</strong> On Load, set PO Number based on RM Type dropdown</div></div>
+        <div class="auto-code">
+// Form Rule - On Load
+if(input.RM_Type == "Coding") {
+  zoho.form.setValue("PO_Number", autogen("RMWAD-YYYY-XXXX"));
+} else {
+  zoho.form.setValue("PO_Number", autogen("RM-YYYY-XXXX"));
+}
+        </div>
+
+        <div class="auto-sub-title">GST Split Calculation (Line Item level)</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div>Formula fields in Line Items subform</div></div>
+        <div class="auto-code">
+// Formula: Basic_Amount = Quantity * Rate
+// Formula: GST_Amount = Basic_Amount * (GST_Percentage / 100)
+// Formula: Total_Amount = Basic_Amount + GST_Amount
+        </div>
+
+        <div class="auto-sub-title">Footer Totals (Auto-calculated)</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div>Formula fields at PO header level</div></div>
+        <div class="auto-code">
+// Formula fields at header level
+Basic_Total = SUM(PO_Line_Items.Basic_Amount);
+CGST = Basic_Total * (GST/200);   // GST/2 for intra-state
+SGST = Basic_Total * (GST/200);
+IGST = Basic_Total * (GST/100);   // for inter-state
+Grand_Total = Basic_Total + CGST + SGST;  // or + IGST
+        </div>
+        <div class="auto-note">Use conditional formula based on Supplier GSTIN state code vs Company GSTIN state code (intra vs inter-state).</div>
+
+        <div class="auto-sub-title">Printable PO Template</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div>Use Zoho Creator Print Template feature (PDF)</div></div>
+        <div class="auto-step"><span class="auto-step-num">2</span><div>Include: Company logo, PO Number, Date, Supplier details, Item table with HSN/Qty/Rate/GST, Total in words, T&C</div></div>
+
+        <div class="auto-sub-title">Notification: PO Ready for GRN</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Workflow Rule:</strong> On Status change to "Dispatched", notify Purchase dept that PO is ready for GRN</div></div>
+        <div class="auto-code">
+// Workflow Rule - On Status change to "Dispatched" or "Delivered"
+if(input.Status == "Dispatched" || input.Status == "Delivered")
+{
+  sendmail
+  [
+    from: "system@chemsol.com",
+    to: "purchase@chemsol.com",
+    cc: "store@chemsol.com",
+    subject: "PO " + input.PO_Number + " Ready for GRN",
+    message: "PO " + input.PO_Number + " has been dispatched/delivered. Please initiate GRN."
+  ];
+}
+        </div>
+      </div>
+    </div>
+
+    <div class="auto-card">
+      <div class="auto-card-header" style="background:var(--primary-light)">
+        <span class="auto-tag tag-workflow">Workflow</span>
+        <span class="auto-tag tag-deluge">Deluge</span>
+        4C &middot; Goods Receipt Note (GRN)
+      </div>
+      <div class="auto-card-body">
+        <div class="auto-sub-title">Auto-fetch PO Details</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Form Rule:</strong> On PO Number selection, auto-populate Supplier Name, Items, Ordered Qty</div></div>
+
+        <div class="auto-sub-title">Stock Update on GRN Posting (DELAYED POSTING)</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div>Create a <strong>Custom Button</strong> "Post GRN" that triggers Deluge</div></div>
+        <div class="auto-step"><span class="auto-step-num">2</span><div>The button: validates data -> posts -> updates stock -> makes record read-only</div></div>
+        <div class="auto-code">
+// Custom Button: "Post GRN"
+// Step 1: Validate all items have QC Status set
+for each item in input.GRN_Line_Items
+{
+  if(isNull(item.QC_Status) || item.QC_Status == "Pending")
+  {
+    throw "All items must have QC Status before posting GRN";
+  }
+}
+
+// Step 2: Update RM Inventory for each item
+for each item in input.GRN_Line_Items
+{
+  inventory = lookupRecords(RM_Inventory, "Item_Code == '" + item.Item_Code + "'");
+  if(!isNull(inventory))
+  {
+    updateRecord
+    {
+      "Form_Type": "RM_Inventory",
+      "ID": inventory.ID,
+      "Current_Stock": inventory.Current_Stock + item.Received_Qty,
+      "Last_GRN_Ref": input.ID,
+      "Last_Updated": now()
+    };
+  }
+  else
+  {
+    // First time this item enters inventory
+    createRecord
+    {
+      "Form_Type": "RM_Inventory",
+      "Item_Code": item.Item_Code,
+      "Item_Name": item.Item_Name,
+      "Current_Stock": item.Received_Qty,
+      "Last_GRN_Ref": input.ID
+    };
+  }
+  
+  // Log stock movement
+  createRecord
+  {
+    "Form_Type": "Stock_Movement_Log",
+    "Document_Type": "GRN",
+    "Document_Ref": input.GRN_Number,
+    "Item_Code": item.Item_Code,
+    "Item_Name": item.Item_Name,
+    "Movement_Type": "IN",
+    "Quantity": item.Received_Qty,
+    "UOM": item.UOM,
+    "Timestamp": now(),
+    "Warehouse": input.Warehouse
+  };
+}
+
+// Step 3: Mark GRN as posted (read-only)
+input.Status = "Posted";
+input.Posted_Time = now();
+        </div>
+        <div class="auto-warn"><strong>Critical:</strong> Stock is added ONLY after posting. Before posting, GRN is a draft. Partial GRN handled via checkbox: only checked items are processed in the loop above.</div>
+
+        <div class="auto-sub-title">GRN Number Auto-generation</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div>Field Properties -> GRN Number: <code>GRN-{YYYY}-{XXXX}</code> (hidden field, generated only on post)</div></div>
+
+        <div class="auto-sub-title">Overdue GRN Reminder (Scheduled)</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Scheduled Workflow:</strong> Daily at 8 AM, check POs with Status=Dispatched/Delivered that have no linked GRN within expected lead time</div></div>
+        <div class="auto-code">
+// Scheduled Workflow - Daily 8 AM - "GRN Overdue Reminder"
+cutoff = now().addDays(-7);  // POs dispatched >7 days without GRN
+pendingPOs = lookupRecords(PO, "Status == 'Dispatched' && Modified_Time < '" + cutoff + "'");
+for each po in pendingPOs
+{
+  grn = lookupRecords(GRN, "PO_Ref == " + po.ID + " && Status == 'Posted'");
+  if(isNull(grn))
+  {
+    sendmail
+    [
+      from: "system@chemsol.com",
+      to: "purchase@chemsol.com",
+      cc: "store@chemsol.com",
+      subject: "GRN Overdue Alert - PO " + po.PO_Number,
+      message: "PO " + po.PO_Number + " dispatched " + po.Modified_Time + " but no GRN posted yet."
+    ];
+  }
+}
+        </div>
+      </div>
+    </div>
+
+    <div class="auto-card">
+      <div class="auto-card-header" style="background:var(--primary-light)">
+        <span class="auto-tag tag-workflow">Workflow</span>
+        <span class="auto-tag tag-numbering">Numbering</span>
+        4D &middot; QC / QA
+      </div>
+      <div class="auto-card-body">
+        <div class="auto-sub-title">Auto-generate QC Number</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div>Field Properties -> QC Number -> Auto Numbering: <code>QC-{YYYY}-{XXXX}</code></div></div>
+
+        <div class="auto-sub-title">Auto-fetch from GRN</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Form Rule:</strong> On GRN Number selection, auto-populate Item Name from GRN</div></div>
+
+        <div class="auto-sub-title">Auto-set QC Status</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Form Rule:</strong> If Accepted Qty == Total Qty, set Status = Pass. If Rejected Qty > 0, set Status = Fail or Hold.</div></div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- PHASE 5: PRODUCTION -->
+    <!-- ============================================================ -->
+    <div class="auto-section-title">5. Production — Automations</div>
+
+    <div class="auto-card">
+      <div class="auto-card-header" style="background:#d1fae5">
+        <span class="auto-tag tag-workflow">Workflow</span>
+        <span class="auto-tag tag-deluge">Deluge</span>
+        5A &middot; Material Issue Slip (MIS)
+      </div>
+      <div class="auto-card-body">
+        <div class="auto-sub-title">Gate: Only Released MRs shown</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Form Rule:</strong> Restrict MR No lookup to only show MRs with Status = "Released"</div></div>
+        <div class="auto-code">
+// Form Rule - On Load - Field Property override
+zoho.form.setFieldProperty("MR_No", "lookupCriteria", "Status == 'Released'");
+        </div>
+
+        <div class="auto-sub-title">Auto-fetch Items from MR</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Form Rule:</strong> On MR No selection, auto-populate MIS Line Items from MR line items</div></div>
+
+        <div class="auto-sub-title">Stock Deduction on MIS Posting (Custom Button)</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div>Create Custom Button "Post MIS" on the form</div></div>
+        <div class="auto-code">
+// Custom Button: "Post MIS"
+for each item in input.MIS_Line_Items
+{
+  // Deduct from RM Inventory
+  inventory = lookupRecords(RM_Inventory, "Item_Code == '" + item.Item_Code + "'");
+  if(!isNull(inventory) && inventory.Current_Stock >= item.Issued_Qty)
+  {
+    updateRecord
+    {
+      "Form_Type": "RM_Inventory",
+      "ID": inventory.ID,
+      "Current_Stock": inventory.Current_Stock - item.Issued_Qty,
+      "Last_MIS_Ref": input.ID,
+      "Last_Updated": now()
+    };
+  }
+  else
+  {
+    throw "Insufficient stock for " + item.Item_Code + ". Available: "
+        + inventory.Current_Stock + ", Required: " + item.Issued_Qty;
+  }
+  
+  // Log stock movement
+  createRecord
+  {
+    "Form_Type": "Stock_Movement_Log",
+    "Document_Type": "MIS",
+    "Document_Ref": input.MIS_Number,
+    "Item_Code": item.Item_Code,
+    "Item_Name": item.Item_Name,
+    "Movement_Type": "OUT",
+    "Quantity": item.Issued_Qty,
+    "UOM": item.UOM,
+    "Timestamp": now()
+  };
+}
+
+input.Status = "Posted";
+input.Posted_Time = now();
+        </div>
+        <div class="auto-note"><strong>Balance Qty</strong> = Required Qty - Issued Qty (Formula field in line items). Only createable after MR Released.</div>
+      </div>
+    </div>
+
+    <div class="auto-card">
+      <div class="auto-card-header" style="background:#d1fae5">
+        <span class="auto-tag tag-workflow">Workflow</span>
+        <span class="auto-tag tag-numbering">Numbering</span>
+        5B &middot; Production Planning
+      </div>
+      <div class="auto-card-body">
+        <div class="auto-sub-title">Auto-generate Planning Number</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div>Field Properties -> Planning No -> Auto Numbering: <code>PLAN-{YYYY}-{XXXX}</code></div></div>
+
+        <div class="auto-sub-title">Auto-fetch from Project + MR</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Form Rule:</strong> On Project ID selection, auto-populate System/FG requirements from SO</div></div>
+        <div class="auto-step"><span class="auto-step-num">2</span><div><strong>Form Rule:</strong> On MR Sheet No selection, auto-populate FG quantities from MR line items</div></div>
+      </div>
+    </div>
+
+    <div class="auto-card">
+      <div class="auto-card-header" style="background:#d1fae5">
+        <span class="auto-tag tag-deluge">Deluge</span>
+        <span class="auto-tag tag-numbering">Numbering</span>
+        5C &middot; BMR — Batch Manufacturing Record
+      </div>
+      <div class="auto-card-body">
+        <div class="auto-sub-title">Auto-generate BMR Number</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div>Field Properties -> BMR No -> Auto Numbering: <code>BMR-{YYYY}-{XXXX}</code></div></div>
+
+        <div class="auto-sub-title">Auto-fetch BOM RM List</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Form Rule:</strong> On FG Code selection, auto-populate RM Line Items from BOM formulation</div></div>
+        <div class="auto-code">
+// Form Rule - On FG Code selection
+bom = lookupRecords(BOM_Formulation, "FG_Code == '" + input.FG_Code + "' && Status == 'Released'");
+if(!isNull(bom))
+{
+  for each rmItem in bom.BOM_Line_Items
+  {
+    addSubformRow("BMR_Line_Items",
+    {
+      "RM_Item_Code": rmItem.RM_Item_Code,
+      "RM_Item_Name": rmItem.RM_Item_Name,
+      "UOM": rmItem.UOM,
+      "Qty_Consumed": rmItem.Total_Qty,  // standard qty from BOM
+      "Batch_No": input.Batch_No
+    });
+  }
+}
+        </div>
+
+        <div class="auto-sub-title">Update MR Material Allocation Consumed Qty</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Workflow Rule:</strong> On BMR Submit, increment Consumed Qty on matching MR Allocation</div></div>
+        <div class="auto-code">
+// Workflow Rule - On Submit
+// Match: Project ID + Item Code
+projectId = input.Project_ID;
+for each line in input.BMR_Line_Items
+{
+  allocation = lookupRecords(Material_Allocation, 
+    "MR_ID.Project_ID == '" + projectId + "' && Item_Code == '" + line.RM_Item_Code + "'");
+  
+  if(!isNull(allocation))
+  {
+    updateRecord
+    {
+      "Form_Type": "Material_Allocation",
+      "ID": allocation.ID,
+      "Consumed_Qty": allocation.Consumed_Qty + line.Qty_Consumed,
+      "Consumption_Percentage": ((allocation.Consumed_Qty + line.Qty_Consumed) / allocation.Assigned_Qty) * 100
+    };
+  }
+}
+        </div>
+        <div class="auto-note"><strong>Consumption Tracking:</strong> This is how the system ties actual RM usage back to the project-assigned baseline. Every BMR batch consumption increments the project's allocated RM, which triggers the 80% alert at threshold.</div>
+      </div>
+    </div>
+
+    <div class="auto-card">
+      <div class="auto-card-header" style="background:#d1fae5">
+        <span class="auto-tag tag-formrule">Form Rule</span>
+        5D &middot; RM Consumption Entry
+      </div>
+      <div class="auto-card-body">
+        <div class="auto-sub-title">Auto-fetch Standard Qty from BOM</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Form Rule:</strong> On Item-wise RM selection, look up BOM and auto-populate Standard Qty</div></div>
+
+        <div class="auto-sub-title">Variance Calculation</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div>Formula field: <code>Variance = Actual_Qty - Standard_Qty</code></div></div>
+      </div>
+    </div>
+
+    <div class="auto-card">
+      <div class="auto-card-header" style="background:#d1fae5">
+        <span class="auto-tag tag-deluge">Deluge</span>
+        5E &middot; Packing Entry
+      </div>
+      <div class="auto-card-body">
+        <div class="auto-sub-title">Auto-fetch Batch No from BMR</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Form Rule:</strong> On BMR Reference selection, auto-populate Batch No</div></div>
+
+        <div class="auto-sub-title">Packing Material Stock Deduction</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Workflow Rule:</strong> On Submit, deduct packing material from Packaging inventory</div></div>
+        <div class="auto-code">
+// Workflow Rule - On Submit
+for each item in input.Packing_Material_Items
+{
+  inventory = lookupRecords(RM_Inventory, "Item_Code == '" + item.Item_Code + "'");
+  if(!isNull(inventory))
+  {
+    updateRecord
+    {
+      "Form_Type": "RM_Inventory",
+      "ID": inventory.ID,
+      "Current_Stock": inventory.Current_Stock - item.Qty
+    };
+  }
+}
+        </div>
+      </div>
+    </div>
+
+    <div class="auto-card">
+      <div class="auto-card-header" style="background:#d1fae5">
+        <span class="auto-tag tag-workflow">Workflow</span>
+        <span class="auto-tag tag-deluge">Deluge</span>
+        5F &middot; FG Handover (FGHM)
+      </div>
+      <div class="auto-card-body">
+        <div class="auto-sub-title">Auto-generate FGH Number</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div>Field Properties -> FGH No -> Auto Numbering: <code>FGH-{YYYY}-{XXXX}</code></div></div>
+
+        <div class="auto-sub-title">FG Stock Update on Inline Acceptance</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Workflow Rule:</strong> On Submit where Overall Status = "Accepted", update FG Inventory</div></div>
+        <div class="auto-code">
+// Workflow Rule - On Submit (when Overall_Status == "Accepted")
+for each item in input.FGHM_Line_Items
+{
+  inventory = lookupRecords(FG_Inventory, "Item_Code == '" + item.FG_Product_Code + "'");
+  if(!isNull(inventory))
+  {
+    updateRecord
+    {
+      "Form_Type": "FG_Inventory",
+      "ID": inventory.ID,
+      "Current_Stock": inventory.Current_Stock + item.Accepted_Qty,
+      "Last_FGHM_Ref": input.ID
+    };
+  }
+  else
+  {
+    createRecord
+    {
+      "Form_Type": "FG_Inventory",
+      "Item_Code": item.FG_Product_Code,
+      "Item_Name": item.FG_Product_Name,
+      "Current_Stock": item.Accepted_Qty
+    };
+  }
+  
+  // Log stock movement
+  createRecord
+  {
+    "Form_Type": "Stock_Movement_Log",
+    "Document_Type": "FGHM",
+    "Document_Ref": input.FGH_No,
+    "Item_Code": item.FG_Product_Code,
+    "Item_Name": item.FG_Product_Name,
+    "Movement_Type": "IN",
+    "Quantity": item.Accepted_Qty,
+    "UOM": item.UOM,
+    "Timestamp": now()
+  };
+}
+
+// Notification to Store
+sendmail
+[
+  from: "system@chemsol.com",
+  to: "store@chemsol.com",
+  subject: "FG Handover - " + input.FGH_No,
+  message: "FG Handover " + input.FGH_No + " from Project " + input.Project_ID.Project_Name + " has been accepted and FG stock updated."
+];
+        </div>
+        <div class="auto-note">Inline acceptance means no separate FGAN form. The FGHM line items have Damaged_Qty and Accepted_Qty fields. Only Accepted_Qty adds to FG stock.</div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- PHASE 6: INVENTORY -->
+    <!-- ============================================================ -->
+    <div class="auto-section-title">6. Inventory — Automations</div>
+
+    <div class="auto-card">
+      <div class="auto-card-header" style="background:#f3e8ff">
+        <span class="auto-tag tag-workflow">Workflow</span>
+        <span class="auto-tag tag-deluge">Deluge</span>
+        <span class="auto-tag tag-function">Function</span>
+        RM &amp; FG Inventory + Stock Movement Log
+      </div>
+      <div class="auto-card-body">
+
+        <div class="auto-sub-title">Min/Max Reorder Alerts</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Scheduled Workflow:</strong> Runs daily to check all inventory items against thresholds</div></div>
+        <div class="auto-code">
+// Scheduled Workflow - Daily 7 AM
+// Check RM Inventory
+rmItems = lookupRecords(RM_Inventory);
+for each item in rmItems
+{
+  if(item.Current_Stock < item.Min_Stock)
+  {
+    // Dashboard banner + notification
+    sendmail
+    [
+      from: "system@chemsol.com",
+      to: "purchase@chemsol.com",
+      subject: "REORDER ALERT: " + item.Item_Name + " below minimum stock",
+      message: item.Item_Name + " current stock: " + item.Current_Stock 
+             + " " + item.UOM + ". Minimum: " + item.Min_Stock + ". Please reorder."
+    ];
+  }
+  if(item.Current_Stock > item.Max_Stock)
+  {
+    sendmail
+    [
+      from: "system@chemsol.com",
+      to: "store@chemsol.com",
+      subject: "OVERSTOCK ALERT: " + item.Item_Name + " above maximum stock",
+      message: item.Item_Name + " current stock: " + item.Current_Stock
+             + " " + item.UOM + ". Maximum: " + item.Max_Stock + "."
+    ];
+  }
+}
+
+// Check FG Inventory (same pattern)
+fgItems = lookupRecords(FG_Inventory);
+for each item in fgItems { /* same threshold logic */ }
+        </div>
+
+        <div class="auto-sub-title">Material Return (Stock Reversal)</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div>Create a <strong>Material Return</strong> form or use a negative MIS entry</div></div>
+        <div class="auto-step"><span class="auto-step-num">2</span><div>On submission, add qty back to RM Inventory and log as "RETURN" in Stock Movement Log</div></div>
+
+        <div class="auto-sub-title">Stock Movement Summary (Custom Function - reusable)</div>
+        <div class="auto-code">
+// Custom Function: getCurrentStock(itemCode)
+// Returns current stock for any item across RM or FG inventory
+
+// Check RM first
+rm = lookupRecords(RM_Inventory, "Item_Code == '" + itemCode + "'");
+if(!isNull(rm)) { return rm.Current_Stock; }
+
+// Check FG next
+fg = lookupRecords(FG_Inventory, "Item_Code == '" + itemCode + "'");
+if(!isNull(fg)) { return fg.Current_Stock; }
+
+return 0;  // Item not found
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- SUMMARY TABLE -->
+    <!-- ============================================================ -->
+    <div class="auto-section-title">Complete Automation Inventory <span class="badge badge-blue">All Forms</span></div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Form</th>
+            <th>Automation Type</th>
+            <th>Trigger</th>
+            <th>Action</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="5"><strong>Master Data</strong></td></tr>
+          <tr><td>Item Muster</td><td><span class="auto-tag tag-formrule">Form Rule</span></td><td>On Load</td><td>Auto-generate Item Code by Category</td><td>Pending</td></tr>
+          <tr><td>Item Muster</td><td><span class="auto-tag tag-formrule">Form Rule</span></td><td>On Load</td><td>Hide Standard Rate for non-Purchase/Store</td><td>Pending</td></tr>
+          <tr><td>System Composition</td><td><span class="auto-tag tag-blueprint">Blueprint</span></td><td>On Submit</td><td>Status: Draft -> Approved -> Released</td><td>Pending</td></tr>
+          <tr><td>BOM</td><td><span class="auto-tag tag-blueprint">Blueprint</span></td><td>On Submit</td><td>Status: Draft -> Approved -> Released</td><td>Pending</td></tr>
+          <tr><td>Supplier Master</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: SUP-YYYY-XXXX</td><td>Pending</td></tr>
+          <tr><td>Store Master</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: ST-XXXX</td><td>Pending</td></tr>
+
+          <tr><td colspan="5"><strong>Sales &amp; Project</strong></td></tr>
+          <tr><td>SO</td><td><span class="auto-tag tag-formrule">Form Rule</span></td><td>On Sales Type change</td><td>Toggle Subform A (System) / Subform B (FG)</td><td>Pending</td></tr>
+          <tr><td>SO</td><td><span class="auto-tag tag-workflow">Workflow</span></td><td>On Submit (Supply+Apply)</td><td>Auto-create Project record</td><td>Pending</td></tr>
+          <tr><td>SO</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: SO-YYYY-XXXX</td><td>Pending</td></tr>
+          <tr><td>Project</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: PRJ-YYYY-XXXX</td><td>Pending</td></tr>
+
+          <tr><td colspan="5"><strong>MR — Costing Gate [CRITICAL]</strong></td></tr>
+          <tr><td>MR</td><td><span class="auto-tag tag-blueprint">Blueprint</span></td><td>Status transitions</td><td>Draft -> Prod Verified -> Costing Approved -> Released</td><td>Pending</td></tr>
+          <tr><td>MR</td><td><span class="auto-tag tag-deluge">Deluge</span></td><td>On Submit</td><td>Auto-populate Material Allocation from MR Lines</td><td>Pending</td></tr>
+          <tr><td>MR</td><td><span class="auto-tag tag-workflow">Workflow</span></td><td>Consumed Qty update</td><td>80% Consumption Alert -> Email PM + Dashboard</td><td>Pending</td></tr>
+          <tr><td>MR</td><td><span class="auto-tag tag-workflow">Workflow</span></td><td>Scheduled Daily</td><td>Escalation: Draft >7d, Prod Verified >3d</td><td>Pending</td></tr>
+          <tr><td>MR</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: MR-YYYY-XXXX</td><td>Pending</td></tr>
+
+          <tr><td colspan="5"><strong>Procurement</strong></td></tr>
+          <tr><td>PR</td><td><span class="auto-tag tag-workflow">Workflow</span></td><td>On Submit</td><td>Status: Draft -> Pending Approval</td><td>Pending</td></tr>
+          <tr><td>PR</td><td><span class="auto-tag tag-workflow">Workflow</span></td><td>On Approval</td><td>Notify Production user</td><td>Pending</td></tr>
+          <tr><td>PR</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: PR-YYYY-XXXX</td><td>Pending</td></tr>
+          <tr><td>PO</td><td><span class="auto-tag tag-formrule">Form Rule</span></td><td>On Load</td><td>Set PO Number series by RM Type (RM- / RMWAD-)</td><td>Pending</td></tr>
+          <tr><td>PO</td><td><span class="auto-tag tag-formrule">Form Rule</span></td><td>Line Item entry</td><td>Auto-calculate GST split + Footer totals</td><td>Pending</td></tr>
+          <tr><td>GRN</td><td><span class="auto-tag tag-workflow">Workflow</span></td><td>Custom Button "Post GRN"</td><td>Update RM Inventory + Stock Movement Log</td><td>Pending</td></tr>
+          <tr><td>GRN</td><td><span class="auto-tag tag-formrule">Form Rule</span></td><td>On PO selected</td><td>Auto-fetch Supplier, Items, Ordered Qty</td><td>Pending</td></tr>
+          <tr><td>QC</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: QC-YYYY-XXXX</td><td>Pending</td></tr>
+
+          <tr><td colspan="5"><strong>Production</strong></td></tr>
+          <tr><td>MIS</td><td><span class="auto-tag tag-formrule">Form Rule</span></td><td>On Load</td><td>Restrict MR lookup to "Released" only</td><td>Pending</td></tr>
+          <tr><td>MIS</td><td><span class="auto-tag tag-deluge">Deluge</span></td><td>Custom Button "Post MIS"</td><td>Deduct RM Inventory + Stock Movement Log</td><td>Pending</td></tr>
+          <tr><td>Prod Planning</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: PLAN-YYYY-XXXX</td><td>Pending</td></tr>
+          <tr><td>BMR</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: BMR-YYYY-XXXX</td><td>Pending</td></tr>
+          <tr><td>BMR</td><td><span class="auto-tag tag-deluge">Deluge</span></td><td>On Submit</td><td>Increment Consumed Qty on MR Allocation</td><td>Pending</td></tr>
+          <tr><td>Packing</td><td><span class="auto-tag tag-workflow">Workflow</span></td><td>On Submit</td><td>Deduct packing material from inventory</td><td>Pending</td></tr>
+          <tr><td>FGHM</td><td><span class="auto-tag tag-deluge">Deluge</span></td><td>On Submit (Accepted)</td><td>Update FG Inventory + Stock Movement Log + Notify Store</td><td>Pending</td></tr>
+          <tr><td>FGHM</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: FGH-YYYY-XXXX</td><td>Pending</td></tr>
+
+          <tr><td colspan="5"><strong>Inventory</strong></td></tr>
+          <tr><td>RM/FG Stock</td><td><span class="auto-tag tag-workflow">Workflow</span></td><td>Scheduled Daily</td><td>Min/Max reorder alerts + overstock warnings</td><td>Pending</td></tr>
+          <tr><td>Stock Movement</td><td><span class="auto-tag tag-workflow">Workflow</span></td><td>GRN/MIS/FGHM Post</td><td>Auto-log all stock movements with traceability</td><td>Pending</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- IMPLEMENTATION ORDER -->
+    <!-- ============================================================ -->
+    <div class="auto-section-title">Implementation Order <span class="badge badge-green">Build Sequence</span></div>
+    <div class="auto-card">
+      <div class="auto-card-body">
+        <p style="font-size:13px;color:var(--gray-600);margin-bottom:8px">Build automations in this order (each depends on previous):</p>
+        <ol style="padding-left:20px;font-size:13px;color:var(--gray-600);line-height:1.8">
+          <li><strong>Auto Numbering</strong> &mdash; Configure on ALL forms first (PR, PO, GRN, MR, MIS, FGHM, QC, SO, Project, BMR, Planning)</li>
+          <li><strong>Form Rules</strong> &mdash; Conditional visibility (SO Sales Type), lookup filters (MIS MR No), auto-populate (PO from PR, BMR RM list from BOM)</li>
+          <li><strong>Formula Fields</strong> &mdash; Total Amount on SO, GST split on PO, Total MR Cost, Allocation Ratio, Variance</li>
+          <li><strong>Blueprints</strong> &mdash; MR Status workflow (Draft -> Prod Verified -> Costing Approved -> Released). This is the critical gate. Test thoroughly.</li>
+          <li><strong>Workflow Rules</strong> &mdash; SO -> Project creation, Stock updates (GRN -> RM+, MIS -> RM-, FGHM -> FG+), 80% alert, PR notifications</li>
+          <li><strong>Custom Buttons</strong> &mdash; "Post GRN", "Post MIS" with Deluge scripts for stock updates and logging</li>
+          <li><strong>Scheduled Workflows</strong> &mdash; Daily escalation reminders, Min/Max stock alerts</li>
+          <li><strong>Custom Functions</strong> &mdash; Reusable getCurrentStock(), stock movement summary functions</li>
+          <li><strong>Print Templates</strong> &mdash; PO printable format with GST split, company logo</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="auto-card">
+      <div class="auto-card-header" style="background:#fef3c7">
+        <span class="auto-tag tag-workflow">Test Checklist</span>
+        UAT Checklist for Automations
+      </div>
+      <div class="auto-card-body">
+        <div class="auto-grid">
+          <div style="font-size:12px;color:var(--gray-600)">
+            <strong>&#x2611; MR Status Workflow</strong>
+            <ul style="padding-left:16px;margin-top:4px">
+              <li>Draft to Production Verified works</li>
+              <li>Production Verified to Costing Approved works</li>
+              <li>Costing Approved to Released works</li>
+              <li>Cannot skip states</li>
+              <li>MIS only sees Released MRs</li>
+            </ul>
+          </div>
+          <div style="font-size:12px;color:var(--gray-600)">
+            <strong>&#x2611; Stock Updates</strong>
+            <ul style="padding-left:16px;margin-top:4px">
+              <li>GRN Post -> RM stock +</li>
+              <li>MIS Post -> RM stock -</li>
+              <li>FGHM Accept -> FG stock +</li>
+              <li>Partial GRN works via checkbox</li>
+              <li>Stock reversal on material return</li>
+            </ul>
+          </div>
+          <div style="font-size:12px;color:var(--gray-600)">
+            <strong>&#x2611; SO -> Project</strong>
+            <ul style="padding-left:16px;margin-top:4px">
+              <li>Supply+Apply creates Project</li>
+              <li>Supply Only does NOT create Project</li>
+              <li>Subform visibility toggles correctly</li>
+            </ul>
+          </div>
+          <div style="font-size:12px;color:var(--gray-600)">
+            <strong>&#x2611; 80% Alert</strong>
+            <ul style="padding-left:16px;margin-top:4px">
+              <li>Alert fires at >= 80%</li>
+              <li>PM receives email notification</li>
+              <li>100% escalation to Purchase</li>
+              <li>Dashboard banner shows</li>
+            </ul>
+          </div>
+          <div style="font-size:12px;color:var(--gray-600)">
+            <strong>&#x2611; Auto-populate</strong>
+            <ul style="padding-left:16px;margin-top:4px">
+              <li>PO auto-fetches from PR</li>
+              <li>GRN auto-fetches from PO</li>
+              <li>MIS auto-fetches from MR</li>
+              <li>BMR auto-fetches RM list from BOM</li>
+            </ul>
+          </div>
+          <div style="font-size:12px;color:var(--gray-600)">
+            <strong>&#x2611; Notifications</strong>
+            <ul style="padding-left:16px;margin-top:4px">
+              <li>PR Submitted -> Purchase dept notified</li>
+              <li>PR Approved -> Production notified</li>
+              <li>PO Dispatched -> Purchase + Store notified</li>
+              <li>GRN Overdue (7d) -> Purchase + Store reminded daily</li>
+              <li>MR Submitted -> Production notified</li>
+              <li>MR Verified -> Costing notified</li>
+              <li>MR Released -> Store + Production</li>
+              <li>FGHM Submitted -> Store & Logistics</li>
+              <li>80% Consumption -> PM alert</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- COMMON DELUGE PATTERNS -->
+    <!-- ============================================================ -->
+    <div class="auto-section-title">Common Deluge Patterns <span class="badge badge-purple">Copy-Paste Templates</span></div>
+
+    <div class="auto-grid">
+      <div class="auto-card">
+        <div class="auto-card-header">Lookup &amp; Auto-populate</div>
+        <div class="auto-card-body">
+          <div class="auto-code">
+// On field selection, fetch related record
+source = lookupRecords(Form_Name, "Field == '" + input.Value + "'");
+if(!isNull(source))
+{
+  zoho.form.setValue("Target_Field", source.Fetched_Field);
+}
+          </div>
+        </div>
+      </div>
+      <div class="auto-card">
+        <div class="auto-card-header">Stock Update</div>
+        <div class="auto-card-body">
+          <div class="auto-code">
+// Add or subtract from inventory
+inv = lookupRecords(Inventory, "Code == '" + c + "'");
+if(!isNull(inv)) {
+  updateRecord { "Form_Type": "Inventory",
+    "ID": inv.ID,
+    "Current_Stock": inv.Current_Stock + qty };
+}
+          </div>
+        </div>
+      </div>
+      <div class="auto-card">
+        <div class="auto-card-header">Send Email Alert</div>
+        <div class="auto-card-body">
+          <div class="auto-code">
+sendmail
+[
+  from: "system@chemsol.com",
+  to: zoho.login.email,
+  cc: "manager@chemsol.com",
+  subject: "Alert: " + subject_text,
+  message: "Details: " + detail_text
+];
+          </div>
+        </div>
+      </div>
+      <div class="auto-card">
+        <div class="auto-card-header">Create Child Record</div>
+        <div class="auto-card-body">
+          <div class="auto-code">
+createRecord
+{
+  "Form_Type": "Child_Form",
+  "Parent_ID": input.ID,
+  "Field1": value1,
+  "Field2": value2
+};
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <p>Chemsol &mdash; Zoho Creator ERP &middot; ITOTCloud Systems Pvt. Ltd.</p>
+    <p>Automation Implementation Guide &middot; 30+ Automations &middot; Built on Zoho Creator India (.in)</p>
+  </div>
+</div>
+
+<script src="nav.js"></script>
+</body>
+</html>
