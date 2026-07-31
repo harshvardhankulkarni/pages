@@ -501,8 +501,8 @@
       <!-- ============================================================ -->
       <!-- SECTION 3: MR — COSTING GATE -->
       <!-- ============================================================ -->
-      <h2 id="mr">3 · MR — Costing Gate <span class="badge badge-purple">Stream B — Project ID</span></h2>
-      <p><strong>MR is the complete project implementation cost baseline</strong> — four cost components (Material + Application + Transportation + Tools & Tackles) summing to Total MR Cost. Costing approves this TOTAL cost. MR is NOT just RM allocation — it is the full project cost estimate. <strong>Only Released MR can proceed to MIS → Production → FGHM.</strong></p>
+      <h2 id="mr">3 · Costing → Plan → MR Gate <span class="badge badge-purple">Stream B — Costing + Plan + MR (auto-derived)</span></h2>
+      <p><strong>Costing Sheet is the standalone cost baseline</strong> — 5 sections auto-expanded from SO × System Composition × BOM. On Costing Approved → auto-creates Project + Production Plan. Production Plan checks stock, auto-PRs for shortages, then MR is <strong>auto-derived</strong> (4 cost components pre-filled, zero manual re-entry). <strong>Only Released MR can proceed to MIS → Production → FGHM.</strong></p>
 
       <div style="margin:12px 0;display:flex;gap:6px;align-items:center;flex-wrap:wrap">
         <strong>MR Status Workflow:</strong>
@@ -520,14 +520,154 @@
 
       <div class="phase-container">
 
-        <!-- 3A MR -->
+        <!-- 3A Costing Sheet -->
         <div class="phase">
           <div class="phase-header">
             <span class="phase-number">3A</span>
-            <span class="phase-title">Material Requisition (MR)</span>
-            <span class="phase-tag">4 Cost Components · N Line Items · Material Allocation</span>
+            <span class="phase-title">Costing Sheet</span>
+            <span class="phase-tag">5 Sections · Auto-Expanded from SO × BOM</span>
           </div>
-          <p>Department: Production & R&D. Created against the SO/Project. Carries the per-project Material Allocation subform — the consumption budget baseline with per-RM allocation ratios and 80% alert flags.</p>
+          <p>Department: Costing. Standalone form created AFTER SO. Auto-expands SO System Lines × System Composition × BOM into per-RM material cost lines. Costing Approved → auto-creates Project + Production Plan.</p>
+          <div style="margin:8px 0;font-size:12px;color:var(--gray-600)">
+            <strong>Status Workflow:</strong>
+            <span class="badge" style="background:#e5e7eb;color:#374151">Draft</span> →
+            <span class="badge" style="background:#fef3c7;color:#d97706">Under Review</span> →
+            <span class="badge" style="background:#d1fae5;color:#059669">Approved</span> /
+            <span class="badge" style="background:#fee2e2;color:#dc2626">Rejected</span>
+          </div>
+          <h4>Header</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Costing Number</td><td>Autogen</td><td>*</td><td>CST-YYYY-XXXX</td></tr>
+                <tr><td>2</td><td>Costing Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
+                <tr><td>3</td><td>SO Reference</td><td>Lookup (SO Master)</td><td>*</td><td>Auto-fetch System Lines, Area, Customer</td></tr>
+                <tr><td>4</td><td>Project Name</td><td>AutoFetch (from SO)</td><td>*</td><td>—</td></tr>
+                <tr><td>5</td><td>Customer</td><td>AutoFetch (from SO)</td><td>*</td><td>—</td></tr>
+                <tr><td>6</td><td>Costing Status</td><td>Dropdown</td><td>*</td><td>Draft / Under Review / Approved / Rejected</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Section A — Material Cost <span style="font-size:11px;font-weight:400;color:var(--gray-500)">(auto-expanded from SO × System Composition × BOM)</span></h4>
+          <div style="padding:8px 12px;background:#ecfdf5;border-radius:6px;font-size:12px;color:#065f46;margin-bottom:8px">
+            <strong>Auto-expand:</strong> For each SO System Line → System Composition (which FGs) → BOM (which RMs per FG × ratio × SO Area). All RM lines pre-populated with BOM quantities. Rate editable.
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>System Code</td><td>AutoFetch (from SO)</td><td>*</td><td>—</td></tr>
+                <tr><td>2</td><td>FG Code</td><td>AutoFetch (System Composition)</td><td>*</td><td>—</td></tr>
+                <tr><td>3</td><td>RM Item Code</td><td>AutoFetch (BOM)</td><td>*</td><td>—</td></tr>
+                <tr><td>4</td><td>RM Item Name</td><td>AutoFetch</td><td>*</td><td>—</td></tr>
+                <tr><td>5</td><td>UOM</td><td>AutoFetch</td><td>*</td><td>—</td></tr>
+                <tr><td>6</td><td>BOM Ratio</td><td>AutoFetch</td><td>*</td><td>From BOM</td></tr>
+                <tr><td>7</td><td>Area (sqm)</td><td>AutoFetch (from SO)</td><td>*</td><td>—</td></tr>
+                <tr><td>8</td><td>Required Qty</td><td>Formula</td><td>*</td><td>= BOM Ratio × Area</td></tr>
+                <tr><td>9</td><td>Rate</td><td>Currency</td><td>*</td><td>Editable</td></tr>
+                <tr><td>10</td><td>Material Cost</td><td>Formula</td><td>*</td><td>= Required Qty × Rate</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Section B — Application Cost</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Activity</td><td>Text</td><td>*</td></tr>
+                <tr><td>2</td><td>UOM</td><td>Dropdown</td><td>*</td></tr>
+                <tr><td>3</td><td>Qty / Area</td><td>Number</td><td>*</td></tr>
+                <tr><td>4</td><td>Rate</td><td>Currency</td><td>*</td></tr>
+                <tr><td>5</td><td>Amount</td><td>Formula</td><td>*</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Section C — Transportation Cost</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>From (Warehouse)</td><td>Lookup (Store Master)</td><td>*</td></tr>
+                <tr><td>2</td><td>To (Site)</td><td>Text</td><td>*</td></tr>
+                <tr><td>3</td><td>Mode of Transport</td><td>Dropdown</td><td>*</td></tr>
+                <tr><td>4</td><td>Estimated Trips</td><td>Number</td><td>*</td></tr>
+                <tr><td>5</td><td>Rate per Trip</td><td>Currency</td><td>*</td></tr>
+                <tr><td>6</td><td>Amount</td><td>Formula</td><td>*</td></tr>
+                <tr><td>7</td><td>Logistics Notes</td><td>Multi-line</td><td></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Section D — Tools & Tackles</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Item / Tool</td><td>Text/Lookup</td><td>*</td></tr>
+                <tr><td>2</td><td>Qty</td><td>Number</td><td>*</td></tr>
+                <tr><td>3</td><td>Rate</td><td>Currency</td><td>*</td></tr>
+                <tr><td>4</td><td>Amount</td><td>Formula</td><td>*</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h4>Section E — Overhead & Miscellaneous</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Description</td><td>Text</td><td>*</td></tr>
+                <tr><td>2</td><td>Amount</td><td>Currency</td><td>*</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p><strong>Total Costing Amount</strong> = Σ Section A + B + C + D + E. This is what Costing approves.</p>
+          <p><strong>Automation:</strong> On Costing Approved → auto-create Project + Production Plan (Draft). Costing stuck >24 hr → escalation to admin.</p>
+        </div>
+
+        <!-- 3B Production Plan -->
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">3B</span>
+            <span class="phase-title">Production Plan</span>
+            <span class="phase-tag">Stock Check · Auto-PR for Shortages</span>
+          </div>
+          <p>Department: Production / Costing. Created on Costing Approval. Checks Available Stock = physical stock − Σ(Assigned Qty from all unreleased MRs). If stock insufficient → auto-PR on Plan Release.</p>
+          <div style="margin:8px 0;font-size:12px;color:var(--gray-600)">
+            <strong>Status Workflow:</strong>
+            <span class="badge" style="background:#e5e7eb;color:#374151">Draft</span> →
+            <span class="badge" style="background:#d1fae5;color:#059669">Released</span>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Plan Number</td><td>Autogen</td><td>*</td><td>PLAN-YYYY-XXXX</td></tr>
+                <tr><td>2</td><td>Plan Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
+                <tr><td>3</td><td>Costing Sheet No</td><td>Lookup (Costing Sheet — Approved)</td><td>*</td><td>Auto-fetch material lines</td></tr>
+                <tr><td>4</td><td>Project ID</td><td>AutoFetch (from Costing Sheet)</td><td>*</td><td>—</td></tr>
+                <tr><td>5</td><td>Available Stock</td><td>Formula</td><td>*</td><td>= Physical Stock − Σ(Assigned Qty from unreleased MRs)</td></tr>
+                <tr><td>6</td><td>Shortage</td><td>Formula</td><td>*</td><td>= Required Qty − Available Stock (if > 0)</td></tr>
+                <tr><td>7</td><td>Plan Status</td><td>Dropdown</td><td>*</td><td>Draft / Released</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>Automation:</strong> Plan Released → auto-PR for every line where Shortage > 0. Plan must be Released before MR can be auto-created.</p>
+        </div>
+
+        <!-- 3C MR -->
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">3C</span>
+            <span class="phase-title">Material Requisition (MR) <span style="color:var(--green);font-weight:600">— Auto-Derived</span></span>
+            <span class="phase-tag">4 Cost Components · Zero Manual Re-Entry · Critical Gate</span>
+          </div>
+          <p>Department: Production & R&D. <strong>Auto-created from Costing Sheet + Released Production Plan.</strong> All 4 cost components pre-filled. Cross-validated vs SO×BOM (>5% flag, >10% block). Only Released MR can proceed to MIS → Production → FGHM.</p>
           <div style="margin:8px 0;font-size:12px;color:var(--gray-600)">
             <strong>MR Status Workflow (5 states):</strong>
             <span class="badge" style="background:#e5e7eb;color:#374151">Draft</span> →
@@ -897,26 +1037,28 @@
           <p><strong>Automation:</strong> Stock deducted from inventory on MIS posting. Only creatable after MR Released.</p>
         </div>
 
-        <!-- 5B Production Planning -->
+        <!-- 5B Production Job -->
         <div class="phase">
           <div class="phase-header">
             <span class="phase-number">5B</span>
-            <span class="phase-title">Production Planning</span>
-            <span class="phase-tag">Per Project · Period-based</span>
+            <span class="phase-title">Production Job</span>
+            <span class="phase-tag">Per Project · Period-based · From Released MR</span>
           </div>
-          <p>Department: Production. Plan FG production based on Project requirements. Project ID, MR Sheet reference, Period.</p>
+          <p>Department: Production. Plan FG production based on Project requirements. MR Sheet reference (Released only), Period.</p>
           <div class="table-wrap">
             <table>
               <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
               <tbody>
-                <tr><td>1</td><td>Planning No</td><td>Autogen</td><td>*</td><td>—</td></tr>
-                <tr><td>2</td><td>Planning Date</td><td>Date</td><td>*</td><td>—</td></tr>
+                <tr><td>1</td><td>Job Number</td><td>Autogen</td><td>*</td><td>JOB-YYYY-XXXX</td></tr>
+                <tr><td>2</td><td>Job Date</td><td>Date</td><td>*</td><td>—</td></tr>
                 <tr><td>3</td><td>Project ID</td><td>Lookup (Project Master) → AutoFetch: Project Name, Manager</td><td>*</td><td>From Project Master</td></tr>
                 <tr><td>4</td><td>MR Sheet No</td><td>Lookup (MR — Released only) → AutoFetch: Items, Qty</td><td>*</td><td>From MR</td></tr>
-                <tr><td>5</td><td>Planning Period</td><td>Dropdown</td><td>*</td><td>Week / Month</td></tr>
-                <tr><td>6</td><td>Plant</td><td>Dropdown</td><td></td><td>—</td></tr>
-                <tr><td>7</td><td>Planner Name</td><td>User lookup</td><td>*</td><td>—</td></tr>
-                <tr><td>8</td><td>Status</td><td>Dropdown</td><td>*</td><td>Draft / Approved / Released</td></tr>
+                <tr><td>5</td><td>FG Code</td><td>Lookup (Item Muster - FG)</td><td>*</td><td>FG to produce</td></tr>
+                <tr><td>6</td><td>Planned FG Qty</td><td>Number</td><td>*</td><td>Planned batch quantity</td></tr>
+                <tr><td>7</td><td>Planning Period</td><td>Dropdown</td><td>*</td><td>Week / Day</td></tr>
+                <tr><td>8</td><td>Plant</td><td>Dropdown</td><td></td><td>—</td></tr>
+                <tr><td>9</td><td>Planner Name</td><td>User lookup</td><td>*</td><td>—</td></tr>
+                <tr><td>10</td><td>Status</td><td>Dropdown</td><td>*</td><td>Draft / Scheduled / In Progress / Completed</td></tr>
               </tbody>
             </table>
           </div>
@@ -936,8 +1078,8 @@
               <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
               <tbody>
                 <tr><td>1</td><td>BMR No</td><td>Autogen</td><td>*</td><td>BMR-YYYY-XXXX</td></tr>
-                <tr><td>2</td><td>Production Order Ref</td><td>Lookup (Production Planning) → AutoFetch: Project ID, FG Code, Planned Qty</td><td>*</td><td>—</td></tr>
-                <tr><td>3</td><td>Project ID</td><td>AutoFetch (from Production Order Ref)</td><td>*</td><td>—</td></tr>
+                <tr><td>2</td><td>Production Job Ref</td><td>Lookup (Production Job) → AutoFetch: Project ID, FG Code, Planned Qty</td><td>*</td><td>—</td></tr>
+                <tr><td>3</td><td>Project ID</td><td>AutoFetch (from Production Job Ref)</td><td>*</td><td>—</td></tr>
                 <tr><td>4</td><td>Batch No</td><td>Text</td><td>*</td><td>—</td></tr>
                 <tr><td>5</td><td>Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
                 <tr><td>6</td><td>FG Code</td><td>Lookup (Item Muster - FG) → AutoFetch: FG Name, BOM RM list</td><td>*</td><td>—</td></tr>
@@ -1037,6 +1179,7 @@
                 <tr><td>7</td><td>Accepted Qty</td><td>Formula</td><td>*</td><td></td><td>FG Qty − Damaged Qty</td></tr>
                 <tr><td>8</td><td>Handed Over By</td><td>Text</td><td>*</td><td></td><td>—</td></tr>
                 <tr><td>9</td><td>Received By</td><td>Text</td><td>*</td><td></td><td>—</td></tr>
+                <tr><td>10</td><td>Remark</td><td>Multi-line</td><td></td><td></td><td>—</td></tr>
               </tbody>
             </table>
           </div>
@@ -1244,10 +1387,85 @@
           <p style="margin-top:8px;font-size:12px;color:var(--gray-500)">Report fields: FG_Received = SUM(FGHM.Accepted_Qty), FG_Consumed = SUM(Project_FG_Consumption.Used_Qty), FG_Remaining = FG_Received − FG_Consumed. Grouped by Project + FG Code.</p>
         </div>
 
-        <!-- 6D Stock Movement Transaction Log -->
+        <!-- 6D Site Consumption Entry -->
         <div class="phase">
           <div class="phase-header">
             <span class="phase-number">6D</span>
+            <span class="phase-title">Site Consumption Entry (SCE)</span>
+            <span class="phase-tag">Hourly/Daily Task Tracking · RM Only</span>
+          </div>
+          <p>Department: Site Supervisor. Hourly or daily task-level consumption tracking per project work area. Each entry resolves to MR Allocation (matched by Project ID + Item Code). Real-time project inventory deduction.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Consumption No</td><td>Autogen</td><td>*</td><td>SCE-YYYY-XXXX</td></tr>
+                <tr><td>2</td><td>Project ID</td><td>Lookup (Project Master)</td><td>*</td><td>—</td></tr>
+                <tr><td>3</td><td>Work Area</td><td>Text</td><td>*</td><td>Zone/area on site</td></tr>
+                <tr><td>4</td><td>Date</td><td>Date</td><td>*</td><td>—</td></tr>
+                <tr><td>5</td><td>Time Slot</td><td>Dropdown</td><td>*</td><td>Morning / Afternoon / Full Day</td></tr>
+                <tr><td>6</td><td>Supervisor</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>7</td><td>Remarks</td><td>Multi-line</td><td></td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h4>Line Items (RM Only)</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>RM Item Code</td><td>Lookup (Item Muster - RM)</td><td>*</td><td>Resolves by Project ID + Item Code</td></tr>
+                <tr><td>2</td><td>Qty Consumed</td><td>Number</td><td>*</td><td>—</td></tr>
+                <tr><td>3</td><td>UOM</td><td>AutoFetch</td><td>*</td><td>—</td></tr>
+                <tr><td>4</td><td>System/FG Reference</td><td>Text</td><td></td><td>For BOM expansion</td></tr>
+                <tr><td>5</td><td>Consumption Type</td><td>Dropdown</td><td>*</td><td>Actual / Wastage / Rework</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>Automation:</strong> On Submit → increment Consumed Qty on MR Allocation (Project ID + Item Code). If no matching allocation → alert + block. System/FG Reference triggers BOM expansion for sub-RM tracking. ≥80% alert fires real-time.</p>
+        </div>
+
+        <!-- 6E Material Return Entry -->
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">6E</span>
+            <span class="phase-title">Material Return Entry (MRT)</span>
+            <span class="phase-tag">Unused RM → Store · Allocation Credit</span>
+          </div>
+          <p>Department: Store / Site Supervisor. Return unused RM from site/production to Store. Decrements Consumed Qty on MR Allocation. Good condition → restores available stock. Damaged/Expired → separate damaged count only.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Return No</td><td>Autogen</td><td>*</td><td>MRT-YYYY-XXXX</td></tr>
+                <tr><td>2</td><td>Project ID</td><td>Lookup (Project Master)</td><td>*</td><td>—</td></tr>
+                <tr><td>3</td><td>Return Date</td><td>Date</td><td>*</td><td>—</td></tr>
+                <tr><td>4</td><td>Returned By</td><td>User lookup</td><td>*</td><td>—</td></tr>
+                <tr><td>5</td><td>Received By</td><td>User lookup (Store)</td><td>*</td><td>—</td></tr>
+                <tr><td>6</td><td>Reason</td><td>Dropdown</td><td>*</td><td>Excess Issued / Unused / Damaged / Wrong Item</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h4>Line Items</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>RM Item Code</td><td>Lookup (Item Muster - RM)</td><td>*</td><td>—</td></tr>
+                <tr><td>2</td><td>RM Item Name</td><td>AutoFetch</td><td>*</td><td>—</td></tr>
+                <tr><td>3</td><td>UOM</td><td>AutoFetch</td><td>*</td><td>—</td></tr>
+                <tr><td>4</td><td>Return Qty</td><td>Number</td><td>*</td><td>—</td></tr>
+                <tr><td>5</td><td>Condition</td><td>Dropdown</td><td>*</td><td>Good / Damaged / Expired</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>Automation:</strong> On Submit → decrement Consumed Qty on MR Allocation. Good/Unused → RM stock restored. Damaged/Expired → damaged stock count only (no RM stock credit).</p>
+        </div>
+
+        <!-- 6F Stock Movement Transaction Log -->
+        <div class="phase">
+          <div class="phase-header">
+            <span class="phase-number">6F</span>
             <span class="phase-title">Stock Movement Transaction Log</span>
             <span class="phase-tag">Audit Trail</span>
           </div>
@@ -1286,10 +1504,10 @@
           <p style="margin-top:8px;font-size:12px;color:var(--gray-500)">The transaction log is auto-populated by workflow rules on each relevant form posting. Running balance is recalculated per item.</p>
         </div>
 
-        <!-- 6E BOM → BMR → FG Creation Flow -->
+        <!-- 6G BOM → BMR → FG Creation Flow -->
         <div class="phase">
           <div class="phase-header">
-            <span class="phase-number">6E</span>
+            <span class="phase-number">6G</span>
             <span class="phase-title">BOM → BMR → FG Creation</span>
             <span class="phase-tag">Visual Flow</span>
           </div>
@@ -1355,10 +1573,10 @@
           </div>
         </div>
 
-        <!-- 6F Reorder Alerts -->
+        <!-- 6H Reorder Alerts -->
         <div class="phase">
           <div class="phase-header">
-            <span class="phase-number">6F</span>
+            <span class="phase-number">6H</span>
             <span class="phase-title">Reorder & Stock Alerts</span>
             <span class="phase-tag">Min/Max Thresholds</span>
           </div>
@@ -1433,7 +1651,7 @@
                 <tr><td>Project</td><td>PRJ-YYYY-XXXX</td></tr>
                 <tr><td>System Composition</td><td>SC-YYYY-XXXX</td></tr>
                 <tr><td>BOM / FG Formulation</td><td>BOM-YYYY-XXXX</td></tr>
-                <tr><td>Production Planning</td><td>PLAN-YYYY-XXXX</td></tr>
+                <tr><td>Production Job</td><td>JOB-YYYY-XXXX</td></tr>
                 <tr><td>BMR</td><td>BMR-YYYY-XXXX</td></tr>
                 <tr><td>Customer / Site Master</td><td>CUST-YYYY-XXXX</td></tr>
               </tbody>

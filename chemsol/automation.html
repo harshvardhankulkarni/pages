@@ -308,6 +308,158 @@ createRecord
     </div>
 
     <!-- ============================================================ -->
+    <!-- PHASE 2B: COSTING SHEET & PRODUCTION PLAN -->
+    <!-- ============================================================ -->
+    <div class="auto-section-title">2B. Costing Sheet & Production Plan — Automations <span class="badge badge-green">NEW</span></div>
+
+    <div class="auto-card">
+      <div class="auto-card-header" style="background:#d1fae5">
+        <span class="auto-tag tag-workflow">Workflow</span>
+        <span class="auto-tag tag-deluge">Deluge</span>
+        2B-1 &middot; Costing Sheet — Auto-expand from SO
+      </div>
+      <div class="auto-card-body">
+        <div class="auto-sub-title">SO → System Composition → BOM → Costing Sheet Section A</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Workflow Rule:</strong> On Costing Sheet Submit, auto-expand SO System Lines × System Composition × BOM into Section A (Material Cost)</div></div>
+        <div class="auto-code">
+// Workflow Rule - On Submit - "AutoExpand Material Cost"
+// For each SO System Line → System Composition → BOM → RM lines
+
+for each sysLine in input.SO_Reference.System_Lines
+{
+  // Get System Composition (which FGs for this System)
+  compRecords = lookupRecords(System_Composition, {"System_Code": sysLine.System_Code});
+  
+  for each comp in compRecords
+  {
+    // Get BOM (which RMs for this FG)
+    bomRecords = lookupRecords(BOM_Master, {"FG_Code": comp.FG_Code});
+    
+    for each bom in bomRecords
+    {
+      requiredQty = bom.BOM_Ratio * sysLine.Area;
+      
+      createRecord
+      {
+        "Form_Type": "Costing_Section_A",
+        "Costing_ID": input.ID,
+        "System_Code": sysLine.System_Code,
+        "FG_Code": comp.FG_Code,
+        "RM_Item_Code": bom.RM_Item_Code,
+        "RM_Item_Name": bom.RM_Item_Name,
+        "UOM": bom.UOM,
+        "BOM_Ratio": bom.BOM_Ratio,
+        "Area": sysLine.Area,
+        "Required_Qty": requiredQty,
+        "Rate": bom.Standard_Rate,  // editable
+        "Material_Cost": requiredQty * bom.Standard_Rate
+      };
+    }
+  }
+}
+        </div>
+      </div>
+    </div>
+
+    <div class="auto-card">
+      <div class="auto-card-header" style="background:#d1fae5">
+        <span class="auto-tag tag-workflow">Workflow</span>
+        <span class="auto-tag tag-deluge">Deluge</span>
+        2B-2 &middot; Costing Sheet Approved → Auto-create Project + Production Plan
+      </div>
+      <div class="auto-card-body">
+        <div class="auto-sub-title">On Costing Approved → Create Project + Production Plan (Draft)</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Workflow Rule:</strong> On Costing Status = "Approved", auto-create Project + Production Plan</div></div>
+        <div class="auto-code">
+// Workflow Rule - On Status Change to "Approved"
+
+// 1. Create Project
+projID = "PRJ-" + input.Created_Time.year() + "-" + sequenceNumber("PRJ_SEQ");
+createRecord
+{
+  "Form_Type": "Project_Master",
+  "Project_ID": projID,
+  "Project_Name": input.Project_Name,
+  "Customer": input.Customer,
+  "SO_Reference": input.SO_Reference,
+  "Project_Manager": "",  // assigned later
+  "Status": "Active"
+};
+
+// 2. Create Production Plan (Draft)
+planID = "PLAN-" + input.Created_Time.year() + "-" + sequenceNumber("PLAN_SEQ");
+createRecord
+{
+  "Form_Type": "Production_Plan",
+  "Plan_Number": planID,
+  "Costing_Sheet_No": input.ID,
+  "Project_ID": projID,
+  "Plan_Status": "Draft"
+};
+
+// 3. Notify Production team
+sendmail
+[
+  from: zoho.login.email,
+  to: "production@chemsol.com",
+  subject: "Costing Approved — Production Plan created: " + planID,
+  message: "Costing Sheet " + input.Costing_Number + " approved. Project " + projID + " created. Production Plan " + planID + " ready for review."
+];
+        </div>
+      </div>
+    </div>
+
+    <div class="auto-card">
+      <div class="auto-card-header" style="background:#fef3c7">
+        <span class="auto-tag tag-numbering">Numbering</span>
+        2B-3 &middot; Costing Sheet + Production Plan Numbering
+      </div>
+      <div class="auto-card-body">
+        <div class="auto-sub-title">Auto-generate Costing Number</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div>Field Properties -> Costing Number -> Auto Numbering: <code>CST-{YYYY}-{XXXX}</code></div></div>
+        <div class="auto-sub-title">Auto-generate Plan Number</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div>Field Properties -> Plan Number -> Auto Numbering: <code>PLAN-{YYYY}-{XXXX}</code></div></div>
+      </div>
+    </div>
+
+    <div class="auto-card">
+      <div class="auto-card-header" style="background:#fef3c7">
+        <span class="auto-tag tag-deluge">Deluge</span>
+        2B-4 &middot; Production Plan — Stock Check + Auto-PR
+      </div>
+      <div class="auto-card-body">
+        <div class="auto-sub-title">Available Stock = Physical − Σ(Assigned from unreleased MRs)</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Formula field:</strong> Available_Stock = RM_Inventory.Closing_Stock − SUM(MR_Allocation.Assigned_Qty WHERE MR.Status != "Released")</div></div>
+        
+        <div class="auto-sub-title">On Plan Released → Auto-PR for Shortages</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Workflow Rule:</strong> On Plan Status = "Released", create PR for each line where Shortage > 0</div></div>
+        <div class="auto-code">
+// Workflow Rule - On Status Change to "Released"
+
+for each line in input.Material_Lines
+{
+  if(line.Shortage > 0)
+  {
+    prID = "PR-" + input.Created_Time.year() + "-" + sequenceNumber("PR_SEQ");
+    createRecord
+    {
+      "Form_Type": "PR_Master",
+      "PR_Number": prID,
+      "Project_ID": input.Project_ID,
+      "Item_Code": line.RM_Item_Code,
+      "Item_Name": line.RM_Item_Name,
+      "Qty": line.Shortage,
+      "UOM": line.UOM,
+      "Status": "Draft",
+      "Auto_Created": true
+    };
+  }
+}
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
     <!-- PHASE 3: MR - COSTING GATE (CRITICAL) -->
     <!-- ============================================================ -->
     <div class="auto-section-title">3. MR — Costing Gate <span class="badge badge-red">CRITICAL AUTOMATIONS</span></div>
@@ -490,6 +642,101 @@ for each mr in verifiedMRs
     subject: "MR " + mr.MR_Number + " pending Costing approval for " + mr.Last_Modified_Time.daysTill(now()) + " days",
     message: "Please approve MR " + mr.MR_Number + " for Project " + mr.Project_ID.Project_Name
   ];
+}
+        </div>
+      </div>
+    </div>
+
+    <div class="auto-card" style="border-left:4px solid var(--red)">
+      <div class="auto-card-header" style="background:#fee2e2">
+        <span class="auto-tag tag-deluge">Deluge</span>
+        3B &middot; MR Auto-Derivation from Costing Sheet + Production Plan
+      </div>
+      <div class="auto-card-body">
+        <div class="auto-sub-title">Auto-create MR on Costing Approved + Plan Released</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Workflow Rule:</strong> When both Costing Sheet = Approved AND Production Plan = Released, auto-create MR with all 4 cost components pre-filled</div></div>
+        <div class="auto-code">
+// Workflow Rule - On Production Plan Released
+// Check if Costing Sheet is Approved
+costingSheet = lookupRecords(Costing_Sheet, {"ID": input.Costing_Sheet_No});
+if(!isNull(costingSheet) && costingSheet.Costing_Status == "Approved")
+{
+  mrID = "MR-" + now().year() + "-" + sequenceNumber("MR_SEQ");
+  
+  createRecord
+  {
+    "Form_Type": "MR_Master",
+    "MR_Number": mrID,
+    "Project_ID": input.Project_ID,
+    "Costing_Sheet_No": costingSheet.ID,
+    "Production_Plan_No": input.ID,
+    "Status": "Draft",
+    // 4 cost components pre-filled from Costing Sheet
+    "Total_Material_Cost": costingSheet.Total_Material_Cost,
+    "Total_Application_Cost": costingSheet.Total_Application_Cost,
+    "Total_Transportation_Cost": costingSheet.Total_Transportation_Cost,
+    "Total_Tools_Cost": costingSheet.Total_Tools_Cost
+  };
+  
+  // Auto-populate MR Line Items from Costing Sheet Section A
+  for each line in costingSheet.Section_A_Lines
+  {
+    createRecord
+    {
+      "Form_Type": "MR_Line_Items",
+      "MR_ID": mrID,
+      "Item_Code": line.RM_Item_Code,
+      "Item_Name": line.RM_Item_Name,
+      "UOM": line.UOM,
+      "Required_Qty": line.Required_Qty,
+      "Rate": line.Rate
+    };
+  }
+}
+        </div>
+      </div>
+    </div>
+
+    <div class="auto-card" style="border-left:4px solid var(--red)">
+      <div class="auto-card-header" style="background:#fee2e2">
+        <span class="auto-tag tag-deluge">Deluge</span>
+        3C &middot; SO↔BOM↔MR Cross-Validation
+      </div>
+      <div class="auto-card-body">
+        <div class="auto-sub-title">Validate MR quantities against SO×BOM</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Workflow Rule:</strong> On MR Submit, validate Σ(Assigned Qty) vs Σ(SO Area × BOM Qty). >5% flag, >10% block.</div></div>
+        <div class="auto-code">
+// Workflow Rule - On Submit - "CrossValidate MR"
+// Compare MR Assigned Qty vs SO Area × BOM Qty
+
+soRef = input.Costing_Sheet_No.SO_Reference;
+totalVariance = 0;
+
+for each mrLine in input.Material_Allocation
+{
+  // Get expected qty from SO × BOM
+  soLine = lookupRecords(SO_System_Lines, 
+    {"SO_ID": soRef, "System_Code": mrLine.System_Code});
+  bomRatio = lookupRecords(BOM_Master, 
+    {"RM_Item_Code": mrLine.Item_Code, "FG_Code": mrLine.FG_Code});
+  
+  if(!isNull(soLine) && !isNull(bomRatio))
+  {
+    expectedQty = soLine.Area * bomRatio.BOM_Ratio;
+    variance = abs(mrLine.Assigned_Qty - expectedQty) / expectedQty * 100;
+    
+    if(variance > 10)
+    {
+      throw "BLOCKED: " + mrLine.Item_Code + " variance " + round(variance) 
+          + "% exceeds 10% threshold. Expected: " + expectedQty + ", Got: " + mrLine.Assigned_Qty;
+    }
+    else if(variance > 5)
+    {
+      // Flag but allow
+      mrLine.Variance_Flag = true;
+      mrLine.Variance_Percentage = variance;
+    }
+  }
 }
         </div>
       </div>
@@ -797,15 +1044,14 @@ input.Posted_Time = now();
       <div class="auto-card-header" style="background:#d1fae5">
         <span class="auto-tag tag-workflow">Workflow</span>
         <span class="auto-tag tag-numbering">Numbering</span>
-        5B &middot; Production Planning
+        5B &middot; Production Job
       </div>
       <div class="auto-card-body">
-        <div class="auto-sub-title">Auto-generate Planning Number</div>
-        <div class="auto-step"><span class="auto-step-num">1</span><div>Field Properties -> Planning No -> Auto Numbering: <code>PLAN-{YYYY}-{XXXX}</code></div></div>
+        <div class="auto-sub-title">Auto-generate Job Number</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div>Field Properties -> Job Number -> Auto Numbering: <code>JOB-{YYYY}-{XXXX}</code></div></div>
 
-        <div class="auto-sub-title">Auto-fetch from Project + MR</div>
-        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Form Rule:</strong> On Project ID selection, auto-populate System/FG requirements from SO</div></div>
-        <div class="auto-step"><span class="auto-step-num">2</span><div><strong>Form Rule:</strong> On MR Sheet No selection, auto-populate FG quantities from MR line items</div></div>
+        <div class="auto-sub-title">Auto-fetch from MR (Released only)</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Form Rule:</strong> On MR Sheet No selection, auto-populate FG quantities from MR line items (only Released MRs shown)</div></div>
       </div>
     </div>
 
@@ -1072,6 +1318,128 @@ for each item in input.Usage_Line_Items
     </div>
 
     <!-- ============================================================ -->
+    <!-- PHASE 5B: SITE OPERATIONS — NEW -->
+    <!-- ============================================================ -->
+    <div class="auto-section-title">5B. Site Operations — Automations <span class="badge badge-green">NEW</span></div>
+
+    <div class="auto-card">
+      <div class="auto-card-header" style="background:#ccfbf1">
+        <span class="auto-tag tag-workflow">Workflow</span>
+        <span class="auto-tag tag-deluge">Deluge</span>
+        5B-1 &middot; Site Consumption Entry (SCE)
+      </div>
+      <div class="auto-card-body">
+        <div class="auto-sub-title">Increment Consumed Qty on MR Allocation</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Workflow Rule:</strong> On SCE Submit, increment Consumed Qty on MR Allocation (matched by Project ID + Item Code)</div></div>
+        <div class="auto-code">
+// Workflow Rule - On Submit - "Update MR Allocation"
+for each item in input.Line_Items
+{
+  // Find matching MR Allocation
+  alloc = lookupRecords(MR_Allocation, 
+    {"Project_ID": input.Project_ID, "Item_Code": item.RM_Item_Code});
+  
+  if(!isNull(alloc))
+  {
+    // Increment consumed qty
+    updateRecord
+    {
+      "Form_Type": "MR_Allocation",
+      "ID": alloc.ID,
+      "Consumed_Qty": alloc.Consumed_Qty + item.Qty_Consumed,
+      "Consumption_Percentage": ((alloc.Consumed_Qty + item.Qty_Consumed) / alloc.Assigned_Qty) * 100
+    };
+    
+    // Check 80% alert
+    newPct = ((alloc.Consumed_Qty + item.Qty_Consumed) / alloc.Assigned_Qty) * 100;
+    if(newPct >= 80 && alloc.Alert_Flag == true)
+    {
+      sendmail
+      [
+        from: zoho.login.email,
+        to: input.Project_ID.Project_Manager.email,
+        subject: "80% Consumption Alert - " + item.RM_Item_Code,
+        message: item.RM_Item_Code + " at " + round(newPct) + "% consumed for Project " + input.Project_ID.Project_Name
+      ];
+    }
+  }
+  else
+  {
+    throw "No matching MR Allocation found for " + item.RM_Item_Code + " in Project " + input.Project_ID;
+  }
+}
+        </div>
+        <div class="auto-sub-title">Auto-generate SCE Number</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div>Field Properties -> Consumption No -> Auto Numbering: <code>SCE-{YYYY}-{XXXX}</code></div></div>
+      </div>
+    </div>
+
+    <div class="auto-card">
+      <div class="auto-card-header" style="background:#ccfbf1">
+        <span class="auto-tag tag-workflow">Workflow</span>
+        <span class="auto-tag tag-deluge">Deluge</span>
+        5B-2 &middot; Material Return Entry (MRT)
+      </div>
+      <div class="auto-card-body">
+        <div class="auto-sub-title">Decrement Consumed Qty + Restore Stock</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Workflow Rule:</strong> On MRT Submit, decrement Consumed Qty on MR Allocation + restore RM stock if condition = Good</div></div>
+        <div class="auto-code">
+// Workflow Rule - On Submit
+for each item in input.Line_Items
+{
+  // Decrement consumed qty on MR Allocation
+  alloc = lookupRecords(MR_Allocation, 
+    {"Project_ID": input.Project_ID, "Item_Code": item.RM_Item_Code});
+  
+  if(!isNull(alloc))
+  {
+    updateRecord
+    {
+      "Form_Type": "MR_Allocation",
+      "ID": alloc.ID,
+      "Consumed_Qty": alloc.Consumed_Qty - item.Return_Qty,
+      "Consumption_Percentage": ((alloc.Consumed_Qty - item.Return_Qty) / alloc.Assigned_Qty) * 100
+    };
+  }
+  
+  // If condition = Good, restore RM stock
+  if(item.Condition == "Good" || item.Condition == "Unused")
+  {
+    inventory = lookupRecords(RM_Inventory, "Item_Code == '" + item.RM_Item_Code + "'");
+    if(!isNull(inventory))
+    {
+      updateRecord
+      {
+        "Form_Type": "RM_Inventory",
+        "ID": inventory.ID,
+        "Current_Stock": inventory.Current_Stock + item.Return_Qty
+      };
+    }
+  }
+  // If Damaged/Expired → damaged count only, no stock credit
+  
+  // Log stock movement
+  createRecord
+  {
+    "Form_Type": "Stock_Movement_Log",
+    "Document_Type": "MATERIAL_RETURN",
+    "Document_Ref": input.Return_No,
+    "Item_Code": item.RM_Item_Code,
+    "Item_Name": item.RM_Item_Name,
+    "Movement_Type": "IN",
+    "Quantity": item.Return_Qty,
+    "UOM": item.UOM,
+    "Project_ID": input.Project_ID,
+    "Timestamp": now()
+  };
+}
+        </div>
+        <div class="auto-sub-title">Auto-generate MRT Number</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div>Field Properties -> Return No -> Auto Numbering: <code>MRT-{YYYY}-{XXXX}</code></div></div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
     <!-- PHASE 6: INVENTORY -->
     <!-- ============================================================ -->
     <div class="auto-section-title">6. Inventory — Automations</div>
@@ -1198,7 +1566,7 @@ return 0;  // Item not found
           <tr><td>MIS</td><td><span class="auto-tag tag-formrule">Form Rule</span></td><td>On Load</td><td>Restrict MR lookup to "Released" only</td><td>Pending</td></tr>
           <tr><td>MIS</td><td><span class="auto-tag tag-deluge">Deluge</span></td><td>Custom Button "Post MIS"</td><td>Deduct RM Inventory + Stock Movement Log</td><td>Pending</td></tr>
           <tr><td>MIS</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: MIS-YYYY-XXXX</td><td>Pending</td></tr>
-          <tr><td>Prod Planning</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: PLAN-YYYY-XXXX</td><td>Pending</td></tr>
+          <tr><td>Production Job</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: JOB-YYYY-XXXX</td><td>Pending</td></tr>
           <tr><td>BMR</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: BMR-YYYY-XXXX</td><td>Pending</td></tr>
           <tr><td>BMR</td><td><span class="auto-tag tag-deluge">Deluge</span></td><td>On Submit</td><td>Increment Consumed Qty on MR Allocation</td><td>Pending</td></tr>
           <tr><td>Packing</td><td><span class="auto-tag tag-workflow">Workflow</span></td><td>On Submit</td><td>Deduct packing material from inventory</td><td>Pending</td></tr>

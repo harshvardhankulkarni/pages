@@ -313,27 +313,27 @@
         </ul>
       </div>
 
-      <h3>Flow 2 · Material Requisition &amp; Issue (MR Cost Baseline)</h3>
+      <h3>Flow 2 · Costing → Plan → MR (Cost Baseline)</h3>
       <div class="callout callout-warning" style="font-size:13px;margin-bottom:16px">
-        <strong>Project baseline = SO + MR:</strong> SO defines System/FG scope (revenue). MR defines the complete project implementation cost baseline (total project cost: Material + Application + Transportation + Tools &amp; Tackles) that Costing approves. Without a <strong>Released MR</strong>, there is no MIS, no Production, no Logistics, no project execution. MR Status flow: <strong>Draft → Pending Production Verification → Production Verified → Costing Approved (TOTAL cost) → Released</strong>.
+        <strong>Costing Sheet creates baseline → MR is auto-derived:</strong> Costing Sheet (5 sections auto-expanded from SO × BOM) → Costing Approved → auto-creates Project + Production Plan → Plan Released → MR auto-derived (4 cost components pre-filled). Without a <strong>Released MR</strong>, there is no MIS, no Production, no project execution. MR Status flow: <strong>Draft → Pending Production Verification → Production Verified → Costing Approved (TOTAL cost) → Released</strong>.
       </div>
       <div class="tree">
         <ul class="tree-list">
-          <li class="tree-item root"><span class="tree-label">Project <span class="tree-tag blue">Root</span></span>
+          <li class="tree-item root"><span class="tree-label">SO (Supply+Apply) <span class="tree-tag blue">Start</span></span>
             <ul class="tree-children">
-              <li class="tree-item"><span class="tree-label">MR (Production/R&amp;D) <span class="tree-tag blue">Project ID lookup · Cost baseline</span></span>
+              <li class="tree-item"><span class="tree-label">Costing Sheet <span class="tree-tag purple">5 sections · Auto-expanded</span></span>
                 <ul class="tree-children">
-                  <li class="tree-item"><span class="tree-label">MR Status: Draft <span class="tree-tag amber">Initial</span></span>
+                  <li class="tree-item"><span class="tree-label">Costing Approved <span class="tree-tag green">Creates Project + Production Plan</span></span>
                     <ul class="tree-children">
-                      <li class="tree-item"><span class="tree-label">Production Verifies <span class="tree-tag amber">Checks MR qty vs SO system req</span></span>
+                      <li class="tree-item"><span class="tree-label">Production Plan <span class="tree-tag amber">Stock check · Auto-PR</span></span>
                         <ul class="tree-children">
-                          <li class="tree-item"><span class="tree-label">Costing Approves <span class="tree-tag purple">Approves TOTAL project cost</span></span>
+                          <li class="tree-item"><span class="tree-label">Plan Released <span class="tree-tag green">Auto-PR for shortages</span></span>
                             <ul class="tree-children">
-                              <li class="tree-item"><span class="tree-label">MR Released <span class="tree-tag green">⛔ Gate passed</span></span>
+                              <li class="tree-item"><span class="tree-label">MR (auto-derived) <span class="tree-tag red">4 cost components pre-filled</span></span>
                                 <ul class="tree-children">
-                                  <li class="tree-item"><span class="tree-label">MIS <span class="tree-tag amber">Store issues — N items</span></span>
+                                  <li class="tree-item"><span class="tree-label">MR Released <span class="tree-tag green">⛔ Gate passed</span></span>
                                     <ul class="tree-children">
-                                      <li class="tree-item"><span class="tree-label">Stock − <span class="tree-tag red">Deduction on posting</span></span></li>
+                                      <li class="tree-item"><span class="tree-label">MIS <span class="tree-tag amber">Store issues — N items</span></span></li>
                                     </ul>
                                   </li>
                                 </ul>
@@ -351,7 +351,7 @@
         </ul>
       </div>
 
-      <h3>Flow 3 · FG Handover (Phase 4)</h3>
+      <h3>Flow 3 · Production → Site Operations</h3>
       <div class="tree">
         <ul class="tree-list">
           <li class="tree-item root"><span class="tree-label">Project <span class="tree-tag blue">Root</span></span>
@@ -360,11 +360,26 @@
                 <ul class="tree-children">
                   <li class="tree-item"><span class="tree-label">FGHM <span class="tree-tag purple">FG Handover — N items</span></span>
                     <ul class="tree-children">
-                      <li class="tree-item"><span class="tree-label">Pop-up Notification <span class="tree-tag amber">Store/Logistics</span></span>
-                        <ul class="tree-children">
-                          <li class="tree-item"><span class="tree-label">FG Stock + <span class="tree-tag green">After inline acceptance</span></span></li>
-                        </ul>
-                      </li>
+                      <li class="tree-item"><span class="tree-label">FG Stock + <span class="tree-tag green">After inline acceptance</span></span></li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li class="tree-item"><span class="tree-label">Site Consumption Entry <span class="tree-tag teal">Hourly/Daily · RM only</span></span>
+                <ul class="tree-children">
+                  <li class="tree-item"><span class="tree-label">MR Allocation (Consumed Qty +) <span class="tree-tag amber">Matches Project ID + Item Code</span></span>
+                    <ul class="tree-children">
+                      <li class="tree-item"><span class="tree-label">≥80% Alert <span class="tree-tag red">Real-time → PM + Dashboard</span></span></li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li class="tree-item"><span class="tree-label">Material Return Entry <span class="tree-tag teal">Unused RM → Store</span></span>
+                <ul class="tree-children">
+                  <li class="tree-item"><span class="tree-label">MR Allocation (Consumed Qty −) <span class="tree-tag amber">Credits project allocation</span></span>
+                    <ul class="tree-children">
+                      <li class="tree-item"><span class="tree-label">Good/Unused → RM Stock + <span class="tree-tag green">Restores available stock</span></span></li>
+                      <li class="tree-item"><span class="tree-label">Damaged/Expired → Damaged Count <span class="tree-tag amber">No stock credit</span></span></li>
                     </ul>
                   </li>
                 </ul>
@@ -524,7 +539,7 @@
             <ul class="tree-list">
               <li class="tree-item root"><span class="tree-label">Production <span class="tree-tag blue">Project ID</span></span>
                 <ul class="tree-children">
-                  <li class="tree-item"><span class="tree-label">Production Planning <span class="tree-tag blue">Schedule</span></span>
+                  <li class="tree-item"><span class="tree-label">Production Job <span class="tree-tag blue">Schedule</span></span>
                     <ul class="tree-children">
                       <li class="tree-item"><span class="tree-label">BMR <span class="tree-tag purple">Batch Record</span></span>
                         <ul class="tree-children">
@@ -549,7 +564,7 @@
       </div>
 
       <div class="callout callout-info">
-        <strong>Production Planning — FGs Required for Project:</strong> Production Planning must show which FGs to manufacture for the project, derived from the SO <strong>System Lines</strong> × <strong>System Composition</strong> (System → FG), with <strong>To Produce = Required Qty − FG Stock Available</strong>. The BOM (FG → RM) drives the underlying RM requisition for each FG. <em>Example:</em> SO sells EP01 over 500 SqM; System Composition maps EP01 → FG "FG-EP01" at 1.2 Kg/SqM → Required Qty = 600 Kg. (Supply+Apply projects only — Supply Only FG sales bypass Production planning.)
+        <strong>Production Job — FGs Required for Project:</strong> Production Job must show which FGs to manufacture for the project, derived from the SO <strong>System Lines</strong> × <strong>System Composition</strong> (System → FG), with <strong>To Produce = Required Qty − FG Stock Available</strong>. The BOM (FG → RM) drives the underlying RM requisition for each FG. <em>Example:</em> SO sells EP01 over 500 SqM; System Composition maps EP01 → FG "FG-EP01" at 1.2 Kg/SqM → Required Qty = 600 Kg. (Supply+Apply projects only — Supply Only FG sales bypass Production planning.)
       </div>
 
       <h3>Project ID Lookup Chain</h3>
@@ -565,8 +580,8 @@
             <tr><td><strong>B (Cost)</strong></td><td>MR</td><td>Direct lookup from Project Master</td><td>Project → MR (project cost baseline with 4 components: Material + Application + Transportation + Tools &amp; Tackles; Draft → Prod Verified → Costing Approved (TOTAL cost) → Released)</td></tr>
             <tr><td>3</td><td>MIS</td><td>AutoFetch from MR</td><td>Project → MR (Released) → MIS (⛔ Only after MR Released)</td></tr>
             <tr><td>3</td><td>FGHM</td><td>Direct lookup from Project Master</td><td>Project → FGHM (inline acceptance)</td></tr>
-            <tr><td>4</td><td>Production Planning</td><td>Direct lookup from Project Master</td><td>Project → Production</td></tr>
-            <tr><td>4</td><td>BMR</td><td>AutoFetch from Production Order (via Project)</td><td>Project → Production → BMR</td></tr>
+            <tr><td>4</td><td>Production Job</td><td>Direct lookup from Project Master</td><td>Project → Production</td></tr>
+            <tr><td>4</td><td>BMR</td><td>AutoFetch from Production Job (via Project)</td><td>Project → Production → BMR</td></tr>
             <tr><td>4</td><td>RM Consumption</td><td>AutoFetch from BMR</td><td>Project → Production → BMR → RM Cons.</td></tr>
             <tr><td>4</td><td>Packing Entry</td><td>AutoFetch from BMR</td><td>Project → Production → BMR → Packing</td></tr>
             <tr><td>4</td><td>Rework Register</td><td>AutoFetch from BMR</td><td>Project → Production → BMR → Rework</td></tr>

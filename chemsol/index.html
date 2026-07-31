@@ -200,15 +200,15 @@
           <span class="dash-card-badge">Costing Gate</span>
           <div class="dash-card-header">
             <div class="dash-card-icon">💰</div>
-            <div class="dash-card-title">Costing &amp; MR</div>
+            <div class="dash-card-title">Costing → Plan → MR</div>
           </div>
-          <div class="dash-card-subtitle">MR → Prod Verified → Costing Approved → Released</div>
+          <div class="dash-card-subtitle">Costing Sheet → Production Plan → MR (auto-derived)</div>
           <div class="dash-card-stats">
-            <span class="dash-card-stat"><strong>2</strong> modules</span>
+            <span class="dash-card-stat"><strong>3</strong> modules</span>
           </div>
           <div class="dash-card-progress">
-            <div class="dash-progress-bar"><div class="dash-progress-fill" style="width:50%"></div></div>
-            <span class="dash-progress-label">50%</span>
+            <div class="dash-progress-bar"><div class="dash-progress-fill" style="width:60%"></div></div>
+            <span class="dash-progress-label">60%</span>
           </div>
         </a>
 
@@ -229,20 +229,20 @@
           </div>
         </a>
 
-        <!-- Card 5 — Production & Inventory -->
+        <!-- Card 5 — Production & Site Operations -->
         <a href="forms.html#production" class="dash-card theme-green">
           <span class="dash-card-badge">Production</span>
           <div class="dash-card-header">
             <div class="dash-card-icon">🏭</div>
-            <div class="dash-card-title">Production &amp; Inventory</div>
+            <div class="dash-card-title">Production &amp; Site Ops</div>
           </div>
-          <div class="dash-card-subtitle">MIS → BOM → BMR (RM→FG) → Packing → FGHM → RM Stock / FG Stock</div>
+          <div class="dash-card-subtitle">MIS → Job → BMR → Pack → FGHM → Site Consumption → Material Return</div>
           <div class="dash-card-stats">
-            <span class="dash-card-stat"><strong>6</strong> modules</span>
+            <span class="dash-card-stat"><strong>8</strong> modules</span>
           </div>
           <div class="dash-card-progress">
-            <div class="dash-progress-bar"><div class="dash-progress-fill" style="width:55%"></div></div>
-            <span class="dash-progress-label">55%</span>
+            <div class="dash-progress-bar"><div class="dash-progress-fill" style="width:65%"></div></div>
+            <span class="dash-progress-label">65%</span>
           </div>
         </a>
 
@@ -266,14 +266,16 @@
 
       <!-- ── Core Process Flow ── -->
       <h2>Core Process Flow</h2>
-      <p>The end-to-end project lifecycle. MR acts as the critical costing approval gate — all downstream execution depends on MR being Released.</p>
+      <p>The end-to-end project lifecycle. Costing Sheet creates the cost baseline, MR is auto-derived as the critical approval gate — all downstream execution depends on MR being Released.</p>
 
       <div class="flow-visual" style="flex-wrap:wrap;gap:6px;">
         <span class="fv-node fv-blue">SO <span class="fv-icon">📄</span></span>
         <span class="fv-arrow">→</span>
-        <span class="fv-node fv-amber">Costing <span class="fv-icon">💰</span></span>
+        <span class="fv-node fv-amber">Costing Sheet <span class="fv-icon">💰</span></span>
         <span class="fv-arrow">→</span>
-        <span class="fv-node fv-purple">MR <span class="fv-icon">📋</span><br><span style="font-size:10px;font-weight:400;opacity:0.8">Draft→Prod Verified→Costing Approved→Released</span></span>
+        <span class="fv-node fv-purple">Production Plan <span class="fv-icon">📋</span></span>
+        <span class="fv-arrow">→</span>
+        <span class="fv-node fv-red">MR (auto-derived) <span class="fv-icon">⛔</span></span>
         <span class="fv-arrow">→</span>
         <span class="fv-node fv-blue">MIS <span class="fv-icon">📝</span></span>
         <span class="fv-arrow">→</span>
@@ -281,7 +283,9 @@
         <span class="fv-arrow">→</span>
         <span class="fv-node fv-green">FGHM <span class="fv-icon">📦</span></span>
         <span class="fv-arrow">→</span>
-        <span class="fv-node fv-blue">FG Stock <span class="fv-icon">📈</span></span>
+        <span class="fv-node fv-teal">Site Consumption <span class="fv-icon">📊</span></span>
+        <span class="fv-arrow">→</span>
+        <span class="fv-node fv-blue">Material Return <span class="fv-icon">🔄</span></span>
       </div>
 
       <div class="flow-visual" style="margin-top:8px;justify-content:flex-start;">
@@ -293,39 +297,39 @@
         <div class="step-flow-row">
           <div class="step-flow-step">
             <span class="sfs-num">1</span>
-            <span class="sfs-title">SO → Costing Review</span>
-            <span class="sfs-desc">Sales Order creates Project. Costing team reviews RM + cost requirements.</span>
+            <span class="sfs-title">SO → Costing Sheet</span>
+            <span class="sfs-desc">Sales Order creates Costing Sheet. Auto-expands SO × System Composition × BOM into 5-section cost breakdown.</span>
           </div>
           <div class="step-flow-arrow">→</div>
           <div class="step-flow-step">
             <span class="sfs-num">2</span>
-            <span class="sfs-title">MR — Draft</span>
-            <span class="sfs-desc">Material Requisition with 4 cost components: Material, Application, Transportation, Tools.</span>
+            <span class="sfs-title">Costing Approved → Project + Production Plan</span>
+            <span class="sfs-desc">Costing approval auto-creates Project + Production Plan. Plan checks stock, auto-PRs for shortages.</span>
           </div>
           <div class="step-flow-arrow">→</div>
           <div class="step-flow-step">
             <span class="sfs-num">3</span>
-            <span class="sfs-title">Production Verified</span>
-            <span class="sfs-desc">Production checks MR qty vs SO system req via BOM.</span>
+            <span class="sfs-title">MR Auto-Derived → Critical Gate ⛔</span>
+            <span class="sfs-desc">MR auto-created from Costing Sheet + Released Plan. 4 cost components pre-filled. Cross-validated vs SO×BOM.</span>
           </div>
         </div>
         <div class="step-flow-row">
           <div class="step-flow-step">
             <span class="sfs-num">4</span>
-            <span class="sfs-title">Costing Approved → Released ⛔</span>
-            <span class="sfs-desc">Costing approves TOTAL project cost. Critical gate passed — MIS can proceed.</span>
+            <span class="sfs-title">MR Released → MIS → Production</span>
+            <span class="sfs-desc">Store issues RM via MIS. Production: Job → BMR → RM Consumption → Packing.</span>
           </div>
           <div class="step-flow-arrow">→</div>
           <div class="step-flow-step">
             <span class="sfs-num">5</span>
-            <span class="sfs-title">MIS → Production</span>
-            <span class="sfs-desc">Store issues RM via MIS. Production: Planning → BMR → RM Consumption → Packing.</span>
+            <span class="sfs-title">FGHM → Site Consumption</span>
+            <span class="sfs-desc">FG Handover with inline acceptance. Site Supervisor tracks hourly/daily consumption per area.</span>
           </div>
           <div class="step-flow-arrow">→</div>
           <div class="step-flow-step">
             <span class="sfs-num">6</span>
-            <span class="sfs-title">FGHM → FG Stock</span>
-            <span class="sfs-desc">FG Handover with inline acceptance. FG stock updated automatically.</span>
+            <span class="sfs-title">Material Return → Project P&L</span>
+            <span class="sfs-desc">Unused RM returned to Store. Real-time Project P&L: Costing vs Actual consumption costs.</span>
           </div>
         </div>
         <div class="step-flow-row" style="border:2px dashed #3b82f6;border-radius:8px;padding:16px;background:rgba(59,130,246,0.04)">
@@ -451,7 +455,7 @@
 
       <!-- ── System Code Conventions ── -->
       <h2>System Code Conventions</h2>
-      <p>Flooring system codes used across Sales Order, System Composition, and Production Planning.</p>
+      <p>Flooring system codes used across Sales Order, System Composition, and Production Job.</p>
 
       <div class="table-wrap">
         <table>
@@ -473,7 +477,7 @@
       </div>
 
       <!-- ── Implementation Phases ── -->
-      <h2>Implementation Roadmap — 6 Phases</h2>
+      <h2>Implementation Roadmap — 12 Weeks</h2>
       <p>Phased rollout across all departments. Each phase corresponds to a vertical functional slice.</p>
 
       <div class="phase-container">
@@ -496,10 +500,10 @@
         <div class="phase">
           <div class="phase-header">
             <span class="phase-number">3</span>
-            <span class="phase-title">Costing &amp; MR (Critical Gate)</span>
-            <span class="phase-tag">MR · Costing Approval</span>
+            <span class="phase-title">Costing Sheet → Production Plan → MR</span>
+            <span class="phase-tag">Costing · Plan · MR (auto-derived)</span>
           </div>
-          <p>MR with 4 cost components (Material, Application, Transportation, Tools), Material Allocation subform with 80% Alert, MR Status workflow: Draft → Pending Production Verification → Production Verified → Costing Approved → Released.</p>
+          <p>Costing Sheet (5 sections auto-expanded from SO × BOM), Production Plan (stock check + auto-PR for shortages), MR auto-derived (4 cost components pre-filled, cross-validated vs SO×BOM). Critical gate: Draft → Prod Verified → Costing Approved → Released.</p>
         </div>
         <div class="phase">
           <div class="phase-header">
@@ -512,18 +516,18 @@
         <div class="phase">
           <div class="phase-header">
             <span class="phase-number">5</span>
-            <span class="phase-title">Production &amp; Inventory</span>
-            <span class="phase-tag">MIS · Planning · BMR · Pack · FGHM</span>
+            <span class="phase-title">Production &amp; Site Operations</span>
+            <span class="phase-tag">MIS · Job · BMR · Pack · FGHM · SCE · MRT</span>
           </div>
-          <p>MIS linked to MR (only Released MRs), Production Planning, BMR, RM Consumption, Packing Entry, FGHM with inline acceptance, RM + FG inventory management.</p>
+          <p>MIS linked to MR (only Released MRs), Production Job, BMR, RM Consumption, Packing Entry, FGHM with inline acceptance, Site Consumption Entry (hourly/daily), Material Return Entry.</p>
         </div>
         <div class="phase">
           <div class="phase-header">
             <span class="phase-number">6</span>
             <span class="phase-title">Reports &amp; Dashboards</span>
-            <span class="phase-tag">Purchase · Store · Production · MR Status</span>
+            <span class="phase-tag">Purchase · Store · Production · Costing · Site Ops</span>
           </div>
-          <p>Purchase Dept dashboard, Store Dept inventory dashboard, Production Dept dashboard, MR Status tracking report, 80% Consumption Alert dashboard, Project Material Allocation report.</p>
+          <p>Purchase Dept dashboard, Store Dept inventory dashboard, Production Dept dashboard, Site Supervisor dashboard, Costing dashboard (Costing vs Actual, Project P&L), Project Inventory Status report.</p>
         </div>
       </div>
 

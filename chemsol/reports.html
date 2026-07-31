@@ -235,8 +235,8 @@
           <table>
             <thead><tr><th>Widget</th><th>Report Source</th></tr></thead>
             <tbody>
-              <tr><td>Today's Production</td><td>Production Planning</td></tr>
-              <tr><td>Open Production Orders</td><td>Production Order</td></tr>
+              <tr><td>Today's Production</td><td>Production Job</td></tr>
+              <tr><td>Open Production Jobs</td><td>Production Job (Status ≠ Completed)</td></tr>
               <tr><td>Planned / Completed Batches</td><td>BOM Formulation / RM Consumption</td></tr>
               <tr><td>Material Consumption vs BOM</td><td>BMR vs BOM variance</td></tr>
               <tr><td>Production Efficiency</td><td>Packing Entry</td></tr>
@@ -249,7 +249,47 @@
 
       <div class="phase">
         <div class="phase-header">
+          <span class="phase-number">5B</span>
+          <span class="phase-title">Site Supervisor Dashboard <span class="badge badge-green">NEW</span></span>
+          <span class="phase-tag">Hourly/Daily Consumption · Filtered by Project</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Widget</th><th>Source</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Site Consumption Log</strong></td><td>SCE Master</td><td>Hourly/daily consumption entries per work area</td></tr>
+              <tr><td><strong>Material Returns</strong></td><td>MRT Master</td><td>Unused RM returned to Store per project</td></tr>
+              <tr><td><strong>80% Alerts Active</strong></td><td>MR Allocation</td><td>Items where consumption ≥ 80% — flagged</td></tr>
+              <tr><td><strong>Remaining per RM</strong></td><td>MR Allocation</td><td>Assigned − Consumed + Returned per item</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p><strong>Core Reports:</strong> Site Consumption Report · Material Return Report · 80% Consumption Alert Dashboard</p>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
           <span class="phase-number">6</span>
+          <span class="phase-title">Costing Dashboard <span class="badge badge-green">NEW</span></span>
+          <span class="phase-tag">Costing Sheet vs Actual · P&L</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Widget</th><th>Source</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Costing Sheet Status</strong></td><td>Costing Sheet</td><td>Draft / Under Review / Approved / Rejected counts</td></tr>
+              <tr><td><strong>Costing vs Actual Variance</strong></td><td>Costing Sheet vs BMR + SCE</td><td>Planned cost vs actual consumption cost</td></tr>
+              <tr><td><strong>Project P&L (Real-time)</strong></td><td>SO Revenue − Material − Procurement</td><td>On-demand P&L view, not just at close</td></tr>
+              <tr><td><strong>Project Inventory Status</strong></td><td>MR Allocation</td><td>Assigned vs Consumed vs Returned vs Remaining per project</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p><strong>Core Reports:</strong> Costing Sheet vs Actual Report · Project P&L Real-time · Project Inventory Status Report</p>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">7</span>
           <span class="phase-title">Project Management Dashboard</span>
           <span class="phase-tag">Root Entity</span>
         </div>
@@ -498,7 +538,7 @@
               <tr><td>Project</td><td>PRJ-YYYY-XXXX</td></tr>
               <tr><td>System Composition</td><td>SC-YYYY-XXXX</td></tr>
               <tr><td>BOM / FG Formulation</td><td>BOM-YYYY-XXXX</td></tr>
-              <tr><td>Production Planning</td><td>PLAN-YYYY-XXXX</td></tr>
+                <tr><td>Production Job</td><td>JOB-YYYY-XXXX</td></tr>
               <tr><td>BMR</td><td>BMR-YYYY-XXXX</td></tr>
               <tr><td>Customer / Site Master</td><td>CUST-YYYY-XXXX</td></tr>
             </tbody>

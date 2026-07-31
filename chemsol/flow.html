@@ -160,8 +160,8 @@
   <div class="hero">
     <div class="hero-eyebrow">Organization Cycle — Interactive Demo</div>
     <h1>Process of Productivity</h1>
-    <p><strong>Two-Stream Architecture:</strong> <strong>Stream A (Stock Procurement):</strong> PURCHASE → STOCK (no Project ID). <strong>Stream B (Project-Centric):</strong> MASTER DATA → SO → PROJECT → MR (Costing Gate) → PRODUCTION → INVENTORY (Project ID flows downstream).</p>
-    <p style="margin-top:4px;font-size:13px;color:var(--gray-500)"><strong>3-Layer Hierarchy:</strong> SO sells <strong>Systems</strong> (EP01) → composed of <strong>FGs</strong> (System Composition) → each FG formulated from <strong>RMs</strong> (BOM). MR works at <strong>RM level only</strong>.</p>
+    <p><strong>Two-Stream Architecture:</strong> <strong>Stream A (Stock Procurement):</strong> PURCHASE → STOCK (no Project ID). <strong>Stream B (Project-Centric):</strong> MASTER DATA → SO → COSTING SHEET → PRODUCTION PLAN → MR (Costing Gate) → PRODUCTION → SITE OPERATIONS (Project ID flows downstream).</p>
+    <p style="margin-top:4px;font-size:13px;color:var(--gray-500)"><strong>3-Layer Hierarchy:</strong> SO sells <strong>Systems</strong> (EP01) → composed of <strong>FGs</strong> (System Composition) → each FG formulated from <strong>RMs</strong> (BOM). Costing Sheet auto-expands SO × BOM into per-RM lines; MR works at <strong>RM level only</strong>.</p>
   </div>
 
   <div class="content">
@@ -178,9 +178,13 @@
       <span class="fp-arrow">&rarr;</span>
       <span class="fp-node stream-b" href="#so-flow">SO → PROJECT</span>
       <span class="fp-arrow">&rarr;</span>
+      <span class="fp-node stream-b" href="#costing-flow">COSTING SHEET → PRODUCTION PLAN</span>
+      <span class="fp-arrow">&rarr;</span>
       <span class="fp-node gate" href="#mr-flow">MR (COSTING GATE)</span>
       <span class="fp-arrow">&rarr;</span>
       <span class="fp-node stream-b" href="#production-flow">PRODUCTION</span>
+      <span class="fp-arrow">&rarr;</span>
+      <span class="fp-node stream-b" href="#site-ops-flow">SITE OPS</span>
       <span class="fp-arrow">&rarr;</span>
       <span class="fp-node stream-b" href="#inventory-flow">INVENTORY</span>
     </div>
@@ -189,8 +193,8 @@
     <!-- ORGANIZATION CYCLE OVERVIEW -->
     <!-- ============================================================ -->
     <div class="module-group" id="org-cycle">
-      <h3>Organization Cycle <span class="mg-badge">Two-Stream Architecture — 6 Stages</span></h3>
-      <p>The system follows a <strong>Two-Stream Architecture.</strong> <strong>Stream A (Stock Procurement):</strong> Purchase for stock → no Project ID. <strong>Stream B (Project-Centric):</strong> Master Data → SO → Project → MR Costing Gate → Production → Inventory.</p>
+      <h3>Organization Cycle <span class="mg-badge">Two-Stream Architecture — 7 Stages</span></h3>
+      <p>The system follows a <strong>Two-Stream Architecture.</strong> <strong>Stream A (Stock Procurement):</strong> Purchase for stock → no Project ID. <strong>Stream B (Project-Centric):</strong> Master Data → SO → Costing Sheet → Production Plan → MR Costing Gate → Production → Site Operations.</p>
 
       <div class="org-cycle-flow" style="background:var(--gray-50);border-radius:12px;padding:24px;margin:16px 0;border:1px solid var(--gray-200)">
         <div style="display:flex;flex-direction:column;gap:16px">
@@ -217,14 +221,14 @@
               <span style="background:var(--green);color:#fff;padding:4px 12px;border-radius:999px;font-size:11px;font-weight:700">STAGE 3</span>
               <span class="ff-node" style="background:#dbeafe">SO (Sales Order)</span>
               <span class="ff-arrow">▶</span>
-              <span class="ff-node" style="background:#fef3c7">PROJECT (Root Entity)</span>
+              <span class="ff-node" style="background:#fef3c7">COSTING SHEET (5 sections, auto-expanded)</span>
             </div>
             <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-left:24px">
               <span style="background:#f59e0b;color:#fff;padding:2px 10px;border-radius:999px;font-size:10px;font-weight:700">Supply+Apply</span>
               <span class="ff-arrow">▶</span>
-              <span class="ff-node" style="background:#fef3c7">PROJECT created — System Lines</span>
+              <span class="ff-node" style="background:#fef3c7">Costing Approved → PROJECT + PRODUCTION PLAN auto-created</span>
               <span class="ff-arrow">▶</span>
-              <span class="ff-node" style="background:#d1fae5">MR → MIS (consumes Store)</span>
+              <span class="ff-node" style="background:#d1fae5">Plan Released → auto-PR for shortages</span>
             </div>
             <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding-left:24px">
               <span style="background:#f59e0b;color:#fff;padding:2px 10px;border-radius:999px;font-size:10px;font-weight:700">Supply Only</span>
@@ -235,14 +239,14 @@
 
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
             <span style="background:#8b5cf6;color:#fff;padding:4px 12px;border-radius:999px;font-size:11px;font-weight:700">STAGE 4</span>
-            <span class="ff-node" style="background:#fce7f3;border:2px solid #f9a8d4">MR — COSTING GATE</span>
+            <span class="ff-node" style="background:#fce7f3;border:2px solid #f9a8d4">MR — COSTING GATE (auto-derived, 4 cost components pre-filled)</span>
             <span class="ff-arrow">▶</span>
             <span class="ff-node" style="background:#d1fae5">Draft → Pending Production Verification → Production Verified → Costing Approved → Released</span>
           </div>
 
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
             <span style="background:var(--accent);color:#fff;padding:4px 12px;border-radius:999px;font-size:11px;font-weight:700">STAGE 5</span>
-            <span class="ff-node" style="background:#fef3c7">PRODUCTION (Plan → BMR → Pack)</span>
+            <span class="ff-node" style="background:#fef3c7">PRODUCTION (Job → BMR → Pack)</span>
             <span class="ff-arrow">▶</span>
             <span class="ff-node" style="background:#d1fae5">FGHM (FG + QC)</span>
             <span class="ff-arrow">▶</span>
@@ -250,10 +254,21 @@
           </div>
 
           <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-            <span style="background:#059669;color:#fff;padding:4px 12px;border-radius:999px;font-size:11px;font-weight:700">STAGE 6</span>
+            <span style="background:#0d9488;color:#fff;padding:4px 12px;border-radius:999px;font-size:11px;font-weight:700">STAGE 6</span>
+            <span class="ff-node" style="background:#ccfbf1">SITE CONSUMPTION (hourly/daily per area)</span>
+            <span class="ff-arrow">▶</span>
+            <span class="ff-node" style="background:#ccfbf1">MATERIAL RETURN (unused RM → Store)</span>
+            <span class="ff-arrow">▶</span>
+            <span class="ff-node" style="background:#fef3c7">PROJECT CLOSE → P&amp;L</span>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span style="background:#059669;color:#fff;padding:4px 12px;border-radius:999px;font-size:11px;font-weight:700">STAGE 7</span>
             <span class="ff-node" style="background:#d1fae5">RM INVENTORY</span>
             <span class="ff-arrow">&#8660;</span>
             <span class="ff-node" style="background:#dbeafe">FG INVENTORY</span>
+            <span class="ff-arrow">&#8660;</span>
+            <span class="ff-node" style="background:#fef3c7">PROJECT INVENTORY STATUS (Assigned / Consumed / Returned)</span>
           </div>
 
         </div>
@@ -451,7 +466,7 @@
     <!-- ============================================================ -->
     <div class="module-group" id="so-flow">
       <h3>Sales <span class="mg-badge">Stage 3 — Client PO ref attached to SO</span></h3>
-      <p>SO creates the Project. Client PO is just a reference record attached to the SO.</p>
+      <p>SO starts Stream B. Client PO is just a reference record attached to the SO.</p>
 
       <div class="form-card" id="so-so">
         <div class="fc-header">
@@ -462,7 +477,7 @@
         <div class="fc-flow">
           <span class="fc-flow-in">From: Customer Master</span>
           <span class="fc-flow-key">Sales Type toggle &rarr; Subform A (System) or B (FG)</span>
-          <span class="fc-flow-out">Supply+Apply: Creates Project — Supply Only: FG dispatch only</span>
+          <span class="fc-flow-out">Supply+Apply: Costing Sheet created → Project on Costing Approval — Supply Only: FG dispatch only</span>
           <span class="lookup-badge">→ Lookups: Customer/Site Master (Org Name, GST, Contact), System Master (System Name)</span>
         </div>
         <div class="form-demo">
@@ -486,7 +501,7 @@
           <!-- Subform A: System Lines -->
           <div style="padding:6px 10px;background:#ecfdf5;border-radius:6px 6px 0 0;font-size:12px;font-weight:700;color:#065f46;border:1px solid #a7f3d0;border-bottom:none">Subform A — System Lines (Supply+Apply)</div>
           <div class="subtable-demo" style="border:1px solid #a7f3d0;border-top:none">
-            <div class="st-hint">System Line Items — sells a SYSTEM (e.g., EP01 &rarr; drives Project)</div>
+            <div class="st-hint">System Line Items — sells a SYSTEM (e.g., EP01 &rarr; drives Costing Sheet)</div>
             <table style="width:100%;border-collapse:collapse;font-size:12px">
               <thead>
                 <tr>
@@ -553,13 +568,13 @@
         <div class="fc-header">
           <span class="fc-num">7B</span>
           <span class="fc-title">Create Project</span>
-          <span class="fc-tag blue" style="background:var(--green-light);color:var(--green)">Auto from SO</span>
+          <span class="fc-tag blue" style="background:var(--green-light);color:var(--green)">Auto on Costing Approval</span>
         </div>
         <div class="fc-flow">
-          <span class="fc-flow-in">From: SO (auto-created)</span>
-          <span class="fc-flow-key">Project ID links ALL downstream forms</span>
-          <span class="fc-flow-out">To: MR, Production, FGHM</span>
-          <span class="lookup-badge">→ Lookups: SO Master (SO No, Customer, Amount)</span>
+          <span class="fc-flow-in">From: Costing Sheet (auto-created when Costing Approved)</span>
+          <span class="fc-flow-key">Project ID links ALL downstream forms. Production Plan auto-created alongside.</span>
+          <span class="fc-flow-out">To: MR, Production, FGHM, Site Ops</span>
+          <span class="lookup-badge">→ Lookups: Costing Sheet (SO No, Customer, Amount)</span>
         </div>
         <div class="form-demo">
           <div class="form-row-4">
@@ -766,11 +781,88 @@
     </div>
 
     <!-- ============================================================ -->
+    <!-- COSTING SHEET + PRODUCTION PLAN -->
+    <!-- ============================================================ -->
+    <div class="module-group" id="costing-flow">
+      <h3>Costing Sheet → Production Plan <span class="mg-badge">Stage 3B — New Standalone Module</span></h3>
+      <p>Costing team builds the <strong>detailed project cost breakdown</strong> (5 sections) auto-expanded from the SO. On <strong>Costing Approved</strong> → Project + Production Plan auto-created. Plan Release triggers <strong>auto-PR</strong> for shortages — earlier in the flow than MR Release.</p>
+
+      <div class="form-card" id="cs-costing">
+        <div class="fc-header">
+          <span class="fc-num">8A</span>
+          <span class="fc-title">Costing Sheet (CST-YYYY-XXXX)</span>
+          <span class="fc-tag">Costing Team — 5 Sections</span>
+        </div>
+        <div class="fc-flow">
+          <span class="fc-flow-in">From: SO Reference (Supply+Apply only)</span>
+          <span class="fc-flow-key">On SO selection → auto-expand System Composition × BOM into <strong>Section A Material lines</strong> (zero manual RM entry)</span>
+          <span class="fc-flow-out">To: <strong>Costing Approved → auto-creates Project + Production Plan (Draft)</strong></span>
+          <span class="lookup-badge">→ Lookups: Sales Order (Customer, System Lines, Area), Item Muster (Standard Rate)</span>
+        </div>
+        <div class="form-demo">
+          <div class="form-row-4">
+            <div><label>Costing No</label><input type="text" value="CST-2026-001" disabled style="background:var(--gray-50)"></div>
+            <div><label>SO Reference</label><select><option selected>SO-2026-014 — Tata Motors (EP01, 5000 SqM)</option></select></div>
+            <div><label>Costing Status</label><select style="background:#dbeafe;font-weight:700"><option>Draft</option><option>Under Review</option><option selected>Approved</option><option>Rejected</option></select></div>
+            <div><label>Total Costing Amount</label><input type="text" value="₹ 4,85,000" disabled style="background:var(--gray-50);font-weight:700"></div>
+          </div>
+          <div class="subtable-demo" style="border:1px solid #fda4af;background:#fff1f2">
+            <div class="st-hint">Section A — Material Cost (auto-expanded: SO System → System Composition → BOM)</div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead><tr><th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">System → FG → RM</th><th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">BOM Qty/FG</th><th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">SO Area</th><th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Total Req</th><th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Rate</th><th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Material Cost</th></tr></thead>
+              <tbody>
+                <tr><td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option selected>EP01 → FG-EP01 → RM-EP-001 Epoxy Resin</option></select></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="0.085" style="font-size:12px" disabled></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="5000" style="font-size:12px" disabled></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="425" style="font-size:12px" disabled></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="620" style="font-size:12px"></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="263500" style="font-size:12px" disabled></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="padding:8px 12px;background:#fff1f2;border-radius:6px;font-size:12px;color:#9f1239;margin-top:8px">
+            <strong>Section A = Σ(RM Required × Rate)</strong> — Sections B-E (Application, Transportation, Tools &amp; Tackles, Overhead) follow the same pattern. <strong>Total Costing Amount = Σ of all 5 sections.</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-card" id="pp-plan">
+        <div class="fc-header">
+          <span class="fc-num">8B</span>
+          <span class="fc-title">Production Plan (PLAN-YYYY-XXXX)</span>
+          <span class="fc-tag">Procurement-Level Planning</span>
+        </div>
+        <div class="fc-flow">
+          <span class="fc-flow-in">From: Costing Sheet (Approved) — auto-created</span>
+          <span class="fc-flow-key"><strong>Available Stock = physical stock − Σ(Assigned Qty from all unreleased MRs)</strong> — prevents double-allocation</span>
+          <span class="fc-flow-out">To: <strong>Plan Released → auto-PR for every line with Shortage &gt; 0</strong> → MR can then be created</span>
+          <span class="lookup-badge">→ Lookups: Costing Sheet (material lines), RM Inventory (net available)</span>
+        </div>
+        <div class="form-demo">
+          <div class="form-row-4">
+            <div><label>Plan No</label><input type="text" value="PLAN-2026-001" disabled style="background:var(--gray-50)"></div>
+            <div><label>Costing Ref</label><select><option selected>CST-2026-001 — Approved</option></select></div>
+            <div><label>Project ID</label><input type="text" value="PRJ-2026-001 (auto)" disabled></div>
+            <div><label>Status</label><select style="background:#d1fae5;font-weight:700"><option>Draft</option><option>Reviewed</option><option selected>Released</option></select></div>
+          </div>
+          <div class="subtable-demo">
+            <div class="st-hint">Stock Check Lines — Shortage triggers Auto-PR</div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead><tr><th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">RM Item</th><th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Total Required</th><th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Available</th><th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Shortage</th><th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Source</th></tr></thead>
+              <tbody>
+                <tr><td style="padding:4px 8px;border-bottom:1px solid #eee">RM-EP-001 — Epoxy Resin</td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="425" style="font-size:12px" disabled></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="500" style="font-size:12px" disabled></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="0" style="font-size:12px" disabled></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Stock" style="font-size:12px" disabled></td></tr>
+                <tr><td style="padding:4px 8px;border-bottom:1px solid #eee">RM-EP-002 — Epoxy Hardener</td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="60" style="font-size:12px" disabled></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="40" style="font-size:12px" disabled></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="20" style="font-size:12px" disabled style="background:#fef2f2;color:#dc2626;font-weight:700"></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Purchase" style="font-size:12px"></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="padding:8px 12px;background:#ecfdf5;border-radius:6px;font-size:12px;color:#065f46;margin-top:8px">
+            <strong>&#x2699; Auto-PR:</strong> Hardener Shortage = 20 Kg → on Release the system auto-creates PR-2026-0xx (project-tagged) and notifies Purchase.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
     <!-- MR — COSTING GATE -->
     <!-- ============================================================ -->
     <div class="module-group" id="mr-flow">
       <h3>MR — Costing Gate <span class="mg-badge">Stage 4 — Critical Approval Gate</span></h3>
-      <p>MR is the <strong>complete project implementation cost baseline</strong> — four cost components (Material + Application + Transportation + Tools & Tackles) summing to Total MR Cost. Costing approves this TOTAL cost.</p>
+      <p>MR is <strong>auto-derived</strong> from the approved Costing Sheet + Released Production Plan — <strong>zero manual re-entry</strong>. Carries the <strong>complete project implementation cost baseline</strong> — four cost components (Material + Application + Transportation + Tools &amp; Tackles) pre-filled. Costing approves this TOTAL cost. <strong>SO↔BOM↔MR cross-validation:</strong> mismatch &gt; 5% flags, &gt; 10% blocks.</p>
 
       <div style="display:flex;gap:8px;align-items:center;padding:10px 14px;background:#f0fdf4;border:1px solid #86efac;border-radius:8px;margin-bottom:12px;font-size:12px">
         <strong>MR Status Workflow:</strong>
@@ -791,9 +883,9 @@
           <span class="fc-tag">Project Cost Baseline</span>
         </div>
         <div class="fc-flow">
-          <span class="fc-flow-in">From: Project ID + Production Plan</span>
-          <span class="fc-flow-key">Request <strong>RM only</strong> from store. Status: Draft &rarr; Pending Production Verification &rarr; Production Verified &rarr; Costing Approved &rarr; Released</span>
-          <span class="fc-flow-out">To: <strong>MIS (only when Released)</strong></span>
+          <span class="fc-flow-in">From: <strong>Costing Sheet (auto-derived) + Production Plan (Released)</strong></span>
+          <span class="fc-flow-key">Request <strong>RM only</strong> from store. All 4 cost components pre-filled. Status: Draft &rarr; Pending Production Verification &rarr; Production Verified &rarr; Costing Approved &rarr; Released</span>
+          <span class="fc-flow-out">To: <strong>MIS (auto-created on Release)</strong></span>
           <span class="lookup-badge">→ Lookups: Project Master (Name, Manager), Item Muster (Name, UOM, Category, Available Stock)</span>
         </div>
         <div class="form-demo">
@@ -908,7 +1000,7 @@
     <!-- PRODUCTION -->
     <!-- ============================================================ -->
     <div class="module-group" id="production-flow">
-      <h3>Production <span class="mg-badge">Stage 5 — MIS &rarr; Planning &rarr; BMR &rarr; Pack &rarr; FGHM</span></h3>
+      <h3>Production <span class="mg-badge">Stage 5 — MIS &rarr; Job &rarr; BMR &rarr; Pack &rarr; FGHM</span></h3>
       <p>Production consumes <strong>RM</strong> (from MR) to produce <strong>FG</strong> via BMR. All tagged to Project.</p>
 
       <!-- FG from RM — Complete Process Diagram -->
@@ -1014,39 +1106,39 @@
       <div class="form-card" id="prod-plan">
         <div class="fc-header">
           <span class="fc-num">10B</span>
-          <span class="fc-title">Production Planning</span>
-          <span class="fc-tag">Per Project</span>
+          <span class="fc-title">Production Job (JOB-YYYY-XXXX)</span>
+          <span class="fc-tag">Execution-Level — after MR Released</span>
         </div>
         <div class="fc-flow">
-          <span class="fc-flow-in">From: Project ID + System Composition</span>
-          <span class="fc-flow-key">System qty from SO &rarr; FG qty from System Composition &rarr; RM from BOM</span>
-          <span class="fc-flow-out">To: Production Order (per FG)</span>
-          <span class="lookup-badge">→ Lookups: Project Master (Name, Manager), MR Master (Items, Qty), System Master</span>
+          <span class="fc-flow-in">From: MR (Released) — which FG batch to produce when</span>
+          <span class="fc-flow-key">Execution planning: FG Code + Planned FG Qty per batch</span>
+          <span class="fc-flow-out">To: BMR (per FG batch)</span>
+          <span class="lookup-badge">→ Lookups: MR Master (Items, Qty — Released only), Item Muster (FG), Project Master</span>
         </div>
         <div class="form-demo">
           <div class="form-row-4">
-            <div><label>Plan No</label><input type="text" value="PLAN-2026-001" disabled style="background:var(--gray-50)"></div>
+            <div><label>Job No</label><input type="text" value="JOB-2026-001" disabled style="background:var(--gray-50)"></div>
             <div><label>Project ID</label><select><option selected>PRJ-2026-001 — Tata Motors</option></select></div>
-            <div><label>System</label><select><option selected>EP01 — Epoxy Flooring 1mm</option></select></div>
-            <div><label>Planner</label><input type="text" value="Suresh Patil"></div>
+            <div><label>MR Sheet No</label><select><option selected>MR-2026-001 (Released)</option></select></div>
+            <div><label>Status</label><select><option>Draft</option><option>Scheduled</option><option selected>In Progress</option><option>Completed</option></select></div>
           </div>
           <div class="subtable-demo">
-            <div class="st-hint">FGs Required for Project</div>
+            <div class="st-hint">FG Batch to Execute</div>
             <table style="width:100%;border-collapse:collapse;font-size:12px">
               <thead>
                 <tr>
                   <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">FG Product</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Required FG Qty</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">FG Stock</th>
-                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Net FG to Produce</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Planned FG Qty</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Period</th>
+                  <th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Plant</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
                   <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="FG-EP-001 — Epoxy Base Coat" style="font-size:12px"></td>
                   <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="600" style="font-size:12px" disabled style="background:var(--gray-50)"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="0" style="font-size:12px" disabled style="background:var(--gray-50)"></td>
-                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="600" style="font-size:12px" disabled style="background:var(--gray-50);font-weight:700;color:var(--primary)"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Week 29" style="font-size:12px"></td>
+                  <td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Wadki Plant" style="font-size:12px"></td>
                 </tr>
               </tbody>
             </table>
@@ -1063,10 +1155,10 @@
           <span class="fc-tag">Consume RM &rarr; Produce FG</span>
         </div>
         <div class="fc-flow">
-          <span class="fc-flow-in">From: Production Order</span>
+          <span class="fc-flow-in">From: Production Job</span>
           <span class="fc-flow-key">Consumes RM &rarr; Produces FG. RM from MR.</span>
           <span class="fc-flow-out">To: RM Consumption, Packing &rarr; FGHM</span>
-          <span class="lookup-badge">→ Lookups: Item Muster (FG → FG Name, UOM, BOM RM List), Production Planning (Project ID, FG Code, Planned Qty)</span>
+          <span class="lookup-badge">→ Lookups: Item Muster (FG → FG Name, UOM, BOM RM List), Production Job (Project ID, FG Code, Planned Qty)</span>
         </div>
         <div class="form-demo">
           <div class="form-row-4">
@@ -1282,11 +1374,94 @@
     </div>
 
     <!-- ============================================================ -->
+    <!-- SITE OPERATIONS -->
+    <!-- ============================================================ -->
+    <div class="module-group" id="site-ops-flow">
+      <h3>Site Operations <span class="mg-badge">Stage 5B — Site Consumption + Material Return</span></h3>
+      <p>Site teams track <strong>actual consumption hourly/daily per work area</strong> — every entry decrements the project's MR Allocation. Unused RM returns to Store via Material Return (credits the project allocation).</p>
+
+      <div class="form-card" id="site-consumption">
+        <div class="fc-header">
+          <span class="fc-num">10F</span>
+          <span class="fc-title">Site Consumption Entry (SCE-YYYY-XXXX)</span>
+          <span class="fc-tag">Hourly/Daily Task Tracking</span>
+        </div>
+        <div class="fc-flow">
+          <span class="fc-flow-in">From: Project ID + MR Allocation</span>
+          <span class="fc-flow-key">Line items consume <strong>RM only</strong> — resolves to MR Allocation by <code>Project ID + Item Code</code>. System/FG reference expands via BOM.</span>
+          <span class="fc-flow-out">To: MR Allocation (Consumed Qty +) → 80%/100% Alerts</span>
+          <span class="lookup-badge">→ Lookups: Project Master, Item Muster (RM), Project Systems subform (BOM expansion)</span>
+        </div>
+        <div class="form-demo">
+          <div class="form-row-4">
+            <div><label>Consumption No</label><input type="text" value="SCE-2026-001" disabled style="background:var(--gray-50)"></div>
+            <div><label>Project ID</label><select><option selected>PRJ-2026-001 — Tata Motors</option></select></div>
+            <div><label>Work Area</label><input type="text" value="Zone A — Ground Floor"></div>
+            <div><label>Time Slot</label><select><option>Morning</option><option selected>Afternoon</option><option>Full Day</option><option>Night</option></select></div>
+          </div>
+          <div class="subtable-demo">
+            <div class="st-hint">Materials Consumed</div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead><tr><th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">RM Item</th><th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Qty Consumed</th><th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">UOM</th><th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Consumption Type</th></tr></thead>
+              <tbody>
+                <tr><td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option selected>RM-EP-001 — Epoxy Resin</option></select></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="2.5" style="font-size:12px"></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option selected>Actual</option><option>Wastage</option><option>Rework</option></select></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="padding:8px 12px;background:#fffbeb;border-radius:6px;font-size:12px;color:#92400e;margin-top:8px">
+            <strong>&#x26A0; No matching MR Allocation → alert + block.</strong> With System/FG Reference → auto-expand into RMs at BOM ratios and consume proportionally.
+          </div>
+          <div style="padding:8px 12px;background:#fff7ed;border-radius:6px;font-size:12px;color:#7c2d12;margin-top:8px">
+            <strong>&#x26A0; 80% Alert:</strong> Consumed 8 Kg of 10 Kg assigned = <strong>80%</strong> → pop-up + banner + email to Project Manager in real time.
+          </div>
+        </div>
+      </div>
+
+      <div class="connector-down">&#x25BC;</div>
+
+      <div class="form-card" id="material-return">
+        <div class="fc-header">
+          <span class="fc-num">10G</span>
+          <span class="fc-title">Material Return Entry (MRT-YYYY-XXXX)</span>
+          <span class="fc-tag">Unused RM → Store</span>
+        </div>
+        <div class="fc-flow">
+          <span class="fc-flow-in">From: Project site / Production</span>
+          <span class="fc-flow-key">Returns unused RM — decrements <code>Consumed Qty</code> on MR Allocation, restores store stock</span>
+          <span class="fc-flow-out">To: MR Allocation (Consumed −) + Store RM Inventory (+)</span>
+          <span class="lookup-badge">→ Lookups: Project Master, Item Muster (RM), Store user (Received By)</span>
+        </div>
+        <div class="form-demo">
+          <div class="form-row-4">
+            <div><label>Return No</label><input type="text" value="MRT-2026-001" disabled style="background:var(--gray-50)"></div>
+            <div><label>Project ID</label><select><option selected>PRJ-2026-001 — Tata Motors</option></select></div>
+            <div><label>Reason</label><select><option selected>Excess Issued</option><option>Unused</option><option>Damaged</option><option>Wrong Item</option></select></div>
+            <div><label>Condition</label><select><option selected>Good</option><option>Damaged</option><option>Expired</option></select></div>
+          </div>
+          <div class="subtable-demo">
+            <div class="st-hint">Returned Items</div>
+            <table style="width:100%;border-collapse:collapse;font-size:12px">
+              <thead><tr><th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">RM Item</th><th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">Return Qty</th><th style="padding:6px 8px;text-align:left;font-size:11px;font-weight:600;border-bottom:2px solid #ddd">UOM</th></tr></thead>
+              <tbody>
+                <tr><td style="padding:4px 8px;border-bottom:1px solid #eee"><select style="font-size:12px"><option selected>RM-EP-002 — Epoxy Hardener</option></select></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="number" value="15" style="font-size:12px"></td><td style="padding:4px 8px;border-bottom:1px solid #eee"><input type="text" value="Kg" style="font-size:12px" disabled></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="padding:8px 12px;background:#ecfdf5;border-radius:6px;font-size:12px;color:#065f46;margin-top:8px">
+            <strong>&#x2713; Good/Unused → Store RM stock restored.</strong> Damaged/Expired → damaged stock count only (no available-stock credit).
+          </div>
+        </div>
+      </div>
+
+      <div class="connector-down">&#x25BC;</div>
+    </div>
+
+    <!-- ============================================================ -->
     <!-- INVENTORY -->
     <!-- ============================================================ -->
     <div class="module-group" id="inventory-flow">
-      <h3>Inventory <span class="mg-badge">Stage 6 — RM Stock + FG Stock</span></h3>
-      <p>Inventory is the final stage. RM stock is updated via GRN posting (Stream A) and MIS posting (Stream B). FG stock is updated via FGHM inline acceptance.</p>
+      <h3>Inventory <span class="mg-badge">Stage 6 — RM Stock + FG Stock + Project Inventory Status</span></h3>
+      <p>RM stock is updated via GRN posting (Stream A) and MIS posting (Stream B). FG stock is updated via FGHM inline acceptance. <strong>Project Inventory Status</strong> tracks Assigned vs Issued vs Consumed vs Returned per project — the single source of truth for P&amp;L.</p>
 
       <div style="display:flex;gap:16px;padding:16px;background:var(--gray-50);border-radius:8px;border:1px solid var(--gray-200)">
         <div style="flex:1;padding:12px;background:#d1fae5;border-radius:6px;">
@@ -1427,7 +1602,7 @@
     <!-- FLOW SUMMARY -->
     <!-- ============================================================ -->
     <h2>Form Flow Summary <span class="badge badge-green">Two-Stream Architecture</span></h2>
-    <p>How data passes from one form to the next — organized by the 6-stage Organization Cycle.</p>
+    <p>How data passes from one form to the next — organized by the 7-stage Organization Cycle.</p>
     <div class="table-wrap">
       <table>
         <thead><tr><th>Stage</th><th>Form</th><th>Data Source</th><th>What It Creates</th><th>Next Form</th></tr></thead>
@@ -1444,23 +1619,28 @@
           <tr><td>2C</td><td>BOM / FG Formulation</td><td>Item Muster — FG (FG Code → FG Name, UOM); RM (RM Code → RM Name, UOM)</td><td>FG &rarr; RM mapping with ratios</td><td>BMR, Costing</td></tr>
           <tr><td>2D</td><td>Supplier Master</td><td>— (Master Data — supplies Name, GSTIN, Address, Contact)</td><td>Vendor database</td><td>PO</td></tr>
 
-          <tr style="background:#d1fae5"><td colspan="5"><strong>STAGE 3: SO &rarr; Project (Stream B)</strong></td></tr>
-          <tr><td>3A</td><td>SO</td><td>Customer/Site Master (Org Name, GST, Contact); System Master (System Name)</td><td>System line items, Client PO ref</td><td>Creates Project (Supply+Apply)</td></tr>
-          <tr><td>3B</td><td>Project</td><td>SO Master (SO No, Customer, Amount) — auto-created</td><td>Project ID, Manager, Dates</td><td>MR, Production, FGHM</td></tr>
+          <tr style="background:#d1fae5"><td colspan="5"><strong>STAGE 3: SO &rarr; Costing Sheet &rarr; Production Plan (Stream B)</strong></td></tr>
+          <tr><td>3A</td><td>SO</td><td>Customer/Site Master (Org Name, GST, Contact); System Master (System Name)</td><td>System line items, Client PO ref</td><td>Costing Sheet (Supply+Apply)</td></tr>
+          <tr><td>3B</td><td>Costing Sheet</td><td>SO Master (System Lines, Area) + System Composition + BOM (auto-expand)</td><td>5-section cost breakdown (CST-)</td><td>Costing Approved → Project + Production Plan</td></tr>
+          <tr><td>3C</td><td>Production Plan</td><td>Costing Sheet (Approved — material lines) + RM Inventory (net available)</td><td>Stock check, Shortage lines (PLAN-)</td><td>Released → Auto-PR for shortages → MR</td></tr>
+          <tr><td>3D</td><td>Project</td><td>Costing Sheet (auto-created on approval)</td><td>Project ID, Manager, Dates</td><td>MR, Production, FGHM, Site Ops</td></tr>
 
           <tr style="background:#fce7f3"><td colspan="5"><strong>STAGE 4: MR — Costing Gate (Stream B)</strong></td></tr>
-          <tr><td>4A</td><td>MR</td><td>Project Master (Name, Manager) + Item Muster (Name, UOM, Category, Available Stock)</td><td>RM request + 4 cost components</td><td>MIS (only when Released)</td></tr>
+          <tr><td>4A</td><td>MR</td><td>Costing Sheet (auto-derived — 4 cost components pre-filled) + Production Plan (Released) + Project Master</td><td>RM request + cost baseline, cross-validated vs SO×BOM</td><td>MIS (auto-created on Release)</td></tr>
 
           <tr style="background:#e8effd"><td colspan="5"><strong>STAGE 5: Production (Stream B)</strong></td></tr>
-          <tr><td>5A</td><td>MIS</td><td>MR Master (Items List, Required Qty, Category, Project ID) — only Released MRs</td><td>Issued qty, balance tracking</td><td>Stock deduction</td></tr>
-          <tr><td>5B</td><td>Production Planning</td><td>Project Master (Name, Manager) + MR Master (Items, Qty) + System Master</td><td>FG breakdown per System</td><td>Production Order</td></tr>
-          <tr><td>5C</td><td>BMR</td><td>Production Planning (Project ID, FG Code, Planned Qty) + Item Muster (FG → FG Name, UOM, BOM RM List)</td><td>Consume RM &rarr; Produce FG</td><td>Packing</td></tr>
+          <tr><td>5A</td><td>MIS</td><td>MR Master (Items List, Required Qty, Category, Project ID) — auto-created on MR Release</td><td>Issued qty, balance tracking</td><td>Stock deduction</td></tr>
+          <tr><td>5B</td><td>Production Job</td><td>MR Master (Released only) + Item Muster (FG)</td><td>FG batch execution plan (JOB-)</td><td>BMR</td></tr>
+          <tr><td>5C</td><td>BMR</td><td>Production Job (Project ID, FG Code, Planned Qty) + Item Muster (FG → FG Name, UOM, BOM RM List)</td><td>Consume RM &rarr; Produce FG</td><td>Packing</td></tr>
           <tr><td>5D</td><td>Packing</td><td>BMR Master (FG Code, Batch No) + Item Muster (FG → Name, UOM; Packaging)</td><td>FG packed, packing material used</td><td>FGHM</td></tr>
           <tr><td>5E</td><td>FGHM</td><td>Project Master (Name, Manager) + Item Muster (FG → Name, UOM)</td><td>FG handover with inline acceptance</td><td>FG stock</td></tr>
+          <tr><td>5F</td><td>Site Consumption Entry</td><td>Project Master + Item Muster (RM) + MR Allocation (Project ID + Item Code)</td><td>Hourly/daily consumption per area (SCE-)</td><td>MR Allocation Consumed Qty +, alerts</td></tr>
+          <tr><td>5G</td><td>Material Return Entry</td><td>Project Master + Item Muster (RM) + MR Allocation</td><td>Unused RM back to Store (MRT-)</td><td>MR Allocation Consumed Qty −, RM stock +</td></tr>
 
           <tr style="background:#d1fae5"><td colspan="5"><strong>STAGE 6: Inventory (Stream B)</strong></td></tr>
-          <tr><td>6A</td><td>RM Stock</td><td>GRN posting (RM +) / MIS posting (RM &minus;)</td><td>RM inventory view</td><td>—</td></tr>
+          <tr><td>6A</td><td>RM Stock</td><td>GRN posting (RM +) / MIS posting (RM &minus;) / Material Return (+)</td><td>RM inventory view</td><td>—</td></tr>
           <tr><td>6B</td><td>FG Stock</td><td>FGHM inline acceptance (FG +)</td><td>FG inventory view</td><td>—</td></tr>
+          <tr><td>6C</td><td>Project Inventory Status</td><td>MR Allocation (Assigned) + MIS (Issued) + BMR/Site Consumption (Consumed) + Material Return (Returned)</td><td>Remaining per RM per project — P&amp;L source of truth</td><td>Project P&amp;L</td></tr>
         </tbody>
       </table>
     </div>
@@ -1496,10 +1676,11 @@
       <h3>Data Source Reference <span class="mg-badge">Lookup &amp; Autofetch Map</span></h3>
       <p>Every master data source and the fields it supplies to each target form, aligned with the <a href="IMPLEMENTATION_PLAN.md">Implementation Plan —8.4</a>.</p>
       <div class="dsr-grid">
-        <div class="dsr-item"><strong>Purchase Item Muster</strong> <span class="dsr-target">→ All forms (PR, PO, GRN, MR, MIS, BMR, FGHM, BOM)</span><br><span class="dsr-fields">Item Name, UOM, Category, HSN Code, GST%, Lead Time, Standard Rate</span></div>
+        <div class="dsr-item"><strong>Purchase Item Muster</strong> <span class="dsr-target">→ All forms (PR, PO, GRN, MR, MIS, BMR, FGHM, BOM, Costing Sheet, Site Consumption, Material Return)</span><br><span class="dsr-fields">Item Name, UOM, Category, HSN Code, GST%, Lead Time, Standard Rate</span></div>
         <div class="dsr-item"><strong>Supplier Master</strong> <span class="dsr-target">→ PO, GRN</span><br><span class="dsr-fields">Supplier Name, GSTIN, Address, Contact, Payment Terms</span></div>
-        <div class="dsr-item"><strong>Project Master</strong> <span class="dsr-target">→ MR, PR, PO, GRN, MIS, Production Planning, FGHM</span><br><span class="dsr-fields">Project Name, Project Manager, SO Reference, Start/End Date</span></div>
-        <div class="dsr-item"><strong>MR Master</strong> <span class="dsr-target">→ MIS, Production Planning</span><br><span class="dsr-fields">Items List, Required Qty per Item, Category, Project ID</span></div>
+        <div class="dsr-item"><strong>Project Master</strong> <span class="dsr-target">→ MR, PR, PO, GRN, MIS, Production Job, FGHM, Costing Sheet, Site Consumption, Material Return</span><br><span class="dsr-fields">Project Name, Project Manager, SO Reference, Start/End Date</span></div>
+        <div class="dsr-item"><strong>Costing Sheet</strong> <span class="dsr-target">→ Production Plan, MR</span><br><span class="dsr-fields">All material lines, 4 cost components, Project ID</span></div>
+        <div class="dsr-item"><strong>MR Master</strong> <span class="dsr-target">→ MIS, Production Job, Site Consumption</span><br><span class="dsr-fields">Items List, Required Qty per Item, Category, Project ID, Allocation lines</span></div>
         <div class="dsr-item"><strong>BOM / FG Formulation</strong> <span class="dsr-target">→ BMR, RM Consumption</span><br><span class="dsr-fields">Standard Qty ratios per RM (e.g. FG-EP-001 = 85Kg Epoxy + 12Kg Hardener + 3Kg Pigment per 100Kg)</span></div>
         <div class="dsr-item"><strong>PO Master</strong> <span class="dsr-target">→ GRN</span><br><span class="dsr-fields">Supplier Name, Items List, Ordered Qty per Item, Project ID</span></div>
         <div class="dsr-item"><strong>BMR Master</strong> <span class="dsr-target">→ RM Consumption, Packing Entry</span><br><span class="dsr-fields">FG Code, Batch No, RM Items List</span></div>
@@ -1509,7 +1690,7 @@
 
     <div class="footer">
       <p>Chemsol — Zoho Creator ERP &middot; ITOTCloud Systems Pvt. Ltd.</p>
-      <p>Organization Cycle &middot; 6 Stages &middot; 3-Layer Hierarchy (System&rarr;FG&rarr;RM) &middot; Built on Zoho Creator India (.in)</p>
+      <p>Organization Cycle &middot; 7 Stages &middot; 3-Layer Hierarchy (System&rarr;FG&rarr;RM) &middot; Built on Zoho Creator India (.in)</p>
     </div>
   </div>
 </div>
