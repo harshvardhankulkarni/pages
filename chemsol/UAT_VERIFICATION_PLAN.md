@@ -62,7 +62,7 @@
 
 **Expected RM requirement math (for later cross-checks):**
 - RM-001: FG-002 500×0.201 = 100.5 kg + FG-003 500×0.349 = 174.5 kg → **275 kg** (BOM ratio × area — same model as Costing Section A)
-- RM-002: FG-002 500×0.099 = 49.5 kg + FG-003 500×0.150 = 75 kg → **124.5 → 125 kg**
+- RM-002: FG-002 500×0.10 = 50 kg + FG-003 500×0.150 = 75 kg → **125 kg** (BOM ratio × area — same model as Costing Section A)
 - FG output (EP02 system composition): FG-002 500×0.30 = **150 kg**, FG-003 500×0.60 = **300 kg** (C22 — matches FGHM Step 7e + R5 448 kg)
 
 ---
@@ -119,11 +119,11 @@
 | System | FG | RM | UOM | BOM Ratio | Area | Required Qty | Rate | Material Cost |
 |--------|-----|-----|-----|-----------|------|-------------|------|--------------|
 | EP02 | FG-002 | RM-001 | Kg | 0.201 | 500 | 100.5 | ₹220 | ₹22,110 |
-| EP02 | FG-002 | RM-002 | Kg | 0.099 | 500 | 49.5 | ₹340 | ₹16,830 |
+| EP02 | FG-002 | RM-002 | Kg | 0.10 | 500 | 50 | ₹340 | ₹17,000 |
 | EP02 | FG-003 | RM-001 | Kg | 0.349 | 500 | 174.5 | ₹220 | ₹38,390 |
 | EP02 | FG-003 | RM-002 | Kg | 0.150 | 500 | 75.0 | ₹340 | ₹25,500 |
 
-**Section A Material Total (G3)** = ₹22,110 + 16,830 + 38,390 + 25,500 = **₹103,000**
+**Section A Material Total (G3)** = ₹22,110 + 17,000 + 38,390 + 25,500 = **₹103,000**
 
 **Section B — Application Cost:**
 
@@ -569,6 +569,7 @@ Footer: Issued By (Store), Handover To (Production), Remark.
 | **C23** | flow.html FGHM mockup used number prefix `FGHM-2026-001` — canonical is `FGH-` (forms.html, automation.html numbering, planner Step 7e/9a) | ✅ **APPLIED** — flow.html aligned to `FGH-2026-001` |
 | **C24** | Numbering Series Reference tables incomplete vs canonical set (automation.html detail steps): forms.html missing CST/PLAN/SCE/MRT/SUP; BRD missing JOB/SCE/MRT/SUP; implementation-plan.html missing SUP | ✅ **APPLIED** — all three tables completed (CST, PLAN, JOB, PR, PO×2, GRN, MR, MIS, FGH, QC, SO, PRJ, SC, BOM, BMR, SCE, MRT, CUST, SUP) |
 | **C25** | Double-count risk: AGENTS.md/BRD/IMPLEMENTATION_PLAN stated "BMR, RM Consumption, Packing — ALL increment Consumed Qty", but planner math (Step 7/8) treats BMR + SCE as the only incrementing events — RC-2026-0001 is variance-only, and adding it would push RM-001 to 136% and break Step 8 | ✅ **APPLIED** — consumption model clarified everywhere: BMR + SCE increment; RM Consumption Entry = BOM variance check (no increment); Packing = packaging material deduction only; planner 7c annotated |
+| **C26** | Step 2 BOM ratio 0.099 → RM-002 required 49.5 kg → Section A actually ₹102,830 (claimed ₹103,000) and Σ BOM = 399.5 kg (claimed 400 / "diff 0%") vs MR assigned 125 kg — 0.5 kg rounding gap | ✅ **APPLIED** — ratio corrected to 0.10 → 50 kg; Section A = ₹103,000 exact; Σ BOM = 400 kg = Σ Assigned (line 317 diff 0% now true); BMR-0001 RM-002 actual 49.5 vs standard 50 = realistic 1% variance, unchanged |
 
 **New findings during UAT walkthrough → append here, then fix docs before building.**
 
