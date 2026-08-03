@@ -61,8 +61,9 @@
 **RM Inventory opening (Wadki):** RM-001 = **200 kg**, RM-002 = **400 kg**
 
 **Expected RM requirement math (for later cross-checks):**
-- RM-001: FG-002 500×0.30×0.67 = 100.5 kg → **275.0 kg total** (incl. top coat 174.5 kg) ≈ round: **275 kg**
-- RM-002: FG-002 500×0.30×0.33 = 49.5 kg + FG-003 500×0.50×0.30 = 75 kg → **125 kg**
+- RM-001: FG-002 500×0.201 = 100.5 kg + FG-003 500×0.349 = 174.5 kg → **275 kg** (BOM ratio × area — same model as Costing Section A)
+- RM-002: FG-002 500×0.099 = 49.5 kg + FG-003 500×0.150 = 75 kg → **124.5 → 125 kg**
+- FG output (EP02 system composition): FG-002 500×0.30 = **150 kg**, FG-003 500×0.60 = **300 kg** (C22 — matches FGHM Step 7e + R5 448 kg)
 
 ---
 
@@ -562,6 +563,7 @@ Footer: Issued By (Store), Handover To (Production), Remark.
 | **C19** | SO↔BOM↔MR cross-validation Deluge writes `Variance_Flag`/`Variance_Percentage` but NO form spec had these fields; IMPLEMENTATION_PLAN + implementation-plan.html MR Allocation tables also still missing G4/C1 rows 12–15 (forms.html had them) | ✅ **APPLIED** — added rows 12–17 (Issued Qty, Returned Qty, Remaining, Fully Consumed, Variance %, Variance Flag) to all three MR Allocation specs |
 | **C20** | Sample-data arithmetic error: Costing Sheet Total = ₹146,000 (incl. Section E Overhead ₹2,000) but MR auto-derives only 4 components = ₹144,000; planner had MR Total = ₹146,000 and P&L = +₹29,000 — should be ₹144,000 / **+₹31,000**. Overhead is Costing-worksheet-only, never in the MR cost baseline | ✅ **APPLIED** — all planner MR Total / Project.Total Actual Cost / P&L / R3 baseline numbers fixed to ₹144,000 / +₹31,000; Costing Sheet Total stays ₹146,000 (overhead noted as Costing-only) |
 | **C21** | Step 8 math broken: RM-002 +5 → 129.5/125 = 103.6% also over-consumes (both lines blocked), but "correct path" only fixed RM-001; 8b's "119.5/125 = 95.6%" assumed the blocked entry was accepted; Step 10 pivot + R6 stock numbers inconsistent | ✅ **APPLIED** — rewrote as 8a (attempt REJECTED, both lines over) → 8b MRT (RM-001 10 + RM-002 10 returns, creates headroom; stock RM-001 10 / RM-002 285) → 8c SCE accepted (275/275 = 100%, 119.5/125 = 95.6%); Step 10 pivot + R6 updated to final state |
+| **C22** | RM requirement math implied FG-003 output = 250 kg (500×0.50×0.30) but FGHM (Step 7e) + R5 use FG-003 = 300 kg (EP02 composition 0.60 kg/sqm) — Today's Production 448 kg = 148 + 300 only works with 300 | ✅ **APPLIED** — math block rewritten on the Costing Section A model (BOM ratio × area) + EP02 composition 0.30/0.60 → FG-002 150 kg, FG-003 300 kg |
 
 **New findings during UAT walkthrough → append here, then fix docs before building.**
 
