@@ -126,9 +126,9 @@ These gaps are **blocking prerequisites**. Phase 0 resolves them all before any 
 
 ---
 
-### Phase 4 — Procurement Reports (M4)
+### Phase 4 — Procurement Reports (M4) ✅ DONE
 
-**Module:** PR, PO, GRN, QC — 8 reports
+**Module:** PR, PO, GRN, QC — 8 reports (R4 build guide complete — reports.html)
 
 | Report | Creator Type | Source Form | Group By | Aggregations | Filters | Gap Dep |
 |--------|-------------|-------------|----------|-------------|---------|---------|
