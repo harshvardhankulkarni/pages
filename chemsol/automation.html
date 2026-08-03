@@ -514,11 +514,45 @@ STATE 4: "Costing Approved"
   -> Transition: "Release"
      -> Action: Set Status = "Released"
      -> Action: Lock all fields (read-only)
+     -> Action: Auto-create MIS Draft (Deluge — C15): one record per MR line, Issued Qty = 0, Status = "Draft"
      -> Notification: Send email to Store + Production: "MR Released - proceed with MIS"
 
 STATE 5: "Released" (Terminal)
   -> No further transitions allowed
   -> MR is now available for MIS form lookup
+        </div>
+
+        <div class="auto-sub-title">Auto-create MIS Draft on Release (C15)</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Workflow Rule:</strong> On status change to "Released", create MIS Draft with items auto-fetched from MR lines</div></div>
+        <div class="auto-code">
+// Workflow Rule - On Submit (when Status == "Released" && oldValue.Status == "Costing Approved")
+// C15: Auto-create MIS Draft — zero manual re-entry, matches AGENTS.md "MR Released → auto-MIS"
+for each line in input.MR_Line_Items
+{
+  createRecord
+  {
+    "Form_Type": "MIS_Master",
+    "MR_Reference": input.ID,
+    "Project_ID": input.Project_ID,
+    "Item_Code": line.Item_Code,
+    "Item_Name": line.Item_Name,
+    "Category": line.Category,
+    "UOM": line.UOM,
+    "Required_Qty": line.Assigned_Qty,
+    "Issued_Qty": 0,
+    "Balance_Qty": line.Assigned_Qty,
+    "Status": "Draft"
+  };
+}
+
+// Notify Store + Production
+sendmail
+[
+  from: "system@chemsol.com",
+  to: "store@chemsol.com, production@chemsol.com",
+  subject: "MR Released - MIS Draft created: " + input.MR_Number,
+  message: "MR " + input.MR_Number + " for Project " + input.Project_ID.Project_Name + " has been Released. MIS Draft created with " + input.MR_Line_Items.size() + " lines. Please issue material."
+];
         </div>
 
         <div class="auto-sub-title">Auto-numbering</div>
@@ -1174,9 +1208,19 @@ for each item in input.Packing_Material_Items
         <div class="auto-step"><span class="auto-step-num">1</span><div>Field Properties -> FGH No -> Auto Numbering: <code>FGH-{YYYY}-{XXXX}</code></div></div>
 
         <div class="auto-sub-title">FG Stock Update on Inline Acceptance</div>
-        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Workflow Rule:</strong> On Submit where Overall Status = "Accepted", update FG Inventory</div></div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Workflow Rule:</strong> On Accept submit, set Status = "Accepted" (G6) and update FG Inventory</div></div>
         <div class="auto-code">
-// Workflow Rule - On Submit (when Overall_Status == "Accepted")
+// Workflow Rule - On Submit (accept action: inline "Accept" button)
+// C16: G6 — Status field is "Status" (Pending Acceptance / Accepted), not "Overall_Status"
+
+// 1. Set Status = Accepted (G6 hook FGHM_Accepted_Status)
+updateRecord
+{
+  "Form_Type": "FGHM",
+  "ID": input.ID,
+  "Status": "Accepted"
+};
+
 for each item in input.FGHM_Line_Items
 {
   inventory = lookupRecords(FG_Inventory, "Item_Code == '" + item.FG_Product_Code + "'");
@@ -1229,9 +1273,9 @@ for each item in input.FGHM_Line_Items
         <div class="auto-note">Inline acceptance means no separate FGAN form. The FGHM line items have Damaged_Qty and Accepted_Qty fields. Only Accepted_Qty adds to FG stock.</div>
 
         <div class="auto-sub-title">Mark MR Allocation Fully Consumed (C14)</div>
-        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Workflow Rule:</strong> On Submit where Overall Status = "Accepted", check if all MR Allocation lines for this project have Consumption % ≥ 100%</div></div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Workflow Rule:</strong> On Accept submit (Status = "Accepted"), check if all MR Allocation lines for this project have Consumption % ≥ 100%</div></div>
         <div class="auto-code">
-// Workflow Rule - On Submit (when Overall_Status == "Accepted")
+// Workflow Rule - On Submit (accept action; C16 — uses Status, not Overall_Status)
 // C14: Mark MR Allocation lines as Fully Consumed when all RM lines exhausted
 projectId = input.Project_ID;
 allocations = lookupRecords(MR_Allocation, "MR_ID.Project_ID == '" + projectId + "'");

@@ -542,6 +542,8 @@ Footer: Issued By (Store), Handover To (Production), Remark.
 | **C12** | automation.html MRT Deluge snippet decremented `Consumed_Qty` but never incremented `Returned_Qty` — violating C1 (Remaining = Assigned − Consumed + Returned would be wrong) | ✅ **APPLIED** — Deluge now updates both `Consumed_Qty −` and `Returned_Qty +`; workflow step description updated |
 | **C13** | automation.html SCE + BMR Deluge snippets updated `Consumed_Qty` unconditionally — no >100% rejection despite the C5 decision (summary rows said BLOCK, code didn't implement it) | ✅ **APPLIED** — both snippets now `throw "Allocation Exhausted … return material first"` before any update when new Consumption % > 100 |
 | **C14** | FGHM "On Accept" Deluge summary row existed but NO actual code snippet to mark MR Allocation `Fully_Consumed = Yes` when all RM lines ≥ 100% | ✅ **APPLIED** — added Deluge snippet that checks all allocations for the project and sets `Fully_Consumed = true` when all at ≥ 100% |
+| **C15** | MR Released → auto-create MIS Draft had a summary row + blueprint notification but NO actual Deluge `createRecord` code — AGENTS.md promises "MR Released → auto-MIS" | ✅ **APPLIED** — blueprint Release transition now has the action; added full Deluge snippet creating one MIS Draft record per MR line (Issued 0, Status Draft) + email |
+| **C16** | FGHM code referenced `Overall_Status` field but canonical field is `Status` (Pending Acceptance / Accepted, G6) — and no code actually SET Status = Accepted on inline acceptance | ✅ **APPLIED** — FGHM On-Accept snippets now set `Status = "Accepted"` (G6 hook FGHM_Accepted_Status) and use `Status` in comments; no more `Overall_Status` |
 
 **New findings during UAT walkthrough → append here, then fix docs before building.**
 
