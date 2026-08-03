@@ -1,0 +1,34 @@
+// ============================================================
+// SCE submit — pre-validated allocation consumption (A-38, C21)
+// Verified: flow_sim.py P5 (8a whole-submit REJECTED, 8c accepted)
+// ============================================================
+// Workflow: On Submit (Site_Consumption_Entry).
+// C21: validate ALL lines first — if ANY line exceeds 100% the WHOLE
+// submit is rejected ("return material first"), no partial updates.
+// Consumption_Type: Actual / Wastage / Rework — all increment (site use).
+
+for each line in input.SCE_Line_Items
+{
+  alloc = lookupRecords(MR_Allocation, {"Project_ID": input.Project_ID, "Item_Code": line.RM_Item_Code});
+  if(isNull(alloc) || alloc.size() == 0)
+  {
+    throw "No matching MR Allocation for " + line.RM_Item_Code + " — consumption must resolve to the project allocation (Project ID + Item Code).";
+  }
+  a = alloc.get(0);
+  newPct = ((a.Consumed_Qty + line.Qty_Consumed) / a.Assigned_Qty) * 100;
+  if(newPct > 100)
+  {
+    throw "Allocation Exhausted for " + line.RM_Item_Code + " — " + round(a.Consumed_Qty, 1)
+      + " of " + round(a.Assigned_Qty, 1) + " consumed. Return material first (Material Return Entry).";
+  }
+}
+
+// all lines validated — apply
+for each line in input.SCE_Line_Items
+{
+  consumeAllocation({"project_id": input.Project_ID, "item_code": line.RM_Item_Code,
+    "qty": line.Qty_Consumed, "doc_ref": input.SCE_Number, "doc_type": "SCE",
+    "project_name": input.Project_ID.Project_Name,
+    "pm_email": input.Project_ID.Project_Manager.email,
+    "purchase_email": "purchase@chemsol.in"});
+}

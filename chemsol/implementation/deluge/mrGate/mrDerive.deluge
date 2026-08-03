@@ -1,0 +1,58 @@
+// ============================================================
+// MR auto-derive from Costing Sheet + Released Plan (A-15, F4)
+// Verified: flow_sim.py P3 (4 components = Rs 144,000; allocation 275/125)
+// ============================================================
+// Workflow: On Record Modified (Production_Plan, Plan_Status -> Released),
+// criteria: linked Costing Sheet already Approved.
+// F4: ONE canonical line table — Material Allocation subform only.
+// F5/F11: MR created here as Draft; MIS comes later at Release.
+// Zero manual entry — all 4 cost components pre-filled (C20: Section E
+// Overhead stays Costing-only, never part of MR cost baseline).
+
+costing = lookupRecords(Costing_Sheet, {"ID": input.Costing_Sheet_No}).get(0);
+
+// 4 cost components (C20)
+matTotal = 0;
+for each line in costing.Costing_Material_Lines
+{
+  matTotal = matTotal + line.Material_Cost;
+}
+totalMr = matTotal + costing.Section_B_Total + costing.Section_C_Total
+  + costing.Section_D_Total; // Section E excluded
+
+allocLines = List();
+for each line in costing.Costing_Material_Lines
+{
+  allocLines.add({
+    "Item_Code": line.RM_Code,
+    "Item_Name": line.RM_Name,
+    "Assigned_Qty": line.Required_Qty,
+    "Rate": line.Rate,
+    "Material_Cost": line.Material_Cost,
+    "Allocation_Ratio_Percent": (line.Required_Qty / 400) * 100, // ratio vs total project kg — see crossValidate for the real check
+    "80%_Alert_Flag": true,
+    "Consumed_Qty": 0,
+    "Issued_Qty": 0,
+    "Returned_Qty": 0,
+    "Remaining": line.Required_Qty,
+    "Fully_Consumed": false
+  });
+}
+
+createRecord
+{
+  "Form_Type": "MR_Master",
+  "MR_Number": numberSeries({"prefix": "MR"}),
+  "Project_ID": input.Project_ID,
+  "Costing_Sheet_Ref": costing.ID,
+  "Production_Plan_Ref": input.ID,
+  "Requisition_Type": "Production",
+  "Priority": "High",
+  "MR_Status": "Draft",
+  "Material_Component": matTotal,
+  "Application_Component": costing.Section_B_Total,
+  "Transport_Component": costing.Section_C_Total,
+  "Tools_Component": costing.Section_D_Total,
+  "Total_MR_Cost": totalMr,
+  "Material_Allocation": allocLines
+};

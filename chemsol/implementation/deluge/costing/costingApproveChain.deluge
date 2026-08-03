@@ -1,0 +1,57 @@
+// ============================================================
+// P3 — Costing Approved -> Project + Production Plan Draft (A-11, C2)
+// Verified: flow_sim.py P2/P3 (revenue Rs 175,000 at creation; plan lines)
+// ============================================================
+// Blueprint transition script: On "Costing Approved" (<= 50 statements).
+// C2: single creation point — Project exists ONLY from here.
+// G2 hook (Project_Revenue_Set): Total Revenue = SO Total at creation.
+
+// 1. Project with revenue from SO (G2)
+so = lookupRecords(SO_Master, {"SO_Number": input.SO_Reference}).get(0);
+projectData = Map();
+projectData.put("Project_ID", numberSeries({"prefix": "PRJ"}));
+projectData.put("Project_Name", so.Client_Org + " - " + so.Site_Name);
+projectData.put("SO_Reference", so.SO_Number);
+projectData.put("Client", so.Client_Org);
+projectData.put("Site", so.Site_Name);
+projectData.put("Project_Manager", so.Site_Manager);
+projectData.put("Total_Revenue", so.Total_Amount); // G2 Project_Revenue_Set
+projectData.put("Status", "In Progress");
+projectRec = createRecord
+{
+  "Form_Type": "Project_Master",
+  "Project_ID": projectData.get("Project_ID"),
+  "Project_Name": projectData.get("Project_Name"),
+  "SO_Reference": projectData.get("SO_Reference"),
+  "Client": projectData.get("Client"),
+  "Site": projectData.get("Site"),
+  "Project_Manager": projectData.get("Project_Manager"),
+  "Total_Revenue": projectData.get("Total_Revenue"),
+  "Status": projectData.get("Status")
+};
+
+// 2. Production Plan draft, lines from Costing Section A
+planRec = createRecord
+{
+  "Form_Type": "Production_Plan",
+  "Plan_Number": numberSeries({"prefix": "PLAN"}),
+  "Costing_Sheet_No": input.ID,
+  "Project_ID": projectData.get("Project_ID"),
+  "Plan_Status": "Draft",
+  "Plant": "Wadki"
+};
+
+for each line in input.Costing_Material_Lines
+{
+  createRecord
+  {
+    "Form_Type": "Production_Plan_Lines",
+    "Plan_Ref": planRec.ID,
+    "RM_Code": line.RM_Code,
+    "RM_Name": line.RM_Name,
+    "Total_Required": line.Required_Qty,
+    "Shortage": 0,
+    "Source": "Stock",
+    "Procurement_Triggered": false
+  };
+}

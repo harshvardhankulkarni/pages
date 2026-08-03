@@ -1,0 +1,14 @@
+// ============================================================
+// Packing — packaging material deduction only (A-35, C25)
+// Verified: flow_sim.py P4 (PK-001 deducted; FG untouched)
+// ============================================================
+// Workflow: On Submit (Packing_Entry).
+// C25: Packing NEVER increments Consumed Qty (BMR + SCE are the only
+// consumption events) — it only deducts packaging from RM inventory.
+
+for each pkg in input.Packing_Line_Items
+{
+  stockMoveRM({"store": input.Warehouse, "item_code": pkg.Packaging_Code,
+    "item_name": pkg.Packaging_Name, "qty": 0 - pkg.Qty_Used, "doc_type": "PACKING",
+    "doc_ref": input.Packing_Number, "uom": pkg.UOM, "project_id": input.Project_ID});
+}

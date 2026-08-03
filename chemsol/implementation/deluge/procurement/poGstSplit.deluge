@@ -1,0 +1,42 @@
+// ============================================================
+// F12 — per-line GST split (A-24)
+// Verified: flow_sim.py P1 (Basic 16500, GST 2970, CGST/SGST 1485, Total 19470)
+// ============================================================
+// Form Rule / On User Input per PO line + footer recompute.
+// Per-line GST% from Item Muster — lines can differ; the old
+// single-footer-percent formula is WRONG (AUTOMATION_ALIGNMENT_PLAN F12).
+
+basicTotal = 0;
+gstTotal = 0;
+
+for each line in input.PO_Line_Items
+{
+  line.Basic = line.Qty * line.Rate;
+  line.GST_Amount = (line.Basic * line.GST_Percentage) / 100;
+
+  // Intra-state (supplier state == billing store state) -> CGST+SGST halves
+  // Inter-state -> IGST full. Both lines below use line.GST_Amount.
+  if(input.Bill_To_State == line.Supplier_State)
+  {
+    line.CGST = line.GST_Amount / 2;
+    line.SGST = line.GST_Amount / 2;
+    line.IGST = 0;
+  }
+  else
+  {
+    line.IGST = line.GST_Amount;
+    line.CGST = 0;
+    line.SGST = 0;
+  }
+  line.Total = line.Basic + line.GST_Amount;
+
+  basicTotal = basicTotal + line.Basic;
+  gstTotal = gstTotal + line.GST_Amount;
+}
+
+input.Basic_Total = basicTotal;
+input.GST_Total = gstTotal;
+input.PO_Total = basicTotal + gstTotal;
+input.CGST_Total = basicTotal != 0 ? (gstTotal / 2) : 0;
+input.SGST_Total = input.CGST_Total;
+input.IGST_Total = 0;

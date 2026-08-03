@@ -1,0 +1,54 @@
+// ============================================================
+// F10 — MR SLA schedule (A-19): 2 hr / 2 hr / 1 hr
+// Verified: flow_sim.py P3 (constants wired; auto-release at 1 hr)
+// ============================================================
+// Schedule on MR_Master: trigger date = Created_Time, run every 5 minutes.
+// Criteria: MR_Status in (Draft, Production Verified, Costing Approved).
+// C10: 2 hr Draft -> reminder, 2 hr Verified -> escalation,
+// 1 hr Approved -> auto-release.
+
+mr = input; // scheduled record
+
+if(mr.MR_Status == "Draft")
+{
+  elapsed = now().getTime() - mr.Created_Time.getTime();
+  if(elapsed > 2 * 60 * 60 * 1000) // 2 hr
+  {
+    sendmail
+    [
+      from: zoho.login.email,
+      to: mr.Requested_By.email,
+      cc: mr.Project_ID.Project_Manager.email,
+      subject: "MR SLA Reminder - " + mr.MR_Number,
+      message: mr.MR_Number + " is still DRAFT after 2 hr. Production verification pending."
+    ];
+  }
+}
+
+if(mr.MR_Status == "Production Verified")
+{
+  elapsed = now().getTime() - mr.Last_Status_Change.getTime();
+  if(elapsed > 2 * 60 * 60 * 1000) // 2 hr
+  {
+    sendmail
+    [
+      from: zoho.login.email,
+      to: mr.Project_ID.Project_Manager.email,
+      cc: "costing@chemsol.in",
+      subject: "MR SLA Escalation - " + mr.MR_Number,
+      message: mr.MR_Number + " verified by Production but not yet Costing-approved after 2 hr."
+    ];
+  }
+}
+
+if(mr.MR_Status == "Costing Approved")
+{
+  elapsed = now().getTime() - mr.Last_Status_Change.getTime();
+  if(elapsed > 1 * 60 * 60 * 1000) // 1 hr
+  {
+    // F10: direct status set — Blueprint auto-triggers the release transition
+    // (VERIFY in Phase 3 of playbook; fallback: keep this email-only and let
+    //  Costing manually release — the On Record Modified workflow A-18 then fires)
+    mr.MR_Status = "Released";
+  }
+}

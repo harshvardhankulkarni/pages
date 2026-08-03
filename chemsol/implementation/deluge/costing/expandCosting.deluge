@@ -1,0 +1,56 @@
+// ============================================================
+// P2 — Costing Section A auto-expansion (A-09)
+// Verified: flow_sim.py P2 (275/125 kg, Sec A = Rs 103,000, 4 lines)
+// ============================================================
+// Workflow: On Submit (Costing_Sheet, status Draft)
+// SO System Lines x System Composition (FG per sqm) x BOM (RM per kg FG).
+// C28 rule: Required_Qty = round(Area x CompQty/sqm x BOM ratio, 1);
+// Amount = Required_Qty x Item Rate (from Item Muster).
+// Watch 5,000-statement ceiling — SOs are small (<=5 systems), safe.
+
+soRec = lookupRecords(SO_Master, {"SO_Number": input.SO_Reference});
+if(isNull(soRec))
+{
+  throw "SO " + input.SO_Reference + " not found";
+}
+so = soRec.get(0);
+
+matTotal = 0;
+
+for each sysLine in so.System_Lines
+{
+  comps = lookupRecords(System_Composition, {"System_Code": sysLine.System_Code});
+  for each comp in comps
+  {
+    boms = lookupRecords(BOM, {"FG_Code": comp.FG_Code, "Status": "Released"});
+    for each bom in boms
+    {
+      item = lookupRecords(Item_Muster, {"Item_Code": bom.RM_Code}).get(0);
+      reqQty = round(sysLine.Area * comp.Qty_Per_Sqm * bom.Ratio, 1);
+      amount = round(reqQty * item.Standard_Rate, 2);
+      matTotal = matTotal + amount;
+
+      createRecord
+      {
+        "Form_Type": "Costing_Material_Lines",
+        "Costing_Ref": input.ID,
+        "System_Code": sysLine.System_Code,
+        "System_Name": sysLine.System_Name,
+        "FG_Code": bom.FG_Code,
+        "RM_Code": bom.RM_Code,
+        "RM_Name": item.Item_Name,
+        "UOM": item.UOM,
+        "BOM_Ratio": bom.Ratio,
+        "Area": sysLine.Area,
+        "Required_Qty": reqQty,
+        "Rate": item.Standard_Rate,
+        "Material_Cost": amount
+      };
+    }
+  }
+}
+
+// Section A total (G3) — written by Deluge, not formula (staleness rule §5.2)
+input.Section_A_Total = matTotal;
+input.Total_Costing_Amount = matTotal + input.Section_B_Total + input.Section_C_Total
+  + input.Section_D_Total + input.Section_E_Total;

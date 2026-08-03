@@ -1,0 +1,46 @@
+// ============================================================
+// Inventory min/max reorder + overstock alerts (A-41)
+// Verified: flow_sim.py P5 (RM-001 10 < min 50 -> reorder fires)
+// ============================================================
+// Schedule on RM_Inventory + FG_Inventory: daily 7 AM.
+// Min -> reorder email to Store; Max -> overstock email to Store + Purchase.
+
+// RM side
+rmInv = lookupRecords(RM_Inventory, {"Current_Stock": "less than Min_Stock"});
+for each inv in rmInv
+{
+  sendmail
+  [
+    from: zoho.login.email,
+    to: "store@chemsol.in",
+    subject: "Reorder Alert - " + inv.Item_Code,
+    message: inv.Item_Code + " (" + inv.Item_Name + ") at " + inv.Current_Stock
+      + " " + inv.UOM + " — below minimum " + inv.Min_Stock + ". Raise PR."
+  ];
+}
+
+rmOver = lookupRecords(RM_Inventory, {"Current_Stock": "greater than Max_Stock"});
+for each inv in rmOver
+{
+  sendmail
+  [
+    from: zoho.login.email,
+    to: "store@chemsol.in",
+    cc: "purchase@chemsol.in",
+    subject: "Overstock Alert - " + inv.Item_Code,
+    message: inv.Item_Code + " at " + inv.Current_Stock + " exceeds maximum " + inv.Max_Stock + "."
+  ];
+}
+
+// FG side
+fgInv = lookupRecords(FG_Inventory, {"Current_Stock": "less than Min_Stock"});
+for each inv in fgInv
+{
+  sendmail
+  [
+    from: zoho.login.email,
+    to: "store@chemsol.in",
+    subject: "FG Reorder Alert - " + inv.Item_Code,
+    message: inv.Item_Code + " at " + inv.Current_Stock + " — below minimum " + inv.Min_Stock + "."
+  ];
+}

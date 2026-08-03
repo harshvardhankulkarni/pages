@@ -1,0 +1,16 @@
+// ============================================================
+// BMR submit — per-line allocation consumption (A-33)
+// Verified: flow_sim.py P4 (36.5/39.6 then 100/99.6; 80%+100% alerts)
+// ============================================================
+// Workflow: On Submit (BMR). C25: RM Consumption Entry is variance-only —
+// BMR is the batch consumption event. C13: >100% rejected line-by-line
+// (BMR lines are per batch; a single over-line throws before any update).
+
+for each line in input.BMR_Line_Items
+{
+  consumeAllocation({"project_id": input.Project_ID, "item_code": line.RM_Item_Code,
+    "qty": line.Qty_Consumed, "doc_ref": input.BMR_Number, "doc_type": "BMR",
+    "project_name": input.Project_ID.Project_Name,
+    "pm_email": input.Project_ID.Project_Manager.email,
+    "purchase_email": "purchase@chemsol.in"});
+}

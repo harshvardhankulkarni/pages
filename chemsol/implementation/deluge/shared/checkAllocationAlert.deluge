@@ -1,0 +1,38 @@
+// ============================================================
+// F8 — shared 80% / 100% allocation alert (A-20, A-38, F8)
+// Verified: flow_sim.py P4 (80% at first crossing, 100% PM+Purchase)
+// ============================================================
+// Custom function. Called by consumeAllocation after every consumption
+// entry (BMR + SCE). Single point of truth — never re-implemented
+// inline in form scripts (AUTOMATION_ALIGNMENT_PLAN §4 rule 5).
+// Input: {"allocation_id", "rm_code", "project_name", "new_pct",
+//         "prev_pct", "pm_email", "purchase_email"}
+// Fires once per threshold (prev_pct guard) — no spam on later entries.
+
+newPct = input.new_pct;
+prevPct = input.prev_pct;
+
+if(newPct >= 80 && prevPct < 80)
+{
+  sendmail
+  [
+    from: zoho.login.email,
+    to: input.pm_email,
+    subject: "80% Consumption Alert - " + input.rm_code,
+    message: input.rm_code + " at " + round(newPct) + "% consumed for Project " + input.project_name
+      + ". Assigned qty nearing exhaustion - plan reorder."
+  ];
+}
+
+if(newPct >= 100 && prevPct < 100)
+{
+  sendmail
+  [
+    from: zoho.login.email,
+    to: input.pm_email,
+    cc: input.purchase_email,
+    subject: "Allocation Exhausted - " + input.rm_code,
+    message: "100% of the assigned quantity for " + input.rm_code + " is consumed on Project "
+      + input.project_name + ". Additional material must be procured (auto-PR via Production Plan)."
+  ];
+}

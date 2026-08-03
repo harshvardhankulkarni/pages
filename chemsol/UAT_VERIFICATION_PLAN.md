@@ -50,8 +50,8 @@
 | FG | RM | Ratio |
 |----|----|-------|
 | FG-002 | RM-001 Epoxy Resin A | 0.67 kg |
-| FG-002 | RM-002 Hardener B | 0.33 kg |
-| FG-003 | RM-001 Epoxy Resin A | 0.58 kg |
+| FG-002 | RM-002 Hardener B | 0.3333 kg |
+| FG-003 | RM-001 Epoxy Resin A | 0.5817 kg |
 | FG-003 | RM-002 Hardener B | 0.25 kg |
 
 **Supplier:** SUP-0001 = "ResinCorp Polymers" (GSTIN, PAN, payment terms 30 days)
@@ -424,7 +424,7 @@ Footer: Issued By (Store), Handover To (Production), Remark.
 - [ ] FGHM Status auto-set = **Accepted**
 - [ ] FG Inventory: FG-002 +148, FG-003 +300
 - [ ] Stock Movement Log: 2 × FGHM in entries
-- [ ] MR Allocation `Fully Consumed` flagged when all lines ≥ 100% (see Change Log **C1** — field may be missing)
+- [ ] MR Allocation `Fully Consumed` stays **OFF** — rule is ALL lines ≥ 100% and RM-002 is at 99.6% (see Change Log **C29**)
 - [ ] Notification to Store
 
 **Verify:** FG Handover Pending (R5) → empty (nothing pending); Today's Production (R5) → 448 kg; Production Efficiency (R5) → 148 + 300 packed.
@@ -571,6 +571,8 @@ Footer: Issued By (Store), Handover To (Production), Remark.
 | **C25** | Double-count risk: AGENTS.md/BRD/IMPLEMENTATION_PLAN stated "BMR, RM Consumption, Packing — ALL increment Consumed Qty", but planner math (Step 7/8) treats BMR + SCE as the only incrementing events — RC-2026-0001 is variance-only, and adding it would push RM-001 to 136% and break Step 8 | ✅ **APPLIED** — consumption model clarified everywhere: BMR + SCE increment; RM Consumption Entry = BOM variance check (no increment); Packing = packaging material deduction only; planner 7c annotated |
 | **C26** | Step 2 BOM ratio 0.099 → RM-002 required 49.5 kg → Section A actually ₹102,830 (claimed ₹103,000) and Σ BOM = 399.5 kg (claimed 400 / "diff 0%") vs MR assigned 125 kg — 0.5 kg rounding gap | ✅ **APPLIED** — ratio corrected to 0.10 → 50 kg; Section A = ₹103,000 exact; Σ BOM = 400 kg = Σ Assigned (line 317 diff 0% now true); BMR-0001 RM-002 actual 49.5 vs standard 50 = realistic 1% variance, unchanged |
 | **C27** | Step 1 master data contradictions: System Composition says FG-003 = 0.50 kg/sqm but every downstream step (line 66, FGHM 300 kg, R5 448 kg, Step 9 FG-003 300→20) uses 0.60; BOM FG-003 ratios 0.70/0.30 per kg × 300 kg = 210/90 ≠ Costing Section A 174.5/75 | ✅ **APPLIED** — composition FG-003 → 0.60 kg/sqm; BOM FG-003 ratios → 0.58/0.25 kg per kg of FG output (derived from Section A: 174.5/300, 75/300; exact 0.582 — within 5% tolerance) |
+| **C28** | Master data BOM ratios were 2-decimal rounded displays (FG-002/RM-002 0.33, FG-003/RM-001 0.58). Running the flow simulator (flow_sim.py) with those values produced Section A lines of 49.5 kg and 174.0 kg → Section A total ₹102,720 (not ₹103,000) and ΣBOM = 399 kg (not 400) → cross-validation 0%-check and the 275/125 kg requirements all broke. Exact ratios restored: 0.3333 (= 0.10/sqm ÷ 0.30) and 0.5817 (= 174.5/300) | ✅ **APPLIED** — master data rows updated to 0.3333 / 0.5817; sim reverified all-green; note: Section A computes Required Qty = round(Area × CompQty/sqm × BOM ratio, 1) then Amount = Required × Rate |
+| **C29** | Step 7e expected `Fully Consumed` flagged on FGHM acceptance, but the C14 rule is **all** allocation lines ≥ 100% — RM-002 ends BMR-0002 at 99.6%, so the flag correctly stays OFF in this scenario. The checkbox contradicted the stated rule | ✅ **APPLIED** — Step 7e expectation corrected to "stays OFF (99.6% < 100%)"; flag will fire only when every line hits 100% (e.g. after SCE 8c RM-001 = 100%, RM-002 = 95.6% — still not fully consumed; a final 100% entry would set it) |
 
 **New findings during UAT walkthrough → append here, then fix docs before building.**
 

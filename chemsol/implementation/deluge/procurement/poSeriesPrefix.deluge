@@ -1,0 +1,20 @@
+// ============================================================
+// P8 — PO conditional dual series (A-23, F1, F2)
+// Verified: flow_sim.py P1 (RMWAD-2026-0001 for coding RM)
+// ============================================================
+// Workflow: On Record Create (PO_Master)
+// Coding materials -> RMWAD series; Non-coding -> RM series.
+// PO numbering: RMWAD-YYYY-XXXX (Coding) / RM-YYYY-XXXX (Non-coding)
+
+poPrefix = "RM";
+if(input.RM_Type == "Coding")
+{
+  poPrefix = "RMWAD";
+}
+
+// invoke numberSeries custom function (P1)
+poData = {"prefix": poPrefix, "year": year(today())};
+poNumber = numberSeries(poData);
+
+input.PO_Number = poNumber;
+input.Status = "Draft";

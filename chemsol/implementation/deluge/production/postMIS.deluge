@@ -1,0 +1,43 @@
+// ============================================================
+// Post MIS — stock out + G4 allocation update (A-31)
+// Verified: flow_sim.py P4 (stock 0/275; Issued 275/125; 2 log rows)
+// ============================================================
+// Report custom button "Post MIS" (MIS_Master).
+// G4 hook (MIS_Post_Allocation_Update): Issued Qty += on MR Allocation.
+
+if(input.Status == "Posted")
+{
+  throw "MIS already posted";
+}
+
+for each line in input.MIS_Line_Items
+{
+  if(line.Issued_Qty > line.Required_Qty)
+  {
+    throw "Issued (" + line.Issued_Qty + ") cannot exceed Required (" + line.Required_Qty + ") for " + line.Item_Code;
+  }
+
+  // stock out (shared function — throws on insufficient stock)
+  stockMoveRM({"store": input.Warehouse, "item_code": line.Item_Code,
+    "item_name": line.Item_Name, "qty": 0 - line.Issued_Qty, "doc_type": "MIS",
+    "doc_ref": input.MIS_Number, "uom": line.UOM, "project_id": input.Project_ID});
+
+  // G4: Issued Qty on MR Allocation (matched by Project ID + Item Code)
+  alloc = lookupRecords(MR_Allocation, {"Project_ID": input.Project_ID, "Item_Code": line.Item_Code});
+  if(isNull(alloc))
+  {
+    throw "No MR Allocation found for " + line.Item_Code + " in Project " + input.Project_ID;
+  }
+  a = alloc.get(0);
+  updateRecord
+  {
+    "Form_Type": "MR_Allocation",
+    "ID": a.ID,
+    "Issued_Qty": a.Issued_Qty + line.Issued_Qty
+  };
+
+  line.Balance_Qty = line.Required_Qty - line.Issued_Qty;
+}
+
+input.Status = "Posted";
+input.Posted_Time = now();

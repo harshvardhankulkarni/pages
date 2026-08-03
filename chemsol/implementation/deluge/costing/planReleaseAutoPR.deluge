@@ -1,0 +1,37 @@
+// ============================================================
+// P8 — Plan Released -> auto-PR for shortages (A-14)
+// Verified: flow_sim.py P2 (RM-001 shortage 75 -> PR 75)
+// ============================================================
+// Workflow: On Record Modified (Production_Plan, Plan_Status -> Released)
+// Stream B PR carries Project ID; Stream A stock PRs carry none.
+
+for each line in input.Production_Plan_Lines
+{
+  avail = getAvailableStock({"item_code": line.RM_Code, "warehouse": input.Plant});
+  shortage = line.Total_Required - avail;
+  if(shortage > 0)
+  {
+    line.Shortage = shortage;
+    line.Source = "Purchase";
+    line.Procurement_Triggered = true;
+
+    createRecord
+    {
+      "Form_Type": "PR_Master",
+      "PR_Number": numberSeries({"prefix": "PR"}),
+      "Project_ID": input.Project_ID,
+      "Department": "Production",
+      "Source": "Production Plan",
+      "Status": "Submitted",
+      "PR_Line_Items": [
+        {
+          "Item_Code": line.RM_Code,
+          "Item_Name": line.RM_Name,
+          "Qty": shortage,
+          "UOM": line.UOM,
+          "Lead_Time": line.Lead_Time
+        }
+      ]
+    };
+  }
+}
