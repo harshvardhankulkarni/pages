@@ -430,7 +430,7 @@ Footer: Issued By (Store), Handover To (Production), Remark.
 
 ## STEP 8 — Site Consumption Entry (SCE) + Material Return
 
-### 8a. SCE `SCE-2026-0001`
+### 8a. SCE `SCE-2026-0001` — first attempt REJECTED
 
 | Header | Value |
 |--------|-------|
@@ -444,30 +444,43 @@ Footer: Issued By (Store), Handover To (Production), Remark.
 | 1 | RM-001 | 10 | Kg | Wastage | ₹220 | ₹2,200 |
 | 2 | RM-002 | 5 | Kg | Actual | ₹340 | ₹1,700 |
 
-**Expected automation:**
-- [ ] Allocation Consumed Qty: RM-001 +10 → 285/275 = **103.6%** → submit **REJECTED** (C5 block): "Allocation Exhausted — return material first"
-- [ ] Correct path: reduce RM-001 to 0 (or return 10 kg first via MRT), then submit → entry accepted
+**Expected automation (C21):**
+- [ ] RM-001 +10 → 285/275 = **103.6%** → line REJECTED (C5 block): "Allocation Exhausted — return material first"
+- [ ] RM-002 +5 → 129.5/125 = **103.6%** → also over — **whole submit rejected** (both lines must be ≤ 100%)
 - [ ] Resolution matched by `Project ID + Item Code` — never a generic pool
 - [ ] System/FG Reference field triggers BOM expansion when used
 
-**Verify:** Site Consumption Log + Consumption by Work Area + Consumption by RM Item (R6).
+**Correct path:** return excess first via MRT (8b) — both RMs are at 100% / 99.6%, so any positive SCE line needs headroom.
 
-### 8b. Material Return `MRT-2026-0001`
+### 8b. Material Return `MRT-2026-0001` (two lines — creates headroom)
 
 | Field | Value |
 |-------|-------|
 | Project ID | PRJ-2026-0001 |
-| Item | RM-002 |
-| Return Qty | 10 kg |
-| Condition | Good |
-| Reason | Excess issue |
+| Line 1 | RM-001, Return Qty 10 kg, Condition Good, Reason "Excess issue" |
+| Line 2 | RM-002, Return Qty 10 kg, Condition Good, Reason "Excess issue" |
 
-**Expected automation:**
-- [ ] Allocation Consumed Qty: RM-002 −10 → 119.5/125 = **95.6%** (MRT decrements `Consumed Qty`); `Returned Qty` (C1) = 10
-- [ ] RM Inventory: RM-002 +10 → 285 kg (good condition restores stock)
+**Expected automation (C21):**
+- [ ] RM-001 Consumed −10 → 265/275 = **96.4%**; `Returned Qty` (C1) = 10
+- [ ] RM-002 Consumed −10 → 114.5/125 = **91.6%**; `Returned Qty` (C1) = 10
+- [ ] RM Inventory: RM-001 +10 → **10 kg**, RM-002 +10 → **285 kg** (Good restores stock)
 - [ ] Damaged condition → only damaged count, no stock restore
 
-**Verify:** Material Return Report + Returns by Condition (R6) → 10 kg Good.
+**Verify:** Material Return Report + Returns by Condition (R6) → 10 + 10 kg Good.
+
+### 8c. SCE `SCE-2026-0002` — accepted after returns
+
+| Line | RM | Qty Consumed | UOM | Type | Rate (G8) | Amount (G8) |
+|------|----|-------------|-----|------|-----------|-----|
+| 1 | RM-001 | 10 | Kg | Wastage | ₹220 | ₹2,200 |
+| 2 | RM-002 | 5 | Kg | Actual | ₹340 | ₹1,700 |
+
+**Expected automation:**
+- [ ] RM-001 +10 → 275/275 = **100%** ✓ accepted (headroom from 8b)
+- [ ] RM-002 +5 → 119.5/125 = **95.6%** ✓ accepted
+- [ ] 80% alert already fired (flag ON); no new alert above 100%
+
+**Final project allocation state:** RM-001 Assigned 275 / Issued 275 / Consumed 275 / Returned 10 / Remaining **10** · RM-002 Assigned 125 / Issued 125 / Consumed 119.5 / Returned 10 / Remaining **15.5**
 
 ---
 
@@ -504,7 +517,7 @@ Footer: Issued By (Store), Handover To (Production), Remark.
 
 **Verify:**
 - [ ] Project P&L Real-time (R2) → +₹31,000
-- [ ] Project Inventory Status (R3 Pivot) → RM-001 Assigned 275 / Issued 275 / Consumed 285* / Returned 0 / Remaining −10* (*if 8a over-consumed; else 275/275/265/10/0)
+- [ ] Project Inventory Status (R3 Pivot) → RM-001 Assigned 275 / Issued 275 / Consumed 275 / Returned 10 / Remaining **10**; RM-002 125 / 125 / 119.5 / 10 / **15.5** (C21 — 8a rejected, returns + re-submit)
 - [ ] Costing vs Actual Variance (R3) → planned ₹144,000 vs actual (BMR + SCE amounts)
 - [ ] Dashboard widgets: MR/Costing, Production, Site Supervisor, Project Management all render from this data
 
@@ -519,7 +532,7 @@ Footer: Issued By (Store), Handover To (Production), Remark.
 | R3 Costing Status, MR Status, Cost Baseline, 80% Alert List, Inventory Status | ₹144k MR baseline (Costing Sheet ₹146k incl. Overhead); Released; alerts fired in Step 7b |
 | R4 Open PO Register, PO vs GRN Pending, Vendor Performance | PO Fully Received; no pending; 5 days |
 | R5 MIS Register, Today's Production, FG Handover Pending | MIS 275/125; 448 kg; empty |
-| R6 RM/FG Stock, Valuation (Closing × Rate), SCE logs, Project FG Position | RM-001 0*, RM-002 285*; FG-003 20 |
+| R6 RM/FG Stock, Valuation (Closing × Rate), SCE logs, Project FG Position | RM-001 10, RM-002 285 (after MRT 8b); SCE logs 8a(blocked)+8c; FG-003 20 |
 | R7 all 8 dashboards | KPI cards + charts render |
 
 ---
@@ -548,6 +561,7 @@ Footer: Issued By (Store), Handover To (Production), Remark.
 | **C18** | 80% alert field-name mismatch: auto-populate Deluge sets `80%_Alert_Flag` but alert workflow + SCE snippet checked `Alert_Flag` — workflow would never fire | ✅ **APPLIED** — all checks now use `80%_Alert_Flag` (matching forms.html "80% Threshold Alert Flag") |
 | **C19** | SO↔BOM↔MR cross-validation Deluge writes `Variance_Flag`/`Variance_Percentage` but NO form spec had these fields; IMPLEMENTATION_PLAN + implementation-plan.html MR Allocation tables also still missing G4/C1 rows 12–15 (forms.html had them) | ✅ **APPLIED** — added rows 12–17 (Issued Qty, Returned Qty, Remaining, Fully Consumed, Variance %, Variance Flag) to all three MR Allocation specs |
 | **C20** | Sample-data arithmetic error: Costing Sheet Total = ₹146,000 (incl. Section E Overhead ₹2,000) but MR auto-derives only 4 components = ₹144,000; planner had MR Total = ₹146,000 and P&L = +₹29,000 — should be ₹144,000 / **+₹31,000**. Overhead is Costing-worksheet-only, never in the MR cost baseline | ✅ **APPLIED** — all planner MR Total / Project.Total Actual Cost / P&L / R3 baseline numbers fixed to ₹144,000 / +₹31,000; Costing Sheet Total stays ₹146,000 (overhead noted as Costing-only) |
+| **C21** | Step 8 math broken: RM-002 +5 → 129.5/125 = 103.6% also over-consumes (both lines blocked), but "correct path" only fixed RM-001; 8b's "119.5/125 = 95.6%" assumed the blocked entry was accepted; Step 10 pivot + R6 stock numbers inconsistent | ✅ **APPLIED** — rewrote as 8a (attempt REJECTED, both lines over) → 8b MRT (RM-001 10 + RM-002 10 returns, creates headroom; stock RM-001 10 / RM-002 285) → 8c SCE accepted (275/275 = 100%, 119.5/125 = 95.6%); Step 10 pivot + R6 updated to final state |
 
 **New findings during UAT walkthrough → append here, then fix docs before building.**
 
