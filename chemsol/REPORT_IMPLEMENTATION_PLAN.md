@@ -209,9 +209,9 @@ These gaps are **blocking prerequisites**. Phase 0 resolves them all before any 
 
 ---
 
-### Phase 8 — Cross-Module Verification
+### Phase 8 — Cross-Module Verification ⏳ PENDING — run in Creator console
 
-**Full end-to-end test with dummy data:**
+**Full end-to-end test with dummy data (checklist):**
 
 1. Create SO (Supply+Apply) → verify Costing Sheet auto-expands → Approved → Project + Production Plan created (G2 Task Budget visible)
 2. Production Plan Released → auto-PR for shortages → PO → GRN (G5 Received/Balance/Delivery Days fire) → QC
@@ -222,7 +222,7 @@ These gaps are **blocking prerequisites**. Phase 0 resolves them all before any 
 7. Open every report in R1–R7 → verify rows, aggregation, filters
 8. Open every dashboard → verify KPI cards, charts, widgets
 
-**Final:** update `reports.html` with G9 (FG reports). Commit + push.
+**Final:** update `reports.html` with G9 (FG reports). Commit + push. ✅ G9 done in Phase 0; all R1–R7 build guides complete. Remaining: execute the 8-step test in the Zoho Creator .in console with dummy data, then tick off. After UAT passes, mark this phase done and close the plan.
 
 ---
 
