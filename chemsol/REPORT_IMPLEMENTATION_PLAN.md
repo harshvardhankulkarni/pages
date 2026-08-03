@@ -145,9 +145,9 @@ These gaps are **blocking prerequisites**. Phase 0 resolves them all before any 
 
 ---
 
-### Phase 5 — Production Reports (M5)
+### Phase 5 — Production Reports (M5) ✅ DONE
 
-**Module:** MIS, Production Job, BMR, RM Consumption, Packing, FGHM — 10 reports
+**Module:** MIS, Production Job, BMR, RM Consumption, Packing, FGHM — 10 reports (R5 build guide complete — reports.html)
 
 | Report | Creator Type | Source Form | Group By | Aggregations | Filters | Gap Dep |
 |--------|-------------|-------------|----------|-------------|---------|---------|
