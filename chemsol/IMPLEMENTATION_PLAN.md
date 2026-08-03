@@ -419,6 +419,12 @@ MR carries **four cost components** that sum to **Total MR Cost** — the projec
 || 9 | Consumed Qty | Number (auto) | Incremented by BMR/RM Consumption entries ||
 || 10 | Consumption % | Formula | = Consumed Qty ÷ Assigned Qty × 100 ||
 || 11 | Alert Triggered | Checkbox (readonly) | Auto-set at Consumption % ≥ 80% ||
+|| 12 | Issued Qty | Number (auto) | **G4** — Incremented by MIS-Post Deluge per matching Project+Item ||
+|| 13 | Returned Qty | Number (auto) | **C1** — Incremented by Material Return Deluge per matching Project+Item ||
+|| 14 | Remaining | Formula | **C1** — = Assigned Qty − Consumed Qty + Returned Qty ||
+|| 15 | Fully Consumed | Checkbox (auto) | **C1** — Set when Consumed Qty ≥ Assigned Qty (100%); checked by FGHM acceptance Deluge ||
+|| 16 | Variance % | Number (readonly) | **C19** — SO↔BOM↔MR cross-validation result (set when diff > 5%) ||
+|| 17 | Variance Flag | Checkbox (readonly) | **C19** — Auto-set when variance > 5% (flag, allow); > 10% hard-blocks submit ||
 
 **Application Cost Subform** (labour/execution):
 || # | Field | Type ||

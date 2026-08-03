@@ -546,6 +546,7 @@ Footer: Issued By (Store), Handover To (Production), Remark.
 | **C16** | FGHM code referenced `Overall_Status` field but canonical field is `Status` (Pending Acceptance / Accepted, G6) — and no code actually SET Status = Accepted on inline acceptance | ✅ **APPLIED** — FGHM On-Accept snippets now set `Status = "Accepted"` (G6 hook FGHM_Accepted_Status) and use `Status` in comments; no more `Overall_Status` |
 | **C17** | MIS Deluge sets `Status` ("Draft" on auto-create, "Posted" on Post MIS button) but MIS form spec (forms.html, IMPLEMENTATION_PLAN, implementation-plan.html) had NO Status field | ✅ **APPLIED** — added `Status` dropdown (Draft / Posted) to all three MIS form specs with C17 note |
 | **C18** | 80% alert field-name mismatch: auto-populate Deluge sets `80%_Alert_Flag` but alert workflow + SCE snippet checked `Alert_Flag` — workflow would never fire | ✅ **APPLIED** — all checks now use `80%_Alert_Flag` (matching forms.html "80% Threshold Alert Flag") |
+| **C19** | SO↔BOM↔MR cross-validation Deluge writes `Variance_Flag`/`Variance_Percentage` but NO form spec had these fields; IMPLEMENTATION_PLAN + implementation-plan.html MR Allocation tables also still missing G4/C1 rows 12–15 (forms.html had them) | ✅ **APPLIED** — added rows 12–17 (Issued Qty, Returned Qty, Remaining, Fully Consumed, Variance %, Variance Flag) to all three MR Allocation specs |
 
 **New findings during UAT walkthrough → append here, then fix docs before building.**
 

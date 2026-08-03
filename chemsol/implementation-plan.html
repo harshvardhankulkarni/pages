@@ -593,6 +593,12 @@
             <tr><td>9</td><td>Consumed Qty</td><td>Number (auto)</td><td>Incremented by BMR/RM Consumption + Site Consumption</td></tr>
             <tr><td>10</td><td>Consumption %</td><td>Formula</td><td>= Consumed Qty ÷ Assigned Qty × 100</td></tr>
             <tr><td>11</td><td>Alert Triggered</td><td>Checkbox (readonly)</td><td>Auto-set at Consumption % ≥ 80%</td></tr>
+            <tr><td>12</td><td>Issued Qty</td><td>Number (auto)</td><td><strong>G4</strong> — Incremented by MIS-Post Deluge per matching Project+Item</td></tr>
+            <tr><td>13</td><td>Returned Qty</td><td>Number (auto)</td><td><strong>C1</strong> — Incremented by Material Return Deluge per matching Project+Item</td></tr>
+            <tr><td>14</td><td>Remaining</td><td>Formula</td><td><strong>C1</strong> — = Assigned Qty − Consumed Qty + Returned Qty</td></tr>
+            <tr><td>15</td><td>Fully Consumed</td><td>Checkbox (auto)</td><td><strong>C1</strong> — Set when Consumed Qty ≥ Assigned Qty (100%); checked by FGHM acceptance Deluge</td></tr>
+            <tr><td>16</td><td>Variance %</td><td>Number (readonly)</td><td><strong>C19</strong> — SO↔BOM↔MR cross-validation result (set when diff > 5%)</td></tr>
+            <tr><td>17</td><td>Variance Flag</td><td>Checkbox (readonly)</td><td><strong>C19</strong> — Auto-set when variance > 5% (flag, allow); > 10% hard-blocks submit</td></tr>
           </table>
         </div>
 
