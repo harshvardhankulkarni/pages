@@ -937,11 +937,15 @@ The Project ID is passed from parent to child in Stream B only:
 | QC | QC-YYYY-XXXX | On create |
 | SO | SO-YYYY-XXXX | On create |
 | Project | PRJ-YYYY-XXXX | On create |
+| Production Job | JOB-YYYY-XXXX | On create |
 | System Composition | SC-YYYY-XXXX | On create |
 | BOM / FG Formulation | BOM-YYYY-XXXX | On create |
 | Production Planning | PLAN-YYYY-XXXX | On create |
 | BMR | BMR-YYYY-XXXX | On create |
+| Site Consumption Entry | SCE-YYYY-XXXX | On create |
+| Material Return | MRT-YYYY-XXXX | On create |
 | Customer / Site Master | CUST-YYYY-XXXX | On create |
+| Supplier Master | SUP-YYYY-XXXX | On create |
 
 ### 4.5 Notification Triggers
 
