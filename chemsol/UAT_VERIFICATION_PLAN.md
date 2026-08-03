@@ -578,7 +578,7 @@ Footer: Issued By (Store), Handover To (Production), Remark.
 
 ## Sign-off
 
-**Doc-level verification (loop pass 1):** every step's fields exist in forms.html, every expected automation has a hook in automation.html, every verify report is spec'd in reports.html R1–R7 → all 10 steps + report sweep **doc-verified ✓** (see REPORT_IMPLEMENTATION_PLAN Phase 8).
+**Doc-level verification (loop passes 1–33):** every step's fields exist in forms.html, every expected automation has a hook in automation.html, every verify report is spec'd in reports.html R1–R7, every number traces end-to-end (SO ₹175,000 → Costing ₹146,000 → MR ₹144,000 → P&L +₹31,000; RM 275/125 kg; FG 148/300 kg; stock 10/285 kg) → all 10 steps + report sweep **doc-verified ✓** (see REPORT_IMPLEMENTATION_PLAN Phase 8; change log C1–C27 all applied).
 
 **Console execution (Zoho Creator .in) — remaining manual work:**
 
