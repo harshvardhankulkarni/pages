@@ -251,7 +251,7 @@
 - [ ] GST split auto-computes (₹2,970 total)
 - [ ] Line fields `Received Qty` = 0, `Balance Qty` = 75, `Receipt Status` = Not Started (G5)
 
-**Verify:** Open PO Register (R4) → shows this PO (Status ≠ Completed/Closed).
+**Verify:** Open PO Register (R4) → shows this PO (Status ≠ Fully Received / Cancelled).
 
 ### 4c. GRN `GRN-2026-0001`
 
@@ -535,6 +535,8 @@ Footer: Issued By (Store), Handover To (Production), Remark.
 | **C5** | SCE could over-consume past 100% of assignment | ✅ **APPLIED — decision: BLOCK.** Any consumption entry (SCE / BMR / RM Consumption) pushing Consumption % > 100% is rejected: "Allocation Exhausted — return material first". Applied to forms.html (SCE note + MR backend rule) and automation.html (SCE hook). Step 8a below updated. |
 | **C6** | C2 fix was only applied to forms.html 2A — 6 more files still said "SO acceptance → auto-creates Project" (forms.html intro/badge, implementation-plan.html ×2, IMPLEMENTATION_PLAN.md ×2, data-model.html ×2, BRD ×2) | ✅ **APPLIED** — all swept to "SO acceptance → Costing Sheet (Draft); Project on Costing Approved" |
 | **C7** | automation.html summary had **no hook for "MR Released → auto-create MIS Draft"** and no **100% "Allocation Exhausted" escalation** row (AGENTS.md promises both) | ✅ **APPLIED** — added MR "On Released → auto-create MIS Draft + notify Store/Production" and 100% escalation to the 80% alert row |
+| **C8** | Remaining formula stale in IMPLEMENTATION_PLAN.md + implementation-plan.html ("Assigned − Consumed", missing + Returned) | ✅ **APPLIED** — both now `Assigned − Consumed + Returned` (C1); SCE automation note also gained C5 block text |
+| **C9** | PO Status value set mismatch: forms.html = Draft/Sent/Partially Received/Fully Received/Cancelled; plan G5 = Draft/Approved/PO Sent/Completed/Closed; R4 filters referenced "≠ Completed/Closed" which doesn't exist in the set | ✅ **APPLIED** — plan G5 aligned to forms.html set; Open PO Register filters in both docs → "Status ≠ Fully Received / Cancelled" |
 
 **New findings during UAT walkthrough → append here, then fix docs before building.**
 

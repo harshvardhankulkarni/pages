@@ -925,7 +925,7 @@
           </table>
         </div>
         <div class="impl-info-box">
-          <strong>Automation:</strong> On submit → increment <code>Consumed Qty</code> on matching MR Allocation line (Project ID + Item Code). If no matching allocation exists → alert and block. With System/FG Reference → auto-expand into RMs at BOM ratios and consume proportionally. After increment → recalc Consumption %; ≥ 80% + flag ON → fire 80% Alert. <strong>Remaining = Assigned Qty − Consumed Qty</strong> (live project inventory balance).
+          <strong>Automation:</strong> On submit → increment <code>Consumed Qty</code> on matching MR Allocation line (Project ID + Item Code). If no matching allocation exists → alert and block. With System/FG Reference → auto-expand into RMs at BOM ratios and consume proportionally. After increment → recalc Consumption %; ≥ 80% + flag ON → fire 80% Alert. <strong>Remaining = Assigned Qty − Consumed Qty + Returned Qty (C1)</strong> (live project inventory balance). <strong>Over-consumption BLOCK (C5):</strong> any entry pushing Consumption % &gt; 100% is rejected — "Allocation Exhausted — return material first".
         </div>
       </div>
 

@@ -41,7 +41,7 @@ These gaps are **blocking prerequisites**. Phase 0 resolves them all before any 
    - `Total MR Cost` formula: `Material Cost + Application Amount + Transport Amount + Tools Amount`
    - Allocation `Issued Qty` (Number, auto-updated) — set by Deluge on MIS-Post
 5. **G5 — PO additions:**
-   - Header `Status` dropdown: Draft / Approved / PO Sent / Completed / Closed
+   - Header `Status` dropdown: Draft / Sent / Partially Received / Fully Received / Cancelled (C9 — aligned to forms.html; GRN hook sets Partially/Fully Received)
    - Line item `Received Qty` (Number, auto-updated) — set by Deluge on GRN-Post
    - Line item `Balance Qty` formula: `Ordered Qty − Received Qty`
    - Line item `Receipt Status` formula: Pending / Partial / Complete
@@ -133,7 +133,7 @@ These gaps are **blocking prerequisites**. Phase 0 resolves them all before any 
 | Report | Creator Type | Source Form | Group By | Aggregations | Filters | Gap Dep |
 |--------|-------------|-------------|----------|-------------|---------|---------|
 | PR Status Report | Summary | PR | Status | COUNT(PR Number) | — | — |
-| Open PO Register | Detail | PO | — | — | Status ≠ Completed/Closed | G5 |
+| Open PO Register | Detail | PO | — | — | Status ≠ Fully Received / Cancelled | G5 |
 | PO Value by Supplier | Summary | PO | Supplier Code | SUM(Total Amount), COUNT(PO Number) | — | — |
 | Purchase by Item Group | Summary | PO (lines) | Item Category | SUM(Total Amount) | Date range | — |
 | PO vs GRN Pending | Detail | PO (lines) | — | — | Balance Qty > 0 | G5 |

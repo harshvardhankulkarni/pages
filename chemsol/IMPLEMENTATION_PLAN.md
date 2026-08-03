@@ -698,7 +698,7 @@ Procurement runs when production needs materials not in stock.
 - On submit → increment `Consumed Qty` on matching MR Allocation line (`Project ID + Item Code`). If no matching allocation exists, alert and block.
 - If `System / FG Reference` is provided → auto-expand into RMs at BOM ratios and consume from MR Allocation proportionally
 - After increment → recalculate `Consumption %` on MR Allocation. If ≥ 80% and flag ON → fire 80% Alert
-- **Project Inventory deduction**: Remaining = MR Allocation.Assigned Qty − Consumed Qty (this is the live project inventory balance)
+- **Project Inventory deduction**: Remaining = MR Allocation.Assigned Qty − Consumed Qty + Returned Qty (C1 — this is the live project inventory balance)
 
 ### 6.8 Material Return Entry [NEW]
 
