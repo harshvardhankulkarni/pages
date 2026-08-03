@@ -215,7 +215,7 @@ These gaps are **blocking prerequisites**. Phase 0 resolves them all before any 
 
 1. ✅ Create SO (Supply+Apply) → verify Costing Sheet auto-expands → Approved → Project + Production Plan created (G2 Task Budget visible) — doc-verified via UAT planner Steps 1–3
 2. ✅ Production Plan Released → auto-PR for shortages → PO → GRN (G5 Received/Balance/Delivery Days fire) → QC — doc-verified via UAT planner Step 4
-3. ✅ MR auto-derived → Production Verified → Costing Approved → Released (G4 Total MR Cost + Issued Qty ready) — doc-verified via UAT planner Step 5
+3. ✅ MR auto-derived → Pending Production Verification → Production Verified → Costing Approved → Released (G4 Total MR Cost + Issued Qty ready) — doc-verified via UAT planner Step 5
 4. ✅ MIS posted → G4 Issued Qty updates on Allocation; G8 Rate+Amount on BMR lines; MIS Draft auto-created on MR Release (hook now documented) — doc-verified via UAT planner Step 6
 5. ✅ Production: BMR → RM Consumption → Packing → FGHM (G6 Status auto-sets to Accepted; C1 Fully Consumed flag) — doc-verified via UAT planner Step 7
 6. ✅ SCE (G8 Rate+Amount, C5 over-consumption block) → MRT (C1 Returned Qty) → FG Consumption — doc-verified via UAT planner Steps 8–9

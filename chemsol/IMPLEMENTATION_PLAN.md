@@ -455,7 +455,7 @@ MR carries **four cost components** that sum to **Total MR Cost** — the projec
 **Automation Rules:**
 - MR is **auto-created** from approved Costing Sheet + Released Production Plan. All 4 cost components pre-filled. Not manually entered.
 - MR Status workflow: Draft (auto-created) → Pending Production Verification → Production Verified → Costing Approved → Released
-- **SO↔BOM↔MR cross-validation**: On MR creation, validate that Σ(MR Allocation Assigned Qty) = Σ(SO Area × BOM Qty per Unit × (1+Waste%)). If mismatch > 5%, flag for review. Hard block if > 10%.
+- **SO↔BOM↔MR cross-validation**: On MR creation, validate that each MR Allocation line's Assigned Qty matches the SO Area × BOM Qty per Unit × (1+Waste%) expected for that RM (**C31**, per-RM). If any line mismatch > 5%, flag for review. Hard block if > 10%.
 - **Without Released MR, there is no MIS, no Production, no project execution**
 - Consumption entries increment Consumed Qty on matching MR Allocation (matched by Project ID + Item Code)
 - **80% Alert**: When Consumption % ≥ 80% and Alert Flag is ON → pop-up + dashboard banner + email to Project Manager
@@ -982,7 +982,7 @@ Accelerate the end‑to‑end flow by eliminating 15 identified bottlenecks acro
 3. **Production Plan auto-creation**: On Costing Approved, auto-create Production Plan (Draft) with all material lines carried forward.
 4. **Stock check at plan time**: Available Stock = physical stock − Σ(Assigned Qty from all unreleased MRs). Prevents double-allocation across projects.
 5. **Auto-PR on shortage**: On Production Plan Release → for every line where Shortage > 0 → auto-create project‑tagged PR. Notify Purchase with priority from plan.
-6. **MR auto-derived from Costing Sheet**: All 4 cost components pre-filled. No manual re-entry. SO↔BOM↔MR cross-validation: if Σ(Assigned Qty) vs Σ(SO Area × BOM) differs >5% → flag; >10% → block.
+6. **MR auto-derived from Costing Sheet**: All 4 cost components pre-filled. No manual re-entry. SO↔BOM↔MR cross-validation: if any RM line differs >5% → flag; >10% → block.
 7. **Tighter SLAs**: MR Draft >2 hr → reminder. Production Verified >2 hr → escalation to Costing lead. Costing Approved >1 hr → auto-release.
 8. **MR Release cascade**: Auto-create MIS draft + notify Store + Production simultaneously.
 

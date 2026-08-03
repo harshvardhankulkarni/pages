@@ -1,14 +1,14 @@
 // ============================================================
-// P5 — SO<->BOM<->MR cross-validation (A-16)
-// Verified: flow_sim.py P3 (0% -> pass; +6% flag; +11% block)
+// P5 — SO<->BOM<->MR cross-validation (A-16, C31)
+// Verified: flow_sim.py P3 (0% pass; +6% flag; +11% block)
 // ============================================================
 // Workflow: On Submit (MR_Master) — validate BEFORE create.
-// diff% = |SUM(Assigned Qty) - SUM(SO Area x Comp x BOM)| / expected x 100
-// >5% -> Variance_Flag + warning; >10% -> block submit (throw).
+// Per-RM rule (C31): diff% = |Assigned - BOM expected| / expected x 100
+// any line >5% -> Variance_Flag + warning; any line >10% -> block (throw).
 
-// expected from SO System Lines x Composition x BOM
+// expected kg per RM from SO System Lines x Composition x BOM
 so = lookupRecords(SO_Master, {"Project_ID": input.Project_ID}).get(0);
-expected = 0;
+expectedByRM = Map();
 for each sysLine in so.System_Lines
 {
   comps = lookupRecords(System_Composition, {"System_Code": sysLine.System_Code});
@@ -17,29 +17,27 @@ for each sysLine in so.System_Lines
     boms = lookupRecords(BOM, {"FG_Code": comp.FG_Code, "Status": "Released"});
     for each bom in boms
     {
-      expected = expected + sysLine.Area * comp.Qty_Per_Sqm * bom.Ratio;
+      qty = sysLine.Area * comp.Qty_Per_Sqm * bom.Ratio;
+      expectedByRM.put(bom.RM_Code, expectedByRM.get(bom.RM_Code, 0) + qty);
     }
   }
 }
 
-assigned = 0;
+maxDiff = 0;
 for each a in input.Material_Allocation
 {
-  assigned = assigned + a.Assigned_Qty;
-}
-
-diffPct = (abs(assigned - expected) / expected) * 100;
-
-if(diffPct > 5)
-{
-  input.Variance_Percentage = diffPct;
-  input.Variance_Flag = true;
-  if(diffPct > 10)
+  exp = expectedByRM.get(a.Item_Code);
+  if(exp == null || exp <= 0) { continue; }
+  diff = abs(a.Assigned_Qty - exp) / exp * 100;
+  if(diff > maxDiff) { maxDiff = diff; }
+  if(diff > 10)
   {
-    throw "Cross-validation BLOCKED: assigned " + round(assigned, 1) + " kg vs expected "
-      + round(expected, 1) + " kg (diff " + round(diffPct, 1) + "% > 10%). Correct MR allocation first.";
+    throw "Cross-validation BLOCKED: " + a.Item_Code + " assigned " + round(a.Assigned_Qty, 1)
+      + " kg vs expected " + round(exp, 1) + " kg (diff " + round(diff, 1) + "% > 10%). Correct MR allocation first.";
   }
-  // >5% but <=10%: flag only
-  input.Variance_Percentage = diffPct;
-  input.Variance_Flag = true;
+  if(diff > 5)
+  {
+    input.Variance_Flag = true;
+  }
 }
+input.Variance_Percentage = maxDiff;

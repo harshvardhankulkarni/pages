@@ -11,8 +11,8 @@ SO (Sales Order)
   → Costing Sheet (Costing team: 5-section auto-expanded from SO × BOM)
     → Costing Approved → auto-create Project + Production Plan
       → Production Plan Released → auto-PR for stock shortages
-        → MR auto-derived from Costing Sheet (4 cost pre-filled)
-          → Production Verified → Costing Approved → MR Released [CRITICAL GATE]
+        → MR auto-derived from Costing Sheet (4 cost pre-filled; Draft → Pending Production Verification → Production Verified → Costing Approved)
+          → MR Released [CRITICAL GATE]
             → auto-MIS → Store issues RM to Production
               → Production (BMR → RM Consumption → Packing)
                 → FGHM (FG Handover → FG Stock +)

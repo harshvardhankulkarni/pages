@@ -88,7 +88,7 @@
 | Costing Sheet (5 sections) | Section A auto-expanded from SO System Lines × System Composition × BOM | on-submit Deluge: fetch SO + System Comp + BOM → build Section A subform rows (createRecord); formula totals per section | ✅ + Deluge (P2) |
 | Costing Approved → auto-create Project + Production Plan (Draft) | Blueprint transition script (≤50 stmts OK) | ✅ + Deluge (P3) |
 | Production Plan | Available Stock = physical − Σ(Assigned Qty from unreleased MRs); Released → auto-PR for shortages | on-submit/on-transition Deluge with aggregate query; schedule for release-check | ✅ + Deluge (P4) |
-| MR (critical gate) | **Auto-derived** from Costing + Plan (4 cost components pre-filled); cross-validation ΣAssigned vs Σ(SO Area×BOM) — **>5% flag, >10% block**; status Draft→Prod Verified→Costing Approved→Released; 2 hr / 2 hr / 1 hr SLAs | on-submit validation script (block/flag), Blueprint for 4-stage status, schedules on status-date fields for SLA reminders, auto-release at 1 hr | ✅ + Deluge (P2, P5) + Blueprint |
+| MR (critical gate) | **Auto-derived** from Costing + Plan (4 cost components pre-filled); cross-validation per RM line vs SO×BOM expected — **>5% flag, >10% block** (C31); status Draft→Prod Verified→Costing Approved→Released; 2 hr / 2 hr / 1 hr SLAs | on-submit validation script (block/flag), Blueprint for 4-stage status, schedules on status-date fields for SLA reminders, auto-release at 1 hr | ✅ + Deluge (P2, P5) + Blueprint |
 | MIS | Auto-created as Draft on MR Release | Blueprint transition → createRecord draft | ✅ + Deluge (P3) |
 | BMR | RM consumption lines → increment Consumed Qty on MR Allocation (`Project ID + Item Code`) | subform add-row event + on-submit Deluge update | ✅ + Deluge (P6) |
 | RM Consumption Entry | BOM variance check only (no increment — avoids double count) | on-submit Deluge compute + flag | ✅ + Deluge |
@@ -142,7 +142,7 @@ Service Invoice, Finance CN/AR, Logistics (DC/Outward), Vehicle & Transport, ful
 - **P2 — Costing Section A expansion**: fetch SO record → iterate System Lines → fetch System Composition → fetch BOM → `createRecord` Section A lines. Watch the 5,000-statement ceiling; SOs are small (≤5 systems) so it's fine; batch workflow available if ever needed.
 - **P3 — Chain creation on approval**: Blueprint transition (≤50 statements) → `createRecord` Project + Production Plan draft.
 - **P4 — Available Stock query**: `Stock` aggregate minus Σ Assigned Qty from MRs with Status ≠ Released (aggregate function on MR Allocation).
-- **P5 — Cross-validation**: on-submit validation script comparing ΣAssigned vs Σ(SO Area × BOM); >5% → warning message, >10% → block submit (validate before create).
+- **P5 — Cross-validation**: on-submit validation script comparing each MR Allocation line vs its SO × BOM expected qty (per-RM, C31); >5% → warning message, >10% → block submit (validate before create).
 - **P6 — Consumption resolution**: match `Project ID + Item Code` against MR Allocation line → increment/decrement Consumed Qty; recompute 80%/100% flags.
 - **P7 — Inline accept**: report custom action button → Deluge updates FGHM status + MR Allocation Fully Consumed + FG stock.
 - **P8 — Conditional PO prefix**: if item category coding → RMWAD counter, else RM counter (two No_Series rows).

@@ -19,7 +19,7 @@ The system has two independent streams:
 - **Costing Sheet Approved** → auto-creates **Project** + auto-creates **Production Plan** (Draft)
 - **Production Plan Released** → checks Available Stock = physical − other allocations → auto-PR for shortage items
 - **Production Plan + Costing Sheet** → **MR auto-derived** (4 cost components pre-filled from Costing Sheet, zero manual re-entry)
-- **MR → Production Verified → Costing Approved → Released** (critical approval gate)
+- **MR → Draft → Pending Production Verification → Production Verified → Costing Approved → Released** (critical approval gate; 5-state set per forms.html)
 - **MR Released** → auto-MIS → Store issues RM to Production
 - **Production** (BMR → RM Consumption → Packing → FGHM)
 - **Site Consumption Entry** (hourly/daily task tracking per project area — replaces full Service Team module)
@@ -29,7 +29,7 @@ The system has two independent streams:
 **Consumption Tracking (KEY):** The **Project is the anchor** for material consumption.
 - The **MR is the consumption baseline** — records Assigned Qty per RM with ratio % and 80% alert flag.
 - BMR/RM Consumption and **Site Consumption entries** resolve to MR Allocation (matched by `Project ID + Item Code`). They do **NOT** deduct from a generic stock pool.
-- **SO↔BOM↔MR cross-validation**: Σ(MR Assigned Qty) must match Σ(SO Area × BOM Qty) within 5%. >5% flags, >10% blocks.
+- **SO↔BOM↔MR cross-validation**: each RM line's Assigned Qty must match its SO Area × BOM expected within 5%. >5% flags, >10% blocks (per-RM, C31).
 - **80% Alert**: real-time — when any allocated RM hits 80% of Assigned Qty (flag ON) → pop-up + dashboard + email to PM.
 - **100% Alert**: "Allocation Exhausted" → PM + Purchase notified.
 
@@ -138,8 +138,8 @@ Master Data (Item Muster, Suppliers, Customers, Store Master) is global — used
 
 ### MR (Critical Gate — REVISED)
 - MR is **auto-derived** from Costing Sheet + Production Plan. All 4 cost components pre-filled. No manual data entry.
-- **SO↔BOM↔MR cross-validation**: Σ(Assigned Qty) vs Σ(SO Area × BOM Qty). >5% flag, >10% block.
-- MR Status: Draft → Production Verified → Costing Approved → Released
+- **SO↔BOM↔MR cross-validation**: per-RM: Assigned Qty vs SO Area × BOM expected. >5% flag, >10% block.
+- MR Status: Draft → Pending Production Verification → Production Verified → Costing Approved → Released
 - Tighter SLAs: 2 hr Draft → reminder, 2 hr Verified → escalation, 1 hr Approved → auto-release
 - MR Released → auto-create MIS draft
 
