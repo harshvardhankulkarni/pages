@@ -140,7 +140,7 @@
     <section class="hero">
       <div class="hero-eyebrow">Streamlined ERP · v2.0</div>
       <h1>Forms &amp; Module Structure</h1>
-      <p>Core Workflow: <strong>SO → Costing (RM check) → MR (Draft → Prod Verified → Costing Approved → Released) → MIS → Production → FGHM → FG Stock</strong>. Procurement (PR→PO→GRN→QC) runs when stock insufficient. Inventory manages RM + FG.</p>
+      <p>Core Workflow: <strong>SO → Costing (RM check) → MR (Draft → Pending Production Verification → Production Verified → Costing Approved → Released) → MIS → Production → FGHM → FG Stock</strong>. Procurement (PR→PO→GRN→QC) runs when stock insufficient. Inventory manages RM + FG.</p>
       <p style="margin-top:4px;font-size:13px;color:var(--gray-500)"><strong>3-Layer Hierarchy:</strong> SO sells <strong>Systems</strong> → composed of <strong>FGs</strong> (System Composition) → each FG formulated from <strong>RMs</strong> (BOM). MR works at <strong>RM level only</strong>.</p>
     </section>
 
@@ -464,15 +464,15 @@
           <div class="phase-header">
             <span class="phase-number">2B</span>
             <span class="phase-title">Project</span>
-            <span class="phase-tag">Root Entity · Auto-created from SO</span>
+            <span class="phase-tag">Root Entity · Auto-created on Costing Approval</span>
           </div>
-          <p>Root entity — every downstream form links here. Auto-created from SO acceptance (Supply+Apply only).</p>
+          <p>Root entity — every downstream form links here. Auto-created by Costing Sheet approval (Supply+Apply only) — single creation point (C2); NOT created on SO submit.</p>
           <div class="table-wrap">
             <table>
               <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
               <tbody>
                 <tr><td>1</td><td>Project ID</td><td>Autogen</td><td>*</td><td>—</td></tr>
-                <tr><td>2</td><td>SO Reference</td><td>Lookup (Sales Order Master) → AutoFetch: SO No, Customer, Amount</td><td>*</td><td>Auto-filled from SO acceptance</td></tr>
+                <tr><td>2</td><td>SO Reference</td><td>Lookup (Sales Order Master) → AutoFetch: SO No, Customer, Amount</td><td>*</td><td>Auto-filled from Costing Sheet approval</td></tr>
                 <tr><td>3</td><td>Project Name</td><td>Text</td><td>*</td><td>—</td></tr>
                 <tr><td>4</td><td>Address</td><td>Multi-line</td><td>*</td><td>—</td></tr>
                 <tr><td>5</td><td>Project Manager</td><td>User lookup</td><td>*</td><td>—</td></tr>
@@ -480,7 +480,7 @@
                 <tr><td>7</td><td>Start Date / End Date</td><td>Date</td><td>*</td><td>—</td></tr>
                 <tr><td>8</td><td>Project Cost</td><td>Currency</td><td>*</td><td>—</td></tr>
                 <tr><td>9</td><td>Status</td><td>Dropdown</td><td>*</td><td>Planned / In Progress / Completed / On Hold</td></tr>
-                <tr><td>10</td><td>Total Revenue</td><td>AutoFetch (SO Total Amount — set on SO acceptance)</td><td>*</td><td>G2 — Revenue from SO</td></tr>
+                <tr><td>10</td><td>Total Revenue</td><td>AutoFetch (SO Total Amount — set at Project creation)</td><td>*</td><td>G2 — Revenue from SO</td></tr>
                 <tr><td>11</td><td>Total Actual Cost</td><td>AutoFetch (MR Total MR Cost — set on MR Released)</td><td>*</td><td>G2 — Cost baseline from MR</td></tr>
                 <tr><td>12</td><td>P&amp;L</td><td>Formula</td><td>*</td><td>G2 — = Total Revenue − Total Actual Cost</td></tr>
               </tbody>
@@ -733,6 +733,8 @@
                 <tr><td>7</td><td>Requested By</td><td>Text (Employee Name)</td><td>*</td><td>—</td></tr>
                 <tr><td>8</td><td>Priority</td><td>Dropdown</td><td>*</td><td>Low / Medium / High / Urgent</td></tr>
                 <tr><td>9</td><td>MR Status</td><td>Dropdown</td><td>*</td><td>Draft / Pending Production Verification / Production Verified / Costing Approved / Released</td></tr>
+                <tr><td>10</td><td>Last Status Change</td><td>Date-Time (auto)</td><td></td><td><strong>C32</strong> — stamped on every Blueprint transition (A-18); SLA schedules measure elapsed from this (F10)</td></tr>
+                <tr><td>11</td><td>SLA Reminder Sent</td><td>Checkbox (auto)</td><td></td><td><strong>C32</strong> — set by mrSlaSchedules so the 2 hr Draft reminder fires once only</td></tr>
               </tbody>
             </table>
           </div>
@@ -775,7 +777,7 @@
                 <tr><td>12</td><td>Issued Qty</td><td>Number (auto)</td><td><strong>G4</strong> — Incremented by MIS-Post Deluge per matching Project+Item</td></tr>
                 <tr><td>13</td><td>Returned Qty</td><td>Number (auto)</td><td><strong>C1</strong> — Incremented by Material Return Deluge per matching Project+Item</td></tr>
                 <tr><td>14</td><td>Remaining</td><td>Formula</td><td><strong>C1</strong> — = Assigned Qty − Consumed Qty + Returned Qty</td></tr>
-                <tr><td>15</td><td>Fully Consumed</td><td>Checkbox (auto)</td><td><strong>C1</strong> — Set when Consumed Qty ≥ Assigned Qty (100%); checked by FGHM acceptance Deluge</td></tr>
+                <tr><td>15</td><td>Fully Consumed</td><td>Checkbox (auto)</td><td><strong>C1/C29</strong> — set only when ALL allocation lines ≥ 100% (checked by FGHM acceptance Deluge); stays OFF while any line < 100%</td></tr>
                 <tr><td>16</td><td>Variance %</td><td>Number (readonly)</td><td><strong>C19</strong> — SO↔BOM↔MR cross-validation result (set when diff > 5%)</td></tr>
                 <tr><td>17</td><td>Variance Flag</td><td>Checkbox (readonly)</td><td><strong>C19</strong> — Auto-set when variance > 5% (flag, allow); > 10% hard-blocks submit</td></tr>
               </tbody>
@@ -929,7 +931,7 @@
                 <tr><td>8</td><td>Total Amount</td><td>Formula</td><td>*</td><td>Basic + GST</td></tr>
                 <tr><td>9</td><td>Received Qty</td><td>Number (auto)</td><td></td><td><strong>G5</strong> — Incremented on GRN posting</td></tr>
                 <tr><td>10</td><td>Balance Qty</td><td>Formula</td><td></td><td><strong>G5</strong> = Quantity − Received Qty</td></tr>
-                <tr><td>11</td><td>Receipt Status</td><td>Formula (text)</td><td></td><td><strong>G5</strong> — Not Started / Partial / Received</td></tr>
+                <tr><td>11</td><td>Receipt Status</td><td>Formula (text)</td><td></td><td><strong>G5</strong> — Not Started / Partial / Complete</td></tr>
               </tbody>
             </table>
           </div>
@@ -946,7 +948,7 @@
                 <tr><td>6</td><td>Delivery Date</td><td>Date</td><td>*</td></tr>
                 <tr><td>7</td><td>Payment Terms</td><td>Text</td><td>*</td></tr>
                 <tr><td>8</td><td>Scope of Transport</td><td>Dropdown</td><td>Supplier / Own</td></tr>
-                <tr><td>9</td><td>Delivery Days</td><td>Number (auto)</td><td><strong>G5</strong> — = PO Date − Delivery Date (days elapsed)</td></tr>
+                <tr><td>9</td><td>Delivery Days</td><td>Number (auto)</td><td><strong>G5</strong> — = GRN Date − Delivery Date (actual days from promised delivery to receipt)</td></tr>
               </tbody>
             </table>
           </div>

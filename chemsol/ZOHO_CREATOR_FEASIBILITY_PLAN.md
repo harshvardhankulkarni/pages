@@ -85,11 +85,11 @@
 | Module | Key automation | Construct | Verdict |
 |---|---|---|---|
 | Sales Order (SO) | Conditional **Sales Type** (Supply Only / Supply+Apply) swaps **Subform A vs Subform B** | field rule (show/hide subforms) + on-submit Deluge | ✅ Native |
-| Costing Sheet (5 sections) | Section A auto-expanded from SO System Lines × System Composition × BOM | on-submit Deluge: fetch SO + System Comp + BOM → build Section A subform rows (createRecord); formula totals per section | ✅ + Deluge (P2) |
+| Costing Sheet (5 sections) | Section A auto-expanded from SO System Lines × System Composition × BOM | on-submit Deluge: fetch SO + System Comp + BOM → build Section A subform rows (createRecord); section subtotal fields written by Deluge (Section_A_Total … Section_E_Total — **G3**, not formula fields) | ✅ + Deluge (P2) |
 | Costing Approved → auto-create Project + Production Plan (Draft) | Blueprint transition script (≤50 stmts OK) | ✅ + Deluge (P3) |
 | Production Plan | Available Stock = physical − Σ(Assigned Qty from unreleased MRs); Released → auto-PR for shortages | on-submit/on-transition Deluge with aggregate query; schedule for release-check | ✅ + Deluge (P4) |
-| MR (critical gate) | **Auto-derived** from Costing + Plan (4 cost components pre-filled); cross-validation per RM line vs SO×BOM expected — **>5% flag, >10% block** (C31); status Draft→Prod Verified→Costing Approved→Released; 2 hr / 2 hr / 1 hr SLAs | on-submit validation script (block/flag), Blueprint for 4-stage status, schedules on status-date fields for SLA reminders, auto-release at 1 hr | ✅ + Deluge (P2, P5) + Blueprint |
-| MIS | Auto-created as Draft on MR Release | Blueprint transition → createRecord draft | ✅ + Deluge (P3) |
+| MR (critical gate) | **Auto-derived** from Costing + Plan (4 cost components pre-filled); cross-validation per RM line vs SO×BOM expected — **>5% flag, >10% block** (C31); status Draft→Pending Production Verification→Production Verified→Costing Approved→Released (C30); 2 hr / 2 hr / 1 hr SLAs | on-submit validation script (block/flag), Blueprint for 5-state status, schedules on status-date fields for SLA reminders, auto-release at 1 hr | ✅ + Deluge (P2, P5) + Blueprint |
+| MIS | Auto-created as Draft on MR Release | on-change workflow (criteria MR_Status=Released, **F5**) → createRecord one header + line subform from Allocation | ✅ + Deluge (P3) |
 | BMR | RM consumption lines → increment Consumed Qty on MR Allocation (`Project ID + Item Code`) | subform add-row event + on-submit Deluge update | ✅ + Deluge (P6) |
 | RM Consumption Entry | BOM variance check only (no increment — avoids double count) | on-submit Deluge compute + flag | ✅ + Deluge |
 | Packing Entry | packaging material deduction only | on-submit Deluge | ✅ + Deluge |
@@ -129,7 +129,7 @@ Service Invoice, Finance CN/AR, Logistics (DC/Outward), Vehicle & Transport, ful
 | Form Workflow (On Load / On User Input) | autofetch of supplier/item/project details, dynamic lookup filters | ✅ Native |
 | Field Rules | Sales Type swap (Subform A/B), disable fields in Released MR, 80% flag display | ✅ Native |
 | Subform add/delete row events | line-level totals, per-line allocation checks | ✅ Native |
-| Blueprint | MR 4-stage gate, Costing→Project/Plan creation, FGHM accept | ✅ Native |
+| Blueprint | MR 5-state gate, Costing→Project/Plan creation, FGHM accept | ✅ Native |
 | Schedule | SLA escalations (Costing >24 hr, MR stages 2/2/1 hr), auto-release | ✅ Native |
 | Report Workflow (custom buttons) | FGHM inline accept, MR Release action, Costing Approve | ✅ Native |
 | Deluge (data access) | all cross-record reads/writes; number-series counters | ✅ Native |

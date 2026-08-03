@@ -15,9 +15,13 @@ if(!isNull(inv) && inv.size() > 0)
 }
 
 held = 0;
-// MR_Ref.MR_Status != "Released" — subform records resolved through parent MR
+// C32: ALL unreleased states hold allocation — Draft, Pending Production
+// Verification, Production Verified, Costing Approved (5-state set, C30).
+// MR_Ref.MR_Status — subform records resolved through parent MR
 allocLines = lookupRecords(MR_Allocation,
   {"Item_Code": input.item_code, "MR_Ref.MR_Status": "Draft"});
+allocLines.addAll(lookupRecords(MR_Allocation,
+  {"Item_Code": input.item_code, "MR_Ref.MR_Status": "Pending Production Verification"}));
 allocLines.addAll(lookupRecords(MR_Allocation,
   {"Item_Code": input.item_code, "MR_Ref.MR_Status": "Production Verified"}));
 allocLines.addAll(lookupRecords(MR_Allocation,

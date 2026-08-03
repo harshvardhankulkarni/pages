@@ -12,7 +12,8 @@ mr = input; // scheduled record
 if(mr.MR_Status == "Draft")
 {
   elapsed = now().getTime() - mr.Created_Time.getTime();
-  if(elapsed > 2 * 60 * 60 * 1000) // 2 hr
+  // C32: once-only guard — no re-reminder on later 5-min runs (matches sim)
+  if(elapsed > 2 * 60 * 60 * 1000 && !mr.SLA_Reminder_Sent) // 2 hr
   {
     sendmail
     [
@@ -22,6 +23,12 @@ if(mr.MR_Status == "Draft")
       subject: "MR SLA Reminder - " + mr.MR_Number,
       message: mr.MR_Number + " is still DRAFT after 2 hr. Production verification pending."
     ];
+    updateRecord
+    {
+      "Form_Type": "MR_Master",
+      "ID": mr.ID,
+      "SLA_Reminder_Sent": true
+    };
   }
 }
 

@@ -21,6 +21,11 @@ totalMr = matTotal + costing.Section_B_Total + costing.Section_C_Total
   + costing.Section_D_Total; // Section E excluded
 
 allocLines = List();
+totalAssigned = 0;
+for each line in costing.Costing_Material_Lines
+{
+  totalAssigned = totalAssigned + line.Required_Qty;
+}
 for each line in costing.Costing_Material_Lines
 {
   allocLines.add({
@@ -29,7 +34,8 @@ for each line in costing.Costing_Material_Lines
     "Assigned_Qty": line.Required_Qty,
     "Rate": line.Rate,
     "Material_Cost": line.Material_Cost,
-    "Allocation_Ratio_Percent": (line.Required_Qty / 400) * 100, // ratio vs total project kg — see crossValidate for the real check
+    // C32: ratio vs THIS project's total kg, not a hardcoded 400
+    "Allocation_Ratio_Percent": totalAssigned > 0 ? round(line.Required_Qty / totalAssigned * 100, 2) : 0,
     "80%_Alert_Flag": true,
     "Consumed_Qty": 0,
     "Issued_Qty": 0,

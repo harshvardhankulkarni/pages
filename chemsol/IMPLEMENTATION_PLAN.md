@@ -216,7 +216,7 @@ Build first — all transactional forms depend on these.
 - System lines define System→FG→RM composition that drives backend consumption
 
 ### 3.2 Project
-**Purpose**: Root entity — every downstream form links here. Auto-created from SO.
+**Purpose**: Root entity — every downstream form links here. Created on Costing Approved (single creation point — C2/F3).
 **Department**: Project Manager / Coordinator
 
 || # | Field | Type | Req ||
@@ -877,7 +877,7 @@ MR Draft → [Production Verifies: checks MR qty vs SO system req via BOM]
 
 ### Week 3-4: Sales & Project
 - Sales Order with conditional subforms (System Lines / FG Lines)
-- Project (auto-created from SO)
+- Project (created on Costing Approved)
 - SO → Project automation
 
 ### Week 4-6: Costing Sheet, Production Plan & MR [NEW ORDER]
@@ -973,7 +973,7 @@ Accelerate the end‑to‑end flow by eliminating 15 identified bottlenecks acro
 - **Validate master data**: Add validation rules (mandatory fields, unique codes) and schedule a weekly data‑quality report.
 
 #### Phase 2 – Sales & Project (Weeks 3‑4)
-- **SO → Project automation**: Deluge `on Submit` creates Project record instantly and copies SO fields.
+- **SO → Costing Sheet automation**: Deluge `on Submit` (Supply+Apply) creates Costing Sheet (Draft). Project is created ONLY on Costing Approved (C2/F3).
 - **Dashboard**: Real‑time SO‑to‑Project conversion dashboard for sales managers.
 
 #### Phase 3 – Costing Sheet, Production Plan & MR (Weeks 4‑6) [REVISED]

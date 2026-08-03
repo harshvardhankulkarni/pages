@@ -7,7 +7,10 @@
 // any line >5% -> Variance_Flag + warning; any line >10% -> block (throw).
 
 // expected kg per RM from SO System Lines x Composition x BOM
-so = lookupRecords(SO_Master, {"Project_ID": input.Project_ID}).get(0);
+// C32: SO resolved via MR -> Costing_Sheet_Ref -> SO_Reference (SO_Master has
+// NO Project_ID — Project is created only at Costing approval, C2/F3).
+cs = input.Costing_Sheet_Ref;
+so = cs.SO_Reference;
 expectedByRM = Map();
 for each sysLine in so.System_Lines
 {
@@ -18,7 +21,9 @@ for each sysLine in so.System_Lines
     for each bom in boms
     {
       qty = sysLine.Area * comp.Qty_Per_Sqm * bom.Ratio;
-      expectedByRM.put(bom.RM_Code, expectedByRM.get(bom.RM_Code, 0) + qty);
+      cur = expectedByRM.get(bom.RM_Code);
+      if(cur == null) { expectedByRM.put(bom.RM_Code, qty); }
+      else { expectedByRM.put(bom.RM_Code, cur + qty); }
     }
   }
 }

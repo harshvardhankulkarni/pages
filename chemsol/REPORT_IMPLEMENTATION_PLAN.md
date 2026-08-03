@@ -14,9 +14,9 @@ These gaps are **blocking prerequisites**. Phase 0 resolves them all before any 
 | G2 | **Project (2B)** | No Revenue/P&L formula; **Task Budget subform missing** (BRD expects it) | Project P&L (R2), category-wise P&L, "Task Budget Actuals pending" notification | Add `Total Revenue` (AutoFetch SO Total), `Total Actual Cost` (auto from MR/SCE/BMR), `P&L` formula; add **Task Budget subform** (Category, Description, Budget Qty, Rate, Budget Amount, Actual Qty, Actual Amount) |
 | G3 | **Costing Sheet (3A)** | No explicit section subtotal fields or Total Costing Amount | Costing Status, Costing vs Actual (R3) | Add 5 section subtotal formulas (A–E) + `Total Costing Amount` formula |
 | G4 | **MR (3C)** | `Total MR Cost` not a real field; Allocation has no `Issued Qty` | R3 Project Cost Baseline; Project Inventory Status | Add `Total MR Cost` formula (Material + Application + Transport + Tools); add `Issued Qty` (auto) on Allocation, updated by MIS-Post Deluge |
-| G5 | **PO (4B)** | No `Status`; line items no Received/Balance/Receipt Status; no Delivery Days | Open PO Register, PO vs GRN Pending, Vendor Performance (R4) | Add `Status` dropdown; line fields `Received Qty` (auto), `Balance Qty` (formula), `Receipt Status` (formula: Pending/Partial/Complete); add `Delivery Days` computed at GRN submit (GRN Date − PO Delivery Date) |
+| G5 | **PO (4B)** | No `Status`; line items no Received/Balance/Receipt Status; no Delivery Days | Open PO Register, PO vs GRN Pending, Vendor Performance (R4) | Add `Status` dropdown; line fields `Received Qty` (auto), `Balance Qty` (formula), `Receipt Status` (formula: Not Started / Partial / Complete — aligned with forms.html; GRN_Post hook sets Partial/Complete); add `Delivery Days` computed at GRN submit (GRN Date − PO Delivery Date); add header `Total Amount` formula (Basic_Total + GST_Total — needed by PO Value by Supplier) |
 | G6 | **FGHM (5F)** | No `Status` (Pending Acceptance / Accepted) | R5 FG Handover Pending | Add `Status` dropdown, auto-set on inline acceptance |
-| G7 | **RM/FG Inventory (6A/6B)** | No `Standard Rate` on ledger | Inventory Valuation (R6) | AutoFetch `Standard Rate` from Item Muster |
+| G7 | **RM/FG Inventory (6A/6B)** | No `Standard Rate` on ledger; FG ledger has no `Category` | Inventory Valuation (R6) | AutoFetch `Standard Rate` from Item Muster; add `Category` lookup on FG Inventory (group-by source for valuation/Stock by Category) |
 | G8 | **SCE (6D) + BMR (5C) lines** | No Rate/Amount on line items | Costing vs Actual Variance, P&L (R3) | Add `Rate` (AutoFetch Standard Rate from Item Muster) + `Amount` (formula: Qty × Rate) per line |
 | G9 | **Reports guide** | FG Consumption Log + Project FG Position (form 6C exists) missing from R6 | R6 completeness | Add 2 report rows to reports.html R6 |
 
@@ -44,8 +44,9 @@ These gaps are **blocking prerequisites**. Phase 0 resolves them all before any 
    - Header `Status` dropdown: Draft / Sent / Partially Received / Fully Received / Cancelled (C9 — aligned to forms.html; GRN hook sets Partially/Fully Received)
    - Line item `Received Qty` (Number, auto-updated) — set by Deluge on GRN-Post
    - Line item `Balance Qty` formula: `Ordered Qty − Received Qty`
-   - Line item `Receipt Status` formula: Pending / Partial / Complete
+   - Line item `Receipt Status` formula: Not Started / Partial / Complete
    - Header `Delivery Days` (Number) — computed at GRN submit: `GRN Date − PO Delivery Date`
+   - Header `Total Amount` formula: `Basic_Total + GST_Total` (per-line totals from poGstSplit.deluge — F12)
 6. **G6 — FGHM `Status` dropdown:** Pending Acceptance / Accepted (auto-set on inline acceptance)
 7. **G7 — RM/FG Inventory:** Add `Standard Rate` field (AutoFetch from Item Muster)
 8. **G8 — SCE + BMR line items:** Add `Rate` (AutoFetch from Item Muster) + `Amount` formula per line
@@ -135,7 +136,7 @@ These gaps are **blocking prerequisites**. Phase 0 resolves them all before any 
 | PR Status Report | Summary | PR | Status | COUNT(PR Number) | — | — |
 | Open PO Register | Detail | PO | — | — | Status ≠ Fully Received / Cancelled | G5 |
 | PO Value by Supplier | Summary | PO | Supplier Code | SUM(Total Amount), COUNT(PO Number) | — | — |
-| Purchase by Item Group | Summary | PO (lines) | Item Category | SUM(Total Amount) | Date range | — |
+| Purchase by Item Group | Summary | PO (lines) | Item Code | SUM(Total Amount) | Date range | G5 |
 | PO vs GRN Pending | Detail | PO (lines) | — | — | Balance Qty > 0 | G5 |
 | Vendor Performance | Summary | PO | Supplier | COUNT(PO), AVG(Delivery Days) | — | G5 |
 | GRN Register | Detail | GRN | — | — | Date range | — |
@@ -158,7 +159,7 @@ These gaps are **blocking prerequisites**. Phase 0 resolves them all before any 
 | Production Job Status | Summary | Production Job | Status | COUNT(Job No) | — | — |
 | Open Production Jobs | Detail | Production Job | — | — | Status = Scheduled/In Progress | — |
 | Daily Production Trend | Chart (Bar) | BMR | Date | SUM(FG Output) | Date range | — |
-| BMR vs BOM Variance | Detail | RM Consumption | FG Code | — | — | — |
+| BMR vs BOM Variance | Detail | RM Consumption | BMR Reference | — | — | — |
 | Production Efficiency | Summary | Packing | FG Code | SUM(Packed Qty) | — | — |
 | FG Handover Pending | Detail | FGHM | — | — | Status = Pending Acceptance | G6 |
 
@@ -184,7 +185,7 @@ These gaps are **blocking prerequisites**. Phase 0 resolves them all before any 
 | Material Return Report | Detail | MRT | — | — | Project ID, Reason, Condition | — |
 | Returns by Condition | Summary | MRT (lines) | Condition | SUM(Return Qty) | — | — |
 | FG Consumption Log | Detail | FG Consumption Entry | — | — | Project ID, Date | — |
-| Project FG Position | Summary | Project FG Consumption | Project ID, FG Code | SUM(Received), SUM(Consumed), SUM(Remaining) | — | — |
+| Project FG Position | Summary | Project FG Consumption + FGHM | Project ID, FG Code | SUM(Received) [from FGHM], SUM(Consumed) [from Project_FG_Consumption], SUM(Remaining) | — | G9 |
 
 **Verification:** Valuation math (Closing × Rate); FG Position shows received/consumed/remaining. Push.
 
@@ -199,11 +200,11 @@ These gaps are **blocking prerequisites**. Phase 0 resolves them all before any 
 | **Purchase** | Total Purchase This Month · Open POs · Pending PR Approvals | Purchase by Item Group (Bar) · Vendor Delivery (Bar) | Open PO Register · PO vs GRN Pending |
 | **Sales** | SO Count · SO Value (YTD) | SO Value Trend (Line) · SO Type Split (Pie) | Sales Register · Project Status |
 | **MR / Costing** | MR Count by Stage · Total MR Cost | MR Status (Funnel) · Costing Status (Pie) | MR Status Tracking · Material Allocation vs Consumption |
-| **Store** | RM Stock Value · Below-Min Items | Stock by Category (Pie) · Reorder Alerts (Bar) | RM Stock Status · FG Stock Status · Stock Movement Log |
+| **Store** | RM Stock Value · Below-Min Items | Stock by Category (Pie — from RM/FG Inventory group-by Category, G7) · Reorder Alerts (Bar) | RM Stock Status · FG Stock Status · Stock Movement Log |
 | **Production** | Batches Today · Open Jobs · Pending MIS | Daily Production (Bar) · Job Status (Pie) | MIS Register · Production Job Status · BMR vs BOM Variance |
 | **Site Supervisor** | Consumption Today · Active 80% Alerts | Consumption by Area (Bar) · Consumption by RM (Bar) | Site Consumption Log · Material Return Report |
 | **Costing** | Costing Approvals · Project P&L Sum | Costing vs Actual (Bar) · Project Inventory (Bar) | Project Inventory Status · Costing vs Actual Variance |
-| **Project Management** | Open Projects · Active POs per Project | Project Status (Pie) · MR Status per Project (Bar) | Project Status · MR Status per Project · 80% Alert List |
+| **Project Management** | Open Projects · Open POs (POs carry no Project ID — Stream A) | Project Status (Pie) · MR Status per Project (Bar) | Project Status · MR Status per Project · 80% Alert List |
 
 **Verification:** Every KPI card/chart/report widget renders; drilldown links work; dept access correct. Push.
 

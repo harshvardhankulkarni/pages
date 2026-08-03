@@ -218,6 +218,7 @@ def seed(f):
     f.stock[("ST-01", "RM-001")] = 200
     f.stock[("ST-01", "RM-002")] = 400
     f.stock[("ST-01", "PK-001")] = 50
+    f.suppliers = {"SUP-0001": {"name": "ResinChem Supplies", "state": "Maharashtra"}}
 
 
 def run():
@@ -278,7 +279,7 @@ def run():
     project["status"] = "In Progress"
     project["budget_total"] = 7500 + 30000 + 7200 + 3500 + 2000  # UAT Step 3a
     plan_no = f.number_series("PLAN")
-    plan = {"no": plan_no, "lines": [{"rm": "RM-001", "req": 275.0}, {"rm": "RM-002", "req": 125.0}]}
+    plan = {"no": plan_no, "status": "Draft", "lines": [{"rm": "RM-001", "req": 275.0}, {"rm": "RM-002", "req": 125.0}]}
     for l in plan["lines"]:
         l["available"] = f.available_stock("ST-01", l["rm"])
         l["shortage"] = max(0.0, l["req"] - l["available"])
@@ -289,6 +290,10 @@ def run():
     check("P2", "Plan: RM-002 no shortage", plan["lines"][1]["shortage"] == 0)
 
     # ============ PHASE 3 — MR gate (5-state, C30) ============
+    # UAT 3b: MR auto-derive requires Plan Released + Costing Approved
+    plan["status"] = "Released"
+    check("P3", "MR auto-derived only after Plan Released + Costing Approved (UAT 3b)",
+          plan["status"] == "Released" and costing["status"] == "Approved", plan["status"])
     mr_no = f.number_series("MR")
     mr = {"no": mr_no, "project": "PRJ-2026-0001", "mr_status": "Draft",
           "components": {"Material": sec_a, "Application": sec_b,
@@ -404,6 +409,25 @@ def run():
     qc = {"no": f.number_series("QC"), "grn": grn["no"], "accepted": 75, "status": "Passed"}
     check("P1", "QC: Passed, accepted 75", qc["status"] == "Passed" and qc["accepted"] == 75)
 
+    # C32: G1 exit criterion — partial GRN path (rollback test, off canonical flow)
+    saved_stock = dict(f.stock)
+    saved_moves = len(f.moves)
+    po_partial = {"no": "PO-TEST-1", "type": "RMWAD", "status": "Sent",
+                  "lines": [{"rm": "RM-002", "qty": 30, "rate": 340, "received": 0,
+                             "balance": 30, "status": "Not Started",
+                             "delivery_date": datetime(2026, 1, 12)}]}
+    grn_partial = {"no": "GRN-TEST-1",
+                   "lines": [{"rm": "RM-002", "ordered": 30, "received": 20, "qc": "Pass"}],
+                   "date": datetime(2026, 1, 17)}
+    f.post_grn(grn_partial, "ST-01", po_partial)
+    pl_partial = po_partial["lines"][0]
+    check("P1", "Partial GRN: +20 kg posted, PO line Partial, PO NOT Fully Received",
+          f.stock[("ST-01", "RM-002")] == 420 and pl_partial["received"] == 20 and
+          pl_partial["balance"] == 10 and pl_partial["status"] == "Partial" and
+          po_partial["status"] == "Sent", pl_partial)
+    f.stock = saved_stock
+    del f.moves[saved_moves:]
+
     # ============ PHASE 4 — MIS post -> Production -> FGHM ============
     mis["status"] = "Posted"
     for line in mis["lines"]:
@@ -467,6 +491,7 @@ def run():
           not f.alloc[("PRJ-2026-0001", "RM-001")]["fully_consumed"])
 
     # ============ PHASE 5 — Site ops + inventory ============
+    sce_accepted = 0
     sce1 = {"no": f.number_series("SCE"), "project": "PRJ-2026-0001",
             "lines": [("RM-001", 10), ("RM-002", 5)]}
     consumed_before = f.alloc[("PRJ-2026-0001", "RM-001")]["consumed"]
@@ -491,10 +516,22 @@ def run():
     check("P5", "MRT: Good condition restores stock -> RM-001 10 / RM-002 285",
           f.stock[("ST-01", "RM-001")] == 10 and f.stock[("ST-01", "RM-002")] == 285)
 
+    # C32: UAT Step 8b — Damaged return credits allocation, stock NOT restored (rollback)
+    saved_stock2 = dict(f.stock)
+    saved_c1, saved_r1 = a1["consumed"], a1["returned"]
+    f.material_return("PRJ-2026-0001", [("RM-001", 2, "Damaged")], "ST-01")
+    check("P5", "MRT Damaged: credits allocation, stock NOT restored (UAT 8b)",
+          a1["consumed"] == saved_c1 - 2 and a1["returned"] == saved_r1 + 2 and
+          f.stock[("ST-01", "RM-001")] == saved_stock2[("ST-01", "RM-001")], a1["returned"])
+    f.stock = saved_stock2
+    a1["consumed"], a1["returned"] = saved_c1, saved_r1
+    a1["pct"] = saved_c1 / a1["assigned"] * 100
+
     sce2 = {"no": f.number_series("SCE"), "project": "PRJ-2026-0001",
             "lines": [("RM-001", 10), ("RM-002", 5)]}
     for rm, qty in sce2["lines"]:
         f.consume("PRJ-2026-0001", rm, qty)
+    sce_accepted += 1
     check("P5", "SCE 8c accepted: RM-001 100% / RM-002 95.6%",
           close_enough(a1["pct"], 100) and close_enough(a2["pct"], 95.6, 0.1))
     check("P5", "G8: SCE line Amounts from Allocation rate — 10x220=2,200 / 5x340=1,700",
@@ -515,13 +552,16 @@ def run():
     # ============ REPORT SWEEP (UAT Report Coverage Check R1-R7) ============
     check("REP", "R1: master data seeds present (EP02, RM-001/2, FG-002/3, SUP-0001)",
           "EP02" in f.comp and "RM-001" in f.items and "RM-002" in f.items and
-          "FG-002" in f.items and "FG-003" in f.items)
+          "FG-002" in f.items and "FG-003" in f.items and "SUP-0001" in f.suppliers)
     check("REP", "R2: Sales Register SO Rs 175,000; Project In Progress; Task Budget Rs 50,200",
           so["total"] == 175000 and project["status"] == "In Progress" and
           project["budget_total"] == 50200)
     check("REP", "R3: Costing Status 1 Approved Rs 146,000; MR Released Rs 144,000 baseline; 80% alerts fired",
           costing["status"] == "Approved" and costing_total == 146000 and
           mr["total"] == 144000 and len([t for t, *_ in f.alerts if t == "80%"]) >= 2)
+    actual_cons_cost = round(100.5 * 220 + 49.5 * 340 + 174.5 * 220 + 75 * 340 + 10 * 220 + 5 * 340, 2)
+    check("REP", "R3 variance: planned Rs 144,000 vs actual BMR+SCE Rs 106,730 (UAT Step 10)",
+          actual_cons_cost == 106730 and round(144000 - actual_cons_cost, 2) == 37270, actual_cons_cost)
     check("REP", "R4: Open PO Register empty (PO Fully Received); Vendor Performance avg Delivery Days 5",
           po["status"] == "Fully Received" and l0["delivery_days"] == 5)
     check("REP", "R5: MIS Register 275/125 issued; Today's Production 448 kg; FG Handover Pending empty",
@@ -530,7 +570,7 @@ def run():
     check("REP", "R6: RM stock 10/285; Valuation 10x220 + 285x340 = Rs 99,100; SCE log 1 accepted; FG position FG-003 20",
           f.stock[("ST-01", "RM-001")] == 10 and f.stock[("ST-01", "RM-002")] == 285 and
           (10 * 220 + 285 * 340) == 99100 and
-          sum(1 for m in f.moves if m["type"] == "SCE") == 0 and  # SCE is allocation-level, not stock movement
+          sce_accepted == 1 and  # SCE resolves at allocation level — 8a rejected, 8c accepted
           f.stock[("ST-01", "FG-003")] == 20)
     check("REP", "R7: dashboard sources all renderable (all report numbers traceable)",
           pnl == 31000 and so["total"] == 175000 and project["actual_cost"] == 144000)

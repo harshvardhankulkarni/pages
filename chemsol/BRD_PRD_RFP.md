@@ -280,7 +280,7 @@ Every form uses a **single field table** with a **Section** column. The Section 
 | 16 | Site Manager/Incharge | Text | Header | | — |
 | 17 | Contact No (Site) | Phone | Header | | — |
 | 18 | Project Type | Dropdown | Header | | 1.Industrial, 2.Commercial — **conditional: shown/required only when Sales Type = Supply+Apply** |
-| 19 | **Sales Type (CONTROLLING FIELD)** | Dropdown | Header | * | 1. Supply+Apply (sell SYSTEM → auto-creates Project) · 2. Supply Only (sell FG directly → NO Project). Drives subform visibility + automation. |
+| 19 | **Sales Type (CONTROLLING FIELD)** | Dropdown | Header | * | 1. Supply+Apply (sell SYSTEM → auto-creates Costing Sheet; Project on Costing Approved) · 2. Supply Only (sell FG directly → NO Project). Drives subform visibility + automation. |
 | 20 | **Subform A — System Lines** | **Subform (N rows)** | **Subform** | | **Visible when Sales Type = Supply+Apply.** System/Product line items |
 |   | — System Code | Lookup | Subform Column | * | From System Master |
 |   | — System Name | AutoFetch | Subform Column | * | — |
@@ -327,7 +327,7 @@ Every form uses a **single field table** with a **Section** column. The Section 
 
 #### FORM: Create Project
 
-**Purpose:** Central hub record. Auto-created from SO acceptance.  
+**Purpose:** Central hub record. Created on Costing Approved — single creation point (C2/F3); SO acceptance creates the Costing Sheet, NOT the Project.  
 **Subforms:** Systems (N rows), Task Budget (N rows)
 
 | # | Field Name | Field Type | Section | Req | Notes / Options |
@@ -875,7 +875,7 @@ Forms requiring subforms:
 | Goods Receipt Note (GRN) | Line Items | N |
 | Goods Receipt Note (GRN) | Transport (conditional) | 1 |
 | QC / QA | Inspection Line Items | N |
-| Material Requisition (MR) | MR Status (Draft/Prod Verified/Costing Approved/Released) | 1 (header) |
+| Material Requisition (MR) | MR Status (Draft/Pending Production Verification/Production Verified/Costing Approved/Released) | 1 (header) |
 | Material Requisition (MR) | Line Items | N |
 | Material Requisition (MR) | Material Allocation (Material Cost), Application Cost, Transportation Cost, Tools & Tackles (4 cost components → Total MR Cost) | N each |
 | Material Issue Slip (MIS) | Line Items | N |

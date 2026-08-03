@@ -8,6 +8,9 @@
 
 basicTotal = 0;
 gstTotal = 0;
+cgstTotal = 0;
+sgstTotal = 0;
+igstTotal = 0;
 
 for each line in input.PO_Line_Items
 {
@@ -32,11 +35,16 @@ for each line in input.PO_Line_Items
 
   basicTotal = basicTotal + line.Basic;
   gstTotal = gstTotal + line.GST_Amount;
+  cgstTotal = cgstTotal + line.CGST;
+  sgstTotal = sgstTotal + line.SGST;
+  igstTotal = igstTotal + line.IGST;
 }
 
 input.Basic_Total = basicTotal;
 input.GST_Total = gstTotal;
 input.PO_Total = basicTotal + gstTotal;
-input.CGST_Total = basicTotal != 0 ? (gstTotal / 2) : 0;
-input.SGST_Total = input.CGST_Total;
-input.IGST_Total = 0;
+// C32: footer sums the PER-LINE splits — halving the footer total was wrong
+// for mixed intra/inter-state POs or differing per-line GST% (F12).
+input.CGST_Total = cgstTotal;
+input.SGST_Total = sgstTotal;
+input.IGST_Total = igstTotal;

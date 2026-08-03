@@ -1,0 +1,26 @@
+// ============================================================
+// Costing SLA escalation (A-08) — stuck >24 hr in Under Review
+// Verified: flow_sim.py P2 ("Costing stuck >24h -> admin escalation")
+// ============================================================
+// Schedule on Costing_Sheet: trigger date = Created_Time, run every 5 minutes.
+// Criteria: CS_Status == "Under Review".
+// If Costing team hasn't decided in 24 hr -> escalate to Admin (C32: file added
+// to close the automation.html/schedule gap found in reverify sweep).
+
+cs = input; // scheduled record
+
+if(cs.CS_Status == "Under Review")
+{
+  elapsed = now().getTime() - cs.Created_Time.getTime();
+  if(elapsed > 24 * 60 * 60 * 1000) // 24 hr
+  {
+    sendmail
+    [
+      from: zoho.login.email,
+      to: "admin@chemsol.in",
+      subject: "Costing SLA Escalation - " + cs.CS_Number,
+      message: "Costing Sheet " + cs.CS_Number + " has been Under Review for more than 24 hr."
+        + " Project " + cs.SO_Reference + " is blocked on this decision."
+    ];
+  }
+}

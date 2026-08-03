@@ -22,6 +22,17 @@ if(newPct >= 80 && prevPct < 80)
     message: input.rm_code + " at " + round(newPct) + "% consumed for Project " + input.project_name
       + ". Assigned qty nearing exhaustion - plan reorder."
   ];
+  // C32: A-20 "email + dashboard flag" — mark the allocation line (row 11
+  // "Alert Triggered", readonly) so dashboards/reports show the fired alert.
+  if(!isNull(input.allocation_id))
+  {
+    updateRecord
+    {
+      "Form_Type": "MR_Allocation",
+      "ID": input.allocation_id,
+      "Alert_Triggered": true
+    };
+  }
 }
 
 if(newPct >= 100 && prevPct < 100)

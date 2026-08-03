@@ -184,20 +184,21 @@
         <div class="auto-sub-title">Auto-generate Item Code</div>
         <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Config:</strong> Field Properties -> Item Code -> Auto Numbering</div></div>
         <div class="auto-step"><span class="auto-step-num">2</span><div><strong>Format:</strong> <code>CT-{Category}-{YYYY}-{XXXX}</code> where Category = RM/FG/PKG/TLS</div></div>
-        <div class="auto-step"><span class="auto-step-num">3</span><div><strong>Deluge:</strong> On form load, set prefix based on Category dropdown selection</div></div>
+        <div class="auto-step"><span class="auto-step-num">3</span><div><strong>Deluge:</strong> On form load, set prefix based on Category dropdown — P1 counter pattern (F1: Auto Number is numeric-only, autogen() not available)</div></div>
         <div class="auto-code">
-// On Load - Form Rule
-if(input.Category == "RM")    { zoho.form.setValue("Item_Code", autogen("RM-YYYY-XXXX")); }
-if(input.Category == "FG")    { zoho.form.setValue("Item_Code", autogen("FG-YYYY-XXXX")); }
-if(input.Category == "Packaging") { zoho.form.setValue("Item_Code", autogen("PKG-YYYY-XXXX")); }
-if(input.Category == "Tools & Consumable") { zoho.form.setValue("Item_Code", autogen("TLS-YYYY-XXXX")); }
+// On Load - Form Rule (F1: P1 counter — numberSeries.deluge)
+if(input.Category == "RM") { zoho.form.setValue("Item_Code", numberSeries({"prefix": "RM"})); }
+if(input.Category == "FG") { zoho.form.setValue("Item_Code", numberSeries({"prefix": "FG"})); }
+if(input.Category == "Packaging") { zoho.form.setValue("Item_Code", numberSeries({"prefix": "PKG"})); }
+if(input.Category == "Tools & Consumable") { zoho.form.setValue("Item_Code", numberSeries({"prefix": "TLS"})); }
         </div>
 
         <div class="auto-sub-title">Standard Rate Visibility</div>
-        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Form Rule:</strong> On form load, hide Standard Rate if logged-in user department is NOT Purchase or Store</div></div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Form Rule:</strong> On form load, hide Standard Rate unless logged-in role is Purchase or Store (F14 — set via Creator permission sets + form rule)</div></div>
         <div class="auto-code">
-// Form Rule - On Load
-if(zoho.login.department != "Purchase" && zoho.login.department != "Store") {
+// Form Rule - On Load (F14: role-based — configure via permissions; zoho.login
+// role check as guard for form-level hiding)
+if(zoho.login.role.get("Name") != "Purchase" && zoho.login.role.get("Name") != "Store & Logistics") {
   zoho.form.setFieldProperty("Standard_Rate", "visible", false);
 }
         </div>
@@ -265,27 +266,24 @@ if(input.Sales_Type == "Supply Only") {
         <div class="auto-sub-title">Auto-generate SO Number</div>
         <div class="auto-step"><span class="auto-step-num">1</span><div>Field Properties -> SO No -> Auto Numbering: <code>SO-{YYYY}-{XXXX}</code></div></div>
 
-        <div class="auto-sub-title">Auto-create Project (Supply+Apply only)</div>
-        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Workflow Rule:</strong> On Submit, check if Sales Type = "Supply+Apply"</div></div>
-        <div class="auto-step"><span class="auto-step-num">2</span><div>Criteria: <code>Sales_Type == "Supply+Apply"</code></div></div>
-        <div class="auto-step"><span class="auto-step-num">3</span><div>Action: Create new Project record</div></div>
+        <div class="auto-sub-title">Auto-create Costing Sheet Draft (A-07)</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Workflow Rule:</strong> On Record Modified, when Status → "Accepted" and Sales Type = "Supply+Apply"</div></div>
+        <div class="auto-step"><span class="auto-step-num">2</span><div>Action: Create Costing Sheet (Draft) — Section A auto-expands on submit (expandCosting.deluge)</div></div>
         <div class="auto-code">
-// Workflow Rule - On Submit (when Sales_Type == "Supply+Apply")
-createRecord
+// Workflow Rule - On Record Modified (SO_Master, Status -> "Accepted")
+// A-07 (C2/F3): SO acceptance creates the COSTING SHEET, not the Project.
+// Project is created ONLY at Costing approval (2D costingApproveChain.deluge).
+if(input.Sales_Type == "Supply+Apply")
 {
-  "Form_Type": "Project_Master",
-  "SO_Reference": input.ID,
-  "Project_Name": input.Client_Org + " - " + input.Site_Name,
-  "Address": input.Regd_Address,
-  "Project_Manager": "",
-  "Execution_Base": "Area Basis",
-  "Start_Date": today(),
-  "End_Date": today().addDays(30),
-  "Status": "Planned",
-  "Project_Cost": input.Total_Amount
-};
+  createRecord
+  {
+    "Form_Type": "Costing_Sheet",
+    "SO_Reference": input.SO_Number,
+    "CS_Status": "Draft"
+  };
+}
         </div>
-        <div class="auto-note"><strong>Important:</strong> The SO -> Project link is one-way. Project stores SO_Reference linking back. Do NOT allow editing Project after creation from SO without Admin access.</div>
+        <div class="auto-note"><strong>F3/C2/C6:</strong> NO Project on SO submit — single creation point = Costing approval (Project + Production Plan together).</div>
 
         <div class="auto-sub-title">Total Amount Formula</div>
         <div class="auto-step"><span class="auto-step-num">1</span><div>Add a Formula field: <code>Total_Amount = SUM(System_Lines.Amount) + SUM(FG_Lines.Amount)</code></div></div>
@@ -514,7 +512,7 @@ STATE 4: "Costing Approved"
   -> Transition: "Release"
      -> Action: Set Status = "Released"
      -> Action: Lock all fields (read-only)
-     -> Action: Auto-create MIS Draft (Deluge — C15): one record per MR line, Issued Qty = 0, Status = "Draft"
+     -> Action: Auto-create MIS Draft via On Record Modified workflow (F5 — NOT inside Blueprint; one MIS header + line subform, NOT one record per line)
      -> Notification: Send email to Store + Production: "MR Released - proceed with MIS"
 
 STATE 5: "Released" (Terminal)
@@ -522,36 +520,45 @@ STATE 5: "Released" (Terminal)
   -> MR is now available for MIS form lookup
         </div>
 
-        <div class="auto-sub-title">Auto-create MIS Draft on Release (C15)</div>
-        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Workflow Rule:</strong> On status change to "Released", create MIS Draft with items auto-fetched from MR lines</div></div>
+        <div class="auto-sub-title">Auto-create MIS Draft on Release (C15/F5)</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Workflow Rule:</strong> On Record Modified (not Blueprint — 50-statement cap, F5), when MR_Status → "Released", create ONE MIS header + line subform from Material Allocation</div></div>
         <div class="auto-code">
-// Workflow Rule - On Submit (when Status == "Released" && oldValue.Status == "Costing Approved")
-// C15: Auto-create MIS Draft — zero manual re-entry, matches AGENTS.md "MR Released → auto-MIS"
-for each line in input.MR_Line_Items
+// Workflow Rule - On Record Modified (MR_Master, MR_Status == "Released")
+// F5/C15: ONE MIS header + MIS_Line_Items subform (NOT one record per line).
+// Mirrors mrReleaseAutoMIS.deluge — also sets Project.Total Actual Cost (G2).
+misLines = List();
+for each a in input.Material_Allocation
 {
-  createRecord
-  {
-    "Form_Type": "MIS_Master",
-    "MR_Reference": input.ID,
-    "Project_ID": input.Project_ID,
-    "Item_Code": line.Item_Code,
-    "Item_Name": line.Item_Name,
-    "Category": line.Category,
-    "UOM": line.UOM,
-    "Required_Qty": line.Assigned_Qty,
+  misLines.add({
+    "Item_Code": a.Item_Code,
+    "Item_Name": a.Item_Name,
+    "Required_Qty": a.Assigned_Qty,
     "Issued_Qty": 0,
-    "Balance_Qty": line.Assigned_Qty,
-    "Status": "Draft"
-  };
+    "Balance_Qty": a.Assigned_Qty,
+    "UOM": a.UOM
+  });
 }
+
+createRecord
+{
+  "Form_Type": "MIS_Master",
+  "MIS_Number": numberSeries({"prefix": "MIS"}),
+  "MR_Ref": input.ID,
+  "Project_ID": input.Project_ID,
+  "Date": today(),
+  "Status": "Draft",
+  "MIS_Line_Items": misLines
+};
 
 // Notify Store + Production
 sendmail
 [
-  from: "system@chemsol.com",
-  to: "store@chemsol.com, production@chemsol.com",
+  from: zoho.login.email,
+  to: "store@chemsol.in",
+  cc: "production@chemsol.in",
   subject: "MR Released - MIS Draft created: " + input.MR_Number,
-  message: "MR " + input.MR_Number + " for Project " + input.Project_ID.Project_Name + " has been Released. MIS Draft created with " + input.MR_Line_Items.size() + " lines. Please issue material."
+  message: "MR " + input.MR_Number + " for Project " + input.Project_ID.Project_Name
+    + " released. MIS Draft created with " + misLines.size() + " lines. Please issue material."
 ];
         </div>
 
@@ -577,30 +584,12 @@ SUM(Tools_Tackles.Amount)
 Total_Material_Cost + Total_Application_Cost + Total_Transportation_Cost + Total_Tools_Cost
         </div>
 
-        <div class="auto-sub-title">Material Allocation Auto-populate from MR Lines</div>
-        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Deluge Script:</strong> On MR form Submit, copy item details from MR Line Items to Material Allocation subform</div></div>
+        <div class="auto-sub-title">Material Allocation = the line table (F4)</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>F4:</strong> MR has ONE canonical line table — Material Allocation. There is NO separate MR_Line_Items form.</div></div>
+        <div class="auto-step"><span class="auto-step-num">2</span><div>Allocation rows are created by <strong>mrDerive.deluge</strong> at auto-derive (from Costing Section A): Assigned Qty, Rate, Material Cost, Allocation Ratio %, 80% Alert Flag (config ON), Consumed/Issued/Returned/Remaining, Fully Consumed, Variance fields.</div></div>
         <div class="auto-code">
-// Workflow Rule - On Submit - "AutoPopulate Material Allocation"
-for each item in input.MR_Line_Items
-{
-  map criteria = {"MR_ID": input.ID, "Item_Code": item.Item_Code};
-  existing = lookupRecords(Material_Allocation, criteria);
-  if(isNull(existing))
-  {
-    createRecord
-    {
-      "Form_Type": "Material_Allocation",
-      "MR_ID": input.ID,
-      "Item_Code": item.Item_Code,
-      "Item_Name": item.Item_Name,
-      "UOM": item.UOM,
-      "Assigned_Qty": item.Required_Qty,
-      "Rate": item.Standard_Rate,  // from Item Muster
-      "Material_Cost": item.Required_Qty * item.Standard_Rate,
-      "80%_Alert_Flag": true
-    };
-  }
-}
+// No auto-populate script needed — mrDerive.deluge creates the allocation
+// rows directly when the MR is auto-created from Costing + Released Plan.
         </div>
 
         <div class="auto-sub-title">Allocation Ratio % (Formula in subform)</div>
@@ -609,50 +598,28 @@ for each item in input.MR_Line_Items
 (Assigned_Qty / SUM(Material_Allocation.Assigned_Qty)) * 100
         </div>
 
-        <div class="auto-sub-title">80% Consumption Alert</div>
-        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Workflow Rule:</strong> On record update (when Consumed_Qty changes), check Consumption %</div></div>
+        <div class="auto-sub-title">80% / 100% Consumption Alert (F8 — shared function)</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Workflow Rule:</strong> On record update (when Consumed_Qty changes), call the SHARED function — never re-implement inline</div></div>
         <div class="auto-code">
 // Workflow Rule - On Record Update (Material_Allocation subform)
-// C18: Trigger criteria: Consumption_Percentage >= 80 AND 80%_Alert_Flag == true (field is 80%_Alert_Flag, not Alert_Flag)
-
+// F8: single point of truth — checkAllocationAlert.deluge (email PM at >=80%,
+// PM + Purchase at >=100%, sets Alert_Triggered flag). Called by
+// consumeAllocation after every BMR / SCE entry.
 consumptionPct = input.Consumption_Percentage;
-if(consumptionPct >= 80 && input."80%_Alert_Flag" == true)
-{
-  alertMsg = "ALERT: " + input.Item_Name + " consumed " + round(consumptionPct) 
-           + "% of allocated " + input.Assigned_Qty + " " + input.UOM 
-           + " for Project " + input.MR_ID.Project_ID.Project_Name;
-  
-  // Send alert to Project Manager
-  sendmail
-  [
-    from: zoho.login.email,
-    to: input.MR_ID.Project_ID.Project_Manager.email,
-    subject: "80% Consumption Alert - " + input.Item_Name,
-    message: alertMsg
-  ];
-  
-  // Set Alert Triggered flag
-  input.Alert_Triggered = true;
-  
-  if(consumptionPct >= 100)
-  {
-    // Escalate to Purchase dept for reorder
-    sendmail
-    [
-      from: zoho.login.email,
-      to: "purchase@chemsol.com",
-      subject: "ALLOCATION EXHAUSTED - " + input.Item_Name,
-      message: alertMsg + ". Please initiate reorder."
-    ];
-  }
-}
+checkAllocationAlert({"allocation_id": input.ID, "rm_code": input.Item_Code,
+  "project_name": input.MR_ID.Project_ID.Project_Name,
+  "new_pct": consumptionPct, "prev_pct": input.Previous_Consumption_Pct,
+  "pm_email": input.MR_ID.Project_ID.Project_Manager.email,
+  "purchase_email": "purchase@chemsol.in"});
         </div>
 
         <div class="auto-sub-title">Escalation Reminders (Scheduled)</div>
-        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Scheduled Workflow:</strong> Runs daily at 9 AM (C10 — tighter SLAs: 2 hr Draft → reminder, 2 hr Verified → escalation, 1 hr Approved → auto-release)</div></div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Scheduled Workflow:</strong> Runs every 5 minutes on MR_Master (C10/F10 — 2 hr Draft → reminder once, 2 hr Verified → escalation, 1 hr Approved → auto-release). Mirrors mrSlaSchedules.deluge.</div></div>
         <div class="auto-code">
-// Scheduled Workflow - Daily 9 AM
-// C10: Check MRs stuck in Draft > 2 hours (scheduled check is a safety net; SLA reminders fire from status-change workflows)
+// Scheduled Workflow - every 5 minutes (MR_Master)
+// C10/F10: SLA per mrSlaSchedules.deluge — Draft > 2 hr reminder (once, via
+// SLA_Reminder_Sent flag), Production Verified > 2 hr escalation, Costing
+// Approved > 1 hr auto-release (Last_Status_Change stamps the state entry).
 draftMRs = lookupRecords(MR_Master, "Status == 'Draft' && Created_Time < now().addHours(-2)");
 for each mr in draftMRs
 {
@@ -712,18 +679,27 @@ if(!isNull(costingSheet) && costingSheet.Costing_Status == "Approved")
     "Total_Tools_Cost": costingSheet.Total_Tools_Cost
   };
   
-  // Auto-populate MR Line Items from Costing Sheet Section A
+  // Auto-populate Material Allocation from Costing Sheet Section A (F4:
+  // allocation IS the canonical line table — no separate MR_Line_Items)
   for each line in costingSheet.Section_A_Lines
   {
     createRecord
     {
-      "Form_Type": "MR_Line_Items",
+      "Form_Type": "Material_Allocation",
       "MR_ID": mrID,
       "Item_Code": line.RM_Item_Code,
       "Item_Name": line.RM_Item_Name,
       "UOM": line.UOM,
-      "Required_Qty": line.Required_Qty,
-      "Rate": line.Rate
+      "Assigned_Qty": line.Required_Qty,
+      "Rate": line.Rate,
+      "Material_Cost": line.Required_Qty * line.Rate,
+      "Allocation_Ratio_Percent": line.Required_Qty / totalAssigned * 100,
+      "80%_Alert_Flag": true,
+      "Consumed_Qty": 0,
+      "Issued_Qty": 0,
+      "Returned_Qty": 0,
+      "Remaining": line.Required_Qty,
+      "Fully_Consumed": false
     };
   }
 }
@@ -828,14 +804,14 @@ if(input.Status == "Approved" && oldValue.Status == "Pending Approval")
         4B &middot; Purchase Order (PO)
       </div>
       <div class="auto-card-body">
-        <div class="auto-sub-title">Dual Auto-numbering based on RM Type</div>
-        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Form Rule:</strong> On Load, set PO Number based on RM Type dropdown</div></div>
+        <div class="auto-sub-title">Dual numbering based on RM Type</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Form Rule:</strong> On Load, set PO Number from the P1 counter by RM Type (F1 — Auto Number is numeric-only, no prefix)</div></div>
         <div class="auto-code">
-// Form Rule - On Load
+// Form Rule - On Load (F1: autogen() unavailable — P1 counter pattern)
 if(input.RM_Type == "Coding") {
-  zoho.form.setValue("PO_Number", autogen("RMWAD-YYYY-XXXX"));
+  zoho.form.setValue("PO_Number", numberSeries({"prefix": "RMWAD"}));
 } else {
-  zoho.form.setValue("PO_Number", autogen("RM-YYYY-XXXX"));
+  zoho.form.setValue("PO_Number", numberSeries({"prefix": "RM"}));
 }
         </div>
 
@@ -847,17 +823,15 @@ if(input.RM_Type == "Coding") {
 // Formula: Total_Amount = Basic_Amount + GST_Amount
         </div>
 
-        <div class="auto-sub-title">Footer Totals (Auto-calculated)</div>
-        <div class="auto-step"><span class="auto-step-num">1</span><div>Formula fields at PO header level</div></div>
+        <div class="auto-sub-title">Footer Totals (per-line GST split — F12)</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div>Footer sums the PER-LINE CGST/SGST/IGST (poGstSplit.deluge). Halving a single footer GST% is WRONG for mixed intra/inter-state POs.</div></div>
         <div class="auto-code">
-// Formula fields at header level
-Basic_Total = SUM(PO_Line_Items.Basic_Amount);
-CGST = Basic_Total * (GST/200);   // GST/2 for intra-state
-SGST = Basic_Total * (GST/200);
-IGST = Basic_Total * (GST/100);   // for inter-state
-Grand_Total = Basic_Total + CGST + SGST;  // or + IGST
+// poGstSplit.deluge — per line: Basic = Qty * Rate; GST = Basic * GST% / 100;
+// CGST/SGST = GST/2 (intra-state) or IGST = GST (inter-state).
+// Footer: Basic_Total = SUM(lines.Basic); GST_Total = SUM(lines.GST);
+// CGST_Total = SUM(lines.CGST); SGST_Total = SUM(lines.SGST);
+// IGST_Total = SUM(lines.IGST); PO_Total = Basic_Total + GST_Total.
         </div>
-        <div class="auto-note">Use conditional formula based on Supplier GSTIN state code vs Company GSTIN state code (intra vs inter-state).</div>
 
         <div class="auto-sub-title">Printable PO Template</div>
         <div class="auto-step"><span class="auto-step-num">1</span><div>Use Zoho Creator Print Template feature (PDF)</div></div>
@@ -948,11 +922,39 @@ for each item in input.GRN_Line_Items
     "Timestamp": now(),
     "Warehouse": input.Warehouse
   };
+
+  // G5 (F9): update the PO line — Received Qty, Balance, Receipt Status,
+  // Delivery Days = GRN date - PO delivery date; then PO header status.
+  poLine = lookupRecords(PO_Line_Items,
+    {"PO_Ref.PO_Number": input.PO_Reference, "Item_Code": item.Item_Code}).get(0);
+  if(!isNull(poLine))
+  {
+    updateRecord
+    {
+      "Form_Type": "PO_Line_Items",
+      "ID": poLine.ID,
+      "Received_Qty": poLine.Received_Qty + item.Received_Qty,
+      "Balance_Qty": poLine.Quantity - (poLine.Received_Qty + item.Received_Qty),
+      "Receipt_Status": (poLine.Quantity - (poLine.Received_Qty + item.Received_Qty)) <= 0
+                         ? "Complete" : "Partial",
+      "Delivery_Days": input.GRN_Date.daysAfter(poLine.Delivery_Date)
+    };
+  }
 }
 
-// Step 3: Mark GRN as posted (read-only)
+// Step 3: Mark GRN as posted (read-only) + PO Fully Received when no balance
 input.Status = "Posted";
 input.Posted_Time = now();
+poRec = lookupRecords(PO_Master, {"PO_Number": input.PO_Reference}).get(0);
+if(!isNull(poRec) && poRec.Balance_Qty <= 0)
+{
+  updateRecord
+  {
+    "Form_Type": "PO_Master",
+    "ID": poRec.ID,
+    "Status": "Fully Received"
+  };
+}
         </div>
         <div class="auto-warn"><strong>Critical:</strong> Stock is added ONLY after posting. Before posting, GRN is a draft. Partial GRN handled via checkbox: only checked items are processed in the loop above.</div>
 
@@ -1017,8 +1019,9 @@ for each po in pendingPOs
         <div class="auto-sub-title">Gate: Only Released MRs shown</div>
         <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Form Rule:</strong> Restrict MR No lookup to only show MRs with Status = "Released"</div></div>
         <div class="auto-code">
-// Form Rule - On Load - Field Property override
-zoho.form.setFieldProperty("MR_No", "lookupCriteria", "Status == 'Released'");
+// Form Rule - On Load - Set Filter on the MR_No lookup field
+// F6: use the lookup field's Set Filter ("MR_Status is Released") in field
+// properties — lookupCriteria is not a valid form-rule API for this.
         </div>
 
         <div class="auto-sub-title">Auto-fetch Items from MR</div>
@@ -1636,11 +1639,11 @@ return 0;  // Item not found
           <tr><td>Project</td><td><span class="auto-tag tag-deluge">Deluge</span></td><td>On MR Released</td><td><strong>G2</strong> — Set Project.Total Actual Cost = MR.Total MR Cost; recalc P&L</td><td>Pending</td></tr>
 
           <tr><td colspan="5"><strong>MR — Costing Gate [CRITICAL]</strong></td></tr>
-          <tr><td>MR</td><td><span class="auto-tag tag-blueprint">Blueprint</span></td><td>Status transitions</td><td>Draft -> Prod Verified -> Costing Approved -> Released</td><td>Pending</td></tr>
-          <tr><td>MR</td><td><span class="auto-tag tag-deluge">Deluge</span></td><td>On Submit</td><td>Auto-populate Material Allocation from MR Lines</td><td>Pending</td></tr>
+          <tr><td>MR</td><td><span class="auto-tag tag-blueprint">Blueprint</span></td><td>Status transitions</td><td>Draft -> Pending Production Verification -> Production Verified -> Costing Approved -> Released (5-state, C30)</td><td>Pending</td></tr>
+          <tr><td>MR</td><td><span class="auto-tag tag-deluge">Deluge</span></td><td>Auto-derive (mrDerive)</td><td>Material Allocation created from Costing Section A (F4 — single canonical line table)</td><td>Pending</td></tr>
           <tr><td>MR</td><td><span class="auto-tag tag-workflow">Workflow</span></td><td>Consumed Qty update</td><td>80% Consumption Alert -> Email PM + Dashboard; <strong>100% -> "Allocation Exhausted" escalation to PM + Purchase</strong></td><td>Pending</td></tr>
           <tr><td>MR</td><td><span class="auto-tag tag-workflow">Workflow</span></td><td>On Released</td><td><strong>Auto-create MIS Draft</strong> (items auto-fetched from MR lines) + notify Store + Production</td><td>Pending</td></tr>
-          <tr><td>MR</td><td><span class="auto-tag tag-workflow">Workflow</span></td><td>Scheduled Daily</td><td><strong>C10</strong> — SLA: Draft &gt;2 hr → reminder, Prod Verified &gt;2 hr → escalation, Approved &gt;1 hr → auto-release</td><td>Pending</td></tr>
+          <tr><td>MR</td><td><span class="auto-tag tag-workflow">Workflow</span></td><td>Every 5 min (C10/F10)</td><td>SLA: Draft &gt;2 hr → reminder once, Prod Verified &gt;2 hr → escalation, Approved &gt;1 hr → auto-release (mrSlaSchedules)</td><td>Pending</td></tr>
           <tr><td>MR</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: MR-YYYY-XXXX</td><td>Pending</td></tr>
 
           <tr><td colspan="5"><strong>Procurement</strong></td></tr>

@@ -20,7 +20,7 @@
 | S1 | **Schema-first:** when building ANY form, add all report/automation fields in the same pass (Status, Received Qty, Rate/Amount on lines, section subtotals). Never retrofit later | The G1–G9 gap list in REPORT_IMPLEMENTATION_PLAN.md cost a whole phase; retrofit is the #1 schedule killer |
 | S2 | **Pattern library before forms:** Day 1 builds the 8 shared Deluge patterns (P1–P8 from feasibility plan) as custom functions (`numberSeries()`, `updateAllocation()`, `updateStock()`, `consumeAllocation()`, `autoPR()`, `expandCosting()`, `crossValidate()`, `postGRN()`) | Every later form reuses them — no re-writing |
 | S3 | **Vertical slices, not horizontal:** Stream A (PR→PO→GRN→QC) works end-to-end by Day 4. Then Stream B core (SO→Costing→MR→MIS). Working loops early = de-risked delivery | Proven conventions early, everything else is copy-paste |
-| S4 | **MR gate first in Stream B:** Blueprint (Draft→Verified→Approved→Released) built and tested before downstream forms | Every downstream form (MIS, BMR, FGHM) depends on MR statuses |
+| S4 | **MR gate first in Stream B:** Blueprint (Draft→Pending Production Verification→Verified→Approved→Released) built and tested before downstream forms | Every downstream form (MIS, BMR, FGHM) depends on MR statuses |
 | S5 | **Reports go live per-department** as soon as that form set is built (R4 after procurement, R5 after production…) — not batched at the end | Client sees progress weekly; feedback lands while forms are still warm |
 | S6 | **UAT is continuous:** run the UAT_VERIFICATION_PLAN scenario at every gate, not at the end | C1–C27 class bugs get caught the day they're built |
 | S7 | **2-builder parallel split:** Builder A = Stream A (procurement + inventory + R4/R6); Builder B = Stream B (project + costing + production + site + R1–R3/R5/R7). Shared master data done together Day 1–2 | Only true parallelization available; the two streams are independent by design |
@@ -67,7 +67,7 @@ Legend: `✅ verify with UAT scenario step` · `🔁 reuse pattern`
 | Day | Deliverable | Uses |
 |-----|-------------|------|
 | 9 | MR auto-derived (4 cost components pre-filled), Material Allocation subform (Assigned/Ratio/80% flag/Issued/Consumed), **cross-validation >5% flag >10% block (P5)** | P2, P5 |
-| 10 | MR **Blueprint 4-stage gate** (≤50 stmt transitions) + schedules (2 hr reminder, 2 hr escalate, 1 hr auto-release) + release → auto-MIS draft (P3). R3 report seeds | Blueprint · schedules |
+| 10 | MR **Blueprint 5-state gate** (≤50 stmt transitions) + schedules (2 hr reminder, 2 hr escalate, 1 hr auto-release) + release → auto-MIS draft (P3). R3 report seeds | Blueprint · schedules |
 
 **Gate G3:** THE critical gate works. UAT: MR steps + cross-validation + SLA schedule checks pass.
 
@@ -126,7 +126,7 @@ Legend: `✅ verify with UAT scenario step` · `🔁 reuse pattern`
 | 2 | Form rules: Sales Type swap, lookup filters (MIS→Released MRs only), PO from PR, BMR RM list from BOM | SO, MIS, PO, BMR | 1–4 |
 | 3 | Formula fields: totals, GST split, Balance Qty, Receipt Status, Allocation %, variance | all | 1–5 |
 | 4 | **Blueprint MR gate** (Draft→Verified→Approved→Released) | MR | 3 |
-| 5 | Workflow rules: SO→Project, stock updates, auto-PR, 80% alert | SO, GRN, MIS, FGHM, SCE | 1–5 |
+| 5 | Workflow rules: SO→Costing Sheet (Project on Costing Approved), stock updates, auto-PR, 80% alert | SO, GRN, MIS, FGHM, SCE | 1–5 |
 | 6 | Custom buttons: Post GRN, Post MIS, FGHM accept | GRN, MIS, FGHM | 1–4 |
 | 7 | Schedules: SLA escalations, GRN overdue 7d, min/max stock alerts | MR, GRN, Inventory | 3–5 |
 | 8 | Custom functions P1–P8 | shared | 0 |
@@ -152,7 +152,7 @@ Legend: `✅ verify with UAT scenario step` · `🔁 reuse pattern`
 | G0 | Master data + numbering + shared functions tested; UAT seed data in |
 | G1 | PR→PO→GRN→QC end-to-end; R4 live; partial GRN + stock posting verified |
 | G2 | SO→Costing (₹144,000) → Project + Plan auto-chain works |
-| G3 | MR gate: cross-validation blocks >10%, 4-stage blueprint, SLA schedules, auto-MIS |
+| G3 | MR gate: cross-validation blocks >10% (per-RM, C31), 5-state blueprint, SLA schedules, auto-MIS |
 | G4 | Production loop live: MIS→BMR→Packing→FGHM accept (275/125 kg, FG stock +) |
 | G5 | Full UAT scenario passes end-to-end (all ledger numbers tie, P&L +₹31,000) |
 | G6 | Client UAT passed, training done, **sign-off received** |
