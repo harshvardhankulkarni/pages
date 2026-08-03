@@ -190,9 +190,9 @@ These gaps are **blocking prerequisites**. Phase 0 resolves them all before any 
 
 ---
 
-### Phase 7 — Dashboard Widgets (M7)
+### Phase 7 — Dashboard Widgets (M7) ✅ DONE
 
-**8 department dashboards — build widgets referencing reports from Phases 1–6.**
+**8 department dashboards — build widgets referencing reports from Phases 1–6. (R7 build guide complete — reports.html)**
 
 | Dashboard | KPI Cards (Summary Report Metric) | Charts | Report Widgets |
 |-----------|----------------------------------|--------|----------------|
