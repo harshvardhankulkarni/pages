@@ -411,7 +411,7 @@
                 <tr><td>10</td><td>Project Type</td><td>Dropdown</td><td></td><td>Industrial / Commercial</td></tr>
                 <tr><td>11</td><td>Total Amount</td><td>Formula</td><td>*</td><td>Sum of active subform line amounts</td></tr>
                 <tr><td>12</td><td>Payment Terms</td><td>Text</td><td></td><td>—</td></tr>
-                <tr><td>13</td><td>Transportation Scope / Amount</td><td>Dropdown / Currency</td><td></td><td>—</td></tr>
+                <tr><td>13</td><td>Transportation Scope / Amount</td><td>Dropdown / Currency</td><td></td><td>Supplier / Own</td></tr>
                 <tr><td>14</td><td>Lead Time</td><td>Number (Days)</td><td></td><td>—</td></tr>
                 <tr><td>15</td><td>PO/BOQ Attachment</td><td>File upload</td><td></td><td>—</td></tr>
                 <tr><td>16</td><td>Warranty</td><td>Text</td><td></td><td>—</td></tr>
@@ -489,7 +489,7 @@
               <tbody>
                 <tr><td>1</td><td>System Code</td><td>Lookup (System Master)</td><td>—</td></tr>
                 <tr><td>2</td><td>Area</td><td>Number</td><td>—</td></tr>
-                <tr><td>3</td><td>UOM</td><td>Dropdown</td><td>—</td></tr>
+                <tr><td>3</td><td>UOM</td><td>Dropdown</td><td>SqM / Mtr / Nos</td></tr>
                 <tr><td>4</td><td>Description</td><td>Text</td><td>—</td></tr>
               </tbody>
             </table>
@@ -578,7 +578,7 @@
               <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th></tr></thead>
               <tbody>
                 <tr><td>1</td><td>Activity</td><td>Text</td><td>*</td></tr>
-                <tr><td>2</td><td>UOM</td><td>Dropdown</td><td>*</td></tr>
+                <tr><td>2</td><td>UOM</td><td>Dropdown</td><td>*</td><td>SqM / Day / Hour</td></tr>
                 <tr><td>3</td><td>Qty / Area</td><td>Number</td><td>*</td></tr>
                 <tr><td>4</td><td>Rate</td><td>Currency</td><td>*</td></tr>
                 <tr><td>5</td><td>Amount</td><td>Formula</td><td>*</td></tr>
@@ -593,7 +593,7 @@
               <tbody>
                 <tr><td>1</td><td>From (Warehouse)</td><td>Lookup (Store Master)</td><td>*</td></tr>
                 <tr><td>2</td><td>To (Site)</td><td>Text</td><td>*</td></tr>
-                <tr><td>3</td><td>Mode of Transport</td><td>Dropdown</td><td>*</td></tr>
+                <tr><td>3</td><td>Mode of Transport</td><td>Dropdown</td><td>*</td><td>Own / Third Party</td></tr>
                 <tr><td>4</td><td>Estimated Trips</td><td>Number</td><td>*</td></tr>
                 <tr><td>5</td><td>Rate per Trip</td><td>Currency</td><td>*</td></tr>
                 <tr><td>6</td><td>Amount</td><td>Formula</td><td>*</td></tr>
@@ -651,9 +651,25 @@
                 <tr><td>2</td><td>Plan Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
                 <tr><td>3</td><td>Costing Sheet No</td><td>Lookup (Costing Sheet — Approved)</td><td>*</td><td>Auto-fetch material lines</td></tr>
                 <tr><td>4</td><td>Project ID</td><td>AutoFetch (from Costing Sheet)</td><td>*</td><td>—</td></tr>
-                <tr><td>5</td><td>Available Stock</td><td>Formula</td><td>*</td><td>= Physical Stock − Σ(Assigned Qty from unreleased MRs)</td></tr>
-                <tr><td>6</td><td>Shortage</td><td>Formula</td><td>*</td><td>= Required Qty − Available Stock (if > 0)</td></tr>
-                <tr><td>7</td><td>Plan Status</td><td>Dropdown</td><td>*</td><td>Draft / Released</td></tr>
+                <tr><td>5</td><td>Planning Period</td><td>Dropdown</td><td>*</td><td>Week / Month</td></tr>
+                <tr><td>6</td><td>Plant</td><td>Dropdown</td><td></td><td>Wadki / Main / Neelo / Gurgaon / Bangalore</td></tr>
+                <tr><td>7</td><td>Planner Name</td><td>User lookup</td><td>*</td><td>—</td></tr>
+                <tr><td>8</td><td>Plan Status</td><td>Dropdown</td><td>*</td><td>Draft / Released</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <h4>Line Items (auto-fetched from Costing Sheet §A)</h4>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>RM Item Code</td><td>AutoFetch (from Costing Sheet)</td><td>*</td><td>—</td></tr>
+                <tr><td>2</td><td>RM Name</td><td>AutoFetch</td><td>*</td><td>—</td></tr>
+                <tr><td>3</td><td>Total Required</td><td>AutoFetch (from Costing Sheet §A)</td><td>*</td><td>—</td></tr>
+                <tr><td>4</td><td>Available Stock</td><td>AutoFetch (from RM Inventory, net of other project allocations)</td><td>*</td><td>= Physical Stock − Σ(Assigned Qty from unreleased MRs)</td></tr>
+                <tr><td>5</td><td>Shortage</td><td>Formula</td><td>*</td><td>= Total Required − Available Stock (if &gt; 0)</td></tr>
+                <tr><td>6</td><td>Source</td><td>Dropdown</td><td>*</td><td>Stock / Purchase / Both</td></tr>
+                <tr><td>7</td><td>Procurement Triggered</td><td>Checkbox (auto)</td><td></td><td>Set when Shortage &gt; 0</td></tr>
               </tbody>
             </table>
           </div>
@@ -745,7 +761,7 @@
               <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th></tr></thead>
               <tbody>
                 <tr><td>1</td><td>Activity</td><td>Text</td><td>*</td></tr>
-                <tr><td>2</td><td>UOM</td><td>Dropdown</td><td>*</td></tr>
+                <tr><td>2</td><td>UOM</td><td>Dropdown</td><td>*</td><td>SqM / Day / Hour</td></tr>
                 <tr><td>3</td><td>Qty / Area</td><td>Number</td><td>*</td></tr>
                 <tr><td>4</td><td>Rate</td><td>Currency</td><td>*</td></tr>
                 <tr><td>5</td><td>Amount</td><td>Formula</td><td>*</td></tr>
@@ -861,7 +877,7 @@
                 <tr><td>5</td><td>Supplier Name / GSTIN</td><td>AutoFetch</td><td>*</td><td>—</td></tr>
                 <tr><td>6</td><td>Project ID</td><td>Lookup (Project Master)</td><td></td><td>For project-tagged procurement</td></tr>
                 <tr><td>7</td><td>PR Reference</td><td>Lookup (PR Master) → AutoFetch: Items, Qty</td><td></td><td>—</td></tr>
-                <tr><td>8</td><td>Bill To / Ship To</td><td>Dropdown</td><td>*</td><td>Address list</td></tr>
+                <tr><td>8</td><td>Bill To / Ship To</td><td>Dropdown</td><td>*</td><td>Wadki / Main / Neelo / Gurgaon / Bangalore / Client Site</td></tr>
               </tbody>
             </table>
           </div>
@@ -1056,7 +1072,7 @@
                 <tr><td>5</td><td>FG Code</td><td>Lookup (Item Muster - FG)</td><td>*</td><td>FG to produce</td></tr>
                 <tr><td>6</td><td>Planned FG Qty</td><td>Number</td><td>*</td><td>Planned batch quantity</td></tr>
                 <tr><td>7</td><td>Planning Period</td><td>Dropdown</td><td>*</td><td>Week / Day</td></tr>
-                <tr><td>8</td><td>Plant</td><td>Dropdown</td><td></td><td>—</td></tr>
+                <tr><td>8</td><td>Plant</td><td>Dropdown</td><td></td><td>Wadki / Main / Neelo / Gurgaon / Bangalore</td></tr>
                 <tr><td>9</td><td>Planner Name</td><td>User lookup</td><td>*</td><td>—</td></tr>
                 <tr><td>10</td><td>Status</td><td>Dropdown</td><td>*</td><td>Draft / Scheduled / In Progress / Completed</td></tr>
               </tbody>
@@ -1403,7 +1419,7 @@
                 <tr><td>2</td><td>Project ID</td><td>Lookup (Project Master)</td><td>*</td><td>—</td></tr>
                 <tr><td>3</td><td>Work Area</td><td>Text</td><td>*</td><td>Zone/area on site</td></tr>
                 <tr><td>4</td><td>Date</td><td>Date</td><td>*</td><td>—</td></tr>
-                <tr><td>5</td><td>Time Slot</td><td>Dropdown</td><td>*</td><td>Morning / Afternoon / Full Day</td></tr>
+                <tr><td>5</td><td>Time Slot</td><td>Dropdown</td><td>*</td><td>Morning / Afternoon / Full Day / Night</td></tr>
                 <tr><td>6</td><td>Supervisor</td><td>Text</td><td>*</td><td>—</td></tr>
                 <tr><td>7</td><td>Remarks</td><td>Multi-line</td><td></td><td>—</td></tr>
               </tbody>

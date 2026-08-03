@@ -322,6 +322,199 @@
         </div>
       </div>
 
+      <h2 id="report-builder">Report Builder Guide — Zoho Creator</h2>
+      <p>How to actually build every report in the Zoho Creator console. Path: <strong>Create → Report → choose Source Form → pick Report Type</strong>. Then <strong>Create → Dashboard</strong> to assemble widgets.</p>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">R0</span>
+          <span class="phase-title">Zoho Creator Report Types — Quick Reference</span>
+          <span class="phase-tag">Pick the type first</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Creator Type</th><th>What it shows</th><th>Use for</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Detail Report</strong></td><td>Plain record list; supports filters, sorting, column grouping</td><td>Registers, logs, status lists</td></tr>
+              <tr><td><strong>Summary Report</strong></td><td>Grouped rows + aggregate columns (SUM / COUNT / AVG / MIN / MAX)</td><td>Totals by item, supplier, project, status</td></tr>
+              <tr><td><strong>Pivot Report</strong></td><td>Cross-tab: Row field × Column field, cells = aggregate value</td><td>Project × Item consumption matrices</td></tr>
+              <tr><td><strong>Chart</strong></td><td>Bar / Line / Pie / Donut / Funnel / Area — one metric + one group field</td><td>Trends, shares, comparisons</td></tr>
+              <tr><td><strong>Drilldown Report</strong></td><td>Chart on top + detail report below; clicking a segment filters the detail</td><td>Alert-to-detail, status-to-list</td></tr>
+              <tr><td><strong>Dashboard</strong></td><td>Canvas of widgets: KPI Card, Chart, Report, List, Calendar, Form</td><td>Department home screens</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">R1</span>
+          <span class="phase-title">Master Data Reports</span>
+          <span class="phase-tag">Source: Master Data forms</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Report</th><th>Creator Type</th><th>Source Form</th><th>Group By</th><th>Aggregations</th><th>Filters</th></tr></thead>
+            <tbody>
+              <tr><td>Item Catalog</td><td>Detail</td><td>Purchase Item Muster</td><td>—</td><td>—</td><td>Status = Active</td></tr>
+              <tr><td>Items by Category</td><td>Summary</td><td>Purchase Item Muster</td><td>Category</td><td>COUNT(Item Code), SUM(Max Stock)</td><td>—</td></tr>
+              <tr><td>System Master List</td><td>Detail</td><td>System Master</td><td>—</td><td>—</td><td>Status = Active</td></tr>
+              <tr><td>System → FG Composition</td><td>Detail</td><td>System Composition</td><td>System Code</td><td>—</td><td>Status = Approved/Released</td></tr>
+              <tr><td>FG → RM BOM Matrix</td><td>Detail</td><td>BOM / FG Formulation</td><td>FG Code</td><td>—</td><td>Status = Approved/Released</td></tr>
+              <tr><td>Supplier List</td><td>Detail</td><td>Supplier Master</td><td>—</td><td>—</td><td>Status = Active</td></tr>
+              <tr><td>Customer / Site List</td><td>Detail</td><td>Customer / Site Master</td><td>—</td><td>—</td><td>Status = Active</td></tr>
+              <tr><td>Store &amp; Bin Register</td><td>Detail</td><td>Store Master</td><td>Store Type</td><td>—</td><td>—</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">R2</span>
+          <span class="phase-title">Sales &amp; Project Reports</span>
+          <span class="phase-tag">Source: Sales Order, Project</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Report</th><th>Creator Type</th><th>Source Form</th><th>Group By</th><th>Aggregations</th><th>Filters</th></tr></thead>
+            <tbody>
+              <tr><td>Sales Register</td><td>Detail</td><td>Sales Order</td><td>—</td><td>—</td><td>Date range, Sales Type, Status</td></tr>
+              <tr><td>SO Value by Customer</td><td>Summary</td><td>Sales Order</td><td>Customer Code</td><td>SUM(Total Amount), COUNT(SO No)</td><td>—</td></tr>
+              <tr><td>SO Type Split</td><td>Chart (Pie)</td><td>Sales Order</td><td>Sales Type</td><td>SUM(Total Amount)</td><td>—</td></tr>
+              <tr><td>SO Value Trend</td><td>Chart (Line)</td><td>Sales Order</td><td>SO Date (month)</td><td>SUM(Total Amount)</td><td>Date range</td></tr>
+              <tr><td>Project Status List</td><td>Detail</td><td>Project</td><td>Status</td><td>—</td><td>—</td></tr>
+              <tr><td>Open Projects by PM</td><td>Summary</td><td>Project</td><td>Project Manager</td><td>COUNT(Project ID), SUM(Project Cost)</td><td>Status = Planned / In Progress</td></tr>
+              <tr><td>Project P&amp;L Real-time</td><td>Detail</td><td>Project</td><td>—</td><td>—</td><td>— (Revenue − Cost formula fields on Project)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">R3</span>
+          <span class="phase-title">Costing / Plan / MR Reports</span>
+          <span class="phase-tag">Source: Costing Sheet, Production Plan, MR, MR Allocation</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Report</th><th>Creator Type</th><th>Source Form</th><th>Group By</th><th>Aggregations</th><th>Filters</th></tr></thead>
+            <tbody>
+              <tr><td>Costing Sheet Status</td><td>Summary</td><td>Costing Sheet</td><td>Costing Status</td><td>COUNT(Costing No), SUM(Total Costing Amount)</td><td>—</td></tr>
+              <tr><td>Costing Register</td><td>Detail</td><td>Costing Sheet</td><td>—</td><td>—</td><td>Date range, Status</td></tr>
+              <tr><td>Production Plan Register</td><td>Detail</td><td>Production Plan</td><td>—</td><td>—</td><td>Plan Status</td></tr>
+              <tr><td>Plan Shortage Summary</td><td>Summary</td><td>Production Plan (line items)</td><td>RM Item Code</td><td>SUM(Shortage)</td><td>Shortage &gt; 0</td></tr>
+              <tr><td>MR Status Tracking</td><td>Summary</td><td>MR</td><td>MR Status</td><td>COUNT(MR Number)</td><td>—</td></tr>
+              <tr><td>MR Status per Project</td><td>Pivot</td><td>MR</td><td>Row: Project ID, Col: MR Status</td><td>COUNT(MR Number)</td><td>—</td></tr>
+              <tr><td>Project Cost Baseline</td><td>Summary</td><td>MR</td><td>Project ID</td><td>SUM(Total MR Cost), SUM(Material + Application + Transportation + Tools)</td><td>—</td></tr>
+              <tr><td>Material Allocation vs Consumption</td><td>Detail</td><td>MR Allocation (subform)</td><td>Project ID</td><td>—</td><td>— (columns: Assigned, Consumed, Consumption %)</td></tr>
+              <tr><td>80% Alert List</td><td>Detail</td><td>MR Allocation</td><td>—</td><td>—</td><td>Consumption % ≥ 80 AND Alert Flag = ON</td></tr>
+              <tr><td>Allocation Exhausted</td><td>Detail</td><td>MR Allocation</td><td>—</td><td>—</td><td>Consumption % ≥ 100</td></tr>
+              <tr><td>Costing vs Actual Variance</td><td>Detail</td><td>MR (with variance formula)</td><td>Project ID</td><td>—</td><td>— (planned cost − actual SCE/BMR cost)</td></tr>
+              <tr><td>Project Inventory Status</td><td>Summary</td><td>MR Allocation</td><td>Project ID, Item Code</td><td>SUM(Assigned), SUM(Consumed), SUM(Returned)</td><td>— (Remaining = Assigned − Consumed + Returned)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">R4</span>
+          <span class="phase-title">Procurement Reports (Stream A)</span>
+          <span class="phase-tag">Source: PR, PO, GRN, QC</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Report</th><th>Creator Type</th><th>Source Form</th><th>Group By</th><th>Aggregations</th><th>Filters</th></tr></thead>
+            <tbody>
+              <tr><td>PR Status Report</td><td>Summary</td><td>PR</td><td>Status</td><td>COUNT(PR Number)</td><td>—</td></tr>
+              <tr><td>Open PO Register</td><td>Detail</td><td>PO</td><td>—</td><td>—</td><td>Status ≠ Completed / Closed</td></tr>
+              <tr><td>PO Value by Supplier</td><td>Summary</td><td>PO</td><td>Supplier Code</td><td>SUM(Total Amount), COUNT(PO Number)</td><td>—</td></tr>
+              <tr><td>Purchase by Item Group</td><td>Summary</td><td>PO (line items)</td><td>Item Category</td><td>SUM(Total Amount)</td><td>Date range</td></tr>
+              <tr><td>PO vs GRN Pending</td><td>Detail</td><td>PO line items</td><td>—</td><td>—</td><td>Balance Qty &gt; 0 (Ordered − Σ Received)</td></tr>
+              <tr><td>Vendor Performance</td><td>Summary</td><td>PO</td><td>Supplier</td><td>COUNT(PO), AVG(Delivery days = GRN date − PO date)</td><td>—</td></tr>
+              <tr><td>GRN Register</td><td>Detail</td><td>GRN</td><td>—</td><td>—</td><td>Date range</td></tr>
+              <tr><td>QC Results</td><td>Summary</td><td>QC</td><td>QC Status</td><td>COUNT(QC Number), SUM(Accepted Qty)</td><td>—</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">R5</span>
+          <span class="phase-title">Production Reports</span>
+          <span class="phase-tag">Source: MIS, Production Job, BMR, RM Consumption, Packing, FGHM</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Report</th><th>Creator Type</th><th>Source Form</th><th>Group By</th><th>Aggregations</th><th>Filters</th></tr></thead>
+            <tbody>
+              <tr><td>MIS Register</td><td>Detail</td><td>MIS</td><td>—</td><td>—</td><td>Date range, MR No</td></tr>
+              <tr><td>MIS Issued vs Required</td><td>Summary</td><td>MIS (line items)</td><td>Item Code</td><td>SUM(Required Qty), SUM(Issued Qty)</td><td>Project ID, MR No</td></tr>
+              <tr><td>Pending MIS (Balance &gt; 0)</td><td>Detail</td><td>MIS (line items)</td><td>—</td><td>—</td><td>Balance Qty &gt; 0</td></tr>
+              <tr><td>Today's Production</td><td>Summary</td><td>BMR</td><td>FG Code</td><td>SUM(Yield / FG Output)</td><td>Date = Today</td></tr>
+              <tr><td>Production Job Status</td><td>Summary</td><td>Production Job</td><td>Status</td><td>COUNT(Job No)</td><td>—</td></tr>
+              <tr><td>Open Production Jobs</td><td>Detail</td><td>Production Job</td><td>—</td><td>—</td><td>Status = Scheduled / In Progress</td></tr>
+              <tr><td>Daily Production Trend</td><td>Chart (Bar)</td><td>BMR</td><td>Date</td><td>SUM(FG Output)</td><td>Date range</td></tr>
+              <tr><td>BMR vs BOM Variance</td><td>Detail</td><td>RM Consumption Entry</td><td>FG Code</td><td>—</td><td>— (columns: Actual Qty vs Standard Qty, Variance)</td></tr>
+              <tr><td>Production Efficiency</td><td>Summary</td><td>Packing Entry</td><td>FG Code</td><td>SUM(Packed Qty)</td><td>—</td></tr>
+              <tr><td>FG Handover Pending</td><td>Detail</td><td>FGHM</td><td>—</td><td>—</td><td>Status = Submitted (not accepted)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">R6</span>
+          <span class="phase-title">Inventory / Site / Return Reports</span>
+          <span class="phase-tag">Source: RM Inventory, FG Inventory, SCE, MRT, Stock Movement Log</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Report</th><th>Creator Type</th><th>Source Form</th><th>Group By</th><th>Aggregations</th><th>Filters</th></tr></thead>
+            <tbody>
+              <tr><td>RM Stock Status</td><td>Detail</td><td>RM Inventory</td><td>—</td><td>—</td><td>Reorder Status filter (Below Min / Above Max)</td></tr>
+              <tr><td>FG Stock Status</td><td>Detail</td><td>FG Inventory</td><td>—</td><td>—</td><td>Status filter</td></tr>
+              <tr><td>Inventory Valuation</td><td>Summary</td><td>RM Inventory + FG Inventory</td><td>Category</td><td>SUM(Closing Stock × Standard Rate)</td><td>—</td></tr>
+              <tr><td>Reorder Alerts</td><td>Detail</td><td>RM Inventory</td><td>—</td><td>—</td><td>Reorder Status = Below Min</td></tr>
+              <tr><td>Stock Movement Log</td><td>Detail</td><td>Stock Movement Transaction Log</td><td>Item Code</td><td>—</td><td>Date range, In/Out</td></tr>
+              <tr><td>Site Consumption Log</td><td>Detail</td><td>Site Consumption Entry</td><td>—</td><td>—</td><td>Project ID, Date, Work Area</td></tr>
+              <tr><td>Consumption by Work Area</td><td>Summary</td><td>SCE (line items)</td><td>Project ID, Work Area</td><td>SUM(Qty Consumed)</td><td>—</td></tr>
+              <tr><td>Consumption by RM Item</td><td>Summary</td><td>SCE (line items)</td><td>RM Item Code</td><td>SUM(Qty Consumed)</td><td>Project ID</td></tr>
+              <tr><td>Consumption vs Allocation</td><td>Pivot</td><td>MR Allocation</td><td>Row: Project ID, Col: Item Code</td><td>SUM(Consumed Qty)</td><td>—</td></tr>
+              <tr><td>Material Return Report</td><td>Detail</td><td>Material Return Entry</td><td>—</td><td>—</td><td>Project ID, Reason, Condition</td></tr>
+              <tr><td>Returns by Condition</td><td>Summary</td><td>MRT (line items)</td><td>Condition</td><td>SUM(Return Qty)</td><td>—</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-header">
+          <span class="phase-number">R7</span>
+          <span class="phase-title">Dashboard Widget Build — Department Screens</span>
+          <span class="phase-tag">Create → Dashboard → add widgets</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Dashboard</th><th>KPI Cards (from summary metric)</th><th>Charts</th><th>Report Widgets</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Purchase</strong></td><td>Total Purchase This Month · Open POs · Pending PR Approvals</td><td>Purchase by Item Group (Bar) · Vendor Delivery (Bar)</td><td>Open PO Register · PO vs GRN Pending</td></tr>
+              <tr><td><strong>Sales</strong></td><td>SO Count · SO Value (YTD)</td><td>SO Value Trend (Line) · SO Type Split (Pie)</td><td>Sales Register · Project Status</td></tr>
+              <tr><td><strong>MR / Costing</strong></td><td>MR Count by Stage · Total MR Cost</td><td>MR Status (Funnel) · Costing Status (Pie)</td><td>MR Status Tracking · Material Allocation vs Consumption</td></tr>
+              <tr><td><strong>Store</strong></td><td>RM Stock Value · Below-Min Items</td><td>Stock by Category (Pie) · Reorder Alerts (Bar)</td><td>RM Stock Status · FG Stock Status · Stock Movement Log</td></tr>
+              <tr><td><strong>Production</strong></td><td>Batches Today · Open Jobs · Pending MIS</td><td>Daily Production (Bar) · Job Status (Pie)</td><td>MIS Register · Production Job Status · BMR vs BOM Variance</td></tr>
+              <tr><td><strong>Site Supervisor</strong></td><td>Consumption Today · Active 80% Alerts</td><td>Consumption by Area (Bar) · Consumption by RM (Bar)</td><td>Site Consumption Log · Material Return Report</td></tr>
+              <tr><td><strong>Costing</strong></td><td>Costing Approvals · Project P&amp;L Sum</td><td>Costing vs Actual (Bar) · Project Inventory (Bar)</td><td>Project Inventory Status · Costing vs Actual Variance</td></tr>
+              <tr><td><strong>Project Management</strong></td><td>Open Projects · Active POs per Project</td><td>Project Status (Pie) · MR Status per Project (Bar)</td><td>Project Status · MR Status per Project · 80% Alert List</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <h2>Automation &amp; Business Rules</h2>
 
       <div class="phase">
