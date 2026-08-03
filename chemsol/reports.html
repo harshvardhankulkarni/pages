@@ -200,7 +200,7 @@
           </table>
         </div>
         <p><strong>Core Reports:</strong> MR Status Tracking · Project Cost Baseline · 80% Consumption Alert Dashboard · Material Allocation vs Consumption</p>
-        <p><strong>Notifications:</strong> MR stuck in Draft &gt; 7 days · MR in Production Verified &gt; 3 days (escalate to Costing) · MR Released → Store + Production · 80% Consumption Alert → Project Manager</p>
+        <p><strong>Notifications (C10):</strong> MR stuck in Draft &gt; 2 hr · MR in Production Verified &gt; 2 hr (escalate to Costing) · Costing Approved &gt; 1 hr auto-release · MR Released → Store + Production · 80% Consumption Alert → Project Manager</p>
       </div>
 
       <div class="phase">
@@ -660,7 +660,7 @@
           </table>
         </div>
         <p><strong>Filters:</strong> MR Status, Project ID, Date Range. <strong>Export:</strong> PDF / CSV.</p>
-        <p><strong>Business Rule:</strong> MRs stuck in "Draft" for &gt; 7 days trigger a reminder notification. MRs in "Production Verified" for &gt; 3 days trigger escalation to Costing.</p>
+        <p><strong>Business Rule (C10):</strong> MRs stuck in "Draft" for &gt; 2 hr trigger a reminder notification. MRs in "Production Verified" for &gt; 2 hr trigger escalation to Costing. "Costing Approved" &gt; 1 hr → auto-release.</p>
       </div>
 
       <div class="phase">
@@ -685,8 +685,9 @@
               <tr><td>Stock below Min threshold</td><td>Store + Purchase</td><td>Alert</td></tr>
               <tr><td>Project Close</td><td>Project Manager</td><td>In-app + Email</td></tr>
               <tr><td>Task Budget Actuals pending</td><td>Project Coordinator</td><td>Alert</td></tr>
-              <tr><td>MR stuck in Draft &gt; 7 days</td><td>Production dept</td><td>Reminder</td></tr>
-              <tr><td>MR in Production Verified &gt; 3 days</td><td>Costing dept</td><td>Escalation</td></tr>
+              <tr><td>MR stuck in Draft &gt; 2 hr</td><td>Production dept</td><td>Reminder</td></tr>
+              <tr><td>MR in Production Verified &gt; 2 hr</td><td>Costing dept</td><td>Escalation</td></tr>
+              <tr><td>Costing Approved &gt; 1 hr</td><td>Costing dept</td><td>Auto-release</td></tr>
             </tbody>
           </table>
         </div>

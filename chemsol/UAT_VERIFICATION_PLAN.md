@@ -537,6 +537,7 @@ Footer: Issued By (Store), Handover To (Production), Remark.
 | **C7** | automation.html summary had **no hook for "MR Released → auto-create MIS Draft"** and no **100% "Allocation Exhausted" escalation** row (AGENTS.md promises both) | ✅ **APPLIED** — added MR "On Released → auto-create MIS Draft + notify Store/Production" and 100% escalation to the 80% alert row |
 | **C8** | Remaining formula stale in IMPLEMENTATION_PLAN.md + implementation-plan.html ("Assigned − Consumed", missing + Returned) | ✅ **APPLIED** — both now `Assigned − Consumed + Returned` (C1); SCE automation note also gained C5 block text |
 | **C9** | PO Status value set mismatch: forms.html = Draft/Sent/Partially Received/Fully Received/Cancelled; plan G5 = Draft/Approved/PO Sent/Completed/Closed; R4 filters referenced "≠ Completed/Closed" which doesn't exist in the set | ✅ **APPLIED** — plan G5 aligned to forms.html set; Open PO Register filters in both docs → "Status ≠ Fully Received / Cancelled" |
+| **C10** | MR SLA conflict: automation.html + reports.html still had old "Draft > 7 days / Prod Verified > 3 days" while AGENTS.md, IMPLEMENTATION_PLAN and implementation-plan.html specify tight SLAs (2 hr Draft → reminder, 2 hr Verified → escalation, 1 hr Approved → auto-release) | ✅ **APPLIED** — automation.html Deluge snippets + summary row and reports.html notification rows all → 2 hr / 2 hr / 1 hr with C10 notes |
 
 **New findings during UAT walkthrough → append here, then fix docs before building.**
 
