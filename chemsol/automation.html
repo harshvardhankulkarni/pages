@@ -1217,15 +1217,48 @@ for each item in input.FGHM_Line_Items
 }
 
 // Notification to Store
-sendmail
-[
-  from: "system@chemsol.com",
-  to: "store@chemsol.com",
-  subject: "FG Handover - " + input.FGH_No,
-  message: "FG Handover " + input.FGH_No + " from Project " + input.Project_ID.Project_Name + " has been accepted and FG stock updated."
-];
+  sendmail
+  [
+    from: "system@chemsol.com",
+    to: "store@chemsol.com",
+    subject: "FG Handover - " + input.FGH_No,
+    message: "FG Handover " + input.FGH_No + " from Project " + input.Project_ID.Project_Name + " has been accepted and FG stock updated."
+  ];
+
         </div>
         <div class="auto-note">Inline acceptance means no separate FGAN form. The FGHM line items have Damaged_Qty and Accepted_Qty fields. Only Accepted_Qty adds to FG stock.</div>
+
+        <div class="auto-sub-title">Mark MR Allocation Fully Consumed (C14)</div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Workflow Rule:</strong> On Submit where Overall Status = "Accepted", check if all MR Allocation lines for this project have Consumption % ≥ 100%</div></div>
+        <div class="auto-code">
+// Workflow Rule - On Submit (when Overall_Status == "Accepted")
+// C14: Mark MR Allocation lines as Fully Consumed when all RM lines exhausted
+projectId = input.Project_ID;
+allocations = lookupRecords(MR_Allocation, "MR_ID.Project_ID == '" + projectId + "'");
+
+for each alloc in allocations
+{
+  // Check if ALL allocations for this project are at ≥ 100%
+  allConsumed = true;
+  for each a in allocations
+  {
+    if(a.Consumption_Percentage < 100)
+    {
+      allConsumed = false;
+    }
+  }
+  
+  if(allConsumed)
+  {
+    updateRecord
+    {
+      "Form_Type": "MR_Allocation",
+      "ID": alloc.ID,
+      "Fully_Consumed": true
+    };
+  }
+}
+        </div>
       </div>
     </div>
 

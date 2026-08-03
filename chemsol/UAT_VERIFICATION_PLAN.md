@@ -541,6 +541,7 @@ Footer: Issued By (Store), Handover To (Production), Remark.
 | **C11** | flow.html Project mockup Status select used "Active / On Hold / Completed" — canonical Project Status set is "Planned / In Progress / Completed / On Hold" (forms.html, IMPLEMENTATION_PLAN, BRD, report filters) | ✅ **APPLIED** — flow.html aligned to canonical set |
 | **C12** | automation.html MRT Deluge snippet decremented `Consumed_Qty` but never incremented `Returned_Qty` — violating C1 (Remaining = Assigned − Consumed + Returned would be wrong) | ✅ **APPLIED** — Deluge now updates both `Consumed_Qty −` and `Returned_Qty +`; workflow step description updated |
 | **C13** | automation.html SCE + BMR Deluge snippets updated `Consumed_Qty` unconditionally — no >100% rejection despite the C5 decision (summary rows said BLOCK, code didn't implement it) | ✅ **APPLIED** — both snippets now `throw "Allocation Exhausted … return material first"` before any update when new Consumption % > 100 |
+| **C14** | FGHM "On Accept" Deluge summary row existed but NO actual code snippet to mark MR Allocation `Fully_Consumed = Yes` when all RM lines ≥ 100% | ✅ **APPLIED** — added Deluge snippet that checks all allocations for the project and sets `Fully_Consumed = true` when all at ≥ 100% |
 
 **New findings during UAT walkthrough → append here, then fix docs before building.**
 
