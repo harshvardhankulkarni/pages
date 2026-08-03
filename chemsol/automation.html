@@ -1542,6 +1542,8 @@ return 0;  // Item not found
           <tr><td>SO</td><td><span class="auto-tag tag-workflow">Workflow</span></td><td>On Submit (Supply+Apply)</td><td>Auto-create Project record</td><td>Pending</td></tr>
           <tr><td>SO</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: SO-YYYY-XXXX</td><td>Pending</td></tr>
           <tr><td>Project</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: PRJ-YYYY-XXXX</td><td>Pending</td></tr>
+          <tr><td>Project</td><td><span class="auto-tag tag-deluge">Deluge</span></td><td>On SO Accept (Supply+Apply)</td><td><strong>G2</strong> — Set Project.Total Revenue = SO.Total Amount</td><td>Pending</td></tr>
+          <tr><td>Project</td><td><span class="auto-tag tag-deluge">Deluge</span></td><td>On MR Released</td><td><strong>G2</strong> — Set Project.Total Actual Cost = MR.Total MR Cost; recalc P&L</td><td>Pending</td></tr>
 
           <tr><td colspan="5"><strong>MR — Costing Gate [CRITICAL]</strong></td></tr>
           <tr><td>MR</td><td><span class="auto-tag tag-blueprint">Blueprint</span></td><td>Status transitions</td><td>Draft -> Prod Verified -> Costing Approved -> Released</td><td>Pending</td></tr>
@@ -1558,6 +1560,7 @@ return 0;  // Item not found
           <tr><td>PO</td><td><span class="auto-tag tag-formrule">Form Rule</span></td><td>Line Item entry</td><td>Auto-calculate GST split + Footer totals</td><td>Pending</td></tr>
           <tr><td>PO</td><td><span class="auto-tag tag-workflow">Workflow</span></td><td>On Dispatched/Delivered</td><td>Notify Purchase + Store: PO ready for GRN</td><td>Pending</td></tr>
           <tr><td>GRN</td><td><span class="auto-tag tag-workflow">Workflow</span></td><td>Custom Button "Post GRN"</td><td>Update RM Inventory + Stock Movement Log</td><td>Pending</td></tr>
+          <tr><td>GRN</td><td><span class="auto-tag tag-deluge">Deluge</span></td><td>On Post</td><td><strong>G5</strong> — Increment PO Line.Received Qty; recalc Balance Qty; update PO.Status (Fully/Partially Received)</td><td>Pending</td></tr>
           <tr><td>GRN</td><td><span class="auto-tag tag-formrule">Form Rule</span></td><td>On PO selected</td><td>Auto-fetch Supplier, Items, Ordered Qty</td><td>Pending</td></tr>
           <tr><td>GRN</td><td><span class="auto-tag tag-workflow">Workflow</span></td><td>Scheduled Daily 8 AM</td><td>Overdue reminder: dispatched PO without GRN >7d</td><td>Pending</td></tr>
           <tr><td>QC</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: QC-YYYY-XXXX</td><td>Pending</td></tr>
@@ -1565,12 +1568,14 @@ return 0;  // Item not found
           <tr><td colspan="5"><strong>Production</strong></td></tr>
           <tr><td>MIS</td><td><span class="auto-tag tag-formrule">Form Rule</span></td><td>On Load</td><td>Restrict MR lookup to "Released" only</td><td>Pending</td></tr>
           <tr><td>MIS</td><td><span class="auto-tag tag-deluge">Deluge</span></td><td>Custom Button "Post MIS"</td><td>Deduct RM Inventory + Stock Movement Log</td><td>Pending</td></tr>
+          <tr><td>MIS</td><td><span class="auto-tag tag-deluge">Deluge</span></td><td>On Post</td><td><strong>G4</strong> — For each line: increment MR Allocation.Issued Qty (Project ID + Item Code match)</td><td>Pending</td></tr>
           <tr><td>MIS</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: MIS-YYYY-XXXX</td><td>Pending</td></tr>
           <tr><td>Production Job</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: JOB-YYYY-XXXX</td><td>Pending</td></tr>
           <tr><td>BMR</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: BMR-YYYY-XXXX</td><td>Pending</td></tr>
           <tr><td>BMR</td><td><span class="auto-tag tag-deluge">Deluge</span></td><td>On Submit</td><td>Increment Consumed Qty on MR Allocation</td><td>Pending</td></tr>
           <tr><td>Packing</td><td><span class="auto-tag tag-workflow">Workflow</span></td><td>On Submit</td><td>Deduct packing material from inventory</td><td>Pending</td></tr>
           <tr><td>FGHM</td><td><span class="auto-tag tag-deluge">Deluge</span></td><td>On Submit (Accepted)</td><td>Update FG Inventory + Stock Movement Log + Notify Store</td><td>Pending</td></tr>
+          <tr><td>FGHM</td><td><span class="auto-tag tag-deluge">Deluge</span></td><td>On Accept</td><td><strong>G6</strong> — Set Status = Accepted; if all RM lines exhausted → mark MR Allocation Fully Consumed</td><td>Pending</td></tr>
           <tr><td>FGHM</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: FGH-YYYY-XXXX</td><td>Pending</td></tr>
           <tr><td>FG Consumption</td><td><span class="auto-tag tag-workflow">Workflow</span></td><td>On Submit</td><td>Deduct FG inventory + Log project FG consumption</td><td>Pending</td></tr>
 

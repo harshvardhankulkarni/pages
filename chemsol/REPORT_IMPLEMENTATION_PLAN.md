@@ -26,7 +26,7 @@ These gaps are **blocking prerequisites**. Phase 0 resolves them all before any 
 
 ## Part 2 — Phased Build
 
-### Phase 0 — Schema Changes (G1–G9)
+### Phase 0 — Schema Changes (G1–G9) ✅ DONE
 
 **All field additions. Reports depend on them. Build order:**
 

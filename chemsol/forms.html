@@ -416,6 +416,7 @@
                 <tr><td>15</td><td>PO/BOQ Attachment</td><td>File upload</td><td></td><td>—</td></tr>
                 <tr><td>16</td><td>Warranty</td><td>Text</td><td></td><td>—</td></tr>
                 <tr><td>17</td><td>Commission</td><td>Checkbox → % or Fix Amount</td><td></td><td>Applies to Supply+Apply only</td></tr>
+                <tr><td>18</td><td>Status</td><td>Dropdown</td><td>*</td><td>Draft / Accepted / Completed / Cancelled</td></tr>
               </tbody>
             </table>
           </div>
@@ -479,6 +480,9 @@
                 <tr><td>7</td><td>Start Date / End Date</td><td>Date</td><td>*</td><td>—</td></tr>
                 <tr><td>8</td><td>Project Cost</td><td>Currency</td><td>*</td><td>—</td></tr>
                 <tr><td>9</td><td>Status</td><td>Dropdown</td><td>*</td><td>Planned / In Progress / Completed / On Hold</td></tr>
+                <tr><td>10</td><td>Total Revenue</td><td>AutoFetch (SO Total Amount — set on SO acceptance)</td><td>*</td><td>G2 — Revenue from SO</td></tr>
+                <tr><td>11</td><td>Total Actual Cost</td><td>AutoFetch (MR Total MR Cost — set on MR Released)</td><td>*</td><td>G2 — Cost baseline from MR</td></tr>
+                <tr><td>12</td><td>P&amp;L</td><td>Formula</td><td>*</td><td>G2 — = Total Revenue − Total Actual Cost</td></tr>
               </tbody>
             </table>
           </div>
@@ -494,6 +498,23 @@
               </tbody>
             </table>
           </div>
+          <h4>Task Budget Subform <span class="badge badge-blue">G2 — Budget + Actuals per Category</span></h4>
+          <p>Tracks budget vs actuals for 5 cost categories. Actual columns feed P&amp;L.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>1</td><td>Category</td><td>Dropdown</td><td>Transport / Execution / Manpower / Tools / Overhead</td></tr>
+                <tr><td>2</td><td>Description</td><td>Text</td><td>—</td></tr>
+                <tr><td>3</td><td>Budget Qty</td><td>Number</td><td>Planned quantity/area</td></tr>
+                <tr><td>4</td><td>Rate</td><td>Currency</td><td>—</td></tr>
+                <tr><td>5</td><td>Budget Amount</td><td>Formula</td><td>Budget Qty × Rate</td></tr>
+                <tr><td>6</td><td>Actual Qty</td><td>Number</td><td>Updated from actuals</td></tr>
+                <tr><td>7</td><td>Actual Amount</td><td>Formula</td><td>Actual Qty × Rate</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p><strong>P&amp;L feeds:</strong> Execution Actual, Manpower Actual, Transport Actual + GRN Transport, Tools Actual, Overhead Actual. Summed per category in Project P&amp;L report.</p>
         </div>
 
       </div>
@@ -571,6 +592,7 @@
               </tbody>
             </table>
           </div>
+          <p><strong>Section A Material Total</strong> = Σ(Material Cost) across all RM lines. <span style="color:var(--gray-500);font-size:11px">G3 — explicit formula subtotal</span></p>
 
           <h4>Section B — Application Cost</h4>
           <div class="table-wrap">
@@ -585,6 +607,7 @@
               </tbody>
             </table>
           </div>
+          <p><strong>Section B Application Total</strong> = Σ(Amount). <span style="color:var(--gray-500);font-size:11px">G3</span></p>
 
           <h4>Section C — Transportation Cost</h4>
           <div class="table-wrap">
@@ -600,7 +623,8 @@
                 <tr><td>7</td><td>Logistics Notes</td><td>Multi-line</td><td></td></tr>
               </tbody>
             </table>
-          </div>
+           </div>
+          <p><strong>Section C Transport Total</strong> = Σ(Amount). <span style="color:var(--gray-500);font-size:11px">G3</span></p>
 
           <h4>Section D — Tools & Tackles</h4>
           <div class="table-wrap">
@@ -614,6 +638,7 @@
               </tbody>
             </table>
           </div>
+          <p><strong>Section D Tools Total</strong> = Σ(Amount). <span style="color:var(--gray-500);font-size:11px">G3</span></p>
 
           <h4>Section E — Overhead & Miscellaneous</h4>
           <div class="table-wrap">
@@ -625,8 +650,9 @@
               </tbody>
             </table>
           </div>
+          <p><strong>Section E Overhead Total</strong> = Σ(Amount). <span style="color:var(--gray-500);font-size:11px">G3</span></p>
 
-          <p><strong>Total Costing Amount</strong> = Σ Section A + B + C + D + E. This is what Costing approves.</p>
+          <p><strong>Total Costing Amount</strong> <span class="badge badge-green">G3 — Formula Field</span> = Section A Total + Section B Total + Section C Total + Section D Total + Section E Total. This is what Costing approves.</p>
           <p><strong>Automation:</strong> On Costing Approved → auto-create Project + Production Plan (Draft). Costing stuck >24 hr → escalation to admin.</p>
         </div>
 
@@ -746,6 +772,7 @@
                 <tr><td>9</td><td>Consumed Qty</td><td>Number (auto)</td><td>Incremented by BMR / RM Consumption entries</td></tr>
                 <tr><td>10</td><td>Consumption %</td><td>Formula</td><td>= Consumed Qty ÷ Assigned Qty × 100</td></tr>
                 <tr><td>11</td><td>Alert Triggered</td><td>Checkbox (readonly)</td><td>Auto-set at Consumption % ≥ 80%</td></tr>
+                <tr><td>12</td><td>Issued Qty</td><td>Number (auto)</td><td><strong>G4</strong> — Incremented by MIS-Post Deluge per matching Project+Item</td></tr>
               </tbody>
             </table>
           </div>
@@ -796,7 +823,7 @@
             </table>
           </div>
 
-          <p><strong>Total MR Cost</strong> = Material Cost (Σ Allocation Assigned Qty × Rate) + Application Cost + Transportation Cost + Tools & Tackles. This total is the <strong>project implementation cost baseline</strong> that Costing approves at the MR gate.</p>
+          <p><strong>Total MR Cost</strong> <span class="badge badge-green">G4 — Formula Field</span> = Material Cost (Σ Allocation Assigned Qty × Rate) + Application Cost + Transportation Cost + Tools & Tackles. This total is the <strong>project implementation cost baseline</strong> that Costing approves at the MR gate. Auto-set on Project.Total Actual Cost when MR is Released.</p>
           <p><strong>Backend rule (consumption resolution):</strong> Every consumption of RM against the Project — from FG production (BMR / RM Consumption) or Site Manager entries — increments <strong>Consumed Qty</strong> on the matching MR Allocation line (matched by Project ID + Item Code). Never a generic pool deduction for project-tagged material.</p>
           <p><strong>MR Approval workflow:</strong> Draft → <strong>Production verifies</strong> MR qty against SO system requirements → <strong>Costing approves</strong> total project cost → <strong>Released</strong> (available for MIS). Notification to Project Manager on each change.</p>
         </div>
@@ -877,7 +904,8 @@
                 <tr><td>5</td><td>Supplier Name / GSTIN</td><td>AutoFetch</td><td>*</td><td>—</td></tr>
                 <tr><td>6</td><td>Project ID</td><td>Lookup (Project Master)</td><td></td><td>For project-tagged procurement</td></tr>
                 <tr><td>7</td><td>PR Reference</td><td>Lookup (PR Master) → AutoFetch: Items, Qty</td><td></td><td>—</td></tr>
-                <tr><td>8</td><td>Bill To / Ship To</td><td>Dropdown</td><td>*</td><td>Wadki / Main / Neelo / Gurgaon / Bangalore / Client Site</td></tr>
+                <tr><td>8</td><td>Status</td><td>Dropdown</td><td>*</td><td><strong>G5</strong> — Draft / Sent / Partially Received / Fully Received / Cancelled</td></tr>
+                <tr><td>9</td><td>Bill To / Ship To</td><td>Dropdown</td><td>*</td><td>Wadki / Main / Neelo / Gurgaon / Bangalore / Client Site</td></tr>
               </tbody>
             </table>
           </div>
@@ -894,6 +922,9 @@
                 <tr><td>6</td><td>GST %</td><td>AutoFetch</td><td>*</td><td>From Item Muster</td></tr>
                 <tr><td>7</td><td>GST Amount</td><td>Formula</td><td>*</td><td>Basic × GST%</td></tr>
                 <tr><td>8</td><td>Total Amount</td><td>Formula</td><td>*</td><td>Basic + GST</td></tr>
+                <tr><td>9</td><td>Received Qty</td><td>Number (auto)</td><td></td><td><strong>G5</strong> — Incremented on GRN posting</td></tr>
+                <tr><td>10</td><td>Balance Qty</td><td>Formula</td><td></td><td><strong>G5</strong> = Quantity − Received Qty</td></tr>
+                <tr><td>11</td><td>Receipt Status</td><td>Formula (text)</td><td></td><td><strong>G5</strong> — Not Started / Partial / Received</td></tr>
               </tbody>
             </table>
           </div>
@@ -910,6 +941,7 @@
                 <tr><td>6</td><td>Delivery Date</td><td>Date</td><td>*</td></tr>
                 <tr><td>7</td><td>Payment Terms</td><td>Text</td><td>*</td></tr>
                 <tr><td>8</td><td>Scope of Transport</td><td>Dropdown</td><td>Supplier / Own</td></tr>
+                <tr><td>9</td><td>Delivery Days</td><td>Number (auto)</td><td><strong>G5</strong> — = PO Date − Delivery Date (days elapsed)</td></tr>
               </tbody>
             </table>
           </div>
@@ -1113,6 +1145,8 @@
                 <tr><td>4</td><td>Qty Consumed</td><td>Number</td><td>*</td><td></td><td>—</td></tr>
                 <tr><td>5</td><td>UOM</td><td>AutoFetch (from RM Item Code via Item Muster)</td><td>*</td><td>Item Muster</td><td>—</td></tr>
                 <tr><td>6</td><td>Yield / FG Output</td><td>Number</td><td></td><td></td><td>—</td></tr>
+                <tr><td>7</td><td>Rate</td><td>AutoFetch (MR Allocation Rate)</td><td>*</td><td>MR Allocation</td><td><strong>G8</strong> — Per-unit RM rate</td></tr>
+                <tr><td>8</td><td>Amount</td><td>Formula</td><td>*</td><td></td><td><strong>G8</strong> — Qty Consumed × Rate</td></tr>
               </tbody>
             </table>
           </div>
@@ -1178,6 +1212,7 @@
                 <tr><td>2</td><td>Project ID</td><td>Lookup (Project Master)</td><td>*</td><td>—</td></tr>
                 <tr><td>3</td><td>Handover Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
                 <tr><td>4</td><td>Batch No</td><td>Text</td><td>*</td><td>—</td></tr>
+                <tr><td>5</td><td>Status</td><td>Dropdown</td><td>*</td><td><strong>G6</strong> — Pending Acceptance / Accepted</td></tr>
               </tbody>
             </table>
           </div>
@@ -1275,14 +1310,15 @@
                 <tr><td>2</td><td>Item Name</td><td>AutoFetch</td><td>*</td><td>From Item Muster</td></tr>
                 <tr><td>3</td><td>Category</td><td>AutoFetch</td><td>*</td><td>From Item Muster</td></tr>
                 <tr><td>4</td><td>UOM</td><td>AutoFetch</td><td>*</td><td>Nos / Kg / Ltr / Mtr / Kit</td></tr>
-                <tr><td>5</td><td>Opening Stock</td><td>Number</td><td>*</td><td>Carried forward from previous period</td></tr>
-                <tr><td>6</td><td>GRN Received</td><td>Number (auto)</td><td>*</td><td>Sum of GRN quantities posted</td></tr>
-                <tr><td>7</td><td>MIS Issued</td><td>Number (auto)</td><td>*</td><td>Sum of MIS quantities posted</td></tr>
-                <tr><td>8</td><td>Returns</td><td>Number</td><td></td><td>Material returned to store</td></tr>
-                <tr><td>9</td><td>Closing Stock</td><td>Formula</td><td>*</td><td>Opening + GRN − MIS + Returns</td></tr>
-                <tr><td>10</td><td>Min Stock</td><td>AutoFetch</td><td>*</td><td>From Purchase Item Muster</td></tr>
-                <tr><td>11</td><td>Max Stock</td><td>AutoFetch</td><td></td><td>From Purchase Item Muster</td></tr>
-                <tr><td>12</td><td>Reorder Status</td><td>Formula</td><td>*</td><td>OK / Below Min / Above Max</td></tr>
+                <tr><td>5</td><td>Standard Rate</td><td>AutoFetch (from Purchase Item Muster)</td><td>*</td><td><strong>G7</strong> — Latest purchase rate for valuation</td></tr>
+                <tr><td>6</td><td>Opening Stock</td><td>Number</td><td>*</td><td>Carried forward from previous period</td></tr>
+                <tr><td>7</td><td>GRN Received</td><td>Number (auto)</td><td>*</td><td>Sum of GRN quantities posted</td></tr>
+                <tr><td>8</td><td>MIS Issued</td><td>Number (auto)</td><td>*</td><td>Sum of MIS quantities posted</td></tr>
+                <tr><td>9</td><td>Returns</td><td>Number</td><td></td><td>Material returned to store</td></tr>
+                <tr><td>10</td><td>Closing Stock</td><td>Formula</td><td>*</td><td>Opening + GRN − MIS + Returns</td></tr>
+                <tr><td>11</td><td>Min Stock</td><td>AutoFetch</td><td>*</td><td>From Purchase Item Muster</td></tr>
+                <tr><td>12</td><td>Max Stock</td><td>AutoFetch</td><td></td><td>From Purchase Item Muster</td></tr>
+                <tr><td>13</td><td>Reorder Status</td><td>Formula</td><td>*</td><td>OK / Below Min / Above Max</td></tr>
               </tbody>
             </table>
           </div>
@@ -1329,13 +1365,14 @@
                 <tr><td>1</td><td>Item Code</td><td>Lookup (Item Muster — FG)</td><td>*</td><td>Unique FG code</td></tr>
                 <tr><td>2</td><td>Item Name</td><td>AutoFetch</td><td>*</td><td>From Item Muster</td></tr>
                 <tr><td>3</td><td>UOM</td><td>AutoFetch</td><td>*</td><td>Nos / Kg / Ltr / Mtr / Kit</td></tr>
-                <tr><td>4</td><td>Opening Stock</td><td>Number</td><td>*</td><td>Carried forward from previous period</td></tr>
-                <tr><td>5</td><td>FGHM Accepted</td><td>Number (auto)</td><td>*</td><td>Sum of FGHM accepted quantities</td></tr>
-                <tr><td>6</td><td>Dispatched</td><td>Number (auto)</td><td>*</td><td>Sum of dispatch quantities (SO Supply Only / DC)</td></tr>
-                <tr><td>7</td><td>Returns</td><td>Number</td><td></td><td>Customer returns / reversal entries</td></tr>
-                <tr><td>8</td><td>Closing Stock</td><td>Formula</td><td>*</td><td>Opening + FGHM − Dispatched + Returns</td></tr>
-                <tr><td>9</td><td>Min Stock</td><td>AutoFetch</td><td>*</td><td>From Purchase Item Muster</td></tr>
-                <tr><td>10</td><td>Status</td><td>Formula</td><td>*</td><td>In Stock / Low Stock / Out of Stock</td></tr>
+                <tr><td>4</td><td>Standard Rate</td><td>AutoFetch (from Purchase Item Muster)</td><td>*</td><td><strong>G7</strong> — FG unit cost for valuation</td></tr>
+                <tr><td>5</td><td>Opening Stock</td><td>Number</td><td>*</td><td>Carried forward from previous period</td></tr>
+                <tr><td>6</td><td>FGHM Accepted</td><td>Number (auto)</td><td>*</td><td>Sum of FGHM accepted quantities</td></tr>
+                <tr><td>7</td><td>Dispatched</td><td>Number (auto)</td><td>*</td><td>Sum of dispatch quantities (SO Supply Only / DC)</td></tr>
+                <tr><td>8</td><td>Returns</td><td>Number</td><td></td><td>Customer returns / reversal entries</td></tr>
+                <tr><td>9</td><td>Closing Stock</td><td>Formula</td><td>*</td><td>Opening + FGHM − Dispatched + Returns</td></tr>
+                <tr><td>10</td><td>Min Stock</td><td>AutoFetch</td><td>*</td><td>From Purchase Item Muster</td></tr>
+                <tr><td>11</td><td>Status</td><td>Formula</td><td>*</td><td>In Stock / Low Stock / Out of Stock</td></tr>
               </tbody>
             </table>
           </div>
@@ -1435,6 +1472,8 @@
                 <tr><td>3</td><td>UOM</td><td>AutoFetch</td><td>*</td><td>—</td></tr>
                 <tr><td>4</td><td>System/FG Reference</td><td>Text</td><td></td><td>For BOM expansion</td></tr>
                 <tr><td>5</td><td>Consumption Type</td><td>Dropdown</td><td>*</td><td>Actual / Wastage / Rework</td></tr>
+                <tr><td>6</td><td>Rate</td><td>AutoFetch (MR Allocation Rate)</td><td>*</td><td><strong>G8</strong> — Per-unit RM rate from MR Allocation</td></tr>
+                <tr><td>7</td><td>Amount</td><td>Formula</td><td>*</td><td><strong>G8</strong> — Qty Consumed × Rate</td></tr>
               </tbody>
             </table>
           </div>
