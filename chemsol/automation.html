@@ -1539,10 +1539,10 @@ return 0;  // Item not found
 
           <tr><td colspan="5"><strong>Sales &amp; Project</strong></td></tr>
           <tr><td>SO</td><td><span class="auto-tag tag-formrule">Form Rule</span></td><td>On Sales Type change</td><td>Toggle Subform A (System) / Subform B (FG)</td><td>Pending</td></tr>
-          <tr><td>SO</td><td><span class="auto-tag tag-workflow">Workflow</span></td><td>On Submit (Supply+Apply)</td><td>Auto-create Project record</td><td>Pending</td></tr>
+          <tr><td>SO</td><td><span class="auto-tag tag-workflow">Workflow</span></td><td>On Submit (Supply+Apply)</td><td>Auto-create Costing Sheet (Draft). <strong>C2:</strong> Project is created on Costing Approved — not here (single creation point)</td><td>Pending</td></tr>
           <tr><td>SO</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: SO-YYYY-XXXX</td><td>Pending</td></tr>
           <tr><td>Project</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: PRJ-YYYY-XXXX</td><td>Pending</td></tr>
-          <tr><td>Project</td><td><span class="auto-tag tag-deluge">Deluge</span></td><td>On SO Accept (Supply+Apply)</td><td><strong>G2</strong> — Set Project.Total Revenue = SO.Total Amount</td><td>Pending</td></tr>
+          <tr><td>Project</td><td><span class="auto-tag tag-deluge">Deluge</span></td><td>On Costing Approved (Project creation)</td><td><strong>G2/C2</strong> — Set Project.Total Revenue = SO.Total Amount at creation</td><td>Pending</td></tr>
           <tr><td>Project</td><td><span class="auto-tag tag-deluge">Deluge</span></td><td>On MR Released</td><td><strong>G2</strong> — Set Project.Total Actual Cost = MR.Total MR Cost; recalc P&L</td><td>Pending</td></tr>
 
           <tr><td colspan="5"><strong>MR — Costing Gate [CRITICAL]</strong></td></tr>
@@ -1575,9 +1575,11 @@ return 0;  // Item not found
           <tr><td>BMR</td><td><span class="auto-tag tag-deluge">Deluge</span></td><td>On Submit</td><td>Increment Consumed Qty on MR Allocation</td><td>Pending</td></tr>
           <tr><td>Packing</td><td><span class="auto-tag tag-workflow">Workflow</span></td><td>On Submit</td><td>Deduct packing material from inventory</td><td>Pending</td></tr>
           <tr><td>FGHM</td><td><span class="auto-tag tag-deluge">Deluge</span></td><td>On Submit (Accepted)</td><td>Update FG Inventory + Stock Movement Log + Notify Store</td><td>Pending</td></tr>
-          <tr><td>FGHM</td><td><span class="auto-tag tag-deluge">Deluge</span></td><td>On Accept</td><td><strong>G6</strong> — Set Status = Accepted; if all RM lines exhausted → mark MR Allocation Fully Consumed</td><td>Pending</td></tr>
+          <tr><td>FGHM</td><td><span class="auto-tag tag-deluge">Deluge</span></td><td>On Accept</td><td><strong>G6</strong> — Set Status = Accepted; <strong>C1</strong> — mark MR Allocation Fully Consumed = Yes when all RM lines at ≥ 100%</td><td>Pending</td></tr>
           <tr><td>FGHM</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: FGH-YYYY-XXXX</td><td>Pending</td></tr>
           <tr><td>FG Consumption</td><td><span class="auto-tag tag-workflow">Workflow</span></td><td>On Submit</td><td>Deduct FG inventory + Log project FG consumption</td><td>Pending</td></tr>
+          <tr><td>SCE</td><td><span class="auto-tag tag-deluge">Deluge</span></td><td>On Submit</td><td><strong>C5</strong> — Increment Allocation Consumed Qty; BLOCK submit if any line pushes Consumption % &gt; 100% ("Allocation Exhausted — return material first")</td><td>Pending</td></tr>
+          <tr><td>MRT</td><td><span class="auto-tag tag-deluge">Deluge</span></td><td>On Submit</td><td><strong>C1</strong> — Decrement Allocation Consumed Qty + increment Returned Qty (Project ID + Item Code); Good condition → restore RM stock</td><td>Pending</td></tr>
 
           <tr><td colspan="5"><strong>Inventory</strong></td></tr>
           <tr><td>RM/FG Stock</td><td><span class="auto-tag tag-workflow">Workflow</span></td><td>Scheduled Daily</td><td>Min/Max reorder alerts + overstock warnings</td><td>Pending</td></tr>

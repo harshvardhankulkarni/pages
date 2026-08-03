@@ -412,7 +412,7 @@
               <tr><td>Material Allocation vs Consumption</td><td>Detail</td><td>MR Allocation (subform)</td><td>Project ID</td><td>—</td><td>— (columns: Assigned, Consumed, Consumption %)</td></tr>
               <tr><td>80% Alert List</td><td>Detail</td><td>MR Allocation</td><td>—</td><td>—</td><td>Consumption % ≥ 80 AND Alert Flag = ON</td></tr>
               <tr><td>Allocation Exhausted</td><td>Detail</td><td>MR Allocation</td><td>—</td><td>—</td><td>Consumption % ≥ 100</td></tr>
-              <tr><td>Costing vs Actual Variance</td><td>Detail</td><td>MR (with variance formula)</td><td>Project ID</td><td>—</td><td>— (planned cost − actual SCE/BMR cost)</td></tr>
+              <tr><td>Costing vs Actual Variance</td><td>Summary</td><td>MR + SCE (lines) + BMR (lines)</td><td>Project ID</td><td>SUM(Total MR Cost), SUM(SCE Amount), SUM(BMR Amount)</td><td>— (planned cost vs actual SCE/BMR cost — G8 Amount fields)</td></tr>
               <tr><td>Project Inventory Status</td><td>Pivot</td><td>MR Allocation</td><td>Row: Project ID, Col: Item Code</td><td>SUM(Assigned), SUM(Issued), SUM(Consumed), SUM(Returned)</td><td>— (Remaining = Assigned − Consumed + Returned)</td></tr>
             </tbody>
           </table>

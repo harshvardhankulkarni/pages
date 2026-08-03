@@ -437,7 +437,7 @@
             </table>
           </div>
           <div style="padding:10px 14px;background:#ecfdf5;border-left:4px solid var(--green);border-radius:6px;font-size:13px;color:#065f46;margin:10px 0">
-            <strong>Supply+Apply automation:</strong> On SO acceptance, auto-creates the <strong>Project</strong> (Stream B root). The System lines define the <strong>System → FG → RM composition</strong> (via System Composition + BOM) that drives backend RM consumption. <strong>MR Material Allocation + 80% alert apply here only.</strong>
+            <strong>Supply+Apply automation:</strong> On SO acceptance → auto-creates the <strong>Costing Sheet (Draft)</strong>. The <strong>Project</strong> is created later, on <strong>Costing Approved</strong> (single creation point — C2). The System lines define the <strong>System → FG → RM composition</strong> (via System Composition + BOM) that drives backend RM consumption. <strong>MR Material Allocation + 80% alert apply here only.</strong>
           </div>
 
           <h4>Subform B — FG Lines <span class="badge badge-amber" style="background:#fef3c7;color:#92400e">Visible when Sales Type = Supply Only</span></h4>
@@ -773,6 +773,9 @@
                 <tr><td>10</td><td>Consumption %</td><td>Formula</td><td>= Consumed Qty ÷ Assigned Qty × 100</td></tr>
                 <tr><td>11</td><td>Alert Triggered</td><td>Checkbox (readonly)</td><td>Auto-set at Consumption % ≥ 80%</td></tr>
                 <tr><td>12</td><td>Issued Qty</td><td>Number (auto)</td><td><strong>G4</strong> — Incremented by MIS-Post Deluge per matching Project+Item</td></tr>
+                <tr><td>13</td><td>Returned Qty</td><td>Number (auto)</td><td><strong>C1</strong> — Incremented by Material Return Deluge per matching Project+Item</td></tr>
+                <tr><td>14</td><td>Remaining</td><td>Formula</td><td><strong>C1</strong> — = Assigned Qty − Consumed Qty + Returned Qty</td></tr>
+                <tr><td>15</td><td>Fully Consumed</td><td>Checkbox (auto)</td><td><strong>C1</strong> — Set when Consumed Qty ≥ Assigned Qty (100%); checked by FGHM acceptance Deluge</td></tr>
               </tbody>
             </table>
           </div>
@@ -824,7 +827,7 @@
           </div>
 
           <p><strong>Total MR Cost</strong> <span class="badge badge-green">G4 — Formula Field</span> = Material Cost (Σ Allocation Assigned Qty × Rate) + Application Cost + Transportation Cost + Tools & Tackles. This total is the <strong>project implementation cost baseline</strong> that Costing approves at the MR gate. Auto-set on Project.Total Actual Cost when MR is Released.</p>
-          <p><strong>Backend rule (consumption resolution):</strong> Every consumption of RM against the Project — from FG production (BMR / RM Consumption) or Site Manager entries — increments <strong>Consumed Qty</strong> on the matching MR Allocation line (matched by Project ID + Item Code). Never a generic pool deduction for project-tagged material.</p>
+          <p><strong>Backend rule (consumption resolution):</strong> Every consumption of RM against the Project — from FG production (BMR / RM Consumption) or Site Manager entries — increments <strong>Consumed Qty</strong> on the matching MR Allocation line (matched by Project ID + Item Code). Never a generic pool deduction for project-tagged material. <strong>C5 — Over-consumption BLOCK:</strong> any consumption entry (BMR / RM Consumption / SCE) that would push Consumption % &gt; 100% is rejected — "Allocation Exhausted — return material first (Material Return Entry)". Material Return decrements Consumed Qty and increments Returned Qty (C1).</p>
           <p><strong>MR Approval workflow:</strong> Draft → <strong>Production verifies</strong> MR qty against SO system requirements → <strong>Costing approves</strong> total project cost → <strong>Released</strong> (available for MIS). Notification to Project Manager on each change.</p>
         </div>
 
@@ -1477,7 +1480,7 @@
               </tbody>
             </table>
           </div>
-          <p><strong>Automation:</strong> On Submit → increment Consumed Qty on MR Allocation (Project ID + Item Code). If no matching allocation → alert + block. System/FG Reference triggers BOM expansion for sub-RM tracking. ≥80% alert fires real-time.</p>
+          <p><strong>Automation:</strong> On Submit → increment Consumed Qty on MR Allocation (Project ID + Item Code). <strong>C5 — Over-consumption BLOCK:</strong> if the entry would push any line's Consumption % > 100%, the submit is rejected with the message "Allocation Exhausted — return material first (Material Return Entry)". If no matching allocation → alert + block. System/FG Reference triggers BOM expansion for sub-RM tracking. ≥80% alert fires real-time.</p>
         </div>
 
         <!-- 6E Material Return Entry -->

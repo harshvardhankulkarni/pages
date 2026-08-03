@@ -445,8 +445,8 @@ Footer: Issued By (Store), Handover To (Production), Remark.
 | 2 | RM-002 | 5 | Kg | Actual | ₹340 | ₹1,700 |
 
 **Expected automation:**
-- [ ] Allocation Consumed Qty: RM-001 → 285/275 = **103.6%** → exceeds 100% → **block + alert** (allocation exhausted; only MRT can reduce)
-  - Test option: enter 8a with RM-001 = 0 instead (skip the over-consume), proceed to return test.
+- [ ] Allocation Consumed Qty: RM-001 +10 → 285/275 = **103.6%** → submit **REJECTED** (C5 block): "Allocation Exhausted — return material first"
+- [ ] Correct path: reduce RM-001 to 0 (or return 10 kg first via MRT), then submit → entry accepted
 - [ ] Resolution matched by `Project ID + Item Code` — never a generic pool
 - [ ] System/FG Reference field triggers BOM expansion when used
 
@@ -463,7 +463,7 @@ Footer: Issued By (Store), Handover To (Production), Remark.
 | Reason | Excess issue |
 
 **Expected automation:**
-- [ ] Allocation Consumed Qty: RM-002 −10 → 119.5/125 = **95.6%** (MRT decrements `Consumed Qty`)
+- [ ] Allocation Consumed Qty: RM-002 −10 → 119.5/125 = **95.6%** (MRT decrements `Consumed Qty`); `Returned Qty` (C1) = 10
 - [ ] RM Inventory: RM-002 +10 → 285 kg (good condition restores stock)
 - [ ] Damaged condition → only damaged count, no stock restore
 
@@ -524,17 +524,17 @@ Footer: Issued By (Store), Handover To (Production), Remark.
 
 ---
 
-## ⚠️ CHANGE LOG — items found during planner walkthrough (fix docs before building)
+## ⚠️ CHANGE LOG — items found during planner walkthrough
 
-| # | Change | Why | Files |
-|---|--------|-----|-------|
-| **C1** | MR Allocation subform is missing **`Returned Qty`** (auto, incremented by MRT-post), **`Remaining`** formula (= Assigned − Consumed + Returned) and **`Fully Consumed`** checkbox (set by FGHM acceptance) | AGENTS.md and R3 Project Inventory Status both aggregate `SUM(Returned)` and reference Fully Consumed, but the field doesn't exist on the form. Reports would return nothing. | forms.html 3C subform, automation.html (MRT + FGHM hooks), AGENTS.md |
-| **C2** | Project creation trigger is contradictory: forms.html 2A says "On SO acceptance, auto-creates the Project"; 3A + AGENTS.md + plan say Project is auto-created **on Costing Approval**. automation.html has SO "On Submit → create Project record". | Double-creation risk. Decide single source: **SO acceptance → create Costing Sheet (Draft) only; Costing Approved → create Project + Production Plan**. Update `Project_Revenue_Set` hook to fire at Project creation (copy SO Total), not at SO acceptance. | forms.html 2A text, automation.html SO workflow + Project_Revenue_Set hook |
-| **C3** | Costing vs Actual Variance (R3): reports.html lists it as **Detail on MR**; REPORT_IMPLEMENTATION_PLAN lists **Summary** with SUM(SCE Amount), SUM(BMR Amount) | G8 now provides Rate+Amount on SCE/BMR lines — Summary spec is buildable. Align to the plan's Summary definition. | reports.html R3 row |
-| **C4** | Task Budget subform `Actual Qty`/`Actual Amount` have **no automation source** — they're manual | P&L uses MR Total Actual Cost; Task Budget actuals are informational until SCE/BMR are categorized by budget category. Keep manual for now; note in Phase 8 UAT that actuals are entered by hand. | forms.html Task Budget notes |
-| **C5** | SCE allows over-consumption beyond 100% of assignment (Step 8a test) | Decide behavior: **block** entries that push Consumption % > 100% (recommended), or allow + flag. AGENTS.md implies consumption tracked "never a generic pool" but doesn't state the block. Recommend blocking at MR Allocation level. | forms.html SCE automation note, automation.html SCE hook |
+| # | Change | Status |
+|---|--------|--------|
+| **C1** | MR Allocation subform missing **`Returned Qty`** (auto, MRT-post), **`Remaining`** formula (= Assigned − Consumed + Returned) and **`Fully Consumed`** checkbox (FGHM acceptance) | ✅ **APPLIED** — forms.html 3C rows 13–15, automation.html MRT + FGHM hooks |
+| **C2** | Project creation trigger contradiction (SO acceptance vs Costing Approved) — resolved: **SO acceptance → Costing Sheet (Draft); Costing Approved → Project + Production Plan** (single creation point); `Project_Revenue_Set` fires at Project creation | ✅ **APPLIED** — forms.html 2A text, automation.html SO workflow + Revenue hook |
+| **C3** | Costing vs Actual Variance (R3): Detail vs Summary mismatch | ✅ **APPLIED** — reports.html R3 now Summary: SUM(Total MR Cost), SUM(SCE Amount), SUM(BMR Amount) |
+| **C4** | Task Budget subform `Actual Qty`/`Actual Amount` have **no automation source** — manual entry | ⏳ **NOTE** — keep manual for now; P&L uses MR Total Actual Cost; revisit in later phase |
+| **C5** | SCE could over-consume past 100% of assignment | ✅ **APPLIED — decision: BLOCK.** Any consumption entry (SCE / BMR / RM Consumption) pushing Consumption % > 100% is rejected: "Allocation Exhausted — return material first". Applied to forms.html (SCE note + MR backend rule) and automation.html (SCE hook). Step 8a below updated. |
 
-**Anything else you hit during the walkthrough → append here with the same format, then fix the docs before building in Creator.**
+**New findings during UAT walkthrough → append here, then fix docs before building.**
 
 ---
 
