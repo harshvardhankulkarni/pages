@@ -65,9 +65,9 @@ These gaps are **blocking prerequisites**. Phase 0 resolves them all before any 
 
 ---
 
-### Phase 1 — Master Data Reports (M1)
+### Phase 1 — Master Data Reports (M1) ✅ DONE
 
-**Module:** Master Data — 7 forms, 8 reports
+**Module:** Master Data — 7 forms, 8 reports (R1 build guide complete — reports.html)
 
 | Report | Creator Type | Source Form | Group By | Aggregations | Filters | Gap Dep |
 |--------|-------------|-------------|----------|-------------|---------|---------|
