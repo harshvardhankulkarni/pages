@@ -544,6 +544,7 @@ Footer: Issued By (Store), Handover To (Production), Remark.
 | **C14** | FGHM "On Accept" Deluge summary row existed but NO actual code snippet to mark MR Allocation `Fully_Consumed = Yes` when all RM lines ≥ 100% | ✅ **APPLIED** — added Deluge snippet that checks all allocations for the project and sets `Fully_Consumed = true` when all at ≥ 100% |
 | **C15** | MR Released → auto-create MIS Draft had a summary row + blueprint notification but NO actual Deluge `createRecord` code — AGENTS.md promises "MR Released → auto-MIS" | ✅ **APPLIED** — blueprint Release transition now has the action; added full Deluge snippet creating one MIS Draft record per MR line (Issued 0, Status Draft) + email |
 | **C16** | FGHM code referenced `Overall_Status` field but canonical field is `Status` (Pending Acceptance / Accepted, G6) — and no code actually SET Status = Accepted on inline acceptance | ✅ **APPLIED** — FGHM On-Accept snippets now set `Status = "Accepted"` (G6 hook FGHM_Accepted_Status) and use `Status` in comments; no more `Overall_Status` |
+| **C17** | MIS Deluge sets `Status` ("Draft" on auto-create, "Posted" on Post MIS button) but MIS form spec (forms.html, IMPLEMENTATION_PLAN, implementation-plan.html) had NO Status field | ✅ **APPLIED** — added `Status` dropdown (Draft / Posted) to all three MIS form specs with C17 note |
 
 **New findings during UAT walkthrough → append here, then fix docs before building.**
 

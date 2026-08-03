@@ -578,6 +578,7 @@ Procurement runs when production needs materials not in stock.
 | MIS Number | Autogen (against MR) | * |
 | Date | Date (Today) | * |
 | Batch Number | Text | |
+| Status | Dropdown — Draft (auto on MR Release) / Posted (set by "Post MIS" button) | * | **C17** — required by MIS Deluge (input.Status = "Posted") |
 
 **Line Items** (auto-fetched from MR):
 || Item Code / Name | AutoFetch (from MR line items via MR No) | MR |
