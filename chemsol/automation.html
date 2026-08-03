@@ -613,10 +613,10 @@ for each item in input.MR_Line_Items
         <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Workflow Rule:</strong> On record update (when Consumed_Qty changes), check Consumption %</div></div>
         <div class="auto-code">
 // Workflow Rule - On Record Update (Material_Allocation subform)
-// Trigger criteria: Consumption_Percentage >= 80 AND Alert_Flag == true
+// C18: Trigger criteria: Consumption_Percentage >= 80 AND 80%_Alert_Flag == true (field is 80%_Alert_Flag, not Alert_Flag)
 
 consumptionPct = input.Consumption_Percentage;
-if(consumptionPct >= 80 && input.Alert_Flag == true)
+if(consumptionPct >= 80 && input."80%_Alert_Flag" == true)
 {
   alertMsg = "ALERT: " + input.Item_Name + " consumed " + round(consumptionPct) 
            + "% of allocated " + input.Assigned_Qty + " " + input.UOM 
@@ -1440,8 +1440,8 @@ for each item in input.Line_Items
       "Consumption_Percentage": newPct
     };
     
-    // Check 80% alert
-    if(newPct >= 80 && alloc.Alert_Flag == true)
+    // C18: 80% alert uses 80%_Alert_Flag field (matches auto-populate createRecord)
+    if(newPct >= 80 && alloc."80%_Alert_Flag" == true)
     {
       sendmail
       [
