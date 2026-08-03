@@ -172,7 +172,7 @@
 | Start / End Date | Today / +6 days |
 | Status | In Progress |
 | **Total Revenue (G2)** | **₹175,000** (set from SO at creation — see C2) |
-| **Total Actual Cost (G2)** | ₹146,000 — auto-set when MR Released (later step) |
+| **Total Actual Cost (G2)** | ₹144,000 — auto-set when MR Released (later step) |
 | **P&L (G2)** | formula — updates after MR Release |
 
 **Task Budget subform (G2)** — fill all 5 categories:
@@ -303,7 +303,7 @@ Transport subform: 1 trip, supplier's own.
 
 **MR Cost Components (pre-filled):** Material ₹103,000 · Application ₹30,000 · Transport ₹7,500 · Tools ₹3,500
 
-**Total MR Cost (G4)** = **₹146,000**
+**Total MR Cost (G4)** = **₹144,000** (4 components: 103,000 + 30,000 + 7,500 + 3,500 — Section E Overhead stays Costing-Sheet-only, C20)
 
 **Material Allocation subform (auto-populated from MR lines):**
 
@@ -316,11 +316,11 @@ Transport subform: 1 trip, supplier's own.
 - [ ] Σ(Assigned) = 275 + 125 = 400 kg vs Σ(SO Area × BOM) = 400 kg → diff 0% → no flag (test: change one Assigned Qty by 6% → flag fires; 11% → block)
 
 **Expected automation:**
-- [ ] On **Released** → `Project.Total Actual Cost` = ₹146,000, P&L = **+₹29,000** (G2 hook `Project_Cost_Set`)
+- [ ] On **Released** → `Project.Total Actual Cost` = ₹144,000, P&L = **+₹31,000** (G2 hook `Project_Cost_Set`)
 - [ ] On **Released** → MIS **Draft** auto-created
 - [ ] SLAs: Draft > 2 hr reminder, Verified > 2 hr escalation, Approved > 1 hr auto-release
 
-**Verify:** MR Status Tracking (R3) → 1 Released; Project P&L Real-time (R2) → Revenue 175,000 − Cost 146,000 = +29,000; Project Cost Baseline (R3) → ₹146,000.
+**Verify:** MR Status Tracking (R3) → 1 Released; Project P&L Real-time (R2) → Revenue 175,000 − Cost 144,000 = +31,000; Project Cost Baseline (R3) → ₹144,000.
 
 ---
 
@@ -500,12 +500,12 @@ Footer: Issued By (Store), Handover To (Production), Remark.
 | Field | Value |
 |-------|-------|
 | Project Status | In Progress → **Completed** |
-| P&L (G2) | Total Revenue ₹175,000 − Total Actual Cost ₹146,000 = **+₹29,000** |
+| P&L (G2) | Total Revenue ₹175,000 − Total Actual Cost ₹144,000 = **+₹31,000** |
 
 **Verify:**
-- [ ] Project P&L Real-time (R2) → +₹29,000
+- [ ] Project P&L Real-time (R2) → +₹31,000
 - [ ] Project Inventory Status (R3 Pivot) → RM-001 Assigned 275 / Issued 275 / Consumed 285* / Returned 0 / Remaining −10* (*if 8a over-consumed; else 275/275/265/10/0)
-- [ ] Costing vs Actual Variance (R3) → planned ₹146,000 vs actual (BMR + SCE amounts)
+- [ ] Costing vs Actual Variance (R3) → planned ₹144,000 vs actual (BMR + SCE amounts)
 - [ ] Dashboard widgets: MR/Costing, Production, Site Supervisor, Project Management all render from this data
 
 ---
@@ -516,7 +516,7 @@ Footer: Issued By (Store), Handover To (Production), Remark.
 |--------|-----------------|
 | R1 Item Catalog / Supplier / Customer | EP02, RM-001/2, FG-002/3, SUP-0001, CUS-0001 |
 | R2 Sales Register, SO Value by Customer, Project Status, Task Budget | SO ₹175k; PRJ; budget ₹50,200 |
-| R3 Costing Status, MR Status, Cost Baseline, 80% Alert List, Inventory Status | ₹146k; Released; alerts fired in Step 7b |
+| R3 Costing Status, MR Status, Cost Baseline, 80% Alert List, Inventory Status | ₹144k MR baseline (Costing Sheet ₹146k incl. Overhead); Released; alerts fired in Step 7b |
 | R4 Open PO Register, PO vs GRN Pending, Vendor Performance | PO Fully Received; no pending; 5 days |
 | R5 MIS Register, Today's Production, FG Handover Pending | MIS 275/125; 448 kg; empty |
 | R6 RM/FG Stock, Valuation (Closing × Rate), SCE logs, Project FG Position | RM-001 0*, RM-002 285*; FG-003 20 |
@@ -547,6 +547,7 @@ Footer: Issued By (Store), Handover To (Production), Remark.
 | **C17** | MIS Deluge sets `Status` ("Draft" on auto-create, "Posted" on Post MIS button) but MIS form spec (forms.html, IMPLEMENTATION_PLAN, implementation-plan.html) had NO Status field | ✅ **APPLIED** — added `Status` dropdown (Draft / Posted) to all three MIS form specs with C17 note |
 | **C18** | 80% alert field-name mismatch: auto-populate Deluge sets `80%_Alert_Flag` but alert workflow + SCE snippet checked `Alert_Flag` — workflow would never fire | ✅ **APPLIED** — all checks now use `80%_Alert_Flag` (matching forms.html "80% Threshold Alert Flag") |
 | **C19** | SO↔BOM↔MR cross-validation Deluge writes `Variance_Flag`/`Variance_Percentage` but NO form spec had these fields; IMPLEMENTATION_PLAN + implementation-plan.html MR Allocation tables also still missing G4/C1 rows 12–15 (forms.html had them) | ✅ **APPLIED** — added rows 12–17 (Issued Qty, Returned Qty, Remaining, Fully Consumed, Variance %, Variance Flag) to all three MR Allocation specs |
+| **C20** | Sample-data arithmetic error: Costing Sheet Total = ₹146,000 (incl. Section E Overhead ₹2,000) but MR auto-derives only 4 components = ₹144,000; planner had MR Total = ₹146,000 and P&L = +₹29,000 — should be ₹144,000 / **+₹31,000**. Overhead is Costing-worksheet-only, never in the MR cost baseline | ✅ **APPLIED** — all planner MR Total / Project.Total Actual Cost / P&L / R3 baseline numbers fixed to ₹144,000 / +₹31,000; Costing Sheet Total stays ₹146,000 (overhead noted as Costing-only) |
 
 **New findings during UAT walkthrough → append here, then fix docs before building.**
 
