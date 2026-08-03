@@ -166,7 +166,7 @@ Build first — all transactional forms depend on these.
 ## 3. Phase 2 — Sales & Project
 
 ### 3.1 Sales Order (SO)
-**Purpose**: Create customer orders. On acceptance (Supply+Apply), auto-creates Project.
+**Purpose**: Create customer orders. On acceptance (Supply+Apply), auto-creates Costing Sheet (Draft); Project is auto-created on Costing Approved (single creation point — C2).
 **Department**: Sales
 
 **Header:**
@@ -211,7 +211,7 @@ Build first — all transactional forms depend on these.
 
 **Automation:**
 - Sales Type controls subform visibility (show/hide rule)
-- Supply+Apply on acceptance → auto-create Project (Stream B root)
+- Supply+Apply on acceptance → auto-create Costing Sheet (Draft); Project auto-created on Costing Approved (C2)
 - Supply Only → NO Project, direct FG dispatch only
 - System lines define System→FG→RM composition that drives backend consumption
 

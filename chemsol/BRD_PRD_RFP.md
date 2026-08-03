@@ -256,7 +256,7 @@ Every form uses a **single field table** with a **Section** column. The Section 
 #### FORM: Sales / Work Order Master (SO)
 
 **Purpose:** Customer order intake with **conditional line-item subform** driven by a `Sales Type` controlling field.  
-**Mode:** Dual — (A) **Supply+Apply** sells a **SYSTEM** (auto-creates Project, Stream B root); (B) **Supply Only** sells **FG directly** (NO Project, direct stock sale).  
+**Mode:** Dual — (A) **Supply+Apply** sells a **SYSTEM** (auto-creates Costing Sheet → Project on Costing Approved, Stream B root); (B) **Supply Only** sells **FG directly** (NO Project, direct stock sale).  
 **Controlling Field:** `Sales Type` (Header dropdown) toggles subform visibility + downstream automation.  
 **Subforms:** Subform A — System Lines (N rows, Supply+Apply), Subform B — FG Lines (N rows, Supply Only), Commission (1 row, conditional)
 
@@ -316,7 +316,7 @@ Every form uses a **single field table** with a **Section** column. The Section 
 **Controlling-Field Logic (Zoho Creator):** One SO form with **two subforms**. A show/hide rule on `Sales Type` displays Subform A (Supply+Apply) or Subform B (Supply Only); the inactive subform is hidden and its validation skipped. At least one line is required in the active subform.
 
 **Automation per Sales Type:**
-- **Supply+Apply:** Subform A shown → validate ≥1 system line → on acceptance **auto-creates Project** (Stream B root); Systems subform copied from SO System Lines → downstream MR/MIS/Production/Service/Finance/Logistics carry Project ID → **MR Material Allocation + 80% alert active**. System composition (System→FG→RM via BOM) drives backend consumption.
+- **Supply+Apply:** Subform A shown → validate ≥1 system line → on acceptance **auto-creates Costing Sheet (Draft)**; **Project (Stream B root) is auto-created on Costing Approved** (single creation point — C2); Systems subform copied from SO System Lines → downstream MR/MIS/Production/Service/Finance/Logistics carry Project ID → **MR Material Allocation + 80% alert active**. System composition (System→FG→RM via BOM) drives backend consumption.
 - **Supply Only:** Subform B shown → validate ≥1 FG line → **NO Project created** → routes to FG dispatch / customer invoice only (Stream A-adjacent stock sale). **No MR allocation, no 80% alert, no project consumption tracking.**
 
 ---
@@ -965,7 +965,7 @@ The Project ID is passed from parent to child in Stream B only:
 
 | Rule | Description |
 |------|-------------|
-| SO → Project | Supply+Apply acceptance auto-creates Project record |
+| SO → Costing → Project | Supply+Apply acceptance auto-creates Costing Sheet (Draft); Project auto-created on Costing Approved (C2) |
 | **Project Baseline** | **SO = revenue side (System/FG scope). MR = complete project implementation cost baseline (Material + Application + Transportation + Tools & Tackles) that Costing approves. Both anchor the project.** |
 | **MR Status Workflow** | **Draft → Production Verified (Production checks qty vs SO) → Costing Approved (Costing approves TOTAL project cost — all 4 components) → Released. Without Released MR, no downstream steps.** |
 | PR → PO | PR approval triggers PO readiness |

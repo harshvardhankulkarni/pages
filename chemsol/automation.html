@@ -1548,7 +1548,8 @@ return 0;  // Item not found
           <tr><td colspan="5"><strong>MR — Costing Gate [CRITICAL]</strong></td></tr>
           <tr><td>MR</td><td><span class="auto-tag tag-blueprint">Blueprint</span></td><td>Status transitions</td><td>Draft -> Prod Verified -> Costing Approved -> Released</td><td>Pending</td></tr>
           <tr><td>MR</td><td><span class="auto-tag tag-deluge">Deluge</span></td><td>On Submit</td><td>Auto-populate Material Allocation from MR Lines</td><td>Pending</td></tr>
-          <tr><td>MR</td><td><span class="auto-tag tag-workflow">Workflow</span></td><td>Consumed Qty update</td><td>80% Consumption Alert -> Email PM + Dashboard</td><td>Pending</td></tr>
+          <tr><td>MR</td><td><span class="auto-tag tag-workflow">Workflow</span></td><td>Consumed Qty update</td><td>80% Consumption Alert -> Email PM + Dashboard; <strong>100% -> "Allocation Exhausted" escalation to PM + Purchase</strong></td><td>Pending</td></tr>
+          <tr><td>MR</td><td><span class="auto-tag tag-workflow">Workflow</span></td><td>On Released</td><td><strong>Auto-create MIS Draft</strong> (items auto-fetched from MR lines) + notify Store + Production</td><td>Pending</td></tr>
           <tr><td>MR</td><td><span class="auto-tag tag-workflow">Workflow</span></td><td>Scheduled Daily</td><td>Escalation: Draft >7d, Prod Verified >3d</td><td>Pending</td></tr>
           <tr><td>MR</td><td><span class="auto-tag tag-numbering">Numbering</span></td><td>On Create</td><td>Auto: MR-YYYY-XXXX</td><td>Pending</td></tr>
 

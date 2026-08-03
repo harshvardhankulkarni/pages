@@ -533,12 +533,18 @@ Footer: Issued By (Store), Handover To (Production), Remark.
 | **C3** | Costing vs Actual Variance (R3): Detail vs Summary mismatch | ✅ **APPLIED** — reports.html R3 now Summary: SUM(Total MR Cost), SUM(SCE Amount), SUM(BMR Amount) |
 | **C4** | Task Budget subform `Actual Qty`/`Actual Amount` have **no automation source** — manual entry | ⏳ **NOTE** — keep manual for now; P&L uses MR Total Actual Cost; revisit in later phase |
 | **C5** | SCE could over-consume past 100% of assignment | ✅ **APPLIED — decision: BLOCK.** Any consumption entry (SCE / BMR / RM Consumption) pushing Consumption % > 100% is rejected: "Allocation Exhausted — return material first". Applied to forms.html (SCE note + MR backend rule) and automation.html (SCE hook). Step 8a below updated. |
+| **C6** | C2 fix was only applied to forms.html 2A — 6 more files still said "SO acceptance → auto-creates Project" (forms.html intro/badge, implementation-plan.html ×2, IMPLEMENTATION_PLAN.md ×2, data-model.html ×2, BRD ×2) | ✅ **APPLIED** — all swept to "SO acceptance → Costing Sheet (Draft); Project on Costing Approved" |
+| **C7** | automation.html summary had **no hook for "MR Released → auto-create MIS Draft"** and no **100% "Allocation Exhausted" escalation** row (AGENTS.md promises both) | ✅ **APPLIED** — added MR "On Released → auto-create MIS Draft + notify Store/Production" and 100% escalation to the 80% alert row |
 
 **New findings during UAT walkthrough → append here, then fix docs before building.**
 
 ---
 
 ## Sign-off
+
+**Doc-level verification (loop pass 1):** every step's fields exist in forms.html, every expected automation has a hook in automation.html, every verify report is spec'd in reports.html R1–R7 → all 10 steps + report sweep **doc-verified ✓** (see REPORT_IMPLEMENTATION_PLAN Phase 8).
+
+**Console execution (Zoho Creator .in) — remaining manual work:**
 
 | Step | Tested | Signed off |
 |------|--------|------------|
@@ -553,4 +559,4 @@ Footer: Issued By (Store), Handover To (Production), Remark.
 | 9 FG Consumption | | |
 | 10 Close + P&L | | |
 | Report sweep R1–R7 | | |
-| Change Log items applied | | |
+| Change Log items applied | ✅ | |

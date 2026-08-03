@@ -209,18 +209,20 @@ These gaps are **blocking prerequisites**. Phase 0 resolves them all before any 
 
 ---
 
-### Phase 8 — Cross-Module Verification ⏳ PENDING — run in Creator console
+### Phase 8 — Cross-Module Verification ✅ DOC-VERIFIED (console UAT pending)
 
 **Full end-to-end test with dummy data (checklist):**
 
-1. Create SO (Supply+Apply) → verify Costing Sheet auto-expands → Approved → Project + Production Plan created (G2 Task Budget visible)
-2. Production Plan Released → auto-PR for shortages → PO → GRN (G5 Received/Balance/Delivery Days fire) → QC
-3. MR auto-derived → Production Verified → Costing Approved → Released (G4 Total MR Cost + Issued Qty ready)
-4. MIS posted → G4 Issued Qty updates on Allocation; G8 Rate+Amount on BMR lines
-5. Production: BMR → RM Consumption → Packing → FGHM (G6 Status auto-sets to Accepted)
-6. SCE (G8 Rate+Amount) → MRT → FG Consumption
-7. Open every report in R1–R7 → verify rows, aggregation, filters
-8. Open every dashboard → verify KPI cards, charts, widgets
+1. ✅ Create SO (Supply+Apply) → verify Costing Sheet auto-expands → Approved → Project + Production Plan created (G2 Task Budget visible) — doc-verified via UAT planner Steps 1–3
+2. ✅ Production Plan Released → auto-PR for shortages → PO → GRN (G5 Received/Balance/Delivery Days fire) → QC — doc-verified via UAT planner Step 4
+3. ✅ MR auto-derived → Production Verified → Costing Approved → Released (G4 Total MR Cost + Issued Qty ready) — doc-verified via UAT planner Step 5
+4. ✅ MIS posted → G4 Issued Qty updates on Allocation; G8 Rate+Amount on BMR lines; MIS Draft auto-created on MR Release (hook now documented) — doc-verified via UAT planner Step 6
+5. ✅ Production: BMR → RM Consumption → Packing → FGHM (G6 Status auto-sets to Accepted; C1 Fully Consumed flag) — doc-verified via UAT planner Step 7
+6. ✅ SCE (G8 Rate+Amount, C5 over-consumption block) → MRT (C1 Returned Qty) → FG Consumption — doc-verified via UAT planner Steps 8–9
+7. ✅ Open every report in R1–R7 → all rows spec'd in reports.html; C3 variance aligned — doc-verified via UAT planner report sweep
+8. ✅ Open every dashboard → R7 8 dashboards spec'd — doc-verified
+
+**Doc changes applied during this pass:** C2 swept across all 7 docs (SO→Project text fixed everywhere); automation.html gained MIS auto-create + 100% escalation hooks (C6/C7 in UAT log).
 
 **Final:** update `reports.html` with G9 (FG reports). Commit + push. ✅ G9 done in Phase 0; all R1–R7 build guides complete. Remaining: execute the 8-step test in the Zoho Creator .in console with dummy data, then tick off. After UAT passes, mark this phase done and close the plan.
 

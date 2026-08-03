@@ -379,7 +379,7 @@
       <!-- SECTION 2: SALES & PROJECT -->
       <!-- ============================================================ -->
       <h2 id="sales">2 · Sales & Project <span class="badge badge-blue">Dual Mode · Project only on Supply+Apply</span></h2>
-      <p>Sales Order with conditional subforms. On acceptance (Supply+Apply), auto-creates the Project (Stream B root). Supply Only sells FG directly — no Project created.</p>
+      <p>Sales Order with conditional subforms. On acceptance (Supply+Apply), auto-creates the Costing Sheet; the Project (Stream B root) is auto-created on Costing Approved (single creation point — C2). Supply Only sells FG directly — no Project created.</p>
 
       <div class="phase-container">
 
@@ -391,7 +391,7 @@
             <span class="phase-tag">Conditional Subforms · System (Supply+Apply) / FG (Supply Only)</span>
           </div>
           <p>Customer details + a line-item subform that <strong>changes based on the <span class="badge badge-blue">Sales Type</span></strong> controlling field:<br>
-          <span class="badge badge-green">Supply+Apply</span> → sells a <strong>SYSTEM</strong> (System-code lines) and <strong>auto-creates a Project</strong> (Stream B root).<br>
+          <span class="badge badge-green">Supply+Apply</span> → sells a <strong>SYSTEM</strong> (System-code lines) and <strong>drives Costing Sheet → Project</strong> (Stream B root, created on Costing Approved).<br>
           <span class="badge badge-amber" style="background:#fef3c7;color:#92400e">Supply Only</span> → sells <strong>FG directly</strong> (FG-code lines), <strong>NO Project</strong> created — direct stock sale.</p>
 
           <h4>Header</h4>

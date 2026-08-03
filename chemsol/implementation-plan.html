@@ -336,7 +336,7 @@
 
       <div class="impl-card">
         <h3>3.1 Sales Order (SO) <span class="badge badge-purple">Hub</span></h3>
-        <p><strong>Purpose:</strong> Create customer orders. On acceptance (Supply+Apply), auto-creates Project.</p>
+        <p><strong>Purpose:</strong> Create customer orders. On acceptance (Supply+Apply), auto-creates Costing Sheet (Draft); Project is auto-created on Costing Approved (C2).</p>
         <p><strong>Department:</strong> Sales</p>
         <h4>Header</h4>
         <table class="impl-field-table">
@@ -385,7 +385,7 @@
         </div>
 
         <div class="impl-info-box">
-          <strong>Automation:</strong> Sales Type controls subform visibility (show/hide rule). Supply+Apply on acceptance → auto-create Project (Stream B root). Supply Only → NO Project, direct FG dispatch only. System lines define System→FG→RM composition that drives backend consumption.
+          <strong>Automation:</strong> Sales Type controls subform visibility (show/hide rule). Supply+Apply on acceptance → auto-create Costing Sheet (Draft); Project auto-created on Costing Approved (single creation point — C2). Supply Only → NO Project, direct FG dispatch only. System lines define System→FG→RM composition that drives backend consumption.
         </div>
       </div>
 
