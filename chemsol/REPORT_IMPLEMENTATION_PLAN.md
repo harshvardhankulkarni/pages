@@ -84,9 +84,9 @@ These gaps are **blocking prerequisites**. Phase 0 resolves them all before any 
 
 ---
 
-### Phase 2 — Sales & Project Reports (M2)
+### Phase 2 — Sales & Project Reports (M2) ✅ DONE
 
-**Module:** Sales Order, Project, Task Budget — 8 reports
+**Module:** Sales Order, Project, Task Budget — 8 reports (R2 build guide complete — reports.html)
 
 | Report | Creator Type | Source Form | Group By | Aggregations | Filters | Gap Dep |
 |--------|-------------|-------------|----------|-------------|---------|---------|
