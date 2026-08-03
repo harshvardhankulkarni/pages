@@ -43,7 +43,7 @@
 | System | FG | Qty/sqm |
 |--------|----|---------|
 | EP02 | FG-002 Epoxy Primer | 0.30 kg |
-| EP02 | FG-003 Epoxy Top Coat | 0.50 kg |
+| EP02 | FG-003 Epoxy Top Coat | 0.60 kg |
 
 **BOM / FG Formulation (FG → RM, per kg of FG output):** (Status: **Released**)
 
@@ -51,8 +51,8 @@
 |----|----|-------|
 | FG-002 | RM-001 Epoxy Resin A | 0.67 kg |
 | FG-002 | RM-002 Hardener B | 0.33 kg |
-| FG-003 | RM-001 Epoxy Resin A | 0.70 kg |
-| FG-003 | RM-002 Hardener B | 0.30 kg |
+| FG-003 | RM-001 Epoxy Resin A | 0.58 kg |
+| FG-003 | RM-002 Hardener B | 0.25 kg |
 
 **Supplier:** SUP-0001 = "ResinCorp Polymers" (GSTIN, PAN, payment terms 30 days)
 
@@ -570,6 +570,7 @@ Footer: Issued By (Store), Handover To (Production), Remark.
 | **C24** | Numbering Series Reference tables incomplete vs canonical set (automation.html detail steps): forms.html missing CST/PLAN/SCE/MRT/SUP; BRD missing JOB/SCE/MRT/SUP; implementation-plan.html missing SUP | ✅ **APPLIED** — all three tables completed (CST, PLAN, JOB, PR, PO×2, GRN, MR, MIS, FGH, QC, SO, PRJ, SC, BOM, BMR, SCE, MRT, CUST, SUP) |
 | **C25** | Double-count risk: AGENTS.md/BRD/IMPLEMENTATION_PLAN stated "BMR, RM Consumption, Packing — ALL increment Consumed Qty", but planner math (Step 7/8) treats BMR + SCE as the only incrementing events — RC-2026-0001 is variance-only, and adding it would push RM-001 to 136% and break Step 8 | ✅ **APPLIED** — consumption model clarified everywhere: BMR + SCE increment; RM Consumption Entry = BOM variance check (no increment); Packing = packaging material deduction only; planner 7c annotated |
 | **C26** | Step 2 BOM ratio 0.099 → RM-002 required 49.5 kg → Section A actually ₹102,830 (claimed ₹103,000) and Σ BOM = 399.5 kg (claimed 400 / "diff 0%") vs MR assigned 125 kg — 0.5 kg rounding gap | ✅ **APPLIED** — ratio corrected to 0.10 → 50 kg; Section A = ₹103,000 exact; Σ BOM = 400 kg = Σ Assigned (line 317 diff 0% now true); BMR-0001 RM-002 actual 49.5 vs standard 50 = realistic 1% variance, unchanged |
+| **C27** | Step 1 master data contradictions: System Composition says FG-003 = 0.50 kg/sqm but every downstream step (line 66, FGHM 300 kg, R5 448 kg, Step 9 FG-003 300→20) uses 0.60; BOM FG-003 ratios 0.70/0.30 per kg × 300 kg = 210/90 ≠ Costing Section A 174.5/75 | ✅ **APPLIED** — composition FG-003 → 0.60 kg/sqm; BOM FG-003 ratios → 0.58/0.25 kg per kg of FG output (derived from Section A: 174.5/300, 75/300; exact 0.582 — within 5% tolerance) |
 
 **New findings during UAT walkthrough → append here, then fix docs before building.**
 
