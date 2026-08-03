@@ -1382,7 +1382,7 @@ for each item in input.Line_Items
       </div>
       <div class="auto-card-body">
         <div class="auto-sub-title">Decrement Consumed Qty + Restore Stock</div>
-        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Workflow Rule:</strong> On MRT Submit, decrement Consumed Qty on MR Allocation + restore RM stock if condition = Good</div></div>
+        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Workflow Rule:</strong> On MRT Submit, decrement Consumed Qty + increment Returned Qty (C12) on MR Allocation + restore RM stock if condition = Good</div></div>
         <div class="auto-code">
 // Workflow Rule - On Submit
 for each item in input.Line_Items
@@ -1398,6 +1398,7 @@ for each item in input.Line_Items
       "Form_Type": "MR_Allocation",
       "ID": alloc.ID,
       "Consumed_Qty": alloc.Consumed_Qty - item.Return_Qty,
+      "Returned_Qty": alloc.Returned_Qty + item.Return_Qty, // C12: C1 requires Returned Qty tracking
       "Consumption_Percentage": ((alloc.Consumed_Qty - item.Return_Qty) / alloc.Assigned_Qty) * 100
     };
   }
