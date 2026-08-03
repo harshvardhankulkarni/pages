@@ -103,9 +103,9 @@ These gaps are **blocking prerequisites**. Phase 0 resolves them all before any 
 
 ---
 
-### Phase 3 — Costing/Plan/MR Reports (M3)
+### Phase 3 — Costing/Plan/MR Reports (M3) ✅ DONE
 
-**Module:** Costing Sheet, Production Plan, MR, MR Allocation — 12 reports
+**Module:** Costing Sheet, Production Plan, MR, MR Allocation — 12 reports (R3 build guide complete — reports.html)
 
 | Report | Creator Type | Source Form | Group By | Aggregations | Filters | Gap Dep |
 |--------|-------------|-------------|----------|-------------|---------|---------|
