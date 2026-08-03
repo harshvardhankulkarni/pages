@@ -166,9 +166,9 @@ These gaps are **blocking prerequisites**. Phase 0 resolves them all before any 
 
 ---
 
-### Phase 6 — Inventory/Site/Return Reports (M6)
+### Phase 6 — Inventory/Site/Return Reports (M6) ✅ DONE
 
-**Module:** RM/FG Inventory, Stock Movement Log, SCE, MRT, Project FG — 13 reports
+**Module:** RM/FG Inventory, Stock Movement Log, SCE, MRT, Project FG — 13 reports (R6 build guide complete — reports.html, incl. G9 FG rows)
 
 | Report | Creator Type | Source Form | Group By | Aggregations | Filters | Gap Dep |
 |--------|-------------|-------------|----------|-------------|---------|---------|
