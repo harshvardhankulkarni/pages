@@ -1099,12 +1099,18 @@ for each line in input.BMR_Line_Items
   
   if(!isNull(allocation))
   {
+    // C13/C5: block over-consumption — reject before any update
+    newPct = ((allocation.Consumed_Qty + line.Qty_Consumed) / allocation.Assigned_Qty) * 100;
+    if(newPct > 100)
+    {
+      throw "Allocation Exhausted for " + line.RM_Item_Code + " — " + allocation.Consumed_Qty + " of " + allocation.Assigned_Qty + " consumed. Return material first (Material Return Entry).";
+    }
     updateRecord
     {
       "Form_Type": "Material_Allocation",
       "ID": allocation.ID,
       "Consumed_Qty": allocation.Consumed_Qty + line.Qty_Consumed,
-      "Consumption_Percentage": ((allocation.Consumed_Qty + line.Qty_Consumed) / allocation.Assigned_Qty) * 100
+      "Consumption_Percentage": newPct
     };
   }
 }
@@ -1341,17 +1347,23 @@ for each item in input.Line_Items
   
   if(!isNull(alloc))
   {
+    // C13/C5: block over-consumption — reject before any update
+    newPct = ((alloc.Consumed_Qty + item.Qty_Consumed) / alloc.Assigned_Qty) * 100;
+    if(newPct > 100)
+    {
+      throw "Allocation Exhausted for " + item.RM_Item_Code + " — " + alloc.Consumed_Qty + " of " + alloc.Assigned_Qty + " consumed. Return material first (Material Return Entry).";
+    }
+    
     // Increment consumed qty
     updateRecord
     {
       "Form_Type": "MR_Allocation",
       "ID": alloc.ID,
       "Consumed_Qty": alloc.Consumed_Qty + item.Qty_Consumed,
-      "Consumption_Percentage": ((alloc.Consumed_Qty + item.Qty_Consumed) / alloc.Assigned_Qty) * 100
+      "Consumption_Percentage": newPct
     };
     
     // Check 80% alert
-    newPct = ((alloc.Consumed_Qty + item.Qty_Consumed) / alloc.Assigned_Qty) * 100;
     if(newPct >= 80 && alloc.Alert_Flag == true)
     {
       sendmail

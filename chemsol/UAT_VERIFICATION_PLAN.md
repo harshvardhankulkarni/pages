@@ -540,6 +540,7 @@ Footer: Issued By (Store), Handover To (Production), Remark.
 | **C10** | MR SLA conflict: automation.html + reports.html still had old "Draft > 7 days / Prod Verified > 3 days" while AGENTS.md, IMPLEMENTATION_PLAN and implementation-plan.html specify tight SLAs (2 hr Draft → reminder, 2 hr Verified → escalation, 1 hr Approved → auto-release) | ✅ **APPLIED** — automation.html Deluge snippets + summary row and reports.html notification rows all → 2 hr / 2 hr / 1 hr with C10 notes |
 | **C11** | flow.html Project mockup Status select used "Active / On Hold / Completed" — canonical Project Status set is "Planned / In Progress / Completed / On Hold" (forms.html, IMPLEMENTATION_PLAN, BRD, report filters) | ✅ **APPLIED** — flow.html aligned to canonical set |
 | **C12** | automation.html MRT Deluge snippet decremented `Consumed_Qty` but never incremented `Returned_Qty` — violating C1 (Remaining = Assigned − Consumed + Returned would be wrong) | ✅ **APPLIED** — Deluge now updates both `Consumed_Qty −` and `Returned_Qty +`; workflow step description updated |
+| **C13** | automation.html SCE + BMR Deluge snippets updated `Consumed_Qty` unconditionally — no >100% rejection despite the C5 decision (summary rows said BLOCK, code didn't implement it) | ✅ **APPLIED** — both snippets now `throw "Allocation Exhausted … return material first"` before any update when new Consumption % > 100 |
 
 **New findings during UAT walkthrough → append here, then fix docs before building.**
 
