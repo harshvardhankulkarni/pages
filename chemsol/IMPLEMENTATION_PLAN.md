@@ -900,7 +900,7 @@ MR Draft → [Production Verifies: checks MR qty vs SO system req via BOM]
 
 ### Week 8-10: Production, Inventory & Site Operations
 - MIS linked to MR (auto-created on MR Release, only Released MRs selectable)
-- BMR, RM Consumption, Packing — ALL increment Consumed Qty on MR Allocation
+- **BMR** increments Consumed Qty on MR Allocation; **RM Consumption Entry** is the BOM variance check (Actual vs Standard — no increment); **Packing Entry** deducts packaging material from inventory
 - FGHM with inline acceptance → marks MR lines as Fully Consumed
 - **Site Consumption Entry** (hourly/daily task tracking per project area)
 - **Material Return Entry** (unused RM back to Store, credits project allocation)
@@ -994,7 +994,7 @@ Accelerate the end‑to‑end flow by eliminating 15 identified bottlenecks acro
 
 #### Phase 5 – Production, Inventory & Site Operations (Weeks 8‑10) [EXPANDED]
 - **MIS Posting Auto‑Stock Update**: Immediate RM stock deduction + timestamp.
-- **BMR / RM Consumption Real‑Time Update**: Each entry increments `Consumed Qty` on MR Allocation (by Project ID + Item Code).
+- **BMR Real‑Time Update**: Each BMR entry increments `Consumed Qty` on MR Allocation (by Project ID + Item Code). RM Consumption Entry = variance check only.
 - **80% Consumption Alert**: Real-time formula. ≥80% + flag ON → pop‑up, banner, email. 100% → escalation to PM + Purchase.
 - **FGHM Inline Acceptance**: Mobile-optimized. On save, FG stock + and mark MR Allocation Fully Consumed.
 - **Site Consumption Entry [NEW]**: Hourly/daily task-level tracking per project area. All entries resolve to MR Allocation. Enables project inventory deduction in real time.

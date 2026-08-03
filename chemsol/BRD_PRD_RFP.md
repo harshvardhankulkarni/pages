@@ -590,7 +590,7 @@ Every form uses a **single field table** with a **Section** column. The Section 
 - **Production Verified** → Production checks MR quantities against SO system requirements (via BOM — verifies item qty matches expected RM from BOM × SO system qty)  
 - **Costing Approved** → Costing approves the TOTAL project cost — all four MR cost components (Material + Application + Transportation + Tools & Tackles)  
 - **Released** → MR is actionable. **Without Released status, no MIS, no Production, no Logistics, no project execution.**  
-**Consumption resolution (backend):** FG production (BMR / RM Consumption) and Site Manager entries expand the SO System→FG→RM via BOM and increment `Consumed Qty` on the matching MR Allocation line (`Project ID + Item Code`) — never a generic pool. **80% Alert:** when Consumption % ≥ 80% (flag ON) → pop-up + dashboard banner + email to Project Manager.
+**Consumption resolution (backend):** FG production (**BMR**) and Site Manager (**SCE**) entries expand the SO System→FG→RM via BOM and increment `Consumed Qty` on the matching MR Allocation line (`Project ID + Item Code`) — never a generic pool. **RM Consumption Entry** is the BOM variance check (Actual vs Standard — does not increment, avoids double count with BMR). **80% Alert:** when Consumption % ≥ 80% (flag ON) → pop-up + dashboard banner + email to Project Manager.
 
 ---
 
@@ -981,7 +981,7 @@ The Project ID is passed from parent to child in Stream B only:
 | Material Return | Qty added back to stock |
 | Min/Max Alert | Alert when stock crosses threshold from Item Muster |
 | MR = Project Cost Baseline | MR carries four cost components — Material (per-project RM allocation: Assigned Qty, Rate, Allocation Ratio, 80% Alert Flag), Application, Transportation, Tools & Tackles — summing to Total MR Cost, the project implementation cost baseline that Costing approves |
-| Consumption → Project-Assigned RM | BMR/RM Consumption and Site Manager entries increment `Consumed Qty` on the matching MR Allocation line (`Project ID + Item Code`), never a generic pool |
+| Consumption → Project-Assigned RM | **BMR** and Site Manager (**SCE**) entries increment `Consumed Qty` on the matching MR Allocation line (`Project ID + Item Code`), never a generic pool. RM Consumption Entry = variance check only |
 | 80% Consumption Alert | When any allocated RM hits 80% of Assigned Qty (flag ON) → pop-up + dashboard banner + email to Project Manager |
 
 ### 4.7 AutoFetch Rules

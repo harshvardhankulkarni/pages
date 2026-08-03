@@ -83,7 +83,7 @@ Master Data (Item Muster, Suppliers, Customers, Store Master) is global — used
 
 ### Production — Tagged to Project
 - **Production Planning** (revised) — Now auto-created from Costing Sheet approval. Stock check against other project allocations. Auto-PR for shortages.
-- **Batch Manufacturing Record**, **RM Consumption Entry**, **Packing Entry**, **Rework Register** — all carry Project ID. Each consumption entry increments `Consumed Qty` on MR Allocation.
+- **Batch Manufacturing Record** and **Site Consumption Entry** — the two consumption events. BMR records batch RM consumption, SCE records site consumption. Each increments `Consumed Qty` on MR Allocation. **RM Consumption Entry** is the BOM variance check (Actual vs Standard — does NOT increment, avoids double count with BMR). **Packing Entry** deducts packaging material from inventory only.
 
 ### Site Operations — Tagged to Project [NEW]
 - **Site Consumption Entry** — Hourly/daily per area. Line items: RM Item Code, Qty Consumed, System/FG Reference (for BOM expansion), Consumption Type (Actual/Wastage/Rework). All entries deduct from project's MR Allocation.
@@ -144,7 +144,7 @@ Master Data (Item Muster, Suppliers, Customers, Store Master) is global — used
 - MR Released → auto-create MIS draft
 
 ### Consumption Tracking (REVISED)
-- BMR/RM Consumption and **Site Consumption Entry** increment `Consumed Qty` on matching MR Allocation line (`Project ID + Item Code`), never a generic pool
+- **BMR** and **Site Consumption Entry** increment `Consumed Qty` on matching MR Allocation line (`Project ID + Item Code`), never a generic pool; RM Consumption Entry is variance-check only
 - **80% Alert**: real-time — formula field triggers on any consumption entry. Pop-up + banner + email.
 - **100% Alert**: "Allocation Exhausted" → PM + Purchase
 

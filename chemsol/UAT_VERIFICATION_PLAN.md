@@ -385,7 +385,7 @@ Footer: Issued By (Store), Handover To (Production), Remark.
 - [ ] **80% alert fires on first line past 80%** (pop-up + dashboard banner + email to PM)
 - [ ] **100% alert** "Allocation Exhausted" → PM + Purchase notified
 
-### 7c. RM Consumption Entry `RC-2026-0001` (variance check)
+### 7c. RM Consumption Entry `RC-2026-0001` (variance check — see C25)
 
 | Field | Value |
 |-------|-------|
@@ -394,6 +394,8 @@ Footer: Issued By (Store), Handover To (Production), Remark.
 | Actual Qty | 100.5 |
 | Standard Qty | 100.5 (from BOM) |
 | Variance | 0 |
+
+**C25:** RC does **NOT** increment Consumed Qty — BMR-0001 already recorded this batch's consumption. RC is the Actual vs BOM-Standard variance record (feeds BMR vs BOM Variance report).
 
 **Verify:** BMR vs BOM Variance (R5) → variance 0.
 
@@ -566,6 +568,7 @@ Footer: Issued By (Store), Handover To (Production), Remark.
 | **C22** | RM requirement math implied FG-003 output = 250 kg (500×0.50×0.30) but FGHM (Step 7e) + R5 use FG-003 = 300 kg (EP02 composition 0.60 kg/sqm) — Today's Production 448 kg = 148 + 300 only works with 300 | ✅ **APPLIED** — math block rewritten on the Costing Section A model (BOM ratio × area) + EP02 composition 0.30/0.60 → FG-002 150 kg, FG-003 300 kg |
 | **C23** | flow.html FGHM mockup used number prefix `FGHM-2026-001` — canonical is `FGH-` (forms.html, automation.html numbering, planner Step 7e/9a) | ✅ **APPLIED** — flow.html aligned to `FGH-2026-001` |
 | **C24** | Numbering Series Reference tables incomplete vs canonical set (automation.html detail steps): forms.html missing CST/PLAN/SCE/MRT/SUP; BRD missing JOB/SCE/MRT/SUP; implementation-plan.html missing SUP | ✅ **APPLIED** — all three tables completed (CST, PLAN, JOB, PR, PO×2, GRN, MR, MIS, FGH, QC, SO, PRJ, SC, BOM, BMR, SCE, MRT, CUST, SUP) |
+| **C25** | Double-count risk: AGENTS.md/BRD/IMPLEMENTATION_PLAN stated "BMR, RM Consumption, Packing — ALL increment Consumed Qty", but planner math (Step 7/8) treats BMR + SCE as the only incrementing events — RC-2026-0001 is variance-only, and adding it would push RM-001 to 136% and break Step 8 | ✅ **APPLIED** — consumption model clarified everywhere: BMR + SCE increment; RM Consumption Entry = BOM variance check (no increment); Packing = packaging material deduction only; planner 7c annotated |
 
 **New findings during UAT walkthrough → append here, then fix docs before building.**
 
