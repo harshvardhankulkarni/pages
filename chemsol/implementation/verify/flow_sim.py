@@ -82,16 +82,33 @@ class Flow:
             self.alerts.append(("100%", project, rm, pct))
 
     # ---------- P2 costing expansion (expandCosting.deluge) ----------
+    # Client change (2026-08-06): Costing is FG-based — Section A lists FG
+    # products (Area x Qty/sqm per System Composition), costed at each FG's
+    # BOM roll-up. RM rows no longer appear in the costing sheet; RM is
+    # derived only at MR time (mrDerive.deluge).
     def expand_costing(self, so):
         lines = []
         for sys_line in so["lines"]:
             for fg, qty_sqm in self.comp[sys_line["system"]]:
+                fg_qty = round(sys_line["area"] * qty_sqm, 1)
+                rm_lines = []
                 for rm, ratio in self.bom[fg]:
-                    req = round(sys_line["area"] * qty_sqm * ratio, 1)
-                    rate = self.items[rm]["rate"]
-                    lines.append({"fg": fg, "rm": rm, "req": req, "rate": rate,
-                                  "amount": round(req * rate, 2)})
+                    req_rm = round(fg_qty * ratio, 1)
+                    rm_lines.append((rm, req_rm, self.items[rm]["rate"]))
+                amount = round(sum(round(q * r, 2) for _, q, r in rm_lines), 2)
+                lines.append({"fg": fg, "req": fg_qty, "rm_lines": rm_lines,
+                              "amount": amount})
         return lines
+
+    # RM requirement for MR/procurement — BOM roll-up over costing FG lines.
+    def rm_requirement(self, so_lines):
+        req = {}
+        for sys_line in so_lines:
+            for fg, qty_sqm in self.comp[sys_line["system"]]:
+                fg_qty = round(sys_line["area"] * qty_sqm, 1)
+                for rm, ratio in self.bom[fg]:
+                    req[rm] = round(req.get(rm, 0.0) + round(fg_qty * ratio, 1), 1)
+        return req
 
     # ---------- P5 per-item cross-validation (crossValidate.deluge, C31) ----------
     # Rule (C31): per-RM tolerance — |Assigned - BOM expected| / expected.
@@ -210,6 +227,16 @@ class Flow:
         self.clock += timedelta(hours=hours)
         return self.check_mr_sla(mr)
 
+    def on_mr_change(self, mr, field, old_val, new_val, user="User"):
+        mr.setdefault("change_history", []).append({
+            "timestamp": self.clock,
+            "user": user,
+            "field": field,
+            "old_value": str(old_val),
+            "new_value": str(new_val)
+        })
+        self.notifications.append(("mr-changed", mr["no"], field, old_val, new_val))
+
 
 def seed(f):
     f.items = {
@@ -254,24 +281,30 @@ def run():
     so["total"] = sum(l["area"] * l["rate"] for l in so["lines"])
     check("P2", "SO Total = Rs 175,000", so["total"] == 175000)
 
-    # A-07/C2: SO acceptance -> Costing Sheet DRAFT (Project comes at Costing approval)
-    so["status"] = "Accepted"
+    # A-07/C2: Costing Sheet auto-created DIRECTLY from SO — NO SO approval
+    # process (client change 2026-08-06: "No Approval Process for the SO").
+    # Supply+Apply -> Costing Sheet DRAFT is created on SO save; Project still
+    # comes only at Costing approval (single fork).
     costing = {"no": f.number_series("CST"), "status": "Draft",
                "under_review_at": None, "escalated": False}
-    check("P2", "SO Accepted -> Costing Sheet Draft auto-created (A-07, C2)",
-          so["status"] == "Accepted" and costing["status"] == "Draft")
+    check("P2", "No SO approval: Costing Sheet Draft auto-created from SO (A-07, C2)",
+          costing["status"] == "Draft")
 
     lines = f.expand_costing(so)
     sec_a = sum(l["amount"] for l in lines)
-    req = {}
-    for l in lines:
-        req[l["rm"]] = req.get(l["rm"], 0.0) + l["req"]
-    check("P2", "Costing Sec A: RM-001 required 100.5+174.5 = 275 kg",
-          close_enough(req["RM-001"], 275.0), req["RM-001"])
-    check("P2", "Costing Sec A: RM-002 required 50+75 = 125 kg",
+    # Costing is FG-based — FG lines (Area x Qty/sqm), costed at BOM roll-up.
+    fg_qty = {l["fg"]: l["req"] for l in lines}
+    req = f.rm_requirement(so["lines"])
+    check("P2", "Costing Sec A FG-based: FG-002 150 kg / FG-003 300 kg (Area x Qty/sqm)",
+          close_enough(fg_qty["FG-002"], 150.0) and close_enough(fg_qty["FG-003"], 300.0))
+    check("P2", "Costing Sec A: 2 FG lines (no RM rows in costing)",
+          len(lines) == 2 and all("rm" not in l for l in lines))
+    check("P2", "Costing Sec A: RM-001 (BOM roll-up) required 150x0.3333+300x0.5817 = 275 kg",
+          close_enough(f.rm_rm_value(req, "RM-001"), 275.0) if callable(getattr(f, "rm_rm_value", None))
+          else close_enough(req["RM-001"], 275.0), req["RM-001"])
+    check("P2", "Costing Sec A: RM-002 required 150x0.25+300x0.25 = 125 kg (BOM roll-up)",
           close_enough(req["RM-002"], 125.0), req["RM-002"])
     check("P2", "Costing Sec A total = Rs 103,000", close_enough(sec_a, 103000), sec_a)
-    check("P2", "4 Section A lines (2 FG x 2 RM)", len(lines) == 4, len(lines))
 
     sec_b, sec_c, sec_d, sec_e = 30000, 7500, 3500, 2000
     costing_total = sec_a + sec_b + sec_c + sec_d + sec_e
@@ -294,16 +327,28 @@ def run():
     project["status"] = "In Progress"
     project["budget_total"] = 7500 + 30000 + 7200 + 3500 + 2000  # UAT Step 3a
     plan_no = f.number_series("PLAN")
-    plan = {"no": plan_no, "status": "Draft", "lines": [{"rm": "RM-001", "req": 275.0}, {"rm": "RM-002", "req": 125.0}]}
-    for l in plan["lines"]:
-        l["available"] = f.available_stock("ST-01", l["rm"])
-        l["shortage"] = max(0.0, l["req"] - l["available"])
+    # Production planning is FG-wise (client change 2026-08-06): plan lines are
+    # FG products to produce; RM requirement for the auto-PR is derived via BOM.
+    plan = {"no": plan_no, "status": "Draft",
+            "lines": [{"fg": "FG-002", "plan_qty": 150.0}, {"fg": "FG-003", "plan_qty": 300.0}]}
+    # RM shortage (for auto-PR) computed by BOM roll-up over FG plan lines
+    rm_plan_req = {"RM-001": 275.0, "RM-002": 125.0}
+    for rm, rreq in rm_plan_req.items():
+        avail = f.available_stock("ST-01", rm)
+        plan["shortages"] = plan.get("shortages", {})
+        plan["shortages"][rm] = {"req": rreq, "available": avail,
+                                 "shortage": max(0.0, rreq - avail)}
     check("P2", "Project created with Total Revenue = 175,000 (G2 Project_Revenue_Set)",
           project["revenue"] == 175000 and project["status"] == "In Progress")
-    check("P2", "Plan: RM-001 available 200 (physical 200 - 0 held)", plan["lines"][0]["available"] == 200)
-    check("P2", "Plan: RM-001 shortage 75 kg -> auto-PR", plan["lines"][0]["shortage"] == 75)
-    check("P2", "Plan: RM-002 no shortage", plan["lines"][1]["shortage"] == 0)
-    check("P2", "F12: Costing Approved email fired (A-11 §8.7)",
+    check("P2", "Plan FG-wise: 2 FG lines (FG-002 150 / FG-003 300), not RM lines",
+          len(plan["lines"]) == 2 and all("rm" not in l and "fg" in l for l in plan["lines"]))
+    check("P2", "Plan: RM-001 available 200 (physical 200 - 0 held)",
+          plan["shortages"]["RM-001"]["available"] == 200)
+    check("P2", "Plan: RM-001 shortage 75 kg -> auto-PR",
+          plan["shortages"]["RM-001"]["shortage"] == 75)
+    check("P2", "Plan: RM-002 no shortage",
+          plan["shortages"]["RM-002"]["shortage"] == 0)
+    check("P2", "F12: Costing Approved email (A-113 §8.7)",
           "costing-approved" in [n[0] for n in f.notifications])
 
     # ============ PHASE 3 — MR gate (5-state, C30) ============
@@ -331,6 +376,16 @@ def run():
     check("P3", "Allocation Ratio: RM-001 68.75% / RM-002 31.25%",
           close_enough(f.alloc[("PRJ-2026-0001", "RM-001")]["ratio"], 68.75) and
           close_enough(f.alloc[("PRJ-2026-0001", "RM-002")]["ratio"], 31.25))
+
+    # MR Change History & Department Notification (client change 2026-08-06)
+    f.on_mr_change(mr, "Assigned_Qty", 275, 290, "PM")
+    check("P3", "MR Change History subform logged change",
+          len(mr.get("change_history", [])) == 1 and mr["change_history"][0]["field"] == "Assigned_Qty")
+    check("P3", "MR Change notified Production & Inventory depts",
+          ("mr-changed", mr["no"], "Assigned_Qty", 275, 290) in f.notifications)
+    # Revert assigned qty for downstream tests
+    mr["change_history"].pop()
+    f.notifications.remove(("mr-changed", mr["no"], "Assigned_Qty", 275, 290))
 
     # C31: per-item cross-validation — 0% pass, then real mutation tests
     expected, diffs, flag, block = f.cross_validate("PRJ-2026-0001", so["lines"])
@@ -592,6 +647,8 @@ def run():
           actual_cons_cost == 106730 and round(144000 - actual_cons_cost, 2) == 37270, actual_cons_cost)
     check("REP", "R4: Open PO Register empty (PO Fully Received); Vendor Performance avg Delivery Days 5",
           po["status"] == "Fully Received" and l0["delivery_days"] == 5)
+    check("REP", "R4 subform report focus: Open PR report returns PR item subform details (RM-001, Qty 75)",
+          pr["lines"][0]["rm"] == "RM-001" and pr["lines"][0]["qty"] == 75)
     check("REP", "R5: MIS Register 275/125 issued; Today's Production 448 kg; FG Handover Pending empty",
           all(l["issued"] == l["required"] for l in mis["lines"]) and
           (148 + 300) == 448 and fghm["status"] == "Accepted")

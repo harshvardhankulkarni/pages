@@ -1,37 +1,62 @@
 // ============================================================
-// P8 — Plan Released -> auto-PR for shortages (A-14)
-// Verified: flow_sim.py P2 (RM-001 shortage 75 -> PR 75)
+// P8 — Plan Released -> auto-PR for shortages (A-14) - FG-wise (Client update 2026-08-06)
+// Verified: flow_sim.py P2 (Plan FG lines: FG-002 150, FG-003 300 -> RM shortage 75 -> PR 75)
 // ============================================================
 // Workflow: On Record Modified (Production_Plan, Plan_Status -> Released)
 // Stream B PR carries Project ID; Stream A stock PRs carry none.
+// Plan lines are FG products; RM requirement derived via BOM roll-up.
 
-for each line in input.Production_Plan_Lines
+for each fgLine in input.Production_Plan_Lines
 {
-  avail = getAvailableStock({"item_code": line.RM_Code, "warehouse": input.Plant});
-  shortage = line.Total_Required - avail;
-  if(shortage > 0)
+  // FG line has FG_Code and Plan_Qty (FG quantity to produce)
+  // Derive RM requirements from BOM
+  boms = lookupRecords(BOM, {"FG_Code": fgLine.FG_Code, "Status": "Released"});
+  for each bom in boms
   {
-    line.Shortage = shortage;
-    line.Source = "Purchase";
-    line.Procurement_Triggered = true;
-
-    createRecord
+    rmQty = round(fgLine.Plan_Qty * bom.Ratio, 1);
+    avail = getAvailableStock({"item_code": bom.RM_Code, "warehouse": input.Plant});
+    shortage = rmQty - avail;
+    if(shortage > 0)
     {
-      "Form_Type": "PR_Master",
-      "PR_Number": numberSeries({"prefix": "PR"}),
-      "Project_ID": input.Project_ID,
-      "Department": "Production",
-      "Source": "Production Plan",
-      "Status": "Submitted",
-      "PR_Line_Items": [
+      // Check if PR already exists for this RM in this project
+      existing = lookupRecords(PR_Master, {"Project_ID": input.Project_ID, "Status": "Submitted", "PR_Line_Items.Item_Code": bom.RM_Code});
+      if(isNull(existing))
+      {
+        item = lookupRecords(Item_Muster, {"Item_Code": bom.RM_Code}).get(0);
+        createRecord
         {
-          "Item_Code": line.RM_Code,
-          "Item_Name": line.RM_Name,
+          "Form_Type": "PR_Master",
+          "PR_Number": numberSeries({"prefix": "PR"}),
+          "Project_ID": input.Project_ID,
+          "Department": "Production",
+          "Source": "Production Plan",
+          "Status": "Submitted",
+          "PR_Line_Items": [
+            {
+              "Item_Code": bom.RM_Code,
+              "Item_Name": item.Item_Name,
+              "Qty": shortage,
+              "UOM": item.UOM,
+              "Lead_Time": item.Lead_Time
+            }
+          ]
+        };
+      }
+      else
+      {
+        // Add line to existing PR
+        pr = existing.get(0);
+        createRecord
+        {
+          "Form_Type": "PR_Line_Items",
+          "PR_Ref": pr.ID,
+          "Item_Code": bom.RM_Code,
+          "Item_Name": item.Item_Name,
           "Qty": shortage,
-          "UOM": line.UOM,
-          "Lead_Time": line.Lead_Time
-        }
-      ]
-    };
+          "UOM": item.UOM,
+          "Lead_Time": item.Lead_Time
+        };
+      }
+    }
   }
 }
