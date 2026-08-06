@@ -4,6 +4,8 @@
 // ============================================================
 // Custom function. Called by consumeAllocation after every consumption
 // entry (BMR + SCE). Single point of truth — never re-implemented
+// F-02 NOTE (2026-08-06): MR_Allocation is a SUBFORM — resolve via MR_Master
+// lookup then iterate rows; re-PUT subform on parent to persist.
 // inline in form scripts (AUTOMATION_ALIGNMENT_PLAN §4 rule 5).
 // Input: {"allocation_id", "rm_code", "project_name", "new_pct",
 //         "prev_pct", "pm_email", "purchase_email"}

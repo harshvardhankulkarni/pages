@@ -3,6 +3,8 @@
 // Verified: flow_sim.py P2 (RM-001 200 = 200 - 0 held; shortage 75)
 // ============================================================
 // Custom function. Input: {"item_code", "warehouse"}
+// F-02 NOTE (2026-08-06): MR_Allocation is a SUBFORM — query MR_Master
+// (MR_Status != Released) and iterate Material_Allocation rows for held qty.
 // Available = physical stock - SUM(Assigned Qty from unreleased MRs)
 // (prevents double-allocation; AGENTS.md "Available Stock" rule).
 // NOT a formula field — cross-form criteria aggregate (F7).

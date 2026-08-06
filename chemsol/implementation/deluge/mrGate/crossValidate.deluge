@@ -28,13 +28,15 @@ for each sysLine in so.System_Lines
   }
 }
 
-maxDiff = 0;
+// Per-line rule (C31, F-05 2026-08-06): Variance_Flag / Variance_Percentage
+// live on the Material_Allocation rows (forms.html rows 16-17), NOT on the
+// MR header. Compute per line; any >10% blocks; >5% flags that line only.
+rows = List();
 for each a in input.Material_Allocation
 {
   exp = expectedByRM.get(a.Item_Code);
-  if(exp == null || exp <= 0) { continue; }
+  if(exp == null || exp <= 0) { rows.add(a); continue; }
   diff = abs(a.Assigned_Qty - exp) / exp * 100;
-  if(diff > maxDiff) { maxDiff = diff; }
   if(diff > 10)
   {
     throw "Cross-validation BLOCKED: " + a.Item_Code + " assigned " + round(a.Assigned_Qty, 1)
@@ -42,7 +44,18 @@ for each a in input.Material_Allocation
   }
   if(diff > 5)
   {
-    input.Variance_Flag = true;
+    a.Variance_Flag = true;   // flag this line only (C31 per-RM, not aggregate)
   }
+  a.Variance_Percentage = round(diff, 1);
+  rows.add(a);
 }
-input.Variance_Percentage = maxDiff;
+// Persist per-line flags: subform rows are NOT a standalone form in Creator.
+// Re-PUT the whole Material_Allocation subform on the parent (keep row IDs).
+// NOTE (F-02 pattern): if this does not persist in your console build,
+// promote Material Allocation to a linked form and update per-line instead.
+updateRecord
+{
+  "Form_Type": "MR_Master",
+  "ID": input.ID,
+  "Material_Allocation": rows
+};

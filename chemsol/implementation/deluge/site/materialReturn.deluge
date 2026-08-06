@@ -3,6 +3,8 @@
 // Verified: flow_sim.py P5 (consumed 265/114.5, returned 10/10, stock 10/285)
 // ============================================================
 // Workflow: On Submit (Material_Return_Entry).
+// F-02 NOTE (2026-08-06): MR_Allocation is a SUBFORM — resolve via MR_Master
+// lookup then iterate rows; re-PUT subform on parent to persist.
 // C12: BOTH Consumed_Qty - AND Returned_Qty + (Remaining formula needs both).
 // Good/Unused -> stock restored; Damaged/Expired -> damaged count only.
 
@@ -38,3 +40,13 @@ for each item in input.Line_Items
   }
   // Damaged/Expired: damaged count tracked on the MRT line, no stock credit
 }
+
+// F12 (2026-08-06): IMPL §8.7 — Material Return -> Store (stock credited)
+sendmail
+[
+  from: zoho.login.email,
+  to: "store@chemsol.in",
+  subject: "Material Return - " + input.Return_No,
+  message: "MRT " + input.Return_No + " recorded for Project " + input.Project_ID
+    + ". Unused/damaged RM credited to " + input.Warehouse + "."
+];

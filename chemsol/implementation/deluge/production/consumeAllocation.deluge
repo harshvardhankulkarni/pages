@@ -4,6 +4,8 @@
 // ============================================================
 // Custom function. Input: {"project_id", "item_code", "qty", "doc_ref", "doc_type"}
 // Resolution by Project ID + Item Code — NEVER a generic pool (AGENTS.md).
+// F-02 NOTE (2026-08-06): MR_Allocation is a SUBFORM — resolve via MR_Master
+// lookup then iterate rows; re-PUT subform on parent to persist.
 // C5/C13: ANY entry pushing Consumption % > 100 is REJECTED before any
 // update — "Allocation Exhausted — return material first".
 // F8: shared alert function fires 80%/100% once per threshold.

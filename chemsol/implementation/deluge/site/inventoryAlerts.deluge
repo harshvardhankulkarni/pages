@@ -44,3 +44,30 @@ for each inv in fgInv
     message: inv.Item_Code + " at " + inv.Current_Stock + " — below minimum " + inv.Min_Stock + "."
   ];
 }
+
+// F12 (2026-08-06): IMPL §8.7 — <20% allocation remaining -> PM + Purchase
+// "Allocation nearly exhausted" early warning: Remaining < 20% of Assigned.
+mrs = lookupRecords(MR_Master, {"MR_Status": "Released"});
+for each mr in mrs
+{
+  for each a in mr.Material_Allocation
+  {
+    if(a.Assigned_Qty != null && a.Assigned_Qty > 0)
+    {
+      remainingPct = ((a.Assigned_Qty - a.Consumed_Qty) / a.Assigned_Qty) * 100;
+      if(remainingPct < 20 && a.Alert_Triggered == false)
+      {
+        sendmail
+        [
+          from: zoho.login.email,
+          to: "pm@chemsol.in",
+          cc: "purchase@chemsol.in",
+          subject: "Allocation Nearly Exhausted - " + mr.MR_Number,
+          message: mr.MR_Number + ": " + a.Item_Code + " has only "
+            + round(remainingPct, 0) + "% remaining (Consumed " + a.Consumed_Qty
+            + " of " + a.Assigned_Qty + " " + a.UOM + ")."
+        ];
+      }
+    }
+  }
+}

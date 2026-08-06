@@ -58,6 +58,7 @@ class Flow:
         self.alloc = {}          # (project, rm) -> state
         self.alerts = []
         self.sla_emails = []
+        self.notifications = []   # F12 (2026-08-06): §8.7 email notifications
         self.clock = datetime(2026, 1, 5, 9, 0)
 
     # ---------- P1 number series (numberSeries.deluge) ----------
@@ -141,6 +142,7 @@ class Flow:
             a = self.alloc[(mis["project"], line["rm"])]
             a["issued"] += line["issued"]
             line["balance"] = line["required"] - line["issued"]
+        self.notifications.append(("mis-posted", mis["no"], mis["project"]))  # F12
 
     def consume(self, project, rm, qty):
         a = self.alloc[(project, rm)]
@@ -161,6 +163,18 @@ class Flow:
             a["pct"] = a["consumed"] / a["assigned"] * 100
             if condition == "Good":
                 self.stock_move(store, rm, qty, "MATERIAL_RETURN", "MRT-" + str(len(self.moves)))
+        self.notifications.append(("mrt", project))  # F12
+
+    # ---------- F12 §8.7 <20% remaining check (inventoryAlerts.deluge) ----------
+    def low_remaining_check(self):
+        fired = []
+        for (project, rm), a in self.alloc.items():
+            if a["assigned"] > 0:
+                remaining_pct = (a["assigned"] - a["consumed"]) / a["assigned"] * 100
+                if remaining_pct < 20:
+                    fired.append((project, rm, round(remaining_pct, 0)))
+                    self.notifications.append(("low-remaining", project, rm, remaining_pct))
+        return fired
 
     def fghm_accept(self, fghm, store):
         for line in fghm["lines"]:
@@ -275,6 +289,7 @@ def run():
 
     # Approval -> Project (G2 revenue) + Plan draft (P3, C2)
     costing["status"] = "Approved"
+    f.notifications.append(("costing-approved", costing["no"]))  # F12 A-11
     project["revenue"] = so["total"]
     project["status"] = "In Progress"
     project["budget_total"] = 7500 + 30000 + 7200 + 3500 + 2000  # UAT Step 3a
@@ -288,6 +303,8 @@ def run():
     check("P2", "Plan: RM-001 available 200 (physical 200 - 0 held)", plan["lines"][0]["available"] == 200)
     check("P2", "Plan: RM-001 shortage 75 kg -> auto-PR", plan["lines"][0]["shortage"] == 75)
     check("P2", "Plan: RM-002 no shortage", plan["lines"][1]["shortage"] == 0)
+    check("P2", "F12: Costing Approved email fired (A-11 §8.7)",
+          "costing-approved" in [n[0] for n in f.notifications])
 
     # ============ PHASE 3 — MR gate (5-state, C30) ============
     # UAT 3b: MR auto-derive requires Plan Released + Costing Approved
@@ -361,6 +378,7 @@ def run():
     # Release effects: F5 auto-MIS draft + G2 Project_Cost_Set
     for rm in ("RM-001", "RM-002"):
         f.alloc[("PRJ-2026-0001", rm)]["mr_status"] = "Released"
+    f.notifications.append(("mr-released", mr["no"]))  # F12 (email incl. PM)
     project["actual_cost"] = mr["total"]
     pnl = f.pnl(project)
     mis = {"no": f.number_series("MIS"), "project": "PRJ-2026-0001",
@@ -371,6 +389,8 @@ def run():
     check("P3", "P&L = 175,000 - 144,000 = +31,000", pnl == 31000, pnl)
     check("P3", "MR Released: MIS Draft auto-created, 2 lines (F5 header+lines)",
           mis["status"] == "Draft" and len(mis["lines"]) == 2)
+    check("P3", "F12: MR Released email fired (store + production + PM)",
+          "mr-released" in [n[0] for n in f.notifications])
 
     # ============ PHASE 1 — procurement (75 kg shortage; parallel to MR gate) ============
     pr = {"no": f.number_series("PR"), "lines": [{"rm": "RM-001", "qty": 75}]}
@@ -440,6 +460,8 @@ def run():
           f.alloc[("PRJ-2026-0001", "RM-002")]["issued"] == 125)
     check("P4", "Post MIS: 2 movement log OUT entries",
           sum(1 for m in f.moves if m["type"] == "MIS") == 2)
+    check("P4", "F12: MIS Posted email fired (A-31 §8.7 -> Production)",
+          "mis-posted" in [n[0] for n in f.notifications])
 
     bmr1 = {"no": f.number_series("BMR"), "fg": "FG-002",
             "lines": [("RM-001", 100.5), ("RM-002", 49.5)]}
@@ -515,6 +537,12 @@ def run():
           a1["returned"] == 10 and a2["returned"] == 10)
     check("P5", "MRT: Good condition restores stock -> RM-001 10 / RM-002 285",
           f.stock[("ST-01", "RM-001")] == 10 and f.stock[("ST-01", "RM-002")] == 285)
+    check("P5", "F12: Material Return email fired (A-40 §8.7 -> Store)", "mrt" in [n[0] for n in f.notifications])
+
+    # F12 §8.7 <20% remaining early-warning (inventoryAlerts.deluge)
+    low = f.low_remaining_check()   # RM-001 96.4% consumed, RM-002 91.6% -> both < 20% remaining
+    check("P5", "F12: <20% allocation remaining -> PM + Purchase early warning",
+          len(low) >= 2 and "low-remaining" in [n[0] for n in f.notifications], low)
 
     # C32: UAT Step 8b — Damaged return credits allocation, stock NOT restored (rollback)
     saved_stock2 = dict(f.stock)

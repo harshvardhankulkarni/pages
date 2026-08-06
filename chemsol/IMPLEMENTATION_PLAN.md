@@ -111,9 +111,11 @@ Build first — all transactional forms depend on these.
 || 1 | RM Item Code | Lookup (Item Muster - RM) | * ||
 || 2 | RM Name | AutoFetch (from RM Item Code) | * ||
 || 3 | UOM | AutoFetch (from Item Muster via RM Code) | * ||
-|| 4 | Qty per FG Unit | Number | * ||
-|| 5 | Waste % | Number | ||
-|| 6 | Total Qty | Formula | * ||
+|| 4 | Qty per FG Unit | Number | * | Full 4dp precision (0.3333, 0.5817) — C28 ||
+|| 5 | Waste % | Number | | Informational only (variance analysis). NOT applied in Costing §A — ratios already reflect standard consumption (B4) ||
+|| 6 | Total Qty | Formula | * | = Qty per FG Unit × (1 + Waste%) — informational line total for reference ||
+
+> **B4 note:** Costing Section A and MR cross-validation use `round(Area × CompQty/sqm × Qty-per-FG-Unit, 1)` — NO Waste% term. Keep Waste% for reporting/variance only. Changing this formula breaks the BOM → Costing → MR chain and flow_sim (275/125 kg, ₹103,000).
 
 ### 2.5 Supplier Master
 **Purpose**: Vendor database
@@ -277,11 +279,12 @@ SO (System/FG scope + area) → Costing Sheet (detailed per-cost line)
 | 3 | RM Item Code | Auto-fetch from BOM | All RMs per FG |
 | 4 | RM Name | Auto-fetch | |
 | 5 | UOM | Auto-fetch | |
-| 6 | BOM Qty per FG Unit | Auto-fetch | |
-| 7 | SO Area/Qty | Auto-fetch from SO | |
-| 8 | Total RM Required | Formula = BOM Qty × SO Area × (1 + Waste%) | |
-| 9 | Rate per Unit | Lookup (Item Muster — Standard Rate) | Costing can override |
-| 10 | Material Cost | Formula = Total RM Required × Rate | |
+| 6 | BOM Ratio | Auto-fetch (4dp precision — 0.3333, 0.5817; C28) | |
+| 7 | CompQty/sqm | Auto-fetch (System Composition) | |
+| 8 | SO Area/Qty | Auto-fetch from SO | |
+| 9 | Required Qty | Formula = round(Area × CompQty/sqm × BOM Ratio, 1) — **B4 canonical** (Waste% is informational, absorbed into 4dp ratios; NOT applied in §A) | |
+| 10 | Rate per Unit | Lookup (Item Muster — Standard Rate) | Costing can override |
+| 11 | Material Cost | Formula = Required Qty × Rate | |
 
 **Section B — Application Cost (labour/execution on site):**
 | # | Field | Type |
@@ -323,7 +326,7 @@ SO (System/FG scope + area) → Costing Sheet (detailed per-cost line)
 - Total Costing Amount = Σ(Material) + Σ(Application) + Σ(Transportation) + Σ(Tools) + Σ(Overhead)
 - **On Costing Approved**: auto-create Project (if not already created) + auto-create Production Plan (Draft) with all material requirements
 - On Costing Rejected with revision → increment Revision No, reset status to Draft
-- SLA: Costing must be completed within 24 hours of SO acceptance. Escalation to management at 48 hours.
+- SLA: Costing stuck reminder 4 hr after SO acceptance; escalation to Costing Head/management at 24 hr (F11 — aligns A-08 costingSlaEscalate / flow_sim:25h check).
 
 ### 4.2 Production Plan [REVISED — triggers procurement]
 
@@ -384,16 +387,7 @@ Draft → Pending Production Verification → Production Verified → Costing Ap
 || 8 | Priority | Low / Medium / High / Urgent | * | — ||
 || 9 | **MR Status** | **Draft / Pending Production Verification / Production Verified / Costing Approved / Released** | * | **CRITICAL — controls downstream flow** ||
 
-**Line Items (N items):**
-|| # | Field | Type ||
-||---|-------|------|---||
-|| 1 | Item Code | Lookup (Item Muster - RM only via filter) ||
-|| 2 | Item Name | AutoFetch (from Item Code) ||
-|| 3 | Category | AutoFetch (from Item Code) ||
-|| 4 | UOM | AutoFetch (from Item Code) ||
-|| 5 | Available Stock | AutoFetch from RM Inventory (real-time via stock summary) ||
-|| 6 | Required Qty | Number ||
-|| 7 | Remarks | Multi-line ||
+**Line Items — SINGLE TABLE (F4):** MR has NO separate "Line Items" table. **Material Allocation Subform below is the one and only line table** — Assigned Qty defaults from the Costing Sheet §A quantities (auto-derived by A-15, zero manual re-entry). All automations (A-15, A-18, A-33, A-38, A-40) read/write this subform only. Do NOT build a ghost MR_Line_Items table.
 
 **MR = Complete Project Implementation Cost Baseline:**
 MR carries **four cost components** that sum to **Total MR Cost** — the project implementation cost baseline that **Costing approves**:
@@ -422,7 +416,7 @@ MR carries **four cost components** that sum to **Total MR Cost** — the projec
 || 12 | Issued Qty | Number (auto) | **G4** — Incremented by MIS-Post Deluge per matching Project+Item ||
 || 13 | Returned Qty | Number (auto) | **C1** — Incremented by Material Return Deluge per matching Project+Item ||
 || 14 | Remaining | Formula | **C1** — = Assigned Qty − Consumed Qty + Returned Qty ||
-|| 15 | Fully Consumed | Checkbox (auto) | **C1** — Set when Consumed Qty ≥ Assigned Qty (100%); checked by FGHM acceptance Deluge ||
+|| 15 | Fully Consumed | Checkbox (auto) | **C1/C29** — set only when ALL allocation lines ≥ 100%; stays OFF while any line < 100% (checked by FGHM acceptance Deluge) ||
 || 16 | Variance % | Number (readonly) | **C19** — SO↔BOM↔MR cross-validation result (set when diff > 5%) ||
 || 17 | Variance Flag | Checkbox (readonly) | **C19** — Auto-set when variance > 5% (flag, allow); > 10% hard-blocks submit ||
 
@@ -455,7 +449,7 @@ MR carries **four cost components** that sum to **Total MR Cost** — the projec
 **Automation Rules:**
 - MR is **auto-created** from approved Costing Sheet + Released Production Plan. All 4 cost components pre-filled. Not manually entered.
 - MR Status workflow: Draft (auto-created) → Pending Production Verification → Production Verified → Costing Approved → Released
-- **SO↔BOM↔MR cross-validation**: On MR creation, validate that each MR Allocation line's Assigned Qty matches the SO Area × BOM Qty per Unit × (1+Waste%) expected for that RM (**C31**, per-RM). If any line mismatch > 5%, flag for review. Hard block if > 10%.
+- **SO↔BOM↔MR cross-validation**: On MR creation, validate each MR Allocation line's Assigned Qty against `round(Area × CompQty/sqm × BOM Ratio, 1)` expected for that RM (**C31**, per-RM, not aggregate). If any line mismatch > 5%, flag (Variance Flag ON, allow). Hard block if > 10%.
 - **Without Released MR, there is no MIS, no Production, no project execution**
 - Consumption entries increment Consumed Qty on matching MR Allocation (matched by Project ID + Item Code)
 - **80% Alert**: When Consumption % ≥ 80% and Alert Flag is ON → pop-up + dashboard banner + email to Project Manager
@@ -502,20 +496,23 @@ Procurement runs when production needs materials not in stock.
 || 2 | PO Number | Autogen (RM-YYYY-XXXX / RMWAD-YYYY-XXXX) | * ||
 || 3 | PO Date | Date (Today) | * ||
 || 4 | Supplier Code | Lookup (Supplier Master) → AutoFetch Name, GSTIN, Address | * ||
-|| 5 | Project ID | Lookup (Project Master) | * ||
+|| 5 | Project ID | Lookup (Project Master) | Optional — project-tagged procurement only; Stream A stock POs carry NO Project ID (B2) ||
 || 6 | PR Reference | Lookup (PR Master) → AutoFetch: Items, Qty | ||
 || 7 | Bill To / Ship To | Dropdown | * ||
 
 **Line Items:**
 || # | Field | Type ||
 ||---|-------|------|---||
-|| 1 | Item Code | Lookup (Item Muster) → AutoFetch: Name, HSN, GST%, UOM ||
+|| 1 | Item Code | Lookup (Item Muster) → AutoFetch: Name, HSN, GST%, UOM, Category ||
 || 2 | Item Name / HSN | AutoFetch (from Item Code) ||
-|| 3 | Quantity / Rate | Number / Currency ||
-|| 4 | Basic Amount | Formula = Qty × Rate ||
-|| 5 | GST % | AutoFetch from Item Muster ||
-|| 6 | GST Amount | Formula = Basic × GST% ||
-|| 7 | Total Amount | Formula = Basic + GST ||
+|| 3 | Category | AutoFetch — optional group-by source for R4 Purchase by Item Group (F7) ||
+|| 4 | UOM | AutoFetch (from Item Muster) ||
+|| 5 | Quantity / Rate | Number / Currency ||
+|| 6 | Basic Amount | Formula = Qty × Rate ||
+|| 7 | GST % | AutoFetch from Item Muster ||
+|| 8 | GST Amount | Formula = Basic × GST% ||
+|| 9 | CGST / SGST / IGST | Formula — intra-state = GST/2 + GST/2; inter-state = full GST (F12, Supplier State driven) ||
+|| 10 | Total Amount | Formula = Basic + GST ||
 
 **Footer (Auto-calculated):**
 || Field | Formula ||
@@ -523,9 +520,13 @@ Procurement runs when production needs materials not in stock.
 || Basic Total | SUM of line Basic Amounts ||
 || CGST / SGST | Each = GST/2 (intra-state) ||
 || IGST | Full GST (inter-state) ||
+|| Total Amount | **G5** — = Basic Total + CGST + SGST + IGST (numeric; feeds R4 PO Value by Supplier) ||
 || Total Amount (Words) | Auto-convert ||
 || Delivery Date / Payment Terms | Mandatory ||
 || Scope of Transport | Supplier / Own ||
+|| Mode of Transport | Own / Third Party ||
+|| Supplier State | Auto from Supplier GSTIN state code (F12) ||
+|| Delivery Days | **G5** — = GRN Date − Delivery Date (actual days from promised delivery to receipt) ||
 
 **Printable PO** with T&C, company logo, total in words.
 
@@ -538,7 +539,7 @@ Procurement runs when production needs materials not in stock.
 || 1 | GRN Number | Autogen (after posting) | * ||
 || 2 | GRN Date | Date (Today) | * ||
 || 3 | PO Number | Lookup (PO Master) → AutoFetch: Supplier Name, Items, Ordered Qty, Project ID | * ||
-|| 4 | Project ID | AutoFetch from PO | * ||
+|| 4 | Project ID | AutoFetch from PO | Optional — inherited from PO; blank for Stream A (stock procurement, no project). Project-tagged only when the PO is project-linked (B3) ||
 || 5 | Vehicle Number | Text | * ||
 || 6 | Warehouse | Dropdown | * | Wadki / Main / Neelo / Gurgaon / Bangalore / Client Site ||
 || 7 | Invoice Number / Date | Text / Date | * ||
@@ -581,7 +582,7 @@ Procurement runs when production needs materials not in stock.
 
 || # | Field | Type | Req |
 ---|-------|------|-----|  MR No | No | Look MR No | Lookup (MR — only Released MRs shown) | * |
-| MIS Number | Autogen (against MR) | * |
+| MIS Number | Autogen **MIS-YYYY-XXXX** (F9 — auto-created on MR Release) | * |
 | Date | Date (Today) | * |
 | Batch Number | Text | |
 | Status | Dropdown — Draft (auto on MR Release) / Posted (set by "Post MIS" button) | * | **C17** — required by MIS Deluge (input.Status = "Posted") |
@@ -824,7 +825,7 @@ MR Draft → [Production Verifies: checks MR qty vs SO system req via BOM]
 || PO (Non-Coding) | RM-YYYY-XXXX ||
 || GRN | GRN-YYYY-XXXX ||
 || MR | MR-YYYY-XXXX ||
-|| MIS | Auto against MR ||
+|| MIS | MIS-YYYY-XXXX ||
 || FGH | FGH-YYYY-XXXX ||
 || QC | QC-YYYY-XXXX ||
 || SO | SO-YYYY-XXXX ||
@@ -878,7 +879,7 @@ MR Draft → [Production Verifies: checks MR qty vs SO system req via BOM]
 ### Week 3-4: Sales & Project
 - Sales Order with conditional subforms (System Lines / FG Lines)
 - Project (created on Costing Approved)
-- SO → Project automation
+- SO → Costing Sheet automation (F2 — Project created only on Costing Approved, single creation point C2)
 
 ### Week 4-6: Costing Sheet, Production Plan & MR [NEW ORDER]
 - **Costing Sheet** form (5 sections: Material, Application, Transport, Tools, Overhead)
@@ -887,7 +888,7 @@ MR Draft → [Production Verifies: checks MR qty vs SO system req via BOM]
 - **Production Plan** with stock check (Available Stock = physical − other allocations)
 - Auto-PR trigger on Production Plan Release for shortage items
 - **MR** auto-derived from Costing Sheet (4 cost components pre-filled)
-- MR Status workflow: Draft → Production Verified → Costing Approved → Released
+- MR Status workflow: Draft → Pending Production Verification → Production Verified → Costing Approved → Released (5-state, F1/C30)
 - SO↔BOM↔MR cross-validation (quantity mismatch >5% flags, >10% blocks)
 - 80% Consumption Alert automation
 - SLA enforcement: 2 hr per stage, auto-escalation
@@ -1024,7 +1025,7 @@ Accelerate the end‑to‑end flow by eliminating 15 identified bottlenecks acro
 | Lag Point | Mitigation |
 |-----------|------------|
 | Costing Sheet not created after SO | Auto-reminder to Costing team 4 hr after SO acceptance. Escalate at 24 hr |
-| Costing Sheet stuck in review | SLA notifications: 4 hr → reminder, 8 hr → escalation to Costing Head |
+| Costing Sheet stuck in review | SLA notifications: 4 hr → reminder, 24 hr → escalation to Costing Head (F11 — A-08) |
 | MR manual data entry | MR auto-derived from Costing Sheet + Production Plan. Zero manual re-entry |
 | SO↔MR quantity mismatch | Cross-validation on MR creation: >5% flag, >10% block |
 | Double-allocation of RM across projects | Available Stock = physical − Σ(other unreleased MR allocations) |

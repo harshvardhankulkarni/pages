@@ -44,7 +44,7 @@ sendmail
 [
   from: zoho.login.email,
   to: "store@chemsol.in",
-  cc: "production@chemsol.in",
+  cc: "production@chemsol.in," + (input.Project_ID.Project_Manager != null && input.Project_ID.Project_Manager.Email != null ? input.Project_ID.Project_Manager.Email : "pm@chemsol.in"),
   subject: "MR Released - " + input.MR_Number,
   message: "MR " + input.MR_Number + " released for " + input.Project_ID.Project_Name
     + ". MIS " + misLines.size() + " lines auto-created (Draft) for store issue."

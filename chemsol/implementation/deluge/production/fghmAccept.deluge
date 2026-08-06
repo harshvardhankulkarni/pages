@@ -4,6 +4,8 @@
 // ============================================================
 // Report custom action button "Accept" (FGHM_Master).
 // G6 hook (FGHM_Accepted_Status): Status -> Accepted + FG stock IN.
+// F-02 NOTE (2026-08-06): MR_Allocation is a SUBFORM — resolve via MR_Master
+// lookup then iterate rows; re-PUT subform on parent to persist.
 // C14: Fully_Consumed = true ONLY when ALL project allocations >= 100%.
 // C29: with RM-002 at 99.6% in the canonical scenario the flag stays OFF —
 // that is correct behaviour, not a bug.

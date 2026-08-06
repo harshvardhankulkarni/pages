@@ -3,6 +3,10 @@
 // Verified: flow_sim.py P4 (stock 0/275; Issued 275/125; 2 log rows)
 // ============================================================
 // Report custom button "Post MIS" (MIS_Master).
+// F-02 NOTE (2026-08-06): MR_Allocation is a SUBFORM, not a standalone form —
+// lookupRecords/updateRecord on it fails in Creator. Resolve via MR_Master
+// (Project_ID + MR_Number), iterate its Material_Allocation rows, re-PUT the
+// subform on the parent (keep row IDs). flow_sim models this as an entity.
 // G4 hook (MIS_Post_Allocation_Update): Issued Qty += on MR Allocation.
 
 if(input.Status == "Posted")
@@ -41,3 +45,13 @@ for each line in input.MIS_Line_Items
 
 input.Status = "Posted";
 input.Posted_Time = now();
+
+// F12 (2026-08-06): IMPL §8.7 — MIS Posted -> Production (RM now issued)
+sendmail
+[
+  from: zoho.login.email,
+  to: "production@chemsol.in",
+  subject: "MIS Posted - " + input.MIS_Number,
+  message: "MIS " + input.MIS_Number + " posted for Project " + input.Project_ID
+    + ". RM issued to Production — BMR entry can start."
+];

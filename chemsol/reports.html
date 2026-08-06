@@ -192,7 +192,7 @@
           <table>
             <thead><tr><th>Widget</th><th>Source</th><th>Description</th></tr></thead>
             <tbody>
-              <tr><td><strong>MR Status Tracking</strong></td><td>MR Status</td><td>Count by stage: Draft / Verified / Approved / Released</td></tr>
+              <tr><td><strong>MR Status Tracking</strong></td><td>MR Status</td><td>Count by stage: Draft / Pending Production Verification / Production Verified / Costing Approved / Released (5-state — F1)</td></tr>
               <tr><td><strong>Project Cost Baseline</strong></td><td>MR total (4 components)</td><td>Material + Application + Transportation + Tools &amp; Tackles</td></tr>
               <tr><td><strong>80% Consumption Alerts</strong></td><td>MR Allocation subform</td><td>RMs where Consumed % ≥ 80% — flagged for Project Manager</td></tr>
               <tr><td><strong>Material Allocation vs Consumption</strong></td><td>MR Allocation subform</td><td>Per-project: Assigned Qty vs Consumed Qty per RM</td></tr>
@@ -279,7 +279,7 @@
             <tbody>
               <tr><td><strong>Costing Sheet Status</strong></td><td>Costing Sheet</td><td>Draft / Under Review / Approved / Rejected counts</td></tr>
               <tr><td><strong>Costing vs Actual Variance</strong></td><td>Costing Sheet vs BMR + SCE</td><td>Planned cost vs actual consumption cost</td></tr>
-              <tr><td><strong>Project P&L (Real-time)</strong></td><td>SO Revenue − Material − Procurement</td><td>On-demand P&L view, not just at close</td></tr>
+              <tr><td><strong>Project P&L (Real-time)</strong></td><td>SO Revenue − MR Total Actual Cost</td><td><strong>G2 canonical</strong> — Project P&L = Total Revenue (SO) − Total Actual Cost (MR Total MR Cost); on-demand view, not just at close (F3)</td></tr>
               <tr><td><strong>Project Inventory Status</strong></td><td>MR Allocation</td><td>Assigned vs Consumed vs Returned vs Remaining per project</td></tr>
             </tbody>
           </table>
@@ -432,9 +432,9 @@
               <tr><td>PR Status Report</td><td>Summary</td><td>PR</td><td>Status</td><td>COUNT(PR Number)</td><td>—</td></tr>
               <tr><td>Open PO Register</td><td>Detail</td><td>PO</td><td>—</td><td>—</td><td>Status ≠ Fully Received / Cancelled</td></tr>
               <tr><td>PO Value by Supplier</td><td>Summary</td><td>PO</td><td>Supplier Code</td><td>SUM(Total Amount), COUNT(PO Number)</td><td>—</td></tr>
-              <tr><td>Purchase by Item Group</td><td>Summary</td><td>PO (line items)</td><td>Item Category</td><td>SUM(Total Amount)</td><td>Date range</td></tr>
+              <tr><td>Purchase by Item Group</td><td>Summary</td><td>PO (line items)</td><td>Item Code</td><td>SUM(Total Amount)</td><td>Date range (F7 — Category AutoFetch added to PO lines as optional group-by)</td></tr>
               <tr><td>PO vs GRN Pending</td><td>Detail</td><td>PO line items</td><td>—</td><td>—</td><td>Balance Qty &gt; 0 (Ordered − Σ Received)</td></tr>
-              <tr><td>Vendor Performance</td><td>Summary</td><td>PO</td><td>Supplier</td><td>COUNT(PO), AVG(Delivery days = GRN date − PO date)</td><td>—</td></tr>
+              <tr><td>Vendor Performance</td><td>Summary</td><td>PO</td><td>Supplier</td><td>COUNT(PO), AVG(Delivery days = GRN Date − Delivery Date)</td><td>— (F6 — actual days from promised delivery to receipt)</td></tr>
               <tr><td>GRN Register</td><td>Detail</td><td>GRN</td><td>—</td><td>—</td><td>Date range</td></tr>
               <tr><td>QC Results</td><td>Summary</td><td>QC</td><td>QC Status</td><td>COUNT(QC Number), SUM(Accepted Qty)</td><td>—</td></tr>
             </tbody>
@@ -459,7 +459,7 @@
               <tr><td>Production Job Status</td><td>Summary</td><td>Production Job</td><td>Status</td><td>COUNT(Job No)</td><td>—</td></tr>
               <tr><td>Open Production Jobs</td><td>Detail</td><td>Production Job</td><td>—</td><td>—</td><td>Status = Scheduled / In Progress</td></tr>
               <tr><td>Daily Production Trend</td><td>Chart (Bar)</td><td>BMR</td><td>Date</td><td>SUM(FG Output)</td><td>Date range</td></tr>
-              <tr><td>BMR vs BOM Variance</td><td>Detail</td><td>RM Consumption Entry</td><td>FG Code</td><td>—</td><td>— (columns: Actual Qty vs Standard Qty, Variance)</td></tr>
+              <tr><td>BMR vs BOM Variance</td><td>Detail</td><td>RM Consumption Entry</td><td>BMR Reference</td><td>—</td><td>— (columns: Actual Qty vs Standard Qty, Variance; F8 — FG Code requires a join via BMR)</td></tr>
               <tr><td>Production Efficiency</td><td>Summary</td><td>Packing Entry</td><td>FG Code</td><td>SUM(Packed Qty)</td><td>—</td></tr>
               <tr><td>FG Handover Pending</td><td>Detail</td><td>FGHM</td><td>—</td><td>—</td><td>Status = Pending Acceptance</td></tr>
             </tbody>
@@ -512,7 +512,7 @@
               <tr><td><strong>Production</strong></td><td>Batches Today · Open Jobs · Pending MIS</td><td>Daily Production (Bar) · Job Status (Pie)</td><td>MIS Register · Production Job Status · BMR vs BOM Variance</td></tr>
               <tr><td><strong>Site Supervisor</strong></td><td>Consumption Today · Active 80% Alerts</td><td>Consumption by Area (Bar) · Consumption by RM (Bar)</td><td>Site Consumption Log · Material Return Report</td></tr>
               <tr><td><strong>Costing</strong></td><td>Costing Approvals · Project P&amp;L Sum</td><td>Costing vs Actual (Bar) · Project Inventory (Bar)</td><td>Project Inventory Status · Costing vs Actual Variance</td></tr>
-              <tr><td><strong>Project Management</strong></td><td>Open Projects · Active POs per Project</td><td>Project Status (Pie) · MR Status per Project (Bar)</td><td>Project Status · MR Status per Project · 80% Alert List</td></tr>
+              <tr><td><strong>Project Management</strong></td><td>Open Projects · Open POs (project-tagged)</td><td>Project Status (Pie) · MR Status per Project (Bar)</td><td>Project Status · MR Status per Project · 80% Alert List</td></tr>
             </tbody>
           </table>
         </div>
@@ -728,7 +728,7 @@
               <tr><td>PO (Coding)</td><td>RMWAD-YYYY-XXXX</td></tr>
               <tr><td>GRN</td><td>GRN-YYYY-XXXX (after posting)</td></tr>
               <tr><td>MR</td><td>MR-YYYY-XXXX</td></tr>
-              <tr><td>MIS</td><td>Auto against MR</td></tr>
+              <tr><td>MIS</td><td>MIS-YYYY-XXXX</td></tr>
               <tr><td>FGH</td><td>FGH-YYYY-XXXX</td></tr>
               <tr><td>QC</td><td>QC-YYYY-XXXX</td></tr>
               <tr><td>SO</td><td>SO-YYYY-XXXX</td></tr>

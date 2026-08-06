@@ -12,7 +12,7 @@ The system has two independent streams:
 - **PR → PO → GRN → QC → Material Handover** — materials bought for stock
 - **Material Handover** (Purchase → Store, Coding/Non-Coding RM split)
 - **Inventory** sits in Store (RM + FG)
-- These forms do NOT carry a Project ID. They are independent stock procurement.
+- These forms carry NO Project ID by default (independent stock procurement). A Project ID is optional on PR / PO / GRN only when procurement is project-linked (B2/B3); Stream A stock purchases leave it blank.
 
 ### Stream B: Project-Triggered (Project ID is root)
 - **SO (Supply+Apply)** → **Costing Sheet** — standalone module where Costing team creates detailed cost breakdown (5 sections: Material auto-expanded from SO×BOM, Application, Transportation, Tools, Overhead). **SO (Supply Only)** → direct FG sale, NO Project.
@@ -61,10 +61,10 @@ Master Data (Item Muster, Suppliers, Customers, Store Master) is global — used
 - **Task Budget** — Category dropdown (Transport / Execution / Manpower / Tools / Overhead), Description, Qty/Area, Rate, Amount. Actual columns feed P&amp;L.
 
 ### Procurement (PR→Rate Comparison→PO→GRN→QC→Material Handover) — Stream A (No Project ID)
-1. **PR** (Purchase Requisition) — PR# autogen, department auto from login, items with autofill code/name/UOM/lead time. **No Project ID.**
+1. **PR** (Purchase Requisition) — PR# autogen, department auto from login, items with autofill code/name/UOM/lead time. **Project ID optional** (project-linked procurement only).
 2. **Rate Comparison** — PR ref, 5 supplier comparisons (dropdown, price, credit), finalised supplier/rate, PO ref.
-3. **PO** (Purchase Order) — RM type (Coding/Non-Coding → different PO series: RM vs RMWAD), PR reference, supplier autofetch, items table with HSN, qty, rate, GST split (CGST/SGST/IGST), delivery/payment terms, transport scope. **No Project ID.**
-4. **GRN** (Goods Receipt Note) — PO ref, warehouse dropdown (Wadki/Main/Neelo/Gurgaon/Bangalore/Client Site), item checkbox for partial GRN, ordered vs received qty, QC status, packing quality, transport subform. **No Project ID.**
+3. **PO** (Purchase Order) — RM type (Coding/Non-Coding → different PO series: RM vs RMWAD), PR reference, supplier autofetch, items table with HSN, qty, rate, GST split (CGST/SGST/IGST), delivery/payment terms, transport scope. **Project ID optional** (project-linked only).
+4. **GRN** (Goods Receipt Note) — PO ref, warehouse dropdown (Wadki/Main/Neelo/Gurgaon/Bangalore/Client Site), item checkbox for partial GRN, ordered vs received qty, QC status, packing quality, transport subform. **Project ID optional** (inherited from PO).
 5. **QC/QA** — GRN ref, inspection results (viscosity, density, color, moisture), accepted/rejected qty, packaging quality.
 6. **Material Handover** — Coding/Non-Coding RM split from Purchase → Store (with Bin Location subform in Store Master).
 
@@ -185,7 +185,7 @@ Master Data (Item Muster, Suppliers, Customers, Store Master) is global — used
 ## Reports (revised)
 
 - **Project Inventory Status Report [NEW]** — Per RM per project: Assigned Qty (from MR) vs Issued (MIS) vs Consumed (BMR + Site) vs Returned vs Remaining. Single source of truth for project P&amp;L.
-- **Project P&amp;L real-time view [NEW]** — Costing Sheet Total − Material Consumption Costs − Procurement Costs. On-demand, not just at close.
+- **Project P&amp;L real-time view [NEW]** — **G2 canonical**: Total Revenue (SO) − Total Actual Cost (MR Total MR Cost, set on MR Released). The "Costing Sheet Total − Material Consumption − Procurement" view is the **Costing vs Actual Variance report (R3)**, not Project P&amp;L. Task Budget actual columns are a future P&amp;L feed (F3/C4). On-demand, not just at close.
 - **Costing Sheet vs Actual Report [NEW]** — Planned (Costing Sheet) vs actual (Site Consumption + BMR) cost variance.
 - **Site Consumption Report [NEW]** — Hourly/daily consumption by work area, project, RM item.
 - **Material Return Report [NEW]** — Returns by project, reason, condition.

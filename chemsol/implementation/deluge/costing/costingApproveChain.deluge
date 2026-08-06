@@ -55,3 +55,15 @@ for each line in input.Costing_Material_Lines
     "Procurement_Triggered": false
   };
 }
+
+// F12 (2026-08-06): A-11 / IMPL §8.7 notification — Costing Approved -> Production + PM
+sendmail
+[
+  from: zoho.login.email,
+  to: "production@chemsol.in",
+  cc: so.Site_Manager != null && so.Site_Manager.Email != null ? so.Site_Manager.Email : "pm@chemsol.in",
+  subject: "Costing Approved - " + input.Costing_Number,
+  message: "Costing " + input.Costing_Number + " approved for SO " + so.SO_Number
+    + ". Project " + projectData.get("Project_ID") + " and Production Plan " + planRec.Plan_Number
+    + " created. MR will be auto-derived next."
+];

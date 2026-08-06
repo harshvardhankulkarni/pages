@@ -371,6 +371,11 @@
               </tbody>
             </table>
           </div>
+
+          <h3>User Access &amp; Approval Matrix <span class="badge badge-blue">F14 — from IMPL §2.7</span></h3>
+          <p><strong>User Access (4 fields):</strong> User (Lookup User) · Department (Dropdown: Purchase / Sales / Store &amp; Logistics / Account &amp; Finance / Admin / Project Coordinator / Project Manager) · Role (Dropdown: Admin / Sales-Entry / Costing-Entry / Costing-Approve / Production-Entry / Production-Verify / Site-Supervisor / Purchase-Entry / Purchase-Approve / Store-Entry / Store-Review / QC-Entry / PM) · Form Access (Multi-select: which forms the user can view/edit; drives form permissions).</p>
+          <p><strong>Approval Matrix (5 fields):</strong> Document (Dropdown: Costing Sheet / MR / PO / GRN / MIS / BMR / SCE / Material Return) · Approver Role (Dropdown: Costing-Approve / Production-Verify / Purchase-Approve / Store-Review / PM) · Level (Number: 1 = first approval, 2 = final) · SLA Hours (Number: hours allowed at this level before SLA escalation fires) · Escalation To (Lookup User: who receives the SLA escalation notification).</p>
+          <p style="font-size:12px;color:var(--gray-500)">Build both as master-data forms in the console (no automations in core loop; they feed form permissions + SLA scheduling).</p>
         </div>
 
       </div>
@@ -567,6 +572,9 @@
                 <tr><td>4</td><td>Project Name</td><td>AutoFetch (from SO)</td><td>*</td><td>—</td></tr>
                 <tr><td>5</td><td>Customer</td><td>AutoFetch (from SO)</td><td>*</td><td>—</td></tr>
                 <tr><td>6</td><td>Costing Status</td><td>Dropdown</td><td>*</td><td>Draft / Under Review / Approved / Rejected</td></tr>
+                <tr><td>7</td><td>Prepared By</td><td>AutoLookup (login)</td><td>*</td><td>Costing dept user (F13 — IMPL:267)</td></tr>
+                <tr><td>8</td><td>Reviewed By</td><td>Lookup (User)</td><td></td><td>Costing Approver (F13)</td></tr>
+                <tr><td>9</td><td>Revision No</td><td>Number (auto)</td><td></td><td>Increments on Rejection → re-draft (F13)</td></tr>
               </tbody>
             </table>
           </div>
@@ -584,11 +592,12 @@
                 <tr><td>3</td><td>RM Item Code</td><td>AutoFetch (BOM)</td><td>*</td><td>—</td></tr>
                 <tr><td>4</td><td>RM Item Name</td><td>AutoFetch</td><td>*</td><td>—</td></tr>
                 <tr><td>5</td><td>UOM</td><td>AutoFetch</td><td>*</td><td>—</td></tr>
-                <tr><td>6</td><td>BOM Ratio</td><td>AutoFetch</td><td>*</td><td>From BOM</td></tr>
-                <tr><td>7</td><td>Area (sqm)</td><td>AutoFetch (from SO)</td><td>*</td><td>—</td></tr>
-                <tr><td>8</td><td>Required Qty</td><td>Formula</td><td>*</td><td>= BOM Ratio × Area</td></tr>
-                <tr><td>9</td><td>Rate</td><td>Currency</td><td>*</td><td>Editable</td></tr>
-                <tr><td>10</td><td>Material Cost</td><td>Formula</td><td>*</td><td>= Required Qty × Rate</td></tr>
+                <tr><td>6</td><td>BOM Ratio</td><td>AutoFetch</td><td>*</td><td>From BOM — full 4dp precision (0.3333, 0.5817), kg per sqm FG output. <strong class="badge">C28</strong></td></tr>
+                <tr><td>7</td><td>CompQty/sqm</td><td>AutoFetch (System Composition)</td><td>*</td><td>FG coverage per sqm of system area</td></tr>
+                <tr><td>8</td><td>Area (sqm)</td><td>AutoFetch (from SO)</td><td>*</td><td>Hall/system area from SO line</td></tr>
+                <tr><td>9</td><td>Required Qty</td><td>Formula</td><td>*</td><td>= round(Area × CompQty/sqm × BOM Ratio, 1) — <strong>B4 canonical</strong> (matches flow_sim: 275 / 125 kg). <span style="color:var(--gray-500)">Waste% is informational (absorbed into 4dp ratios), NOT applied in §A.</span></td></tr>
+                <tr><td>10</td><td>Rate</td><td>Currency</td><td>*</td><td>Editable</td></tr>
+                <tr><td>11</td><td>Material Cost</td><td>Formula</td><td>*</td><td>= Required Qty × Rate</td></tr>
               </tbody>
             </table>
           </div>
@@ -739,20 +748,8 @@
             </table>
           </div>
 
-          <h4>Line Items (N items)</h4>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
-              <tbody>
-                <tr><td>1</td><td>Item Code</td><td>Lookup (Item Muster - RM only via filter)</td><td>*</td><td>—</td></tr>
-                <tr><td>2</td><td>Item Name</td><td>AutoFetch (from Item Code)</td><td>*</td><td>—</td></tr>
-                <tr><td>3</td><td>Category</td><td>AutoFetch</td><td>*</td><td>From Item Muster</td></tr>
-                <tr><td>4</td><td>UOM</td><td>AutoFetch</td><td>*</td><td>From Item Muster</td></tr>
-                <tr><td>5</td><td>Available Stock</td><td>AutoFetch from RM Inventory (real-time via stock summary)</td><td>*</td><td>—</td></tr>
-                <tr><td>6</td><td>Required Qty</td><td>Number</td><td>*</td><td>—</td></tr>
-                <tr><td>7</td><td>Remarks</td><td>Multi-line</td><td></td><td>—</td></tr>
-              </tbody>
-            </table>
+          <div class="note" style="padding:8px 12px;background:#fff7ed;border-radius:6px;font-size:12px;color:#9a3412;margin:8px 0">
+            <strong>Single line table (F4):</strong> MR has NO separate "Line Items" table. <strong>Material Allocation below is the one and only line table</strong> — Assigned Qty defaults from the Costing Sheet §A quantities (auto-derived, zero manual re-entry). All automations (A-15, A-18, A-33, A-38, A-40) read/write this subform only. Do NOT build a ghost MR_Line_Items table.
           </div>
 
           <h4>Material Allocation Subform <span style="color:var(--green);font-weight:600">(per-project RM allocation — consumption budget baseline)</span></h4>
@@ -921,17 +918,20 @@
             <table>
               <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
               <tbody>
-                <tr><td>1</td><td>Item Code</td><td>Lookup (Item Muster) → AutoFetch: Name, HSN, GST%, UOM</td><td>*</td><td>—</td></tr>
+                <tr><td>1</td><td>Item Code</td><td>Lookup (Item Muster) → AutoFetch: Name, HSN, GST%, UOM, Category</td><td>*</td><td>—</td></tr>
                 <tr><td>2</td><td>Item Name / HSN</td><td>AutoFetch (from Item Code)</td><td>*</td><td>—</td></tr>
-                <tr><td>3</td><td>Quantity</td><td>Number</td><td>*</td><td>Ordered quantity</td></tr>
-                <tr><td>4</td><td>Rate</td><td>Currency</td><td>*</td><td>—</td></tr>
-                <tr><td>5</td><td>Basic Amount</td><td>Formula</td><td>*</td><td>Qty × Rate</td></tr>
-                <tr><td>6</td><td>GST %</td><td>AutoFetch</td><td>*</td><td>From Item Muster</td></tr>
-                <tr><td>7</td><td>GST Amount</td><td>Formula</td><td>*</td><td>Basic × GST%</td></tr>
-                <tr><td>8</td><td>Total Amount</td><td>Formula</td><td>*</td><td>Basic + GST</td></tr>
-                <tr><td>9</td><td>Received Qty</td><td>Number (auto)</td><td></td><td><strong>G5</strong> — Incremented on GRN posting</td></tr>
-                <tr><td>10</td><td>Balance Qty</td><td>Formula</td><td></td><td><strong>G5</strong> = Quantity − Received Qty</td></tr>
-                <tr><td>11</td><td>Receipt Status</td><td>Formula (text)</td><td></td><td><strong>G5</strong> — Not Started / Partial / Complete</td></tr>
+                <tr><td>3</td><td>Category</td><td>AutoFetch</td><td></td><td>From Item Muster — optional group-by source for R4 Purchase by Item Group (F7)</td></tr>
+                <tr><td>4</td><td>UOM</td><td>AutoFetch</td><td>*</td><td>From Item Muster (PO.csv)</td></tr>
+                <tr><td>5</td><td>Quantity</td><td>Number</td><td>*</td><td>Ordered quantity</td></tr>
+                <tr><td>6</td><td>Rate</td><td>Currency</td><td>*</td><td>—</td></tr>
+                <tr><td>7</td><td>Basic Amount</td><td>Formula</td><td>*</td><td>Qty × Rate</td></tr>
+                <tr><td>8</td><td>GST %</td><td>AutoFetch</td><td>*</td><td>From Item Muster</td></tr>
+                <tr><td>9</td><td>GST Amount</td><td>Formula</td><td>*</td><td>Basic × GST%</td></tr>
+                <tr><td>10</td><td>CGST / SGST / IGST</td><td>Formula</td><td></td><td><strong>F12</strong> — GST split per line: intra-state = GST/2 + GST/2, inter-state = full GST (Supplier State driven)</td></tr>
+                <tr><td>11</td><td>Total Amount</td><td>Formula</td><td>*</td><td>Basic + GST</td></tr>
+                <tr><td>12</td><td>Received Qty</td><td>Number (auto)</td><td></td><td><strong>G5</strong> — Incremented on GRN posting</td></tr>
+                <tr><td>13</td><td>Balance Qty</td><td>Formula</td><td></td><td><strong>G5</strong> = Quantity − Received Qty</td></tr>
+                <tr><td>14</td><td>Receipt Status</td><td>Formula (text)</td><td></td><td><strong>G5</strong> — Not Started / Partial / Complete</td></tr>
               </tbody>
             </table>
           </div>
@@ -944,11 +944,14 @@
                 <tr><td>2</td><td>CGST (Intra-state)</td><td>Formula</td><td>Sum of GST/2 per line</td></tr>
                 <tr><td>3</td><td>SGST (Intra-state)</td><td>Formula</td><td>Sum of GST/2 per line</td></tr>
                 <tr><td>4</td><td>IGST (Inter-state)</td><td>Formula</td><td>Sum of full GST per line</td></tr>
-                <tr><td>5</td><td>Total Amount (Words)</td><td>Formula</td><td>Auto-convert</td></tr>
-                <tr><td>6</td><td>Delivery Date</td><td>Date</td><td>*</td></tr>
-                <tr><td>7</td><td>Payment Terms</td><td>Text</td><td>*</td></tr>
-                <tr><td>8</td><td>Scope of Transport</td><td>Dropdown</td><td>Supplier / Own</td></tr>
-                <tr><td>9</td><td>Delivery Days</td><td>Number (auto)</td><td><strong>G5</strong> — = GRN Date − Delivery Date (actual days from promised delivery to receipt)</td></tr>
+                <tr><td>5</td><td>Total Amount</td><td>Formula</td><td><strong>G5</strong> — = Basic_Total + CGST_Total + SGST_Total + IGST_Total (numeric header total; feeds R4 PO Value by Supplier)</td></tr>
+                <tr><td>6</td><td>Total Amount (Words)</td><td>Formula</td><td>Auto-convert</td></tr>
+                <tr><td>7</td><td>Delivery Date</td><td>Date</td><td>*</td></tr>
+                <tr><td>8</td><td>Payment Terms</td><td>Text</td><td>*</td></tr>
+                <tr><td>9</td><td>Scope of Transport</td><td>Dropdown</td><td>Supplier / Own</td></tr>
+                <tr><td>10</td><td>Mode of Transport</td><td>Dropdown</td><td>Own / Third Party (PO.csv)</td></tr>
+                <tr><td>11</td><td>Supplier State</td><td>Text (auto)</td><td><strong>F12</strong> — from Supplier GSTIN state code; drives per-line CGST/SGST vs IGST split</td></tr>
+                <tr><td>12</td><td>Delivery Days</td><td>Number (auto)</td><td><strong>G5</strong> — = GRN Date − Delivery Date (actual days from promised delivery to receipt)</td></tr>
               </tbody>
             </table>
           </div>
@@ -971,7 +974,7 @@
                 <tr><td>1</td><td>GRN Number</td><td>Autogen (after posting)</td><td>*</td><td>GRN-YYYY-XXXX</td></tr>
                 <tr><td>2</td><td>GRN Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
                 <tr><td>3</td><td>PO Number</td><td>Lookup (PO Master) → AutoFetch: Supplier Name, Items, Ordered Qty, Project ID</td><td>*</td><td>—</td></tr>
-                <tr><td>4</td><td>Project ID</td><td>AutoFetch from PO</td><td>*</td><td>—</td></tr>
+                <tr><td>4</td><td>Project ID</td><td>AutoFetch from PO</td><td></td><td>Optional — inherited from PO; blank for Stream A (stock procurement, no project). Project-tagged only when the PO is project-linked (B3)</td></tr>
                 <tr><td>5</td><td>Vehicle Number</td><td>Text</td><td>*</td><td>—</td></tr>
                 <tr><td>6</td><td>Warehouse</td><td>Dropdown</td><td>*</td><td>Wadki / Main / Neelo / Gurgaon / Bangalore / Client Site</td></tr>
                 <tr><td>7</td><td>Invoice Number / Date</td><td>Text / Date</td><td>*</td><td>—</td></tr>
@@ -1069,7 +1072,7 @@
               <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
               <tbody>
                 <tr><td>1</td><td>MR No</td><td>Lookup (MR)</td><td>*</td><td>Only Released MRs shown</td></tr>
-                <tr><td>2</td><td>MIS Number</td><td>Autogen</td><td>*</td><td>Auto-generated against MR</td></tr>
+                <tr><td>2</td><td>MIS Number</td><td>Autogen</td><td>*</td><td><strong>MIS-YYYY-XXXX</strong> (F9 — automation.html:1074; auto-generated after MR Release)</td></tr>
                 <tr><td>3</td><td>Date</td><td>Date</td><td>*</td><td>Today's Date</td></tr>
                 <tr><td>4</td><td>Batch Number</td><td>Text</td><td></td><td>—</td></tr>
                 <tr><td>5</td><td>Status</td><td>Dropdown</td><td>*</td><td><strong>C17</strong> — Draft (auto on MR Release) / Posted (set by "Post MIS" button)</td></tr>
@@ -1372,15 +1375,16 @@
               <tbody>
                 <tr><td>1</td><td>Item Code</td><td>Lookup (Item Muster — FG)</td><td>*</td><td>Unique FG code</td></tr>
                 <tr><td>2</td><td>Item Name</td><td>AutoFetch</td><td>*</td><td>From Item Muster</td></tr>
-                <tr><td>3</td><td>UOM</td><td>AutoFetch</td><td>*</td><td>Nos / Kg / Ltr / Mtr / Kit</td></tr>
-                <tr><td>4</td><td>Standard Rate</td><td>AutoFetch (from Purchase Item Muster)</td><td>*</td><td><strong>G7</strong> — FG unit cost for valuation</td></tr>
-                <tr><td>5</td><td>Opening Stock</td><td>Number</td><td>*</td><td>Carried forward from previous period</td></tr>
-                <tr><td>6</td><td>FGHM Accepted</td><td>Number (auto)</td><td>*</td><td>Sum of FGHM accepted quantities</td></tr>
-                <tr><td>7</td><td>Dispatched</td><td>Number (auto)</td><td>*</td><td>Sum of dispatch quantities (SO Supply Only / DC)</td></tr>
-                <tr><td>8</td><td>Returns</td><td>Number</td><td></td><td>Customer returns / reversal entries</td></tr>
-                <tr><td>9</td><td>Closing Stock</td><td>Formula</td><td>*</td><td>Opening + FGHM − Dispatched + Returns</td></tr>
-                <tr><td>10</td><td>Min Stock</td><td>AutoFetch</td><td>*</td><td>From Purchase Item Muster</td></tr>
-                <tr><td>11</td><td>Status</td><td>Formula</td><td>*</td><td>In Stock / Low Stock / Out of Stock</td></tr>
+                <tr><td>3</td><td>Category</td><td>AutoFetch</td><td>*</td><td><strong>G7</strong> — From Item Muster (RM / Packaging / FG…). Group-by source for R6 Inventory Valuation + Store "Stock by Category" pie (F5)</td></tr>
+                <tr><td>4</td><td>UOM</td><td>AutoFetch</td><td>*</td><td>Nos / Kg / Ltr / Mtr / Kit</td></tr>
+                <tr><td>5</td><td>Standard Rate</td><td>AutoFetch (from Purchase Item Muster)</td><td>*</td><td><strong>G7</strong> — FG unit cost for valuation</td></tr>
+                <tr><td>6</td><td>Opening Stock</td><td>Number</td><td>*</td><td>Carried forward from previous period</td></tr>
+                <tr><td>7</td><td>FGHM Accepted</td><td>Number (auto)</td><td>*</td><td>Sum of FGHM accepted quantities</td></tr>
+                <tr><td>8</td><td>Dispatched</td><td>Number (auto)</td><td>*</td><td>Sum of dispatch quantities (SO Supply Only / DC)</td></tr>
+                <tr><td>9</td><td>Returns</td><td>Number</td><td></td><td>Customer returns / reversal entries</td></tr>
+                <tr><td>10</td><td>Closing Stock</td><td>Formula</td><td>*</td><td>Opening + FGHM − Dispatched + Returns</td></tr>
+                <tr><td>11</td><td>Min Stock</td><td>AutoFetch</td><td>*</td><td>From Purchase Item Muster</td></tr>
+                <tr><td>12</td><td>Status</td><td>Formula</td><td>*</td><td>In Stock / Low Stock / Out of Stock</td></tr>
               </tbody>
             </table>
           </div>
@@ -1672,10 +1676,11 @@
           <h4>MR Status Workflow</h4>
           <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:12px;margin-bottom:12px">
             <span class="badge" style="background:#e5e7eb;color:#374151">Draft</span><span style="color:var(--gray-400)">→</span>
+            <span class="badge" style="background:#e0e7ff;color:#4338ca">Pending Production Verification</span><span style="color:var(--gray-400)">→</span>
             <span class="badge" style="background:#dbeafe;color:#1d4ed8">Production Verified</span><span style="color:var(--gray-400)">→</span>
             <span class="badge" style="background:#d1fae5;color:#059669">Costing Approved</span><span style="color:var(--gray-400)">→</span>
             <span class="badge" style="background:#fef3c7;color:#d97706">Released</span>
-            <span style="margin-left:4px;font-size:11px;color:var(--gray-500)">Only Released MR can proceed to MIS</span>
+            <span style="margin-left:4px;font-size:11px;color:var(--gray-500)">5-state Blueprint (F1 — C30/F11); SLA reminders only fire in Draft; Only Released MR can proceed to MIS</span>
           </div>
 
           <h4>Notification Triggers</h4>
@@ -1709,8 +1714,9 @@
                 <tr><td>PO (Non-Coding)</td><td>RM-YYYY-XXXX</td></tr>
                 <tr><td>GRN</td><td>GRN-YYYY-XXXX</td></tr>
                 <tr><td>MR</td><td>MR-YYYY-XXXX</td></tr>
-                <tr><td>MIS</td><td>Auto against MR</td></tr>
+                <tr><td>MIS</td><td>MIS-YYYY-XXXX</td></tr>
                 <tr><td>FGH</td><td>FGH-YYYY-XXXX</td></tr>
+                <tr><td>FG Consumption Entry</td><td>FGC-YYYY-XXXX</td></tr>
                 <tr><td>QC</td><td>QC-YYYY-XXXX</td></tr>
                 <tr><td>SO</td><td>SO-YYYY-XXXX</td></tr>
                 <tr><td>Project</td><td>PRJ-YYYY-XXXX</td></tr>

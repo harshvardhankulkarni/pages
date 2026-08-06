@@ -3,6 +3,8 @@
 // Verified: flow_sim.py P5 (8a whole-submit REJECTED, 8c accepted)
 // ============================================================
 // Workflow: On Submit (Site_Consumption_Entry).
+// F-02 NOTE (2026-08-06): MR_Allocation is a SUBFORM — resolve via MR_Master
+// lookup then iterate rows; re-PUT subform on parent to persist.
 // C21: validate ALL lines first — if ANY line exceeds 100% the WHOLE
 // submit is rejected ("return material first"), no partial updates.
 // Consumption_Type: Actual / Wastage / Rework — all increment (site use).
