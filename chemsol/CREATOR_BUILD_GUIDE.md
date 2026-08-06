@@ -72,8 +72,8 @@ Stages map: **1** SO entry · **2** Costing Sheet · **3** Costing Approved → 
 | 17 | `Total_Amount` | Formula | | = SUM(Subform A line Amount) or SUM(Subform B line Amount) |
 | 18 | `Accepted_At` | Date/Time | | A-07 sets it |
 
-**Subform A — System Lines (7 fields):** `System_Code` Lookup (System Master), `System_Name` AutoFetch, `Area` Number (sqm), `Rate` Currency, `CompQty` Number (auto from System Composition), `Amount` Formula (= Area × Rate), `Remarks` Text.
-**Subform B — FG Lines (6 fields):** `FG_Code` Lookup (FG from Item Muster), `FG_Name` AutoFetch, `Quantity` Number, `Rate` Currency, `Amount` Formula, `Remarks` Text.
+**Subform A — System Lines (7 fields):** `System_Code` Lookup (System Master), `System_Name` Text (AutoFetch), `Area` Number (sqm), `Rate` Currency, `CompQty` Number (auto from System Composition), `Amount` Formula (= Area × Rate), `Remarks` Text.
+**Subform B — FG Lines (6 fields):** `FG_Code` Lookup (FG from Item Muster), `FG_Name` Text (AutoFetch), `Quantity` Number, `Rate` Currency, `Amount` Formula, `Remarks` Text.
 
 **Automations (Stage 1):**
 - **A-06** (SO dual-mode subform swap): Form workflow On Load / On Submit — if `Sales_Type = Supply Only` show Subform B, else Subform A. Deluge: inline.
@@ -102,7 +102,7 @@ Stages map: **1** SO entry · **2** Costing Sheet · **3** Costing Approved → 
 **Header (9 fields):**
 `Costing_Number` Text (CST-YYYY-XXXX, numberSeries, read-only) · `SO_Reference` Lookup (Sales Order Master) * · `Costing_Status` Dropdown: Draft / Under Review / Approved / Rejected * · `Prepared_By` User (AutoLookup login) * · `Reviewed_By` Lookup (User) · `Revision_No` Number · `Project_ID` Lookup (Project) (filled at approval) · `Date` Date · `Remarks` Text.
 
-**Section A — Material (10 fields per line):** `RM_Item_Code` Lookup (Item Muster — RM) · `RM_Name` AutoFetch · `UOM` AutoFetch · `BOM_Ratio` AutoFetch (**4dp precision — 0.3333, 0.5817; never round to 2dp — C28**) · `CompQty_sqm` AutoFetch (from System Composition) · `SO_Area_Qty` AutoFetch (from SO) · `Required_Qty` Formula = `round(Area × CompQty/sqm × Ratio, 1)` · `Rate` Currency (Costing view only) · `Amount` Formula = `Required_Qty × Rate` · `Variance_Note` Text.
+**Section A — Material (10 fields per line):** `RM_Item_Code` Lookup (Item Muster — RM) · `RM_Name` Text (AutoFetch) · `UOM` Text (AutoFetch) · `BOM_Ratio` Number (AutoFetch) (**4dp precision — 0.3333, 0.5817; never round to 2dp — C28**) · `CompQty_sqm` Number (AutoFetch) (from System Composition) · `SO_Area_Qty` Number (AutoFetch) (from SO) · `Required_Qty` Formula = `round(Area × CompQty/sqm × Ratio, 1)` · `Rate` Currency (Costing view only) · `Amount` Formula = `Required_Qty × Rate` · `Variance_Note` Text.
 
 **Section B — Application (5):** `Work_Area` Text, `Description` Text, `Rate` Currency, `Qty` Number, `Amount` Formula.
 **Section C — Transport (7):** vehicle/site fields + `Amount` Formula.
@@ -131,7 +131,7 @@ Stages map: **1** SO entry · **2** Costing Sheet · **3** Costing Approved → 
 **Task Budget subform (7):** `Category` Dropdown (Material/Application/Transport/Tools/Labour/Other) · `Description` Text · `Budget_Qty` Number · `Rate` Currency · `Budget_Amount` Formula · `Actual_Qty` Number · `Actual_Amount` Formula.
 
 **Production Plan header (8):** `Plan_Number` Text (PLAN-YYYY-XXXX) · `Plan_Status` Dropdown: Draft / Released * · `Project_ID` Lookup (Project) · `Costing_Ref` Lookup (Costing Sheet) · `Plan_Date` Date · `Total_Shortage` Number (auto) · `Released_At` Date/Time · `Remarks` Text.
-**Plan lines (7):** `RM_Code` Lookup (Item Muster) · `RM_Name` AutoFetch · `Total_Required` Number (from Costing §A) · `Available_Stock` Number (computed by A-13) · `Shortage` Formula = max(0, Total_Required − Available_Stock) · `Source` Dropdown: Stock / Purchase · `Procurement_Triggered` Checkbox.
+**Plan lines (7):** `RM_Code` Lookup (Item Muster) · `RM_Name` Text (AutoFetch) · `Total_Required` Number (from Costing §A) · `Available_Stock` Number (computed by A-13) · `Shortage` Formula = max(0, Total_Required − Available_Stock) · `Source` Dropdown: Stock / Purchase · `Procurement_Triggered` Checkbox.
 
 **Automations (Stage 3):**
 - **A-11** (chain creation): On Record Modified (Costing Sheet), criteria Costing_Status = Approved → **create Project + Production Plan Draft in ONE chain**, set Project.Total_Revenue = SO Total, notify Production + PM email. Deluge: `costing/costingApproveChain.deluge`. **C2: Project is created here — single creation point, never before.**
@@ -160,7 +160,7 @@ Stages map: **1** SO entry · **2** Costing Sheet · **3** Costing Approved → 
 **MR header (11):** `MR_Number` Text (MR-YYYY-XXXX, read-only) · `Project_ID` Lookup (Project) * · `MR_Status` Dropdown **5-state**: Draft / Pending Production Verification / Production Verified / Costing Approved / Released * (C30/F11 — never a 4-state build) · `SO_Reference` Lookup · `Costing_Ref` Lookup · `MR_Date` Date · `Last_Status_Change` Date/Time (auto, C32) · `SLA_Reminder_Sent` Checkbox (auto, C32 — guard: fires once) · `Total_MR_Cost` Formula (G4) · `Remarks` Text · `Auto_Generated` Checkbox.
 
 **Material Allocation subform (17):**
-`Item_Code` Lookup (Item Muster — RM) · `Item_Name` AutoFetch · `Category` AutoFetch · `UOM` AutoFetch · `Assigned_Qty` Number * (defaults from Costing §A) · `Allocation_Ratio` Formula (= Assigned / Σ Assigned) · `Rate` Currency (from Costing §A) · `Amount` Formula · `Issued_Qty` Number (auto, A-31) · `Consumed_Qty` Number (auto, A-33/A-38) · `Returned_Qty` Number (auto, A-40) · `Remaining_Qty` Formula = Assigned − Consumed + Returned · `Consumption_Percentage` Formula = Consumed/Assigned×100 · `80%_Alert_Flag` Checkbox (auto, A-20) · `100%_Alert_Flag` Checkbox (auto, A-20) · `Variance_Percentage` Number (auto, A-16 — **per line, C31**) · `Variance_Flag` Checkbox (auto, A-16 — **per line, C31**).
+`Item_Code` Lookup (Item Muster — RM) · `Item_Name` Text (AutoFetch) · `Category` Text (AutoFetch) · `UOM` Text (AutoFetch) · `Assigned_Qty` Number * (defaults from Costing §A) · `Allocation_Ratio` Formula (= Assigned / Σ Assigned) · `Rate` Currency (from Costing §A) · `Amount` Formula · `Issued_Qty` Number (auto, A-31) · `Consumed_Qty` Number (auto, A-33/A-38) · `Returned_Qty` Number (auto, A-40) · `Remaining_Qty` Formula = Assigned − Consumed + Returned · `Consumption_Percentage` Formula = Consumed/Assigned×100 · `80%_Alert_Flag` Checkbox (auto, A-20) · `100%_Alert_Flag` Checkbox (auto, A-20) · `Variance_Percentage` Number (auto, A-16 — **per line, C31**) · `Variance_Flag` Checkbox (auto, A-16 — **per line, C31**).
 
 **MR cost subforms:** Application (5), Transport (5), Tools (4) — mirror Costing Sections B/C/D amounts; **Section E is never included** (C20).
 
@@ -198,7 +198,7 @@ Stages map: **1** SO entry · **2** Costing Sheet · **3** Costing Approved → 
 **Form:** `Material Issue Slip (MIS)` — header (5) + MIS_Line_Items subform (6) + footer (3).
 
 **Header:** `MIS_Number` Text (**MIS-YYYY-XXXX** — F9; autogen at MR Release, read-only) · `MR_Ref` Lookup (MR — filtered Released only, F6) * · `Project_ID` Lookup (Project) * · `Date` Date · `Status` Dropdown: Draft / Posted (C17).
-**Lines (6):** `Item_Code` Lookup · `Item_Name` AutoFetch · `Required_Qty` Number (from Allocation) · `Issued_Qty` Number · `Balance_Qty` Formula = Required − Issued · `UOM` AutoFetch.
+**Lines (6):** `Item_Code` Lookup · `Item_Name` Text (AutoFetch) · `Required_Qty` Number (from Allocation) · `Issued_Qty` Number · `Balance_Qty` Formula = Required − Issued · `UOM` Text (AutoFetch).
 **Footer (3):** `Posted_By` User · `Posted_Time` Date/Time · `Remarks` Text.
 
 **Automations (Stage 7):**
@@ -217,10 +217,10 @@ Stages map: **1** SO entry · **2** Costing Sheet · **3** Costing Approved → 
 
 **Forms (5):**
 1. **Production Job** (10): `Job_Number` Text (JOB-YYYY-XXXX) · `Project_ID` Lookup · `MR_Ref` Lookup (AutoFetch from MR) · `FG_Code` Lookup · `Planned_Qty` Number · `Status` Dropdown: Scheduled / In Progress / Completed · `Start_Date`/`Due_Date` Date · `Assigned_To` User · `Remarks` Text. (Numbering + MR-autofetch only — register as A-44/A-45 in AUTOMATION_ALIGNMENT_PLAN; orphan #8.)
-2. **BMR** (6 header + 8 line): `BMR_Number` Text (BMR-YYYY-XXXX) · `Project_ID` Lookup · `FG_Code` Lookup (AutoFetch BOM lines — A-32) · `BMR_Status` Dropdown · `Date` Date · `Batch_Number` Text. Lines (8): `RM_Item_Code` Lookup · `RM_Name` AutoFetch · `Standard_Qty` Number (BOM) · `Qty_Consumed` Number * · `Rate` Currency (AutoFetch — G8) · `Amount` Formula (G8) · `UOM` AutoFetch · `Remarks`.
+2. **BMR** (6 header + 8 line): `BMR_Number` Text (BMR-YYYY-XXXX) · `Project_ID` Lookup · `FG_Code` Lookup (AutoFetch BOM lines — A-32) · `BMR_Status` Dropdown · `Date` Date · `Batch_Number` Text. Lines (8): `RM_Item_Code` Lookup · `RM_Name` Text (AutoFetch) · `Standard_Qty` Number (BOM) · `Qty_Consumed` Number * · `Rate` Currency (AutoFetch — G8) · `Amount` Formula (G8) · `UOM` Text (AutoFetch) · `Remarks`.
 3. **RM Consumption Entry** (5): `Consumption_No` Text (RC-YYYY-XXXX) · `BMR_Reference` Lookup (BMR) * · `RM_Item_Code` Lookup · `Actual_Qty` Number · `Variance` Formula = Actual − Standard (**does NOT increment allocation — C25**).
 4. **Packing Entry** (5): `Packing_No` Text · `Project_ID` Lookup · `FG_Code` Lookup · `Packed_Qty` Number · `Packaging_Material_Items` subform (Packing deducts packaging from inventory only — A-35).
-5. **FGHM** (5 header + 10 line): `FGHM_Number` Text (FGH-YYYY-XXXX) · `Project_ID` Lookup · `FGHM_Status` Dropdown: Pending Acceptance / Accepted (**G6**) · `Date` Date · `Accepted_At` Date/Time (G6). Lines (10): `FG_Product_Code` Lookup · `FG_Name` AutoFetch · `FG_Qty` Number · `Damaged_Qty` Number · `Accepted_Qty` Formula = FG_Qty − Damaged_Qty · `UOM` AutoFetch · `Rate`/`Amount` · `Remarks` · `Reject_Reason` Text. **No separate FGAN form — inline acceptance only (forms.html:1214).**
+5. **FGHM** (5 header + 10 line): `FGHM_Number` Text (FGH-YYYY-XXXX) · `Project_ID` Lookup · `FGHM_Status` Dropdown: Pending Acceptance / Accepted (**G6**) · `Date` Date · `Accepted_At` Date/Time (G6). Lines (10): `FG_Product_Code` Lookup · `FG_Name` Text (AutoFetch) · `FG_Qty` Number · `Damaged_Qty` Number · `Accepted_Qty` Formula = FG_Qty − Damaged_Qty · `UOM` Text (AutoFetch) · `Rate`/`Amount` · `Remarks` · `Reject_Reason` Text. **No separate FGAN form — inline acceptance only (forms.html:1214).**
 
 **Automations (Stage 8):**
 - **A-32** (BMR BOM autofetch): On Load — FG_Code → BOM lines prefilled. Deluge: `production/bmrSubmit.deluge`.
@@ -244,8 +244,8 @@ Stages map: **1** SO entry · **2** Costing Sheet · **3** Costing Approved → 
 ### Stage 9 — Site Consumption Entry + Material Return
 
 **Forms (2):**
-1. **Site Consumption Entry (SCE)** (7 header + 7 line): `Consumption_No` Text (**SCE-YYYY-XXXX**) · `Project_ID` Lookup * · `Work_Area` Text * · `Date` Date/Time * · `Entry_Type` Dropdown: Hourly / Daily · `Posted_By` User · `Status` Dropdown: Draft / Posted. Lines (7): `RM_Item_Code` Lookup · `RM_Name` AutoFetch · `Qty_Consumed` Number * · `Consumption_Type` Dropdown: Actual / Wastage / Rework * · `Rate` Currency (AutoFetch — G8) · `Amount` Formula (G8) · `UOM` AutoFetch.
-2. **Material Return Entry (MRT)** (6 header + 5 line): `Return_No` Text (**MRT-YYYY-XXXX**) · `Project_ID` Lookup * · `Warehouse` Dropdown (6 stores) * · `Return_Date` Date · `Reason` Text · `Status` Dropdown: Draft / Posted. Lines (5): `RM_Item_Code` Lookup · `RM_Name` AutoFetch · `Return_Qty` Number * · `Condition` Dropdown: Good / Unused / Damaged / Expired * · `UOM` AutoFetch.
+1. **Site Consumption Entry (SCE)** (7 header + 7 line): `Consumption_No` Text (**SCE-YYYY-XXXX**) · `Project_ID` Lookup * · `Work_Area` Text * · `Date` Date/Time * · `Entry_Type` Dropdown: Hourly / Daily · `Posted_By` User · `Status` Dropdown: Draft / Posted. Lines (7): `RM_Item_Code` Lookup · `RM_Name` Text (AutoFetch) · `Qty_Consumed` Number * · `Consumption_Type` Dropdown: Actual / Wastage / Rework * · `Rate` Currency (AutoFetch — G8) · `Amount` Formula (G8) · `UOM` Text (AutoFetch).
+2. **Material Return Entry (MRT)** (6 header + 5 line): `Return_No` Text (**MRT-YYYY-XXXX**) · `Project_ID` Lookup * · `Warehouse` Dropdown (6 stores) * · `Return_Date` Date · `Reason` Text · `Status` Dropdown: Draft / Posted. Lines (5): `RM_Item_Code` Lookup · `RM_Name` Text (AutoFetch) · `Return_Qty` Number * · `Condition` Dropdown: Good / Unused / Damaged / Expired * · `UOM` Text (AutoFetch).
 
 **Automations (Stage 9):**
 - **A-38** (SCE): On Submit — validate **ALL** lines first (if ANY line > 100% the WHOLE submit is rejected — C21); Consumed_Qty + per line; 80%/100% alerts via A-20 (C5/C13/C18). Deluge: `site/sceSubmit.deluge` + `production/consumeAllocation.deluge`.
@@ -274,13 +274,13 @@ Stages map: **1** SO entry · **2** Costing Sheet · **3** Costing Approved → 
 
 PR → PO → GRN → QC. **Project ID is OPTIONAL on PR/PO/GRN** (B2/B3 — project-tagged procurement only; Stream A stock purchases leave it blank).
 
-**PR (7 header + 6 line):** `PR_Number` Text (PR-YYYY-XXXX) · `Department` Dropdown (auto from login) · `PR_Status` Dropdown: Draft / Pending Approval / Approved / Rejected · `Project_ID` Lookup (**optional**) · `Requested_By` User · `Date` Date · `Remarks`. Lines (6): `Item_Code` Lookup · `Item_Name` AutoFetch · `Qty` Number · `UOM` AutoFetch · `Lead_Time` Number (AutoFetch) · `Remarks`.
+**PR (7 header + 6 line):** `PR_Number` Text (PR-YYYY-XXXX) · `Department` Dropdown (auto from login) · `PR_Status` Dropdown: Draft / Pending Approval / Approved / Rejected · `Project_ID` Lookup (**optional**) · `Requested_By` User · `Date` Date · `Remarks`. Lines (6): `Item_Code` Lookup · `Item_Name` Text (AutoFetch) · `Qty` Number · `UOM` Text (AutoFetch) · `Lead_Time` Number (AutoFetch) · `Remarks`.
 
 **PO (10 header + 14 line + 10 footer):** `PO_Number` Text (**RMWAD-YYYY-XXXX** coding / **RM-YYYY-XXXX** non-coding — A-23 dual prefix) · `PO_Type` Dropdown: Coding / Non-Coding · `PR_Reference` Lookup · `Supplier_Code` Lookup (Supplier Master — AutoFetch name/GST/address) · `Supplier_State` Text (GST split basis) · `Project_ID` Lookup (**optional** — B2) · `PO_Status` Dropdown: Draft / Sent / Partially Received / Fully Received / Cancelled (**G5**) · `PO_Date` Date · `Delivery_Date` Date · `Delivery_Days` Number (**G5** = GRN Date − Delivery Date).
-Lines (14): `Item_Code` Lookup → AutoFetch Name/HSN/GST%/UOM/**Category** · `Item_Name_HSN` AutoFetch · `Category` AutoFetch (optional group-by source — F7) · `Quantity` Number · `Rate` Currency · `Basic_Amount` Formula = Qty×Rate · `GST_Percent` AutoFetch · `GST_Amount` Formula · `CGST` Formula (= GST/2) · `SGST` Formula · `IGST` Formula · `Total_Amount` Formula = Basic+GST · `Received_Qty` Number (**G5**) · `Balance_Qty` Formula = Qty − Received (**G5**) · `Receipt_Status` Formula: Complete/Partial/Not Started (**G5**).
+Lines (14): `Item_Code` Lookup → AutoFetch Name/HSN/GST%/UOM/**Category** · `Item_Name_HSN` Text (AutoFetch) · `Category` Text (AutoFetch) (optional group-by source — F7) · `Quantity` Number · `Rate` Currency · `Basic_Amount` Formula = Qty×Rate · `GST_Percent` Percent (AutoFetch) · `GST_Amount` Formula · `CGST` Formula (= GST/2) · `SGST` Formula · `IGST` Formula · `Total_Amount` Formula = Basic+GST · `Received_Qty` Number (**G5**) · `Balance_Qty` Formula = Qty − Received (**G5**) · `Receipt_Status` Formula: Complete/Partial/Not Started (**G5**).
 Footer (10): `Basic_Total` Formula · `CGST_Total` Formula · `SGST_Total` Formula · `IGST_Total` Formula · `Total_Amount` Formula = Basic + CGST + SGST + IGST (**G5 — added 2026-08-06, F1**) · `Total_Amount_Words` Formula · `Scope_of_Transport` Text · `Mode_of_Transport` Dropdown · `Payment_Terms` Text · `Remarks`.
 
-**GRN (11 header + 7 line + 4 Transport subform):** `GRN_Number` Text (GRN-YYYY-XXXX) · `PO_Reference` Lookup * (AutoFetch items) · `Warehouse` Dropdown (Wadki/Main/Neelo/Gurgaon/Bangalore/Client Site) * · `Project_ID` Lookup (**optional** — inherited from PO, B3) · `GRN_Date` Date * · `Supplier` AutoFetch · `Invoice_No` Text · `Invoice_Date` Date · `QC_Status` Dropdown: Pending / Pass / Fail / Hold · `Packing_Quality` Dropdown · `Transporter_Details` Text. Lines (7): `Item_Code` · `Item_Name` AutoFetch · `Ordered_Qty` AutoFetch · `Received_Qty` Number * · `Qty_Checked` Checkbox (partial GRN marker) · `Condition` Dropdown · `Remarks`. Transport subform (4): `Vehicle_No` Text · `Driver_Name` Text · `LR_No` Text · `Delivery_Note` Text.
+**GRN (11 header + 7 line + 4 Transport subform):** `GRN_Number` Text (GRN-YYYY-XXXX) · `PO_Reference` Lookup * (AutoFetch items) · `Warehouse` Dropdown (Wadki/Main/Neelo/Gurgaon/Bangalore/Client Site) * · `Project_ID` Lookup (**optional** — inherited from PO, B3) · `GRN_Date` Date * · `Supplier` Text (AutoFetch) · `Invoice_No` Text · `Invoice_Date` Date · `QC_Status` Dropdown: Pending / Pass / Fail / Hold · `Packing_Quality` Dropdown · `Transporter_Details` Text. Lines (7): `Item_Code` · `Item_Name` Text (AutoFetch) · `Ordered_Qty` Number (AutoFetch) · `Received_Qty` Number * · `Qty_Checked` Checkbox (partial GRN marker) · `Condition` Dropdown · `Remarks`. Transport subform (4): `Vehicle_No` Text · `Driver_Name` Text · `LR_No` Text · `Delivery_Note` Text.
 
 **QC/QA (6 + 8):** `QC_Number` Text (QC-YYYY-XXXX) · `GRN_Reference` Lookup * · `QC_Status` Dropdown: Pass / Fail / Hold * · `Inspected_By` User · `Date` Date · `Remarks`. Inspection fields (8): viscosity, density, color, moisture, curing, adhesion, appearance, `Accepted_Qty` Number.
 
@@ -310,7 +310,7 @@ Footer (10): `Basic_Total` Formula · `CGST_Total` Formula · `SGST_Total` Formu
 ## Part 4 — Cross-cutting systems
 
 1. **P1 numbering series** (`shared/numberSeries.deluge`): SO-YYYY-XXXX · CST-YYYY-XXXX · PRJ-YYYY-XXXX · PLAN-YYYY-XXXX · MR-YYYY-XXXX · PR-YYYY-XXXX · RMWAD-YYYY-XXXX (coding PO) · RM-YYYY-XXXX (non-coding PO) · GRN-YYYY-XXXX · QC-YYYY-XXXX · MIS-YYYY-XXXX · JOB-YYYY-XXXX · BMR-YYYY-XXXX · RC-YYYY-XXXX · FGH-YYYY-XXXX · SCE-YYYY-XXXX · MRT-YYYY-XXXX · FGC-YYYY-XXXX · SUP-0001 / ST-01 codes. Item codes: EP/PU/DEM/ANTI/ESD/FIL systems.
-2. **Stock Movement Transaction Log** (8 fields, `shared/stockMoveRM.deluge` + `stockMoveFG.deluge`): `Movement_Type` Dropdown (GRN/MIS/MATERIAL_RETURN/FGHM/FG_CONSUMPTION/OPENING) · `Item_Code` Lookup · `Item_Name` AutoFetch · `Quantity` Number (signed) · `Direction` Dropdown: In/Out · `Store` Lookup · `Document_Ref` Text · `Timestamp` Date/Time. **Every stock move writes one row (A-42).**
+2. **Stock Movement Transaction Log** (8 fields, `shared/stockMoveRM.deluge` + `stockMoveFG.deluge`): `Movement_Type` Dropdown (GRN/MIS/MATERIAL_RETURN/FGHM/FG_CONSUMPTION/OPENING) · `Item_Code` Lookup · `Item_Name` Text (AutoFetch) · `Quantity` Number (signed) · `Direction` Dropdown: In/Out · `Store` Lookup · `Document_Ref` Text · `Timestamp` Date/Time. **Every stock move writes one row (A-42).**
 3. **80%/100% alerts** (`shared/checkAllocationAlert.deluge`): 80% → pop-up + dashboard + email within 1 min; 100% → PM + Purchase "Allocation Exhausted".
 4. **Min/max reorder** (`site/inventoryAlerts.deluge`): daily 7 AM schedule — Current_Stock < Min → Store email; > Max → Store + Purchase; FG same.
 5. **SLA schedules**: MR 2h reminder (once) / 2h escalate / 1h auto-release (`mrGate/mrSlaSchedules.deluge`); Costing 4h reminder / 24h escalate (`costing/costingSlaEscalate.deluge`).
@@ -351,7 +351,7 @@ Footer (10): `Basic_Total` Formula · `CGST_Total` Formula · `SGST_Total` Formu
 - F2 SO→Project residue → SO→Costing; Project creation only at Costing Approved (C2).
 - F4 Vendor Performance formula → "GRN Date − Delivery Date" (was "GRN date − PO date").
 - F5 FG Inventory `Category` field added (G7 — Inventory Valuation + Store chart group-by).
-- F7 Purchase by Item Group → group by Item Code; PO line `Category` AutoFetch added (optional group-by).
+- F7 Purchase by Item Group → group by Item Code; PO line `Category` Text (AutoFetch) added (optional group-by).
 - F8 BMR vs BOM Variance → group by BMR Reference.
 - F9 MIS numbering → MIS-YYYY-XXXX (forms.html, IMPL, reports.html).
 - F10 `Fully_Consumed` wording → ALL-lines condition (C29).
