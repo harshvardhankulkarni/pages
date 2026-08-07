@@ -363,10 +363,10 @@ for each sysLine in input.SO_Reference.System_Lines
       <div class="auto-card-header" style="background:#d1fae5">
         <span class="auto-tag tag-workflow">Workflow</span>
         <span class="auto-tag tag-deluge">Deluge</span>
-        2B-2 &middot; Costing Sheet Approved → Auto-create Project + Production Plan
+        2B-2 &middot; Costing Sheet Approved → Auto-create Project + Production Plan (FG-based)
       </div>
       <div class="auto-card-body">
-        <div class="auto-sub-title">On Costing Approved → Create Project + Production Plan (Draft)</div>
+        <div class="auto-sub-title">On Costing Approved → Create Project + Production Plan (Draft) with FG lines from Costing §A</div>
         <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Workflow Rule:</strong> On Costing Status = "Approved", auto-create Project + Production Plan</div></div>
         <div class="auto-code">
 // Workflow Rule - On Status Change to "Approved"
@@ -384,9 +384,9 @@ createRecord
   "Status": "Active"
 };
 
-// 2. Create Production Plan (Draft)
+// 2. Create Production Plan (Draft) with FG lines from Costing Material Lines
 planID = "PLAN-" + input.Created_Time.year() + "-" + sequenceNumber("PLAN_SEQ");
-createRecord
+planRec = createRecord
 {
   "Form_Type": "Production_Plan",
   "Plan_Number": planID,
@@ -394,6 +394,24 @@ createRecord
   "Project_ID": projID,
   "Plan_Status": "Draft"
 };
+
+// 2a. Create FG-based Production Plan lines from Costing Material Lines
+for each line in input.Costing_Material_Lines
+{
+  createRecord
+  {
+    "Form_Type": "Production_Plan_Lines",
+    "Plan_Ref": planRec.ID,
+    "FG_Code": line.FG_Code,
+    "FG_Name": line.FG_Name,
+    "Plan_Qty": line.Required_FG_Qty,
+    "UOM": line.UOM,
+    "Available_FG_Stock": 0,
+    "Shortage": line.Required_FG_Qty,
+    "Source": "Stock",
+    "Procurement_Triggered": false
+  };
+}
 
 // 3. Notify Production team
 sendmail
@@ -421,41 +439,81 @@ sendmail
     </div>
 
     <div class="auto-card">
-      <div class="auto-card-header" style="background:#fef3c7">
-        <span class="auto-tag tag-deluge">Deluge</span>
-        2B-4 &middot; Production Plan — Stock Check + Auto-PR
-      </div>
-      <div class="auto-card-body">
-        <div class="auto-sub-title">Available Stock = Physical − Σ(Assigned from unreleased MRs)</div>
-        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Formula field:</strong> Available_Stock = RM_Inventory.Closing_Stock − SUM(MR_Allocation.Assigned_Qty WHERE MR.Status != "Released")</div></div>
-        
-        <div class="auto-sub-title">On Plan Released → Auto-PR for Shortages</div>
-        <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Workflow Rule:</strong> On Plan Status = "Released", create PR for each line where Shortage > 0</div></div>
-        <div class="auto-code">
-// Workflow Rule - On Status Change to "Released"
+          <div class="auto-card-header" style="background:#fef3c7">
+            <span class="auto-tag tag-deluge">Deluge</span>
+            2B-4 &middot; Production Plan — FG Stock Check + Auto-PR (RM via BOM)
+          </div>
+          <div class="auto-card-body">
+            <div class="auto-sub-title">FG Shortage = Plan_Qty − Available_FG_Stock (Formula field)</div>
+            <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Formula field:</strong> Shortage = Plan_Qty − Available_FG_Stock (if > 0)</div></div>
 
-for each line in input.Material_Lines
-{
-  if(line.Shortage > 0)
-  {
-    prID = "PR-" + input.Created_Time.year() + "-" + sequenceNumber("PR_SEQ");
-    createRecord
+            <div class="auto-sub-title">On Plan Released → Auto-PR for RM Shortages (derived from FG shortage via BOM)</div>
+            <div class="auto-step"><span class="auto-step-num">1</span><div><strong>Workflow Rule:</strong> On Plan Status = "Released", for each FG line where Shortage > 0, explode BOM and create PR for RM shortages</div></div>
+            <div class="auto-code">
+    // Workflow Rule - On Status Change to "Released"
+    // Plan lines are FG-based: FG_Code, FG_Name, Plan_Qty, UOM, Available_FG_Stock, Shortage (FG level)
+
+    for each fgLine in input.Production_Plan_Lines
     {
-      "Form_Type": "PR_Master",
-      "PR_Number": prID,
-      "Project_ID": input.Project_ID,
-      "Item_Code": line.RM_Item_Code,
-      "Item_Name": line.RM_Item_Name,
-      "Qty": line.Shortage,
-      "UOM": line.UOM,
-      "Status": "Draft",
-      "Auto_Created": true
-    };
-  }
-}
+      fgShortage = fgLine.Shortage; // Formula: Plan_Qty - Available_FG_Stock
+      if(fgShortage > 0)
+      {
+        // Derive RM requirements from BOM for FG shortage qty
+        boms = lookupRecords(BOM, {"FG_Code": fgLine.FG_Code, "Status": "Released"});
+        for each bom in boms
+        {
+          rmQty = round(fgShortage * bom.Ratio, 1);
+          avail = getAvailableStock({"item_code": bom.RM_Code, "warehouse": input.Plant});
+          shortage = rmQty - avail;
+          if(shortage > 0)
+          {
+            // Check if PR already exists for this RM in this project
+            existing = lookupRecords(PR_Master, {"Project_ID": input.Project_ID, "Status": "Submitted", "PR_Line_Items.Item_Code": bom.RM_Code});
+            if(isNull(existing))
+            {
+              item = lookupRecords(Item_Muster, {"Item_Code": bom.RM_Code}).get(0);
+              createRecord
+              {
+                "Form_Type": "PR_Master",
+                "PR_Number": numberSeries({"prefix": "PR"}),
+                "Project_ID": input.Project_ID,
+                "Department": "Production",
+                "Source": "Production Plan",
+                "Status": "Submitted",
+                "PR_Line_Items": [
+                  {
+                    "Item_Code": bom.RM_Code,
+                    "Item_Name": item.Item_Name,
+                    "Qty": shortage,
+                    "UOM": item.UOM,
+                    "Lead_Time": item.Lead_Time
+                  }
+                ]
+              };
+            }
+            else
+            {
+              // Add line to existing PR
+              pr = existing.get(0);
+              item = lookupRecords(Item_Muster, {"Item_Code": bom.RM_Code}).get(0);
+              createRecord
+              {
+                "Form_Type": "PR_Line_Items",
+                "PR_Ref": pr.ID,
+                "Item_Code": bom.RM_Code,
+                "Item_Name": item.Item_Name,
+                "Qty": shortage,
+                "UOM": item.UOM,
+                "Lead_Time": item.Lead_Time
+              };
+            }
+          }
+        }
+      }
+    }
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
 
     <!-- ============================================================ -->
     <!-- PHASE 3: MR - COSTING GATE (CRITICAL) -->

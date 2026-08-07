@@ -4,58 +4,63 @@
 // ============================================================
 // Workflow: On Record Modified (Production_Plan, Plan_Status -> Released)
 // Stream B PR carries Project ID; Stream A stock PRs carry none.
-// Plan lines are FG products; RM requirement derived via BOM roll-up.
-
+// Plan lines are FG products with Plan_Qty; FG Shortage = Plan_Qty - Available_FG_Stock.
+// RM requirement derived via BOM roll-up on FG Shortage only.
 for each fgLine in input.Production_Plan_Lines
 {
-  // FG line has FG_Code and Plan_Qty (FG quantity to produce)
-  // Derive RM requirements from BOM
-  boms = lookupRecords(BOM, {"FG_Code": fgLine.FG_Code, "Status": "Released"});
-  for each bom in boms
+  // FG line has FG_Code, Plan_Qty, Available_FG_Stock, Shortage (FG level)
+  fgShortage = fgLine.Shortage; // Formula field: Plan_Qty - Available_FG_Stock
+  if(fgShortage > 0)
   {
-    rmQty = round(fgLine.Plan_Qty * bom.Ratio, 1);
-    avail = getAvailableStock({"item_code": bom.RM_Code, "warehouse": input.Plant});
-    shortage = rmQty - avail;
-    if(shortage > 0)
+    // Derive RM requirements from BOM for the FG shortage qty only
+    boms = lookupRecords(BOM, {"FG_Code": fgLine.FG_Code, "Status": "Released"});
+    for each bom in boms
     {
-      // Check if PR already exists for this RM in this project
-      existing = lookupRecords(PR_Master, {"Project_ID": input.Project_ID, "Status": "Submitted", "PR_Line_Items.Item_Code": bom.RM_Code});
-      if(isNull(existing))
+      rmQty = round(fgShortage * bom.Ratio, 1);
+      avail = getAvailableStock({"item_code": bom.RM_Code, "warehouse": input.Plant});
+      shortage = rmQty - avail;
+      if(shortage > 0)
       {
-        item = lookupRecords(Item_Muster, {"Item_Code": bom.RM_Code}).get(0);
-        createRecord
+        // Check if PR already exists for this RM in this project
+        existing = lookupRecords(PR_Master, {"Project_ID": input.Project_ID, "Status": "Submitted", "PR_Line_Items.Item_Code": bom.RM_Code});
+        if(isNull(existing))
         {
-          "Form_Type": "PR_Master",
-          "PR_Number": numberSeries({"prefix": "PR"}),
-          "Project_ID": input.Project_ID,
-          "Department": "Production",
-          "Source": "Production Plan",
-          "Status": "Submitted",
-          "PR_Line_Items": [
-            {
-              "Item_Code": bom.RM_Code,
-              "Item_Name": item.Item_Name,
-              "Qty": shortage,
-              "UOM": item.UOM,
-              "Lead_Time": item.Lead_Time
-            }
-          ]
-        };
-      }
-      else
-      {
-        // Add line to existing PR
-        pr = existing.get(0);
-        createRecord
+          item = lookupRecords(Item_Muster, {"Item_Code": bom.RM_Code}).get(0);
+          createRecord
+          {
+            "Form_Type": "PR_Master",
+            "PR_Number": numberSeries({"prefix": "PR"}),
+            "Project_ID": input.Project_ID,
+            "Department": "Production",
+            "Source": "Production Plan",
+            "Status": "Submitted",
+            "PR_Line_Items": [
+              {
+                "Item_Code": bom.RM_Code,
+                "Item_Name": item.Item_Name,
+                "Qty": shortage,
+                "UOM": item.UOM,
+                "Lead_Time": item.Lead_Time
+              }
+            ]
+          };
+        }
+        else
         {
-          "Form_Type": "PR_Line_Items",
-          "PR_Ref": pr.ID,
-          "Item_Code": bom.RM_Code,
-          "Item_Name": item.Item_Name,
-          "Qty": shortage,
-          "UOM": item.UOM,
-          "Lead_Time": item.Lead_Time
-        };
+          // Add line to existing PR
+          pr = existing.get(0);
+          item = lookupRecords(Item_Muster, {"Item_Code": bom.RM_Code}).get(0);
+          createRecord
+          {
+            "Form_Type": "PR_Line_Items",
+            "PR_Ref": pr.ID,
+            "Item_Code": bom.RM_Code,
+            "Item_Name": item.Item_Name,
+            "Qty": shortage,
+            "UOM": item.UOM,
+            "Lead_Time": item.Lead_Time
+          };
+        }
       }
     }
   }

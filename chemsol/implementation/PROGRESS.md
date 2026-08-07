@@ -44,3 +44,20 @@ python chemsol/implementation/verify/flow_sim.py
 2. Send change summary to Medha Desawale via Cliq
 3. Medha replicates in Zoho Creator console
 4. Client UAT meeting with updated data-flow documentation
+
+---
+
+## Verify pass (2026-08-07) — Chemsol V2 .ds edits mirrored in flow_sim
+
+Ran `python verify/flow_sim.py` after applying the V2 .ds changes. Result: **82 passed, 0 failed** (exit 0). Verdict per AGENTS.md loop discipline for each change made this session:
+
+| Change | Sim mirror | Green? |
+|--------|-----------|--------|
+| Autonumber prefixes now `-YYYY-` (12 series: SO, PRJ, PR, GRN, QC, MR, Cost, BOM, Comp, CUST, PLAN, JOB) | `number_series(prefix, year)` already returns `{prefix}-{year}-{seq:04d}` → matches | ✅ |
+| A8 MIS issue → RM ledger (`MIS_Issued`+, `Closing_Stock`−) + log OUT | `post_mis` + `stock_move` + "Post MIS: 2 movement log OUT entries" | ✅ |
+| A11 GRN → RM ledger (`GRN_Received`+, `Closing_Stock`+) + log IN | `post_grn` + `stock_move` + "stock movement log IN entry exists (qty 75)" | ✅ |
+| A15 Material Return → RM ledger (`Returns`+, `Closing_Stock`+) + log IN | `material_return` + "MRT: Good condition restores stock → RM-001 10 / RM-002 285" | ✅ |
+| Ghost `MR_Line_Items` grid removed | sim has zero references to it (never used) | ✅ |
+| New forms `User_Access`, `Approval_Matrix`; `Prepared_By`/`Reviewed_By`; Costing `Project_ID` text→lookup; `MR_Status` | pure schema — no business logic to mirror | ✅ |
+
+Note: AGENTS.md says "72/72" but the harness has grown to **82 assertions**; 82 is the authoritative count now.

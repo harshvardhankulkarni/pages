@@ -579,31 +579,30 @@
             </table>
           </div>
 
-          <h4>Section A — Material Cost <span style="font-size:11px;font-weight:400;color:var(--gray-500)">(auto-expanded from SO × System Composition × BOM)</span></h4>
-          <div style="padding:8px 12px;background:#ecfdf5;border-radius:6px;font-size:12px;color:#065f46;margin-bottom:8px">
-            <strong>Auto-expand:</strong> For each SO System Line → System Composition (which FGs) → BOM (which RMs per FG × ratio × SO Area). All RM lines pre-populated with BOM quantities. Rate editable.
-          </div>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
-              <tbody>
-                <tr><td>1</td><td>System Code</td><td>Lookup (Item Master) · AutoFetch (from SO)</td><td>*</td><td>—</td></tr>
-                <tr><td>2</td><td>FG Code</td><td>Lookup · AutoFetch (System Composition)</td><td>*</td><td>—</td></tr>
-                <tr><td>3</td><td>RM Item Code</td><td>Lookup (Item Master) · AutoFetch (BOM)</td><td>*</td><td>—</td></tr>
-                <tr><td>4</td><td>RM Item Name</td><td>Text · AutoFetch</td><td>*</td><td>—</td></tr>
-                <tr><td>5</td><td>UOM</td><td>Text · AutoFetch</td><td>*</td><td>—</td></tr>
-                <tr><td>6</td><td>BOM Ratio</td><td>Number · AutoFetch</td><td>*</td><td>From BOM — full 4dp precision (0.3333, 0.5817), kg per sqm FG output. <strong class="badge">C28</strong></td></tr>
-                <tr><td>7</td><td>CompQty/sqm</td><td>Number · AutoFetch (System Composition)</td><td>*</td><td>FG coverage per sqm of system area</td></tr>
-                <tr><td>8</td><td>Area (sqm)</td><td>Number · AutoFetch (from SO)</td><td>*</td><td>Hall/system area from SO line</td></tr>
-                <tr><td>9</td><td>Required Qty</td><td>Formula</td><td>*</td><td>= round(Area × CompQty/sqm × BOM Ratio, 1) — <strong>B4 canonical</strong> (matches flow_sim: 275 / 125 kg). <span style="color:var(--gray-500)">Waste% is informational (absorbed into 4dp ratios), NOT applied in §A.</span></td></tr>
-                <tr><td>10</td><td>Rate</td><td>Currency</td><td>*</td><td>Editable</td></tr>
-                <tr><td>11</td><td>Material Cost</td><td>Formula</td><td>*</td><td>= Required Qty × Rate</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <p><strong>Section A Material Total</strong> = Σ(Material Cost) across all RM lines. <span style="color:var(--gray-500);font-size:11px">G3 — explicit formula subtotal</span></p>
+          <h4>Material Cost Subform (Costing_Material_Lines) — FG-Based <span style="font-size:11px;font-weight:400;color:var(--gray-500)">(auto-expanded from SO × System Composition × BOM)</span></h4>
+                    <div style="padding:8px 12px;background:#ecfdf5;border-radius:6px;font-size:12px;color:#065f46;margin-bottom:8px">
+                      <strong>Auto-expand:</strong> For each SO System Line → System Composition (which FGs per sqm) → BOM roll-up (RM cost per FG). Creates FG lines with BOM-derived unit rate. NO RM rows in this subform.
+                    </div>
+                    <div class="table-wrap">
+                      <table>
+                        <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+                        <tbody>
+                          <tr><td>1</td><td>System Code</td><td>Lookup (Item Master) · AutoFetch (from SO)</td><td>*</td><td>—</td></tr>
+                          <tr><td>2</td><td>System Name</td><td>Text · AutoFetch</td><td>*</td><td>—</td></tr>
+                          <tr><td>3</td><td>FG Code</td><td>Lookup (Item Muster — FG) · AutoFetch (System Composition)</td><td>*</td><td>FG product in this system</td></tr>
+                          <tr><td>4</td><td>FG Name</td><td>Text · AutoFetch</td><td>*</td><td>—</td></tr>
+                          <tr><td>5</td><td>UOM</td><td>Text · AutoFetch (from Item Muster via FG Code)</td><td>*</td><td>Kg</td></tr>
+                          <tr><td>6</td><td>Area (sqm)</td><td>Number · AutoFetch (from SO)</td><td>*</td><td>Hall/system area from SO line</td></tr>
+                          <tr><td>7</td><td>Qty Per Sqm</td><td>Number · AutoFetch (System Composition)</td><td>*</td><td>FG coverage per sqm of system area</td></tr>
+                          <tr><td>8</td><td>Required FG Qty</td><td>Formula</td><td>*</td><td>= round(Area × Qty Per Sqm, 1)</td></tr>
+                          <tr><td>9</td><td>Unit Rate (FG)</td><td>Currency</td><td>*</td><td>BOM roll-up: Σ(BOM Ratio × RM Standard Rate)</td></tr>
+                          <tr><td>10</td><td>Material Cost</td><td>Formula</td><td>*</td><td>= Required FG Qty × Unit Rate (FG)</td></tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <p><strong>Material Cost Subform Total</strong> = Σ(Material Cost) across all FG lines. <span style="color:var(--gray-500);font-size:11px">G3 — explicit formula subtotal</span></p>
 
-          <h4>Section B — Application Cost</h4>
+          <h4>Application Cost Subform (Costing_Application_Lines)</h4>
           <div class="table-wrap">
             <table>
               <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th></tr></thead>
@@ -616,9 +615,9 @@
               </tbody>
             </table>
           </div>
-          <p><strong>Section B Application Total</strong> = Σ(Amount). <span style="color:var(--gray-500);font-size:11px">G3</span></p>
+          <p><strong>Application Cost Subform Total</strong> = Σ(Amount). <span style="color:var(--gray-500);font-size:11px">G3</span></p>
 
-          <h4>Section C — Transportation Cost</h4>
+                    <h4>Transportation Cost Subform (Costing_Transportation_Lines)</h4>
           <div class="table-wrap">
             <table>
               <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th></tr></thead>
@@ -633,9 +632,9 @@
               </tbody>
             </table>
            </div>
-          <p><strong>Section C Transport Total</strong> = Σ(Amount). <span style="color:var(--gray-500);font-size:11px">G3</span></p>
+          <p><strong>Transportation Cost Subform Total</strong> = Σ(Amount). <span style="color:var(--gray-500);font-size:11px">G3</span></p>
 
-          <h4>Section D — Tools & Tackles</h4>
+                    <h4>Tools & Tackles Subform (Costing_Tools_Lines)</h4>
           <div class="table-wrap">
             <table>
               <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th></tr></thead>
@@ -647,9 +646,9 @@
               </tbody>
             </table>
           </div>
-          <p><strong>Section D Tools Total</strong> = Σ(Amount). <span style="color:var(--gray-500);font-size:11px">G3</span></p>
+          <p><strong>Tools & Tackles Subform Total</strong> = Σ(Amount). <span style="color:var(--gray-500);font-size:11px">G3</span></p>
 
-          <h4>Section E — Overhead & Miscellaneous</h4>
+                    <h4>Overhead & Miscellaneous Subform (Costing_Overhead_Lines)</h4>
           <div class="table-wrap">
             <table>
               <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th></tr></thead>
@@ -659,10 +658,10 @@
               </tbody>
             </table>
           </div>
-          <p><strong>Section E Overhead Total</strong> = Σ(Amount). <span style="color:var(--gray-500);font-size:11px">G3</span></p>
+          <p><strong>Overhead & Miscellaneous Subform Total</strong> = Σ(Amount). <span style="color:var(--gray-500);font-size:11px">G3</span></p>
 
-          <p><strong>Total Costing Amount</strong> <span class="badge badge-green">G3 — Formula Field</span> = Section A Total + Section B Total + Section C Total + Section D Total + Section E Total. This is what Costing approves.</p>
-          <p><strong>Automation:</strong> On Costing Approved → auto-create Project + Production Plan (Draft). Costing stuck >24 hr → escalation to admin.</p>
+                    <p><strong>Total Costing Amount</strong> <span class="badge badge-green">G3 — Formula Field</span> = Material Cost Subform Total + Application Cost Subform Total + Transportation Cost Subform Total + Tools & Tackles Subform Total + Overhead & Miscellaneous Subform Total. This is what Costing approves.</p>
+                    <p><strong>Automation:</strong> On Costing Approved → auto-create Project + Production Plan (Draft). Costing stuck >24 hr → escalation to admin.</p>
         </div>
 
         <!-- 3B Production Plan -->
@@ -693,23 +692,24 @@
               </tbody>
             </table>
           </div>
-          <h4>Line Items (auto-fetched from Costing Sheet §A)</h4>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
-              <tbody>
-                <tr><td>1</td><td>RM Item Code</td><td>Lookup (Item Master) · AutoFetch (from Costing Sheet)</td><td>*</td><td>—</td></tr>
-                <tr><td>2</td><td>RM Name</td><td>Text · AutoFetch</td><td>*</td><td>—</td></tr>
-                <tr><td>3</td><td>Total Required</td><td>Number · AutoFetch (from Costing Sheet §A)</td><td>*</td><td>—</td></tr>
-                <tr><td>4</td><td>Available Stock</td><td>Number · AutoFetch (from RM Inventory, net of other project allocations)</td><td>*</td><td>= Physical Stock − Σ(Assigned Qty from unreleased MRs)</td></tr>
-                <tr><td>5</td><td>Shortage</td><td>Formula</td><td>*</td><td>= Total Required − Available Stock (if &gt; 0)</td></tr>
-                <tr><td>6</td><td>Source</td><td>Dropdown</td><td>*</td><td>Stock / Purchase / Both</td></tr>
-                <tr><td>7</td><td>Procurement Triggered</td><td>Checkbox (auto)</td><td></td><td>Set when Shortage &gt; 0</td></tr>
-              </tbody>
-            </table>
-          </div>
-          <p><strong>Automation:</strong> Plan Released → auto-PR for every line where Shortage > 0. Plan must be Released before MR can be auto-created.</p>
-        </div>
+          <h4>Line Items (FG-based — auto-fetched from Costing Sheet §A FG lines)</h4>
+                              <div class="table-wrap">
+                                <table>
+                                  <thead><tr><th>#</th><th>Field</th><th>Type</th><th>Req</th><th>Notes</th></tr></thead>
+                                  <tbody>
+                                    <tr><td>1</td><td>FG Code</td><td>Lookup (Item Muster — FG category) · AutoFetch (from Costing Sheet §A)</td><td>*</td><td>FG product to produce</td></tr>
+                                    <tr><td>2</td><td>FG Name</td><td>Text · AutoFetch (from FG Code via Item Muster)</td><td>*</td><td>—</td></tr>
+                                    <tr><td>3</td><td>Plan Qty</td><td>Number · AutoFetch (from Costing Sheet §A Required_FG_Qty)</td><td>*</td><td>Quantity of FG to produce</td></tr>
+                                    <tr><td>4</td><td>UOM</td><td>Text · AutoFetch (from Item Muster via FG Code)</td><td>*</td><td>Kg / Ltr / Nos / Mtr</td></tr>
+                                    <tr><td>5</td><td>Available FG Stock</td><td>Number · AutoFetch (from FG Inventory)</td><td>*</td><td>Current FG stock on hand</td></tr>
+                                    <tr><td>6</td><td>Shortage</td><td>Formula</td><td>*</td><td>= Plan Qty − Available FG Stock (if > 0)</td></tr>
+                                    <tr><td>7</td><td>Source</td><td>Dropdown</td><td>*</td><td>Stock / Purchase / Both</td></tr>
+                                    <tr><td>8</td><td>Procurement Triggered</td><td>Checkbox (auto)</td><td></td><td>Set when Shortage > 0 (triggers RM auto-PR via BOM roll-up)</td></tr>
+                                  </tbody>
+                                </table>
+                              </div>
+                              <p><strong>Automation:</strong> Plan Released → for each FG line where Shortage > 0, lookup BOM and derive RM requirements = Plan Qty × BOM Ratio; check available RM stock; auto-create PR for RM shortages. Plan must be Released before MR can be auto-created.</p>
+                  </div>
 
         <!-- 3C MR -->
         <div class="phase">

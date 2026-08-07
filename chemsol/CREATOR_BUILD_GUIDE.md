@@ -95,23 +95,25 @@ Stages map: **1** SO entry · **2** Costing Sheet · **3** Costing Approved → 
 
 ---
 
-### Stage 2 — Costing Sheet (5 sections, auto-expanded)
+### Stage 2 — Costing Sheet (5 sections/subforms, auto-expanded)
 
 **Form to build:** `Costing Sheet` (header + Section A..E subforms + totals).
 
 **Header (9 fields):**
 `Costing_Number` Text (CST-YYYY-XXXX, numberSeries, read-only) · `SO_Reference` Lookup (Sales Order Master) * · `Costing_Status` Dropdown: Draft / Under Review / Approved / Rejected * · `Prepared_By` User (AutoLookup login) * · `Reviewed_By` Lookup (User) · `Revision_No` Number · `Project_ID` Lookup (Project) (filled at approval) · `Date` Date · `Remarks` Text.
 
-**Section A — Material (10 fields per line):** `RM_Item_Code` Lookup (Item Muster — RM) · `RM_Name` Text (AutoFetch) · `UOM` Text (AutoFetch) · `BOM_Ratio` Number (AutoFetch) (**4dp precision — 0.3333, 0.5817; never round to 2dp — C28**) · `CompQty_sqm` Number (AutoFetch) (from System Composition) · `SO_Area_Qty` Number (AutoFetch) (from SO) · `Required_Qty` Formula = `round(Area × CompQty/sqm × Ratio, 1)` · `Rate` Currency (Costing view only) · `Amount` Formula = `Required_Qty × Rate` · `Variance_Note` Text.
+**Section A — Material Cost Subform (`Costing_Material_Lines` — FG-based, NO RM rows):**
+`System_Code` Lookup (Item Master) · `System_Name` Text (AutoFetch) · `FG_Code` Lookup (Item Master — FG) · `FG_Name` Text (AutoFetch) · `UOM` Text (AutoFetch) · `Area` Number (from SO) · `Qty_Per_Sqm` Number (from System Composition) · `Required_FG_Qty` Formula = `round(Area × Qty_Per_Sqm, 1)` · `Unit_Rate` Currency (AutoFetch BOM roll-up: Σ Ratio × Standard_Rate) · `Material_Cost` Formula = `Required_FG_Qty × Unit_Rate`.
+*Note:* Section A lists FG products with BOM roll-up rates. It contains **NO Raw Material (RM)** rows.
 
-**Section B — Application (5):** `Work_Area` Text, `Description` Text, `Rate` Currency, `Qty` Number, `Amount` Formula.
-**Section C — Transport (7):** vehicle/site fields + `Amount` Formula.
-**Section D — Tools (4):** tool fields + `Amount` Formula.
-**Section E — Costing-only (2):** `Label` Text, `Amount` Currency (never included in MR cost — C20).
+**Section B — Application Cost Subform (`Costing_Application_Lines`):** `Work_Area` Text, `Description` Text, `Rate` Currency, `Qty` Number, `Amount` Formula.
+**Section C — Transport Cost Subform (`Costing_Transport_Lines`):** vehicle/site fields + `Amount` Formula.
+**Section D — Tools & Tackles Subform (`Costing_Tools_Lines`):** tool fields + `Amount` Formula.
+**Section E — Overhead & Misc Subform (`Costing_Overhead_Lines`):** `Label` Text, `Amount` Currency (never included in MR cost — C20).
 **Totals:** `Sec_A_Total` Formula, `Sec_B_Total` Formula, `Sec_C_Total` Formula, `Sec_D_Total` Formula, `Sec_E_Total` Formula, `Total_Costing_Amount` Formula = A+B+C+D+E (G3).
 
 **Automations (Stage 2):**
-- **A-09** (Section A expansion): On Record Created / Recalculate → expand SO × System Composition × BOM into Section A lines. Deluge: `costing/expandCosting.deluge`. **BOM precision rule: ratios 4dp** or totals break (C28).
+- **A-09** (Section A expansion): On Record Created / Recalculate → expand SO × System Composition into `Costing_Material_Lines` FG lines (with rates calculated from BOM roll-up). Deluge: `costing/expandCosting.deluge`.
 - **A-10** (approval Blueprint): Costing Status Blueprint Draft → Under Review → Approved / Rejected (Approved requires Section A non-empty).
 - **A-08-adjacent / costingSlaEscalate**: schedule every 30 min — Costing stuck in Under Review > **4 hr → reminder email; > 24 hr → escalation to Costing Head** (F11). Deluge: `costing/costingSlaEscalate.deluge`.
 
@@ -131,7 +133,7 @@ Stages map: **1** SO entry · **2** Costing Sheet · **3** Costing Approved → 
 **Task Budget subform (7):** `Category` Dropdown (Material/Application/Transport/Tools/Labour/Other) · `Description` Text · `Budget_Qty` Number · `Rate` Currency · `Budget_Amount` Formula · `Actual_Qty` Number · `Actual_Amount` Formula.
 
 **Production Plan header (8):** `Plan_Number` Text (PLAN-YYYY-XXXX) · `Plan_Status` Dropdown: Draft / Released * · `Project_ID` Lookup (Project) · `Costing_Ref` Lookup (Costing Sheet) · `Plan_Date` Date · `Total_Shortage` Number (auto) · `Released_At` Date/Time · `Remarks` Text.
-**Plan lines (7):** `RM_Code` Lookup (Item Muster) · `RM_Name` Text (AutoFetch) · `Total_Required` Number (from Costing §A) · `Available_Stock` Number (computed by A-13) · `Shortage` Formula = max(0, Total_Required − Available_Stock) · `Source` Dropdown: Stock / Purchase · `Procurement_Triggered` Checkbox.
+**Plan lines (8):** `FG_Code` Lookup (Item Muster — FG category) · `FG_Name` Text (AutoFetch from FG_Code) · `Plan_Qty` Number (from Costing §A Required_FG_Qty) · `UOM` Text (AutoFetch from Item Muster via FG_Code) · `Available_FG_Stock` Number (AutoFetch from FG Inventory) · `Shortage` Formula = max(0, Plan_Qty − Available_FG_Stock) · `Source` Dropdown: Stock / Purchase / Both · `Procurement_Triggered` Checkbox (auto).
 
 **Automations (Stage 3):**
 - **A-11** (chain creation): On Record Modified (Costing Sheet), criteria Costing_Status = Approved → **create Project + Production Plan Draft in ONE chain**, set Project.Total_Revenue = SO Total, notify Production + PM email. Deluge: `costing/costingApproveChain.deluge`. **C2: Project is created here — single creation point, never before.**
@@ -145,10 +147,10 @@ Stages map: **1** SO entry · **2** Costing Sheet · **3** Costing Approved → 
 
 **Automations (Stage 4):**
 - **A-13** (getAvailableStock): custom function — Available = physical stock − Σ(Assigned Qty from all **unreleased** MRs) — prevents double-allocation. Deluge: `costing/getAvailableStock.deluge`.
-- **A-14** (auto-PR): On Record Modified (Production Plan), criteria Plan_Status = Released → for lines with Shortage > 0, create **PR (Purchase Requisition)** draft lines, set Procurement_Triggered = true. Deluge: `costing/planReleaseAutoPR.deluge`.
+- **A-14** (auto-PR): On Record Modified (Production Plan), criteria Plan_Status = Released → for each FG line where FG Shortage > 0, explode BOM to derive RM requirements = FG Shortage × BOM Ratio; check available RM stock; create **PR (Purchase Requisition)** draft lines for RM shortages, set Procurement_Triggered = true. Deluge: `costing/planReleaseAutoPR.deluge`.
 
 **Reports (Stage 4):**
-- Plan Shortage Summary — Summary — Production Plan line items — group RM Item Code — SUM(Shortage) — filter Shortage > 0.
+- Plan Shortage Summary — Summary — Production Plan line items — group FG Code — SUM(Shortage) — filter Shortage > 0 (FG-level shortage).
 - PR Status Report — Summary — PR — group Status — COUNT(PR Number).
 
 ---

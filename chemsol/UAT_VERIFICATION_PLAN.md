@@ -114,16 +114,16 @@
 | SO Reference | SO-2026-0001 (autofetch: System Lines, Area, Customer) |
 | Costing Status | Draft → Under Review → **Approved** |
 
-**Section A — Material Cost (auto-expanded, expected 4 lines):**
+**Section A — Material Cost (auto-expanded, expected 2 FG lines):**
 
-| System | FG | RM | UOM | BOM Ratio | Area | Required Qty | Rate | Material Cost |
-|--------|-----|-----|-----|-----------|------|-------------|------|--------------|
-| EP02 | FG-002 | RM-001 | Kg | 0.201 | 500 | 100.5 | ₹220 | ₹22,110 |
-| EP02 | FG-002 | RM-002 | Kg | 0.10 | 500 | 50 | ₹340 | ₹17,000 |
-| EP02 | FG-003 | RM-001 | Kg | 0.349 | 500 | 174.5 | ₹220 | ₹38,390 |
-| EP02 | FG-003 | RM-002 | Kg | 0.150 | 500 | 75.0 | ₹340 | ₹25,500 |
+| System | FG | UOM | Area | Qty/sqm | Required FG Qty | Unit Rate (FG) | Material Cost |
+|--------|-----|-----|------|---------|-----------------|----------------|--------------|
+| EP02 | FG-002 Epoxy Primer | Kg | 500 | 0.30 | 150 | ₹310.00 | ₹46,500 |
+| EP02 | FG-003 Epoxy Top Coat | Kg | 500 | 0.60 | 300 | ₹188.33 | ₹56,500 |
 
-**Section A Material Total (G3)** = ₹22,110 + 17,000 + 38,390 + 25,500 = **₹103,000**
+**Section A Material Total (G3)** = ₹46,500 + 56,500 = **₹103,000**
+
+**Note:** Costing Section A is **FG-based** — lists FG products with BOM roll-up rates. NO RM rows in costing. RM detail derived at MR time via BOM.
 
 **Section B — Application Cost:**
 
@@ -198,16 +198,17 @@
 | Plant | Wadki |
 | Plan Status | Draft → **Released** |
 
-**Line items (auto-fetched from Costing §A):**
+**Line items (FG-based — auto-fetched from Costing Sheet Material Subform):**
 
-| RM | Total Required | Available Stock (physical − other MR allocations) | Shortage | Source |
-|----|---------------|---------------------------------------------------|----------|--------|
-| RM-001 | 275 kg | 200 kg (no unreleased MRs yet) | **75 kg** | Purchase |
-| RM-002 | 125 kg | 400 kg | 0 | Stock |
+| FG | UOM | Plan Qty (FG) | RM Shortage (derived) |
+|----|-----|---------------|----------------------|
+| FG-002 Epoxy Primer | Kg | 150 | RM-001: 75 kg (via BOM roll-up) |
+| FG-003 Epoxy Top Coat | Kg | 300 | RM-001: 0 kg, RM-002: 0 kg |
 
 **Expected automation:**
+- [ ] On Plan Release: for each FG line, explode BOM to derive RM requirements
 - [ ] Available Stock for RM-001 = 200 (physical) − 0 (other allocations) = 200
-- [ ] `Shortage` = 75 kg for RM-001, `Procurement Triggered` checkbox auto-ON
+- [ ] RM Shortage = 75 kg for RM-001 (FG-002 150×0.67 + FG-003 300×0.5817 − 200 = 75), `Procurement Triggered` checkbox auto-ON
 - [ ] **Plan Released → auto-PR for RM-001 75 kg** (Stream A starts — go to STEP 4)
 - [ ] Plan must be Released before MR can be auto-created
 

@@ -115,7 +115,7 @@ Build first — all transactional forms depend on these.
 || 5 | Waste % | Number | | Informational only (variance analysis). NOT applied in Costing §A — ratios already reflect standard consumption (B4) ||
 || 6 | Total Qty | Formula | * | = Qty per FG Unit × (1 + Waste%) — informational line total for reference ||
 
-> **B4 note:** Costing Section A and MR cross-validation use `round(Area × CompQty/sqm × Qty-per-FG-Unit, 1)` — NO Waste% term. Keep Waste% for reporting/variance only. Changing this formula breaks the BOM → Costing → MR chain and flow_sim (275/125 kg, ₹103,000).
+> **B4 note:** Costing **Costing_Material_Lines subform (Material Cost)** and MR cross-validation use `round(Area × CompQty/sqm × Qty-per-FG-Unit, 1)` — NO Waste% term. Keep Waste% for reporting/variance only. Changing this formula breaks the BOM → Costing → MR chain and flow_sim (275/125 kg, ₹103,000).
 
 ### 2.5 Supplier Master
 **Purpose**: Vendor database
@@ -271,94 +271,94 @@ SO (System/FG scope + area) → Costing Sheet (detailed per-cost line)
 | 8 | Revision No | Text | | For revised costings |
 | 9 | Total Costing Amount | Formula (sum of all sections) | * | Auto-calculated |
 
-**Section A — Material Cost (auto-expanded from SO System Lines × BOM):**
-| # | Field | Type | Notes |
-|---|-------|------|-------|
-| 1 | System Code | Lookup (Item Master) · Auto-fetch from SO | |
-| 2 | FG Code | Lookup · Auto-fetch from System Composition × BOM | All FGs in the system |
-| 3 | RM Item Code | Lookup (Item Master) · Auto-fetch from BOM | All RMs per FG |
-| 4 | RM Name | Text · Auto-fetch | |
-| 5 | UOM | Text · Auto-fetch | |
-| 6 | BOM Ratio | Number · Auto-fetch (4dp precision — 0.3333, 0.5817; C28) | |
-| 7 | CompQty/sqm | Number · Auto-fetch (System Composition) | |
-| 8 | SO Area/Qty | Number · Auto-fetch from SO | |
-| 9 | Required Qty | Formula = round(Area × CompQty/sqm × BOM Ratio, 1) — **B4 canonical** (Waste% is informational, absorbed into 4dp ratios; NOT applied in §A) | |
-| 10 | Rate per Unit | Lookup (Item Muster — Standard Rate) | Costing can override |
-| 11 | Material Cost | Formula = Required Qty × Rate | |
+**Section A — Material Cost (auto-expanded from SO System Lines × BOM) — Subform: `Costing_Material_Lines` (FG-based, NO RM rows):**
+|| # | Field | Type | Notes ||
+||---|-------|------|-------||
+|| 1 | System Code | Lookup (Item Master) · Auto-fetch from SO | ||
+|| 2 | FG Code | Lookup · Auto-fetch from System Composition × BOM | All FGs in the system ||
+|| 3 | FG Name | Text · Auto-fetch | ||
+|| 4 | UOM | Text · Auto-fetch | ||
+|| 5 | Area | Number · Auto-fetch from SO | ||
+|| 6 | Qty_Per_Sqm | Number · Auto-fetch (System Composition) | ||
+|| 7 | Required_FG_Qty | Formula = round(Area × Qty_Per_Sqm, 1) | FG-level quantity ||
+|| 8 | Unit_Rate | Currency · Auto-fetch (BOM roll-up: Σ Ratio × RM Standard_Rate) | FG roll-up rate from BOM ||
+|| 9 | Material_Cost | Formula = Required_FG_Qty × Unit_Rate ||
 
-**Section B — Application Cost (labour/execution on site):**
-| # | Field | Type |
-|---|-------|------|
-| 1 | Activity | Text (e.g., Surface Preparation, Primer Application, Top Coat) |
-| 2 | UOM | Dropdown (SqM / Day / Hour) |
-| 3 | Qty / Area | Number |
-| 4 | Rate | Currency |
-| 5 | Amount | Formula = Qty × Rate |
+> **Note:** Section A (`Costing_Material_Lines`) is **FG-based** — it lists Finished Goods with roll-up rates from BOM. **NO RM (Raw Material) rows** exist in this subform. RM detail lives in BOM only; Costing operates at FG level per client update 2026-08-06.
 
-**Section C — Transportation Cost:**
-| # | Field | Type |
-|---|-------|------|
-| 1 | From (Warehouse) | Lookup (Store Master) |
-| 2 | To (Site) | Text |
-| 3 | Mode of Transport | Dropdown (Own / Third Party) |
-| 4 | Estimated Trips | Number |
-| 5 | Rate per Trip | Currency |
-| 6 | Amount | Formula = Trips × Rate |
-| 7 | Logistics Notes | Multi-line |
+**Section B — Application Cost (labour/execution on site) — Subform: `Costing_Application_Lines`:**
+|| # | Field | Type ||
+||---|-------|------||
+|| 1 | Activity | Text (e.g., Surface Preparation, Primer Application, Top Coat) ||
+|| 2 | UOM | Dropdown (SqM / Day / Hour) ||
+|| 3 | Qty / Area | Number ||
+|| 4 | Rate | Currency ||
+|| 5 | Amount | Formula = Qty × Rate ||
 
-**Section D — Tools & Tackles:**
-| # | Field | Type |
-|---|-------|------|
-| 1 | Item | Lookup (Item Muster — Tools & Consumable) |
-| 2 | Qty | Number |
-| 3 | Rate | Currency |
-| 4 | Amount | Formula = Qty × Rate |
+**Section C — Transportation Cost — Subform: `Costing_Transport_Lines`:**
+|| # | Field | Type ||
+||---|-------|------||
+|| 1 | From (Warehouse) | Lookup (Store Master) ||
+|| 2 | To (Site) | Text ||
+|| 3 | Mode of Transport | Dropdown (Own / Third Party) ||
+|| 4 | Estimated Trips | Number ||
+|| 5 | Rate per Trip | Currency ||
+|| 6 | Amount | Formula = Trips × Rate ||
+|| 7 | Logistics Notes | Multi-line ||
 
-**Section E — Overhead & Miscellaneous:**
-| # | Field | Type |
-|---|-------|------|
-| 1 | Description | Text |
-| 2 | Amount | Currency |
-| 3 | Remarks | Multi-line |
+**Section D — Tools & Tackles — Subform: `Costing_Tools_Lines`:**
+|| # | Field | Type ||
+||---|-------|------||
+|| 1 | Item | Lookup (Item Muster — Tools & Consumable) ||
+|| 2 | Qty | Number ||
+|| 3 | Rate | Currency ||
+|| 4 | Amount | Formula = Qty × Rate ||
+
+**Section E — Overhead & Miscellaneous — Subform: `Costing_Overhead_Lines`:**
+|| # | Field | Type ||
+||---|-------|------||
+|| 1 | Description | Text ||
+|| 2 | Amount | Currency ||
+|| 3 | Remarks | Multi-line ||
 
 **Automation:**
-- On SO Reference selection → auto-expand SO System Lines → expand each System via System Composition to get all FGs → expand each FG via BOM to get all RMs → pre-populate Section A Material Cost lines
+- On SO Reference selection → auto-expand SO System Lines → expand each System via System Composition to get all FGs → expand each FG via BOM to get all RMs → pre-populate **Costing_Material_Lines subform** Material Cost lines
 - Total Costing Amount = Σ(Material) + Σ(Application) + Σ(Transportation) + Σ(Tools) + Σ(Overhead)
 - **On Costing Approved**: auto-create Project (if not already created) + auto-create Production Plan (Draft) with all material requirements
 - On Costing Rejected with revision → increment Revision No, reset status to Draft
 - SLA: Costing stuck reminder 4 hr after SO acceptance; escalation to Costing Head/management at 24 hr (F11 — aligns A-08 costingSlaEscalate / flow_sim:25h check).
 
-### 4.2 Production Plan [REVISED — triggers procurement]
+### 4.2 Production Plan [REVISED — FG-based, triggers procurement]
 
-**Purpose**: Production team reviews Costing Sheet, checks existing RM stock, generates production plan. If stock insufficient, auto-creates PR.
+**Purpose**: Production team reviews Costing Sheet, checks existing FG stock, generates FG-wise production plan. If FG stock insufficient, auto-creates PR for RM shortages derived via BOM roll-up on FG shortage.
 
 **Department**: Production
 
-| # | Field | Type | Req | Notes |
-|---|-------|------|-----|-------|
-| 1 | Plan No | Autogen (PLAN-YYYY-XXXX) | * | |
-| 2 | Plan Date | Date (Today) | * | |
-| 3 | Costing Ref | Lookup (Costing Sheet — Approved) | * | Auto-fetches all material lines |
-| 4 | Project ID | Lookup (Project) · Auto-fetch from Costing | * | |
-| 5 | Planning Period | Dropdown: Week / Month | * | |
-| 6 | Plant | Dropdown | | |
-| 7 | Planner Name | User lookup | * | |
-| 8 | Status | Dropdown: Draft / Reviewed / Released | * | |
+||| # | Field | Type | Req | Notes ||
+|||---|-------|------|-----|-------||
+||| 1 | Plan No | Autogen (PLAN-YYYY-XXXX) | * | ||
+||| 2 | Plan Date | Date (Today) | * | ||
+||| 3 | Costing Ref | Lookup (Costing Sheet — Approved) | * | Auto-fetches FG material lines ||
+||| 4 | Project ID | Lookup (Project) · Auto-fetch from Costing | * | ||
+||| 5 | Planning Period | Dropdown: Week / Month | * | ||
+||| 6 | Plant | Dropdown | | ||
+||| 7 | Planner Name | User lookup | * | ||
+||| 8 | Status | Dropdown: Draft / Released | * | ||
 
-**Line Items:**
-| # | Field | Type | Notes |
-|---|-------|------|-------|
-| 1 | RM Item Code | Lookup (Item Master) · Auto-fetch from Costing | |
-| 2 | RM Name | Text · Auto-fetch | |
-| 3 | Total Required | Number · Auto-fetch from Costing Sheet Section A | |
-| 4 | Available Stock | Number · Auto-fetch from RM Inventory (net of other project allocations) | |
-| 5 | Shortage | Formula = Total Required − Available Stock (if negative) | |
-| 6 | Source | Dropdown | Stock / Purchase / Both |
-| 7 | Procurement Triggered | Checkbox (auto) | Set when Shortage > 0 |
+**Line Items (FG-based — from Costing_Material_Lines subform):**
+||| # | Field | Type | Notes ||
+|||---|-------|------|-------||
+||| 1 | FG Code | Lookup (Item Muster — FG category) · Auto-fetch from Costing_Material_Lines | FG product to produce ||
+||| 2 | FG Name | Text · Auto-fetch (from FG Code via Item Muster) | ||
+||| 3 | Plan Qty | Number · Auto-fetch from Costing_Material_Lines Required_FG_Qty | FG quantity to produce ||
+||| 4 | UOM | Text · Auto-fetch (from Item Muster via FG Code) | Kg / Ltr / Nos / Mtr ||
+||| 5 | Available FG Stock | Number · Auto-fetch (from FG Inventory) | Current FG stock on hand ||
+||| 6 | Shortage | Formula | = Plan Qty − Available FG Stock (if > 0) ||
+||| 7 | Source | Dropdown: Stock / Purchase / Both | ||
+||| 8 | Procurement Triggered | Checkbox (auto) | Set when Shortage > 0 (triggers RM auto-PR via BOM roll-up) ||
 
 **Automation:**
-- On Plan Release → for each line where Shortage > 0 → auto-create PR (project-tagged) with item + shortage qty → notify Purchase dept
-- Available Stock = physical stock − Σ(Assigned Qty from all other unreleased MRs). Prevents double-allocation.
+- On Plan Release → for each FG line where FG Shortage > 0, explode BOM to derive RM requirements = FG Shortage × BOM Ratio, check Available RM Stock = physical stock − Σ(Assigned Qty from all other unreleased MRs), auto-create PR (project-tagged) for RM shortages → notify Purchase dept
 - Production Plan must be Released before MR can be created
 
 ### 4.3 MR — Material Requisition [CRITICAL GATE] [REVISED]
@@ -978,7 +978,7 @@ Accelerate the end‑to‑end flow by eliminating 15 identified bottlenecks acro
 - **Dashboard**: Real‑time SO‑to‑Project conversion dashboard for sales managers.
 
 #### Phase 3 – Costing Sheet, Production Plan & MR (Weeks 4‑6) [REVISED]
-1. **Costing Sheet auto-expansion**: On SO Reference selection, Deluge expands SO System Lines → System Composition → BOM → pre-populates all Section A material lines. No manual RM re-entry.
+1. **Costing Sheet auto-expansion**: On SO Reference selection, Deluge expands SO System Lines → System Composition → BOM → pre-populates all **Costing_Material_Lines subform** material lines. No manual RM re-entry.
 2. **Costing Sheet → Project auto-creation**: On Costing Approved, auto-create Project (if not yet created). Escalate to admin if Costing stuck >24 hr.
 3. **Production Plan auto-creation**: On Costing Approved, auto-create Production Plan (Draft) with all material lines carried forward.
 4. **Stock check at plan time**: Available Stock = physical stock − Σ(Assigned Qty from all unreleased MRs). Prevents double-allocation across projects.

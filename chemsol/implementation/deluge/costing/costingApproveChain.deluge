@@ -30,7 +30,7 @@ projectRec = createRecord
   "Status": projectData.get("Status")
 };
 
-// 2. Production Plan draft, lines from Costing Section A
+// 2. Production Plan draft, lines from Costing Section A (FG-based)
 planRec = createRecord
 {
   "Form_Type": "Production_Plan",
@@ -47,10 +47,12 @@ for each line in input.Costing_Material_Lines
   {
     "Form_Type": "Production_Plan_Lines",
     "Plan_Ref": planRec.ID,
-    "RM_Code": line.RM_Code,
-    "RM_Name": line.RM_Name,
-    "Total_Required": line.Required_Qty,
-    "Shortage": 0,
+    "FG_Code": line.FG_Code,
+    "FG_Name": line.FG_Name,
+    "Plan_Qty": line.Required_FG_Qty,
+    "UOM": line.UOM,
+    "Available_FG_Stock": 0, // Will be auto-fetched from FG Inventory
+    "Shortage": line.Required_FG_Qty, // Initial = Plan_Qty (no FG stock considered yet)
     "Source": "Stock",
     "Procurement_Triggered": false
   };
