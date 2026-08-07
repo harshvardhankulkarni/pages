@@ -1,0 +1,59 @@
+// ============================================================
+// P2 — Costing Section A auto-expansion (A-09) - FG-based (Client update 2026-08-06)
+// Verified: flow_sim.py P2 (FG-002 150 kg, FG-003 300 kg, Sec A = Rs 103,000, 2 lines)
+// ============================================================
+// Workflow: On Submit (Costing_Sheet, status Draft)
+// SO System Lines x System Composition (FG per sqm).
+// Section A lists FG Products (not Raw Materials).
+// Costing is based on FG roll-up rates from BOM.
+
+soRec = lookupRecords(SO_Master, {"SO_Number": input.SO_Reference});
+if(isNull(soRec))
+{
+  throw "SO " + input.SO_Reference + " not found";
+}
+so = soRec.get(0);
+
+matTotal = 0;
+
+for each sysLine in so.System_Lines
+{
+  comps = lookupRecords(System_Composition, {"System_Code": sysLine.System_Code});
+  for each comp in comps
+  {
+    fgQty = round(sysLine.Area * comp.Qty_Per_Sqm, 1);
+    
+    // Calculate FG roll-up unit rate from BOM RMs
+    fgRate = 0;
+    boms = lookupRecords(BOM, {"FG_Code": comp.FG_Code, "Status": "Released"});
+    for each bom in boms
+    {
+      item = lookupRecords(Item_Muster, {"Item_Code": bom.RM_Code}).get(0);
+      fgRate = fgRate + (bom.Ratio * item.Standard_Rate);
+    }
+    
+    amount = round(fgQty * fgRate, 2);
+    matTotal = matTotal + amount;
+
+    createRecord
+    {
+      "Form_Type": "Costing_Material_Lines",
+      "Costing_Ref": input.ID,
+      "System_Code": sysLine.System_Code,
+      "System_Name": sysLine.System_Name,
+      "FG_Code": comp.FG_Code,
+      "FG_Name": comp.FG_Name,
+      "UOM": "Kg",
+      "Area": sysLine.Area,
+      "Qty_Per_Sqm": comp.Qty_Per_Sqm,
+      "Required_FG_Qty": fgQty,
+      "Unit_Rate": round(fgRate, 2),
+      "Material_Cost": amount
+    };
+  }
+}
+
+// Section A total (G3)
+input.Section_A_Total = matTotal;
+input.Total_Costing_Amount = matTotal + input.Section_B_Total + input.Section_C_Total
+  + input.Section_D_Total + input.Section_E_Total;

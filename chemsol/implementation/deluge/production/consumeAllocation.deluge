@@ -1,0 +1,43 @@
+// ============================================================
+// P6 — consumeAllocation: BMR + SCE consumption (A-33, A-38)
+// Verified: flow_sim.py P4/P5 (36.5/39.6 -> 100/99.6; 8a blocked; 8c accepted)
+// ============================================================
+// Custom function. Input: {"project_id", "item_code", "qty", "doc_ref", "doc_type"}
+// Resolution by Project ID + Item Code — NEVER a generic pool (AGENTS.md).
+// F-02 NOTE (2026-08-06): MR_Allocation is a SUBFORM — resolve via MR_Master
+// lookup then iterate rows; re-PUT subform on parent to persist.
+// C5/C13: ANY entry pushing Consumption % > 100 is REJECTED before any
+// update — "Allocation Exhausted — return material first".
+// F8: shared alert function fires 80%/100% once per threshold.
+// SCE callers pre-validate ALL lines then apply — whole submit rejected
+// if any single line exceeds (C21).
+
+alloc = lookupRecords(MR_Allocation, {"Project_ID": input.project_id, "Item_Code": input.item_code});
+if(isNull(alloc) || alloc.size() == 0)
+{
+  throw "No matching MR Allocation for " + input.item_code + " in Project " + input.project_id;
+}
+a = alloc.get(0);
+
+newConsumed = a.Consumed_Qty + input.qty;
+newPct = (newConsumed / a.Assigned_Qty) * 100;
+
+if(newPct > 100)
+{
+  throw "Allocation Exhausted for " + input.item_code + " — " + round(newConsumed, 1) + " of "
+    + round(a.Assigned_Qty, 1) + " consumed. Return material first (Material Return Entry).";
+}
+
+updateRecord
+{
+  "Form_Type": "MR_Allocation",
+  "ID": a.ID,
+  "Consumed_Qty": newConsumed,
+  "Consumption_Percentage": newPct
+};
+
+// F8 — fires once per threshold (prev_pct guard inside)
+checkAllocationAlert({"allocation_id": a.ID, "rm_code": input.item_code,
+  "project_name": input.project_name, "new_pct": newPct,
+  "prev_pct": a.Consumption_Percentage, "pm_email": input.pm_email,
+  "purchase_email": input.purchase_email});

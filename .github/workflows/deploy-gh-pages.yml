@@ -1,0 +1,35 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Deploy to gh-pages branch
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git remote set-url origin "https://x-access-token:${TOKEN}@github.com/harshvardhankulkarni/pages.git"
+          git checkout --orphan gh-pages
+          git reset --hard
+          git checkout main -- .
+          git add -A
+          git commit -m "Deploy from main: $(date -u +%Y-%m-%d-%H:%M:%S)"
+          git push origin gh-pages --force

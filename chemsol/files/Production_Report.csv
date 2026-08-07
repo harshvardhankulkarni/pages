@@ -1,0 +1,14 @@
+Unnamed: 0,Unnamed: 1,Unnamed: 2
+,Production Planning Master,
+,,
+,Planning No,(MR Sheet No.)
+,Planning Date,Date
+,Planning Period,Week / Month
+,Plant,Dropdown
+,Planner Name,User Lookup
+,Status,Draft / Approved / Released
+,Remarks,
+,,
+,Total SO/WO Qty,(Autofetch as per MR Sheet)
+,FG Stock Available,(Autofetch as per FG Stock)
+,Net Production Requirement,

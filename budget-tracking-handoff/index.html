@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Budget Tracking — Internal Implementation Blueprint</title>
+<style>
+  :root {
+    --bg: #0b1120; --surface: #1a2435; --surface2: #253040;
+    --border: #2d3a4d; --text: #e8edf5; --muted: #8a9bb5;
+    --accent: #22d3ee; --green: #4ade80; --yellow: #fbbf24;
+    --red: #f87171; --purple: #a78bfa; --orange: #fb923c;
+    --pink: #f472b6; --sidebar-w: 220px;
+    --font-mono: 'JetBrains Mono','Fira Code',Consolas,monospace;
+    --font-sans: system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: var(--font-sans); line-height: 1.6;
+    display: flex; min-height: 100vh;
+  }
+
+  .sidebar {
+    width: var(--sidebar-w); min-width: var(--sidebar-w);
+    background: var(--surface); border-right: 1px solid var(--border);
+    padding: 24px 16px; position: fixed; top: 0; left: 0;
+    height: 100vh; overflow-y: auto; z-index: 100;
+    display: flex; flex-direction: column;
+  }
+  .sidebar h1 { font-size: 1rem; font-weight: 700; color: var(--accent); margin-bottom: 4px; letter-spacing: -0.01em; }
+  .sidebar .sub { font-size: 0.62rem; color: var(--muted); margin-bottom: 24px; }
+  .sidebar nav { flex: 1; }
+  .sidebar a {
+    display: block; color: var(--muted); text-decoration: none;
+    font-size: 0.78rem; padding: 6px 10px; border-radius: 6px;
+    margin-bottom: 2px; transition: 0.12s;
+  }
+  .sidebar a:hover { color: var(--accent); background: var(--surface2); }
+  .sidebar a.active { color: var(--accent); background: var(--surface2); font-weight: 600; }
+  .sidebar .ftr { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--border); font-size: 0.6rem; color: var(--muted); }
+
+  .main { margin-left: var(--sidebar-w); flex: 1; min-width: 0; }
+  .content { max-width: 1100px; padding: 32px 32px 60px; }
+
+  .kpi-bar {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 14px 32px; position: sticky; top: 0; z-index: 50;
+    backdrop-filter: blur(8px);
+    display: flex; gap: 10px; flex-wrap: wrap;
+  }
+  .kpi-bar .kpi {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--bg); padding: 5px 12px; border-radius: 8px;
+    border: 1px solid var(--border); font-size: 0.72rem;
+  }
+  .kpi-bar .kpi .n { font-family: var(--font-mono); font-weight: 700; font-size: 0.95rem; }
+  .kpi-bar .kpi .l { color: var(--muted); }
+
+  .dash { margin-bottom: 32px; }
+  .dash-h { font-size: 1.3rem; font-weight: 800; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+  .dash-h span { color: var(--accent); }
+  .dash-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-bottom: 20px; }
+  .dash-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+  .dash-card .val { font-size: 1.8rem; font-weight: 800; font-family: var(--font-mono); }
+  .dash-card .lbl { font-size: 0.68rem; color: var(--muted); margin-top: 2px; }
+  .dash-card .val.g { color: var(--green); }
+  .dash-card .val.a { color: var(--accent); }
+  .dash-card .val.y { color: var(--yellow); }
+  .dash-card .val.r { color: var(--red); }
+  .dash-card .val.p { color: var(--purple); }
+
+  .ph-bar { margin: 10px 0; }
+  .ph-bar .ph-row { display: flex; align-items: center; gap: 10px; margin: 6px 0; }
+  .ph-bar .ph-row .lbl { min-width: 100px; font-size: 0.78rem; font-weight: 600; }
+  .ph-bar .ph-row .lbl .badge { font-size: 0.55rem; font-family: var(--font-mono); padding: 1px 6px; border-radius: 4px; margin-right: 6px; }
+  .ph-bar .ph-row .trk { flex: 1; height: 18px; background: var(--surface2); border-radius: 10px; overflow: hidden; position: relative; }
+  .ph-bar .ph-row .trk .fill { height: 100%; border-radius: 10px; transition: width 0.6s; min-width: 0; }
+  .ph-bar .ph-row .trk .fill.g { background: var(--green); }
+  .ph-bar .ph-row .trk .fill.a { background: var(--accent); }
+  .ph-bar .ph-row .trk .fill.y { background: var(--yellow); }
+  .ph-bar .ph-row .trk .fill.r { background: var(--red); }
+  .ph-bar .ph-row .trk .fill.p { background: var(--purple); }
+  .ph-bar .ph-row .trk .fill.o { background: var(--orange); }
+  .ph-bar .ph-row .pct { min-width: 50px; text-align: right; font-size: 0.78rem; font-family: var(--font-mono); color: var(--muted); }
+  .ph-bar .lag { font-size: 0.62rem; color: var(--red); margin-left: 4px; }
+  .ph-bar .ph-row .trk .fill.z { width: 0% !important; }
+
+  .dash-donut { display: flex; align-items: center; gap: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+  .dash-donut svg { flex-shrink: 0; }
+  .dash-donut .info { flex: 1; }
+  .dash-donut .info .big { font-size: 2rem; font-weight: 800; font-family: var(--font-mono); }
+  .dash-donut .info .sub { font-size: 0.72rem; color: var(--muted); }
+
+  h2 { font-size: 1.25rem; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+  h2 .t { font-size: 0.62rem; font-family: var(--font-mono); background: var(--surface2); color: var(--muted); padding: 2px 10px; border-radius: 12px; font-weight: 500; }
+  h3 { font-size: 0.95rem; font-weight: 600; margin: 18px 0 10px; color: var(--accent); }
+  section { margin-bottom: 36px; scroll-margin-top: 80px; }
+  p { color: var(--muted); font-size: 0.88rem; margin-bottom: 8px; }
+  code { font-family: var(--font-mono); font-size: 0.76rem; background: var(--surface2); padding: 1px 5px; border-radius: 4px; color: var(--accent); }
+
+  .module-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; margin-bottom: 6px; overflow: hidden;
+  }
+  .module-card hd {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; cursor: pointer; user-select: none;
+    transition: background 0.12s;
+  }
+  .module-card hd:hover { background: var(--surface2); }
+  .module-card hd .num { font-family: var(--font-mono); font-size: 0.68rem; color: var(--muted); min-width: 26px; }
+  .module-card hd h4 { font-size: 0.9rem; font-weight: 600; flex: 1; color: var(--text); }
+  .module-card hd .arr { font-size: 0.68rem; color: var(--muted); transition: transform 0.2s; }
+  .module-card hd .arr.o { transform: rotate(90deg); }
+  .module-card hd .tags { display: flex; gap: 4px; }
+  .module-card hd .tags s { font-size: 0.58rem; font-family: var(--font-mono); padding: 1px 6px; border-radius: 3px; background: var(--surface2); color: var(--muted); }
+  .module-card bd { display: none; padding: 0 14px 14px; border-top: 1px solid var(--border); padding-top: 10px; }
+  .module-card bd.o { display: block; }
+
+  .tw { overflow-x: auto; margin: 6px 0 12px; }
+  .tbl { width: 100%; border-collapse: collapse; font-size: 0.78rem; min-width: 480px; }
+  .tbl th { text-align: left; padding: 5px 8px; background: var(--surface2); color: var(--muted); font-weight: 600; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  .tbl td { padding: 5px 8px; border-bottom: 1px solid var(--surface2); vertical-align: top; color: var(--text); }
+  .tbl tr:hover td { background: rgba(34,211,238,0.03); }
+  .tbl .mu { color: var(--muted); }
+
+  .tag { display: inline-block; font-size: 0.6rem; font-family: var(--font-mono); padding: 1px 6px; border-radius: 3px; margin: 1px; }
+  .tag-lk { background: #1e3a5f; color: #93c5fd; }
+  .tag-cr { background: #4a1c1c; color: #fca5a5; }
+  .tag-nt { background: #2e1f3b; color: #d8b4fe; }
+
+  .s-dr { background: #475569; color: #fff; font-size: 0.6rem; padding: 1px 5px; border-radius: 3px; }
+  .s-op { background: #2563eb; color: #fff; font-size: 0.6rem; padding: 1px 5px; border-radius: 3px; }
+  .s-ap { background: #16a34a; color: #fff; font-size: 0.6rem; padding: 1px 5px; border-radius: 3px; }
+  .s-rj { background: #dc2626; color: #fff; font-size: 0.6rem; padding: 1px 5px; border-radius: 3px; }
+  .s-cl { background: #6b7280; color: #fff; font-size: 0.6rem; padding: 1px 5px; border-radius: 3px; }
+  .s-pn { background: #d97706; color: #fff; font-size: 0.6rem; padding: 1px 5px; border-radius: 3px; }
+  .s-ex { background: #dc2626; color: #fff; font-size: 0.6rem; padding: 1px 5px; border-radius: 3px; }
+
+  .wf-s { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; padding: 8px 12px; background: var(--bg); border-radius: 6px; margin: 8px 0; font-size: 0.72rem; }
+  .wf-s .st { font-family: var(--font-mono); padding: 2px 8px; border-radius: 4px; background: var(--surface2); white-space: nowrap; }
+  .wf-s .ar { color: var(--muted); font-family: var(--font-mono); font-size: 0.65rem; }
+
+  .al { padding: 10px 14px; border-radius: 6px; font-size: 0.8rem; margin: 10px 0; border-left: 3px solid; }
+  .al-w { background: #3b2f1e; border-color: var(--yellow); color: #fef3c7; }
+  .al-i { background: #1e3a5f; border-color: var(--accent); color: #bae6fd; }
+  .al-o { background: #1a3b2a; border-color: var(--green); color: #bbf7d0; }
+
+  pre { background: #080e18; padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 0.76rem; line-height: 1.5; border: 1px solid var(--border); margin: 8px 0; color: #d1d8e8; font-family: var(--font-mono); }
+
+  .lm { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 20px; font-family: var(--font-mono); font-size: 0.76rem; line-height: 1.7; overflow-x: auto; }
+  .lm .f { color: var(--accent); font-weight: 600; }
+  .lm .c { color: var(--green); }
+  .lm .in { padding-left: 20px; }
+
+  .pg { display: grid; grid-template-columns: repeat(auto-fill,minmax(190px,1fr)); gap: 12px; }
+  .pc { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px; transition: background 0.2s, transform 0.2s, box-shadow 0.2s; cursor: pointer; }
+  .pc:hover { background: var(--surface2); transform: translateY(-2px); box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+  .pc h4 { font-size: 0.85rem; margin: 0 0 6px 0; }
+  .pc ul { list-style: none; font-size: 0.76rem; color: var(--muted); }
+  .pc ul li::before { content: "\2713 "; color: var(--green); }
+
+  footer { text-align: center; padding: 24px 0; color: var(--muted); font-size: 0.72rem; border-top: 1px solid var(--border); margin-top: 32px; }
+
+  .hm { display: none; position: fixed; top: 10px; left: 10px; z-index: 200; background: var(--surface); border: 1px solid var(--border); color: var(--text); width: 38px; height: 38px; border-radius: 8px; cursor: pointer; font-size: 1.1rem; align-items: center; justify-content: center; }
+  .so { display: none; }
+
+  .grid-2 { display: grid; grid-template-columns: repeat(auto-fill,minmax(280px,1fr)); gap: 12px; }
+  .grid-2 .c { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
+  .grid-2 .c h4 { font-size: 0.85rem; color: var(--accent); margin: 0 0 6px 0; }
+  .grid-2 .c p { font-size: 0.8rem; }
+
+  @media (max-width: 768px) {
+    .hm { display: flex; }
+    .sidebar { transform: translateX(-100%); transition: transform 0.25s; }
+    .sidebar.o { transform: translateX(0); }
+    .so.o { display: block; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 99; }
+    .main { margin-left: 0; }
+    .content { padding: 60px 14px 40px; }
+    .kpi-bar { padding: 10px 14px; gap: 6px; }
+    .kpi-bar .kpi { padding: 4px 8px; font-size: 0.62rem; }
+    .kpi-bar .kpi .n { font-size: 0.8rem; }
+    .pg { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 480px) {
+    .pg { grid-template-columns: 1fr; }
+    .kpi-bar .kpi .l { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<button class="hm" id="hm">☰</button>
+<div class="so" id="so"></div>
+
+<aside class="sidebar" id="sb">
+  <h1>Budget Tracking</h1>
+  <div class="sub">ITOTCloud Delivery</div>
+  <nav>
+    <a href="#constraints">Constraints</a>
+    <a href="#modules">Modules (18)</a>
+    <a href="#lookup-map">Lookup Map</a>
+    <a href="#workflows">Workflows (24)</a>
+    <a href="#phases">Build Order</a>
+    <a href="#roles">Roles</a>
+    <a href="#risks">Risks</a>
+    <a href="#notes">Build Tips</a>
+    <a href="#impl-guide">Impl Guide</a>
+    <a href="user-guide.html" target="_blank">User Guide ↗</a>
+    <a href="testing-guide.html" target="_blank">Testing Guide ↗</a>
+  </nav>
+  <div class="ftr">
+    <a href="#" onclick="document.getElementById('dashboard').scrollIntoView({behavior:'smooth'});return false;">📊 Dashboard</a> &bull;
+    <a href="user-guide.html">User Guide &rarr;</a> &bull;
+    <a href="testing-guide.html">Testing Guide &rarr;</a>
+  </div>
+</aside>
+
+<div class="main">
+
+  <div class="kpi-bar">
+    <div class="kpi"><span class="n" style="color:var(--accent)">18</span><span class="l">Modules</span></div>
+    <div class="kpi"><span class="n" style="color:var(--green)">24</span><span class="l">Deluge Workflows</span></div>
+    <div class="kpi"><span class="n" style="color:var(--purple)">17</span><span class="l">Forms</span></div>
+    <div class="kpi"><span class="n" style="color:var(--orange)">6</span><span class="l">Build Phases</span></div>
+    <div class="kpi"><span class="n" style="color:var(--pink)">6</span><span class="l">User Roles</span></div>
+    <div class="kpi"><span class="n" style="color:var(--yellow)">1</span><span class="l">App — Ready to Build</span></div>
+  </div>
+
+  <div class="content">
+
+    <section id="dashboard" class="dash">
+      <div class="dash-h">📊 Progress <span>Dashboard</span></div>
+      
+      <div class="dash-donut" id="dash-donut">
+        <svg width="100" height="100" viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="42" fill="none" stroke="var(--surface2)" stroke-width="8"/>
+          <circle id="donut-ring" cx="50" cy="50" r="42" fill="none" stroke="var(--accent)" stroke-width="8" stroke-dasharray="263.9" stroke-dashoffset="263.9" transform="rotate(-90,50,50)" stroke-linecap="round"/>
+        </svg>
+        <div class="info">
+          <div class="big" id="dash-pct">0%</div>
+          <div class="sub">Overall Build Completion</div>
+          <div class="sub" id="dash-count" style="margin-top:4px;">0 / 0 items checked</div>
+        </div>
+      </div>
+
+      <div class="dash-cards" id="dash-kpis"></div>
+
+      <h3 style="margin-top:20px">Phase Progress</h3>
+      <div class="ph-bar" id="dash-phases"></div>
+
+      <h3 style="margin-top:20px">Cross-Phase Progress</h3>
+      <div class="ph-bar" id="dash-cross"></div>
+
+      <h3 style="margin-top:20px">Lagging Areas</h3>
+      <div id="dash-lagging" style="font-size:0.84rem;color:var(--muted);"></div>
+    </section>
+
+    <section id="constraints">
+      <h2>Design Constraints <span class="t">key factors</span></h2>
+      <div class="tw">
+        <table class="tbl">
+          <tr><th style="width:20%">Constraint</th><th>Design Impact</th></tr>
+          <tr><td>No true foreign keys</td><td>All relationships = <strong>Lookup</strong> fields. Archive, never delete.</td></tr>
+          <tr><td>No transactions</td><td>Safety checks before every write. Log failures to Debug Log form.</td></tr>
+          <tr><td>Deluge runs per-record</td><td>Scheduled Workflows for mass ops. Keep On Submit lightweight.</td></tr>
+            <tr><td>Subform limits</td><td>~100 rows max per embedded subform. All subforms are embedded inside the parent form. Deluge accesses subform data via <code>input.&lt;subform_name&gt;</code> during parent On Submit.</td></tr>
+          <tr><td>No dynamic SQL</td><td>Prefer Reports over Deluge for aggregation.</td></tr>
+          <tr><td>Stale lookups</td><td>Formula Lookup (recalculated on load) for live stock values.</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <section id="modules">
+      <h2>18 Modules <span class="t">overview</span></h2>
+      <p>Click any module name for full details in the <a href="user-guide.html" style="color:var(--accent)">User Guide</a>.</p>
+      <div class="tw">
+        <table class="tbl">
+          <tr><th>#</th><th>Module</th><th>Form Name</th><th>Phase</th><th>Subforms</th><th>Deluge</th></tr>
+          <tr><td>1</td><td><a href="user-guide.html#page-projects" style="color:var(--accent)">Project Master</a></td><td><code>Projects</code></td><td><span class="ph-badge ph-1a">1A</span></td><td>—</td><td>Auto-code, auto-invoice on complete</td></tr>
+          <tr><td>2</td><td><a href="user-guide.html#page-vendors" style="color:var(--accent)">Vendor Management</a></td><td><code>Vendors</code></td><td><span class="ph-badge ph-1a">1A</span></td><td>Vendor_Contacts, Vendor_Documents</td><td>None</td></tr>
+          <tr><td>3</td><td><a href="user-guide.html#page-accounts" style="color:var(--accent)">Account Management</a></td><td><code>Accounts</code></td><td><span class="ph-badge ph-1a">1A</span></td><td>Account_Contacts, Account_Documents</td><td>None</td></tr>
+          <tr><td>4</td><td><a href="user-guide.html#page-warehouses" style="color:var(--accent)">Warehouses</a></td><td><code>Warehouses</code></td><td><span class="ph-badge ph-1a">1A</span></td><td>—</td><td>None</td></tr>
+          <tr><td>5</td><td><a href="user-guide.html#page-items" style="color:var(--accent)">Inventory Master</a></td><td><code>Inventory_Items</code></td><td><span class="ph-badge ph-1a">1A</span></td><td>Item_Warehouse_Stock</td><td>Stock sync via transactions</td></tr>
+          <tr><td>6</td><td><a href="user-guide.html#page-budget" style="color:var(--accent)">Budget Planning</a></td><td><code>Budget_Plans</code></td><td><span class="ph-badge ph-1b">1B</span></td><td>Budget_Components</td><td>Component sum validation</td></tr>
+          <tr><td>7</td><td><a href="user-guide.html#page-budget" style="color:var(--accent)">Budget Components</a></td><td><code>Budget_Components</code></td><td><span class="ph-badge ph-1b">1B</span></td><td>—</td><td>Spent tracking</td></tr>
+          <tr><td>8</td><td><a href="user-guide.html#page-expenses" style="color:var(--accent)">Expense Management</a></td><td><code>Expenses</code></td><td><span class="ph-badge ph-1c">1C</span></td><td>—</td><td>Budget alerts at 80/90/100%</td></tr>
+          <tr><td>9</td><td><a href="user-guide.html#page-pr" style="color:var(--accent)">Purchase Requisitions</a></td><td><code>Purchase_Requisitions</code></td><td><span class="ph-badge ph-1c">1C</span></td><td>PR_Line_Items</td><td>3-stage approval, auto-PO</td></tr>
+          <tr><td>10</td><td><a href="user-guide.html#page-approvals" style="color:var(--accent)">Budget Approvals</a></td><td><code>Budget_Approvals</code></td><td><span class="ph-badge ph-1d">1D</span></td><td>—</td><td>Updates budget + expense on decision</td></tr>
+          <tr><td>11</td><td><a href="user-guide.html#page-po" style="color:var(--accent)">Purchase Orders</a></td><td><code>Purchase_Orders</code></td><td><span class="ph-badge ph-1d">1D</span></td><td>PO_Line_Items</td><td>Email PDF on Open</td></tr>
+          <tr><td>12</td><td><a href="user-guide.html#page-grn" style="color:var(--accent)">Goods Receipt</a></td><td><code>Goods_Receipts</code></td><td><span class="ph-badge ph-1d">1D</span></td><td>GRN_Line_Items</td><td>Stock In on accepted qty</td></tr>
+          <tr><td>13</td><td><a href="user-guide.html#page-transfer" style="color:var(--accent)">Transfer Orders</a></td><td><code>Transfer_Orders</code></td><td><span class="ph-badge ph-1d">1D</span></td><td>TO_Line_Items</td><td>Paired Stock Out + In on complete</td></tr>
+          <tr><td>14</td><td><a href="user-guide.html#page-bom" style="color:var(--accent)">Bill of Materials</a></td><td><code>BOM</code></td><td><span class="ph-badge ph-1e">1E</span></td><td>BOM_Line_Items</td><td>Cost calculation</td></tr>
+          <tr><td>15</td><td><a href="user-guide.html#page-dc" style="color:var(--accent)">Delivery Challans</a></td><td><code>Delivery_Challans</code></td><td><span class="ph-badge ph-1e">1E</span></td><td>DC_Line_Items</td><td>Stock Out on Ship</td></tr>
+          <tr><td>16</td><td><a href="user-guide.html#page-invoices" style="color:var(--accent)">Invoicing</a></td><td><code>Invoices</code></td><td><span class="ph-badge ph-1e">1E</span></td><td>Invoice_Line_Items</td><td>Updates Project P&amp;L</td></tr>
+          <tr><td>17</td><td><a href="user-guide.html#page-reports" style="color:var(--accent)">Reports &amp; Dashboards</a></td><td>Report widgets</td><td><span class="ph-badge ph-1f">1F</span></td><td>—</td><td>KPI scheduled refresh</td></tr>
+          <tr><td>18</td><td><a href="user-guide.html#page-reports" style="color:var(--accent)">Inventory Transactions</a></td><td><code>Inventory_Transactions</code></td><td><span class="ph-badge ph-1b">1B</span></td><td>—</td><td>Stock sync engine</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <section id="lookup-map">
+      <h2>Lookup Relationship Map <span class="t">how forms connect</span></h2>
+      <div class="lm">
+        <span class="f">Projects</span> ──┬── <span class="c">Budget_Plans</span> (1:1)<br>
+        <div class="in">├── <span class="c">Budget_Components</span> (1:N, via embedded subform in Budget_Plan)</div>
+        <div class="in">├── <span class="c">Expenses</span> (1:N)</div>
+        <div class="in">├── <span class="c">Inventory_Transactions</span> (1:N)</div>
+        <div class="in">├── <span class="c">Purchase_Requisitions</span> (1:N)</div>
+        <div class="in">├── <span class="c">Purchase_Orders</span> (1:N)</div>
+        <div class="in">├── <span class="c">Budget_Approvals</span> (1:N)</div>
+        <div class="in">├── <span class="c">Invoices</span> (1:N)</div>
+        <div class="in">├── <span class="c">Delivery_Challans</span> (1:N)</div>
+        <div class="in">└── <span class="c">BOM</span> (1:N)</div>
+        <br>
+        <span class="f">Vendors</span> ──┬── (embedded subforms: <span class="c">Vendor_Contacts</span>, <span class="c">Vendor_Documents</span>)<br>
+        <div class="in">└── <span class="c">Purchase_Orders</span> + <span class="c">Inventory_Items</span> + <span class="c">Expenses</span></div>
+        <br>
+        <span class="f">Accounts</span> ──┬── (embedded subforms: <span class="c">Account_Contacts</span>, <span class="c">Account_Documents</span>)<br>
+        <div class="in">├── <span class="c">Projects</span> + <span class="c">Invoices</span> + <span class="c">Delivery_Challans</span></div>
+        <br>
+        <span class="f">Warehouses</span> ──┬── <span class="c">Inventory_Transactions</span><br>
+        <div class="in">└── <span class="c">Transfer_Orders</span> + embedded subforms in PO / GRN / DC</div>
+        <br>
+        <span class="f">Inventory_Items</span> ──┬── (embedded subform: <span class="c">Item_Warehouse_Stock</span>)<br>
+        <div class="in">├── <span class="c">Inventory_Transactions</span></div>
+        <div class="in">├── embedded subforms: <span class="c">TO_Line_Items</span>, <span class="c">PR_Line_Items</span>, <span class="c">PO_Line_Items</span>, <span class="c">GRN_Line_Items</span>, <span class="c">Invoice_Line_Items</span>, <span class="c">DC_Line_Items</span>, <span class="c">BOM_Line_Items</span></div>
+        <div class="in">└── <span class="c">BOM</span> (as finished item)</div>
+      </div>
+    </section>
+
+    <section id="workflows">
+      <h2>24 Deluge Automations <span class="t">build from this</span></h2>
+      <div class="tw">
+        <table class="tbl">
+          <tr><th>#</th><th>Trigger</th><th>Event</th><th>Action</th><th>Critical</th></tr>
+          <tr><td>1</td><td>Project Create</td><td>On Submit</td><td>Generate Project Code (<code>PROJ-0001</code>)</td><td>—</td></tr>
+          <tr><td>2</td><td>Budget Plan Submit</td><td>On Submit</td><td>Validate components sum ≤ Total Budget; prevent duplicates</td><td><span class="tag tag-cr">Yes</span></td></tr>
+          <tr><td>3</td><td>Expense Submit</td><td>On Submit</td><td>Budget check → auto-approve or trigger overrun</td><td><span class="tag tag-cr">Yes</span></td></tr>
+          <tr><td>4</td><td>Expense Overrun</td><td>On Submit</td><td>Create Budget_Approval record; email PM + Finance Manager</td><td><span class="tag tag-nt">Yes</span></td></tr>
+          <tr><td>5</td><td>Budget Approval — Approved</td><td>On Submit</td><td>Update component amount; approve Expense</td><td><span class="tag tag-cr">Yes</span></td></tr>
+          <tr><td>6</td><td>Budget Approval — Rejected</td><td>On Submit</td><td>Expense Rejected; notify submitter</td><td><span class="tag tag-nt">Yes</span></td></tr>
+          <tr><td>7</td><td>Inventory Transaction</td><td>On Submit</td><td>Update Item_Warehouse_Stock; recompute Item.Current_Stock</td><td><span class="tag tag-cr">Yes</span></td></tr>
+          <tr><td>8</td><td>Stock Out + Project set</td><td>On Submit</td><td>Auto-create Expense record (Qty × Rate)</td><td><span class="tag tag-cr">Yes</span></td></tr>
+          <tr><td>9</td><td>Transaction Validation</td><td>Validation</td><td>Prevent negative stock</td><td><span class="tag tag-cr">Yes</span></td></tr>
+          <tr><td>10</td><td>TO Status = Completed</td><td>On Submit</td><td>Paired Stock Out (From) + Stock In (To)</td><td><span class="tag tag-cr">Yes</span></td></tr>
+          <tr><td>11</td><td>GRN Status = Open</td><td>On Submit</td><td>Stock In for accepted qty; update PO line item</td><td><span class="tag tag-cr">Yes</span></td></tr>
+           <tr><td>12</td><td>GRN — all items received</td><td>On Submit</td><td>PO Status unchanged — POs are closed manually</td><td>—</td></tr>
+          <tr><td>13</td><td>PO Status = Open</td><td>On Submit</td><td>Email PO PDF to vendor</td><td><span class="tag tag-nt">Yes</span></td></tr>
+          <tr><td>14</td><td>PO Status = Cancelled</td><td>Validation</td><td>Validate no linked GRN</td><td><span class="tag tag-cr">Yes</span></td></tr>
+          <tr><td>15</td><td>PR Approval Stage change</td><td>On Submit</td><td>Email next approver in chain</td><td><span class="tag tag-nt">Yes</span></td></tr>
+          <tr><td>16</td><td>Scheduled (daily midnight)</td><td>Cron</td><td>Budget alerts, low stock, KPI refresh, mark overdue</td><td><span class="tag tag-nt">Yes</span></td></tr>
+          <tr><td>17</td><td>Project Status = Completed</td><td>Validation</td><td>Check no open Expenses or POs</td><td>—</td></tr>
+           <tr><td>18</td><td><em>Removed — POs are closed manually</em></td><td>—</td><td>—</td><td>—</td></tr>
+          <tr><td>19</td><td>Invoice Sent</td><td>On Submit</td><td>Update project Total Invoiced (P&amp;L)</td><td><span class="tag tag-cr">Yes</span></td></tr>
+          <tr><td>20</td><td>Invoice Paid</td><td>On Submit</td><td>Set Amount Paid, Balance Due = 0, Status = Paid</td><td>—</td></tr>
+          <tr><td>21</td><td>DC Status = Shipped</td><td>On Submit</td><td>Auto-create Stock Out for dispatched items</td><td><span class="tag tag-cr">Yes</span></td></tr>
+          <tr><td>22</td><td>BOM Submit</td><td>On Submit</td><td>Calculate Component Cost + Total Mfg Cost</td><td>—</td></tr>
+          <tr><td>23</td><td>PR Fully Approved</td><td>On Submit</td><td>Auto-create Purchase Order (Draft) from PR line items</td><td><span class="tag tag-cr">Yes</span></td></tr>
+          <tr><td>24</td><td>Reservation Transaction</td><td>On Submit</td><td>Increment Reserved_Qty; validate ≤ Current_Stock</td><td><span class="tag tag-cr">Yes</span></td></tr>
+        </table>
+      </div>
+    </section>
+
+    <section id="phases">
+      <h2>Build Order <span class="t">6 phases</span></h2>
+      <p>Build in strict sequence. Each phase depends on the previous.</p>
+      <div class="pg">
+        <a href="build-viewer.html?phase=1A" class="pc" style="border-left:3px solid var(--green);text-decoration:none;display:block">
+          <h4 style="color:var(--green)">1A — Foundation</h4>
+          <ul><li>Vendors (embedded Contacts &amp; Docs)</li><li>Accounts (embedded Contacts &amp; Docs)</li><li>Project Master</li><li>Warehouses</li><li>Inventory Items (embedded Stock)</li></ul>
+          <span style="font-size:0.75rem;color:var(--muted);margin-top:6px;display:inline-block">Open build guide →</span>
+        </a>
+        <a href="build-viewer.html?phase=1B" class="pc" style="border-left:3px solid var(--accent);text-decoration:none;display:block">
+          <h4 style="color:var(--accent)">1B — Budget</h4>
+          <ul><li>Budget Planning</li><li>Budget Components</li><li>Inventory Transactions</li></ul>
+          <span style="font-size:0.75rem;color:var(--muted);margin-top:6px;display:inline-block">Open build guide →</span>
+        </a>
+        <a href="build-viewer.html?phase=1C" class="pc" style="border-left:3px solid var(--purple);text-decoration:none;display:block">
+          <h4 style="color:var(--purple)">1C — Expenses</h4>
+          <ul><li>Expense Management</li><li>Purchase Requisitions</li><li>Budget Alerts</li></ul>
+          <span style="font-size:0.75rem;color:var(--muted);margin-top:6px;display:inline-block">Open build guide →</span>
+        </a>
+        <a href="build-viewer.html?phase=1D" class="pc" style="border-left:3px solid var(--orange);text-decoration:none;display:block">
+          <h4 style="color:var(--orange)">1D — Procurement</h4>
+          <ul><li>Budget Approval</li><li>Purchase Orders (embedded Line Items)</li><li>Transfer Orders (embedded Line Items)</li><li>Goods Receipt (embedded Line Items)</li></ul>
+          <span style="font-size:0.75rem;color:var(--muted);margin-top:6px;display:inline-block">Open build guide →</span>
+        </a>
+        <a href="build-viewer.html?phase=1E" class="pc" style="border-left:3px solid var(--pink);text-decoration:none;display:block">
+          <h4 style="color:var(--pink)">1E — Revenue &amp; Mfg</h4>
+          <ul><li>BOM (embedded Line Items)</li><li>Delivery Challans (embedded Line Items)</li><li>Invoicing (embedded Line Items)</li></ul>
+          <span style="font-size:0.75rem;color:var(--muted);margin-top:6px;display:inline-block">Open build guide →</span>
+        </a>
+        <a href="build-viewer.html?phase=1F" class="pc" style="border-left:3px solid var(--yellow);text-decoration:none;display:block">
+          <h4 style="color:var(--yellow)">1F — Reports</h4>
+          <ul><li>17 Reports</li><li>Project P&amp;L</li><li>Executive Dashboard</li><li>Scheduled KPI</li></ul>
+          <span style="font-size:0.75rem;color:var(--muted);margin-top:6px;display:inline-block">Open build guide →</span>
+        </a>
+      </div>
+      <div class="al al-i"><strong>Phase 1 (now):</strong> All in Zoho Creator.</div>
+      <div class="al al-o"><strong>Phase 2 (future):</strong> Zoho Projects sync, Zoho Analytics dashboards.</div>
+    </section>
+
+    <section id="roles">
+      <h2>Role Permissions <span class="t">6 roles</span></h2>
+      <div class="tw">
+        <table class="tbl">
+          <tr><th>Module</th><th style="color:var(--red)">Admin</th><th style="color:var(--accent)">PM</th><th style="color:var(--green)">Finance</th><th style="color:var(--orange)">Procurement</th><th style="color:var(--purple)">Inventory</th><th style="color:var(--muted)">Employee</th></tr>
+          <tr><td>Projects</td><td>CRUD</td><td>CRUD</td><td>R</td><td>R</td><td>R</td><td>R</td></tr>
+           <tr><td>Vendors</td><td>CRUD</td><td>R</td><td>R</td><td>CRUD</td><td>R</td><td>—</td></tr>
+           <tr><td>Accounts</td><td>CRUD</td><td>R</td><td>R</td><td>R</td><td>R</td><td>—</td></tr>
+           <tr><td>Warehouses</td><td>CRUD</td><td>—</td><td>—</td><td>R</td><td>CRUD</td><td>—</td></tr>
+          <tr><td>Inventory Items</td><td>CRUD</td><td>R</td><td>R</td><td>R</td><td>CRUD</td><td>—</td></tr>
+          <tr><td>Budget Plans</td><td>CRUD</td><td>CRUD</td><td>CRUD</td><td>—</td><td>—</td><td>—</td></tr>
+          <tr><td>Budget Components</td><td>CRUD</td><td>CRUD</td><td>CRUD</td><td>—</td><td>—</td><td>—</td></tr>
+          <tr><td>Expenses</td><td>CRUD</td><td>CRUD</td><td>R</td><td>—</td><td>R</td><td>C (own)</td></tr>
+          <tr><td>Budget Approvals</td><td>CRUD</td><td>U</td><td>U</td><td>—</td><td>—</td><td>R (own)</td></tr>
+          <tr><td>Inventory Transactions</td><td>CRUD</td><td>R</td><td>R</td><td>R</td><td>CRUD</td><td>—</td></tr>
+          <tr><td>Transfer Orders</td><td>CRUD</td><td>—</td><td>—</td><td>—</td><td>CRUD</td><td>—</td></tr>
+          <tr><td>Purchase Requisitions</td><td>CRUD</td><td>U</td><td>U</td><td>CRUD</td><td>—</td><td>C (own)</td></tr>
+          <tr><td>Purchase Orders</td><td>CRUD</td><td>R</td><td>U</td><td>CRUD</td><td>R</td><td>—</td></tr>
+          <tr><td>Goods Receipts</td><td>CRUD</td><td>R</td><td>R</td><td>CRUD</td><td>CRUD</td><td>—</td></tr>
+          <tr><td>Invoices</td><td>CRUD</td><td>CRUD</td><td>CRUD</td><td>—</td><td>R</td><td>—</td></tr>
+          <tr><td>Delivery Challans</td><td>CRUD</td><td>R</td><td>—</td><td>—</td><td>CRUD</td><td>—</td></tr>
+          <tr><td>BOM</td><td>CRUD</td><td>R</td><td>R</td><td>—</td><td>CRUD</td><td>—</td></tr>
+        </table>
+      </div>
+      <p style="font-size:0.72rem;color:var(--muted);margin-top:4px">C=Create, R=Read, U=Update, D=Delete. "C (own)" = own records only.</p>
+    </section>
+
+    <section id="risks">
+      <h2>Risks &amp; Mitigations <span class="t">watch for these</span></h2>
+      <div class="tw">
+        <table class="tbl">
+          <tr><th style="width:30%">Risk</th><th>Mitigation</th></tr>
+          <tr><td>Deluge timeout on large datasets</td><td>Scheduled Workflows for mass ops. Keep On Submit lightweight.</td></tr>
+          <tr><td>Negative stock</td><td>Validate <code>Current_Stock &ge; Quantity</code> before Stock Out.</td></tr>
+          <tr><td>Concurrent expense submissions</td><td>Record locking + Deluge retry: re-read Spent_Amount after lock.</td></tr>
+          <tr><td>Partial workflow failure</td><td>Safety checks before every write. Log to <code>Deluge_Error_Log</code> form.</td></tr>
+          <tr><td>Stale lookup values</td><td>Formula Lookup for live stock counts instead of regular Lookup.</td></tr>
+          <tr><td>Deleting referenced records</td><td>Archive (Status=Inactive) instead of delete.</td></tr>
+          <tr><td>Formula field performance</td><td>Keep aggregation in Deluge, not formula fields.</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <section id="notes">
+      <h2>Console Build Tips <span class="t">team workflow</span></h2>
+      <div class="grid-2">
+        <div class="c">
+          <h4>1. Build Sequence</h4>
+          <p>Follow 6-phase order. Each depends on previous. Refer to <code>IMPLEMENTATION_PLAN.md</code> for field specs.</p>
+        </div>
+        <div class="c">
+          <h4>2. Form Pattern</h4>
+          <p>Fields → Validation → Deluge → Report/Dashboard → Role Permissions. One module at a time.</p>
+        </div>
+        <div class="c">
+          <h4>3. Seed Data</h4>
+          <p>Create "Main Warehouse". Default budget categories: Labour, Materials, Equipment, Travel, Overhead.</p>
+        </div>
+        <div class="c">
+          <h4>4. Stock Out → Expense</h4>
+          <p>Highest-value automation (WF #8). Closes inventory → budget loop. Test both within-budget and over-budget.</p>
+        </div>
+        <div class="c">
+          <h4>5. Don't Delete</h4>
+          <p>Archive (Status=Inactive) Projects, Vendors, Items, Warehouses. Deleting breaks lookups.</p>
+        </div>
+        <div class="c">
+          <h4>6. Log Issues</h4>
+          <p>Blockers, design questions, and changes go in this repo for team discussion.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="impl-guide">
+<style>
+        .ig-wrap { width:100%; }
+        .ig-tab-bar { display:flex; flex-wrap:wrap; gap:6px; padding-bottom:12px; margin-bottom:20px; border-bottom:1px solid var(--border); }
+        .ig-tab-btn { background:var(--surface2); border:1px solid var(--border); border-radius:24px; padding:7px 16px; font-size:0.78rem; color:var(--muted); cursor:pointer; transition:all .18s; white-space:nowrap; }
+        .ig-tab-btn:hover { color:var(--text); border-color:var(--accent); background:var(--surface); }
+        .ig-tab-btn.active { color:var(--accent); border-color:var(--accent); background:rgba(34,211,238,.08); box-shadow:0 0 12px rgba(34,211,238,.12); font-weight:600; }
+        .ig-tab-pane { display:none; }
+        .ig-tab-pane.active { display:block; animation:igFade .22s ease; }
+        @keyframes igFade { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+        .ts { position:relative; padding-left:44px; }
+        .ts::before { content:''; position:absolute; left:20px; top:14px; bottom:14px; width:2px; background:var(--border); z-index:0; }
+        .ts-step { position:relative; margin-bottom:0; }
+        .ts-hd { display:flex; align-items:center; gap:12px; padding:10px 14px 10px 0; cursor:pointer; user-select:none; border-radius:8px; transition:background .12s; }
+        .ts-hd:hover { background:var(--surface2); }
+        .ts-circle { width:28px; height:28px; min-width:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.7rem; font-weight:700; font-family:var(--font-mono); background:var(--surface2); color:var(--muted); border:2px solid var(--border); position:relative; z-index:1; transition:all .25s; }
+        .ts-step.done .ts-circle { background:var(--green); border-color:var(--green); color:var(--bg); }
+        .ts-step.active .ts-circle { background:var(--accent); border-color:var(--accent); color:var(--bg); box-shadow:0 0 12px rgba(34,211,238,.3); }
+        .ts-step.done .ts-circle .ts-num { display:none; }
+        .ts-step.done .ts-circle::after { content:'\2713'; font-size:0.8rem; }
+        .ts-step.active .ts-circle .ts-num { font-size:0.7rem; }
+        .ts-hd h4 { font-size:0.88rem; font-weight:600; color:var(--text); flex:1; }
+        .ts-step.done .ts-hd h4 { color:var(--muted); }
+        .ts-step.active .ts-hd h4 { color:var(--accent); }
+        .ts-bd { overflow:hidden; max-height:0; opacity:0; transition:max-height .35s ease, opacity .25s ease; margin:0; }
+        .ts-step.active .ts-bd { max-height:4000px; opacity:1; padding:4px 0 14px; }
+        .ts-bd p { font-size:0.82rem; color:var(--muted); margin:0 0 10px; }
+        .ts-bd .tbl { margin:6px 0 10px; }
+        .ts-bd pre { margin:6px 0 10px; font-size:0.74rem; }
+        .ts-bd ol, .ts-bd ul { font-size:0.82rem; color:var(--muted); margin:0 0 10px; padding-left:20px; }
+        .ts-bd li { margin:3px 0; }
+        .ts-btn { background:var(--surface2); border:1px solid var(--accent); color:var(--accent); padding:6px 18px; border-radius:6px; cursor:pointer; font-size:0.78rem; transition:all .18s; }
+        .ts-btn:hover { background:rgba(34,211,238,.12); }
+        .ts-btn-muted { background:transparent; border:1px solid var(--border); color:var(--muted); padding:6px 14px; border-radius:6px; cursor:pointer; font-size:0.78rem; transition:all .18s; }
+        .ts-btn-muted:hover { background:var(--surface2); color:var(--text); }
+        .ts-nav { display:flex; gap:6px; align-items:center; margin-top:10px; padding-top:10px; border-top:1px solid var(--border); }
+        .ts-indicator { font-size:0.72rem; color:var(--muted); font-family:var(--font-mono); background:var(--surface2); padding:2px 10px; border-radius:12px; display:inline-block; margin-bottom:12px; }
+        .ts-bd h3 { font-size:0.9rem; color:var(--accent); margin:12px 0 6px; }
+        @media (max-width:640px) {
+          .ts { padding-left:36px; }
+          .ts::before { left:16px; }
+          .ts-circle { width:24px; height:24px; min-width:24px; font-size:0.65rem; }
+          .ig-tab-btn { font-size:0.7rem; padding:5px 10px; }
+        }
+      </style>
+
+      <div class="ig-wrap">
+        <h2>Implementation Guide <span class="t">Zoho Creator console walkthrough</span></h2>
+        <p style="color:var(--muted);margin-bottom:16px">Click a topic tab above, then step through sub-steps below. Use <strong>Next &rarr;</strong> to advance sequentially or click any step to jump.</p>
+
+        <div class="ig-tab-bar">
+          <button class="ig-tab-btn active" data-tab="setup">App Setup</button>
+          <button class="ig-tab-btn" data-tab="forms">Form Creation</button>
+          <button class="ig-tab-btn" data-tab="mapping">Module Mapping</button>
+          <button class="ig-tab-btn" data-tab="validation">Validation</button>
+          <button class="ig-tab-btn" data-tab="workflows">Workflows</button>
+          <button class="ig-tab-btn" data-tab="blueprints">Blueprints</button>
+          <button class="ig-tab-btn" data-tab="reports">Reports</button>
+          <button class="ig-tab-btn" data-tab="pages">Pages &amp; Dashboards</button>
+          <button class="ig-tab-btn" data-tab="permissions">Permissions</button>
+          <button class="ig-tab-btn" data-tab="practices">Best Practices</button>
+          <button class="ig-tab-btn" data-tab="checklist">Checklist</button>
+        </div>
+
+        <!-- TAB: Setup -->
+        <div class="ig-tab-pane active" id="tab-setup">
+          <div class="ts" data-ts-total="4">
+            <span class="ts-indicator">Step <span class="ts-cur">1</span> of 4</span>
+            <div class="ts-step active" data-ts="1">
+              <div class="ts-hd" onclick="igGo(this,1)"><div class="ts-circle"><span class="ts-num">1</span></div><h4>Create Application Workspace</h4></div>
+              <div class="ts-bd">
+                <p>Go to <strong>creator.zoho.com</strong> → <strong>+ Create New App</strong> → <strong>Blank App</strong>.</p>
+                <table class="tbl"><tr><th>Setting</th><th>Value</th></tr><tr><td>App Name</td><td><code>Project Budget Tracking</code> (API: <code>budget_tracking</code>)</td></tr><tr><td>Icon</td><td>Project-themed for visual ID</td></tr></table>
+                <div class="ts-nav"><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="2">
+              <div class="ts-hd" onclick="igGo(this,2)"><div class="ts-circle"><span class="ts-num">2</span></div><h4>Configure Regional Settings</h4></div>
+              <div class="ts-bd">
+                <p><strong>Settings → General</strong> → set date format, timezone, number format, currency to match your region (e.g. IST, INR, DD/MM/YYYY).</p>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="3">
+              <div class="ts-hd" onclick="igGo(this,3)"><div class="ts-circle"><span class="ts-num">3</span></div><h4>Create User Roles</h4></div>
+              <div class="ts-bd">
+                <p><strong>Settings → User Permissions</strong> → create 6 roles: <code>Administrator</code>, <code>Project_Manager</code>, <code>Finance_Manager</code>, <code>Procurement</code>, <code>Inventory</code>, <code>Employee</code>.</p>
+                <p>Roles are reusable across all forms. CRUD permissions per the Role Matrix in this blueprint.</p>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="4">
+              <div class="ts-hd" onclick="igGo(this,4)"><div class="ts-circle"><span class="ts-num">4</span></div><h4>Invite Users</h4></div>
+              <div class="ts-bd">
+                <p><strong>Settings → Users</strong> → invite users by email, assign roles. Each user gets login credentials. Portal access can be enabled for external vendors.</p>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: Form Creation -->
+        <div class="ig-tab-pane" id="tab-forms">
+          <div class="ts" data-ts-total="7">
+            <span class="ts-indicator">Step <span class="ts-cur">1</span> of 7</span>
+            <div class="ts-step active" data-ts="1">
+              <div class="ts-hd" onclick="igGo(this,1)"><div class="ts-circle"><span class="ts-num">1</span></div><h4>Create Form &amp; Add Fields</h4></div>
+              <div class="ts-bd">
+                <p>In <strong>Design → Forms</strong>, click <strong>+ Create Form</strong> → <strong>Create from Scratch</strong>. Name per spec (e.g. <code>Vendors</code>, <code>Projects</code>, <code>Expenses</code>).</p>
+                <p>Drag 26+ field types from the right panel: Single Line, Multi Line, Email, Phone, URL, Date, Date/Time, Currency, Number, Decimal, Dropdown, Multi-Select, Lookup, User Picker, Auto-Number, Checkbox, File Upload, Image, Address, Formula, etc.</p>
+                <div class="ts-nav"><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="2">
+              <div class="ts-hd" onclick="igGo(this,2)"><div class="ts-circle"><span class="ts-num">2</span></div><h4>Configure Field Properties</h4></div>
+              <div class="ts-bd">
+                <p>For each field, set <strong>Label</strong>, <strong>API Name</strong> (snake_case), <strong>Required</strong> toggle, <strong>Help Text</strong>.</p>
+                <p class="al al-w" style="font-size:0.78rem"><strong>Critical:</strong> Never rename API names after forms go live — it breaks lookups and Deluge scripts.</p>
+                <table class="tbl"><tr><th>Field Type</th><th>Config Tips</th></tr>
+                <tr><td>Dropdown</td><td>Click Values → enter options one per line. Set default. Use clear business labels.</td></tr>
+                <tr><td>Auto-Number</td><td>Use unique prefixes: <code>PROJ-{0000}</code>, <code>VND-</code>, <code>WH-</code>, <code>SKU-</code>, <code>EXP-</code>, <code>TXN-</code>, <code>REQ-</code>, <code>PO-</code>, <code>GRN-</code>, <code>INV-</code>, <code>DC-</code>, <code>BOM-</code></td></tr>
+                <tr><td>Lookup</td><td>Setup Lookup → select source form + display field. Enable popup mode for large datasets.</td></tr>
+                <tr><td>Formula</td><td>Expression like <code>Current_Stock * Purchase_Price</code>. Use Formula Lookup type for live values from related records.</td></tr>
+                <tr><td>User Picker</td><td>Choose single or multi-user. Users come from the app's user list.</td></tr></table>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="3">
+              <div class="ts-hd" onclick="igGo(this,3)"><div class="ts-circle"><span class="ts-num">3</span></div><h4>Sections &amp; Display Rules</h4></div>
+              <div class="ts-bd">
+                <p>Drag <strong>Section</strong> elements to group related fields (e.g. "Billing Address", "Shipping Address", "Line Items"). Set <strong>Field Display Rules</strong> for conditional show/hide — e.g. show <code>Ship_Address</code> only when <code>Ship_Same_As_Bill</code> is unchecked.</p>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="4">
+              <div class="ts-hd" onclick="igGo(this,4)"><div class="ts-circle"><span class="ts-num">4</span></div><h4>Add Subforms for 1:N Data</h4></div>
+              <div class="ts-bd">
+                <p>In form settings, enable <strong>Add-as-Subform</strong> for child forms. Subforms appear as inline editable tables inside the parent form.</p>
+                <p>Examples: <code>Vendor_Contacts</code> inside <code>Vendors</code>; <code>PO_Line_Items</code> inside <code>Purchase_Orders</code>; <code>DC_Line_Items</code> inside <code>Delivery_Challans</code>.</p>
+                <p class="al al-w" style="font-size:0.78rem">Max ~100 rows per subform. Use separate Lookup-based forms if exceeding.</p>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="5">
+              <div class="ts-hd" onclick="igGo(this,5)"><div class="ts-circle"><span class="ts-num">5</span></div><h4>Custom Actions (Form Buttons)</h4></div>
+              <div class="ts-bd">
+                <p>In <strong>Form Settings → Custom Actions</strong>, add buttons that open a target form with pre-filled fields.</p>
+                <table class="tbl"><tr><th>Button</th><th>Form</th><th>Pre-fill</th></tr>
+                <tr><td>Create Invoice</td><td><code>Invoices</code></td><td>Project = current record</td></tr>
+                <tr><td>Request Part Repair</td><td><code>Purchase_Requisitions</code></td><td>Project set, Request Type = "Part Repair"</td></tr>
+                <tr><td>Create DC</td><td><code>Delivery_Challans</code></td><td>Same project/customer/line items</td></tr></table>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="6">
+              <div class="ts-hd" onclick="igGo(this,6)"><div class="ts-circle"><span class="ts-num">6</span></div><h4>Set Lookup Criteria</h4></div>
+              <div class="ts-bd">
+                <p>Enable <strong>Criteria</strong> on Lookup fields to filter values dynamically. Critical for data integrity:</p>
+                <ul>
+                  <li><code>Expenses.Budget_Component</code> — filter by <code>Project == current.Project</code></li>
+                  <li><code>Invoice_Line_Items.Item</code> — filter by active items only</li>
+                  <li><code>GRN_Line_Items.Purchase_Order</code> — filter by open/unreceived POs</li>
+                </ul>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="7">
+              <div class="ts-hd" onclick="igGo(this,7)"><div class="ts-circle"><span class="ts-num">7</span></div><h4>Save &amp; Test</h4></div>
+              <div class="ts-bd">
+                <p>Click <strong>Save</strong> → <strong>Access this Application</strong> to preview. Submit test records. Verify all fields, subforms, and custom action buttons work correctly.</p>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: Module Mapping -->
+        <div class="ig-tab-pane" id="tab-mapping">
+          <div class="ts" data-ts-total="3">
+            <span class="ts-indicator">Step <span class="ts-cur">1</span> of 3</span>
+            <div class="ts-step active" data-ts="1">
+              <div class="ts-hd" onclick="igGo(this,1)"><div class="ts-circle"><span class="ts-num">1</span></div><h4>Understand Lookup Patterns</h4></div>
+              <div class="ts-bd">
+                <p>Zoho Creator uses <strong>Lookup fields</strong> to relate forms (equivalent of foreign keys in SQL). Five patterns:</p>
+                <table class="tbl"><tr><th>Pattern</th><th>Implementation</th><th>Example</th></tr>
+                <tr><td>1:1 Lookup</td><td>Lookup field on dependent form → parent</td><td><code>Budget_Plans.Project → Projects</code></td></tr>
+                <tr><td>1:N Lookup</td><td>Multiple child records with Lookup to single parent</td><td><code>Expenses.Project → Projects</code></td></tr>
+                <tr><td>Add-as-Subform</td><td>Enable subform in form settings</td><td><code>Vendor_Contacts</code> inside <code>Vendors</code></td></tr>
+                <tr><td>Denormalized Lookup</td><td>Extra Lookup for report grouping</td><td><code>Budget_Components.Project</code> for P&amp;L reports</td></tr>
+                <tr><td>Formula Lookup</td><td>Calculated value from related record</td><td>Stock levels aggregated into <code>Items.Current_Stock</code></td></tr></table>
+                <div class="ts-nav"><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="2">
+              <div class="ts-hd" onclick="igGo(this,2)"><div class="ts-circle"><span class="ts-num">2</span></div><h4>Set Up a Lookup Field</h4></div>
+              <div class="ts-bd">
+                <ol>
+                  <li>Drag a <strong>Lookup</strong> field onto the form canvas</li>
+                  <li>Click <strong>Setup Lookup</strong> → select Application (same app) and Form</li>
+                  <li>Choose <strong>Display Field</strong> (e.g. <code>Vendor_Name</code>)</li>
+                  <li>Choose <strong>Selection Type</strong>: Dropdown for small lists, Popup for 1000+ records</li>
+                  <li>Enable <strong>Criteria</strong> for dynamic filtering</li>
+                </ol>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="3">
+              <div class="ts-hd" onclick="igGo(this,3)"><div class="ts-circle"><span class="ts-num">3</span></div><h4>Reference the Lookup Relationship Map</h4></div>
+              <div class="ts-bd">
+<pre><code>Projects ──┬── Budget_Plans ──┬── Budget_Components
+            ├── Expenses        ├── Inventory_Transactions
+            ├── Purchase_Reqs   ├── Purchase_Orders
+            ├── Invoices        └── Delivery_Challans
+Vendors ──┬── Projects (as Account)
+           ├── POs, Expenses, Invoices
+           └── Vendor_Contacts + Vendor_Documents
+Warehouses   ──┬── Item_Warehouse_Stock + Inventory_Transactions
+Inventory_Items ──┬── Item_Warehouse_Stock + PO/GRN/DC/Txn items</code></pre>
+                <p class="al al-i" style="font-size:0.78rem">See the <strong>Lookup Map</strong> section in the sidebar for the full relationship diagram.</p>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: Validation -->
+        <div class="ig-tab-pane" id="tab-validation">
+          <div class="ts" data-ts-total="3">
+            <span class="ts-indicator">Step <span class="ts-cur">1</span> of 3</span>
+            <div class="ts-step active" data-ts="1">
+              <div class="ts-hd" onclick="igGo(this,1)"><div class="ts-circle"><span class="ts-num">1</span></div><h4>Field-Level Validation</h4></div>
+              <div class="ts-bd">
+                <p>Configure in <strong>Field Properties → Required/Validation</strong>:</p>
+                <table class="tbl"><tr><th>Type</th><th>Configuration</th><th>Examples</th></tr>
+                <tr><td>Required</td><td>Checkbox in field properties</td><td><code>Vendor_Name</code>, <code>Project_Name</code>, <code>Item_Name</code></td></tr>
+                <tr><td>Pattern (regex)</td><td>Custom regex expression</td><td><code>^[A-Z]{5}[0-9]{4}[A-Z]{1}$</code> for PAN</td></tr>
+                <tr><td>Range</td><td>Min/max values</td><td><code>Performance_Rating</code> 1-5, <code>Tax_Rate</code> 0-100</td></tr></table>
+                <div class="ts-nav"><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="2">
+              <div class="ts-hd" onclick="igGo(this,2)"><div class="ts-circle"><span class="ts-num">2</span></div><h4>Cross-Field Validation (Deluge)</h4></div>
+              <div class="ts-bd">
+                <p>Use Form Workflow → <strong>On Submit</strong> with Deluge <code>alert</code> for cross-field rules:</p>
+<pre><code>if (input.End_Date != null && input.Start_Date != null
+    && input.End_Date &lt; input.Start_Date)
+    alert "End Date must be on or after Start Date.";</code></pre>
+                <p>Examples in this project:</p>
+                <ul>
+                  <li>Budget Components total &le; Total Budget Amount</li>
+                  <li>Stock Out quantity &le; Current Stock</li>
+                  <li>PR line items total &le; available project budget</li>
+                </ul>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="3">
+              <div class="ts-hd" onclick="igGo(this,3)"><div class="ts-circle"><span class="ts-num">3</span></div><h4>Duplicate Prevention</h4></div>
+              <div class="ts-bd">
+<pre><code>criteria = "Project == " + input.Project + " && Status == 'Active'";
+existing = zoho.creator.getRecords("budget_tracking",
+    "Budget_Plans", criteria, 1, 1);
+if (!existing.isNull() && existing.size() > 0)
+    alert "An active Budget Plan already exists for this project.";</code></pre>
+                <p>Prevents duplicate active plans per project, duplicate SKUs, duplicate active BOMs.</p>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: Workflows -->
+        <div class="ig-tab-pane" id="tab-workflows">
+          <div class="ts" data-ts-total="5">
+            <span class="ts-indicator">Step <span class="ts-cur">1</span> of 5</span>
+            <div class="ts-step active" data-ts="1">
+              <div class="ts-hd" onclick="igGo(this,1)"><div class="ts-circle"><span class="ts-num">1</span></div><h4>Choose Workflow Type</h4></div>
+              <div class="ts-bd">
+                <p>Three types available. Pick based on your need:</p>
+                <table class="tbl"><tr><th>Type</th><th>Trigger</th><th>Use in This Project</th></tr>
+                <tr><td><strong>Form Workflow</strong></td><td>On Load / On Submit / On Delete</td><td>Real-time validation, stock updates, auto-record creation, notifications (WF #1-15, #17, #19-25)</td></tr>
+                <tr><td><strong>Schedule</strong></td><td>Daily / Hourly cron</td><td>Budget alerts at 8 AM, low stock alerts, KPI refresh (WF #16, #18)</td></tr>
+                <tr><td><strong>Blueprint</strong></td><td>User-driven stage transitions</td><td>PR 3-stage approval, PO lifecycle (Draft → Open → Billed → Closed)</td></tr></table>
+                <div class="ts-nav"><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="2">
+              <div class="ts-hd" onclick="igGo(this,2)"><div class="ts-circle"><span class="ts-num">2</span></div><h4>Create a Form Workflow</h4></div>
+              <div class="ts-bd">
+                <ol>
+                  <li>Go to <strong>Workflows → + Create Workflow → Form Workflow</strong></li>
+                  <li>Name it: <code>WF_Expense_Budget_Check</code></li>
+                  <li>Select target form (<code>Expenses</code>)</li>
+                  <li>Trigger: <strong>On Submit</strong> → <strong>When a record is created or edited</strong></li>
+                  <li>Add actions: Set Field Value, Send Email, Add Notification, Create Record, Update Record, Custom Function (Deluge)</li>
+                  <li>For complex logic, use <strong>Custom Function</strong> and paste code from build guides</li>
+                  <li>Toggle <strong>Activate</strong> ON</li>
+                </ol>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="3">
+              <div class="ts-hd" onclick="igGo(this,3)"><div class="ts-circle"><span class="ts-num">3</span></div><h4>Create a Scheduled Workflow</h4></div>
+              <div class="ts-bd">
+                <ol>
+                  <li><strong>Workflows → + Create Workflow → Schedule</strong></li>
+                  <li>Name: <code>Sched_Daily_KPI</code>, schedule: <strong>Daily</strong> at <code>00:00</code></li>
+                  <li>Add <strong>Custom Function</strong> actions</li>
+                  <li>Note: Scheduled workflows don't have <code>input.</code> — use <code>zoho.creator.getRecords()</code> to fetch data</li>
+                </ol>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="4">
+              <div class="ts-hd" onclick="igGo(this,4)"><div class="ts-circle"><span class="ts-num">4</span></div><h4>Deluge Scripting Reference</h4></div>
+              <div class="ts-bd">
+                <table class="tbl"><tr><th>Task</th><th>Deluge Syntax</th></tr>
+                <tr><td>Get Records</td><td><code>zoho.creator.getRecords("app","form","criteria", page, 200)</code></td></tr>
+                <tr><td>Get by ID</td><td><code>zoho.creator.getRecordById("app","form", id)</code></td></tr>
+                <tr><td>Create Record</td><td><code>zoho.creator.createRecord("app","form", data_map)</code></td></tr>
+                <tr><td>Update Record</td><td><code>zoho.creator.updateRecord("app","form", id, data_map)</code></td></tr>
+                <tr><td>Null check</td><td><code>ifnull(value, default)</code> or <code>!value.isNull()</code></td></tr>
+                <tr><td>Alert error</td><td><code>alert "message"</code></td></tr>
+                <tr><td>Map</td><td><code>m = Map(); m.put("key", val);</code></td></tr>
+                <tr><td>Dropdown display</td><td><code>input.Field.toMap().get("display_value")</code></td></tr>
+                <tr><td>Try/Catch</td><td><code>try { } catch (e) { info e; }</code></td></tr>
+                <tr><td>Embedded subform access</td><td><code>item = zoho.creator.getRecordById("budget_tracking", "Inventory_Items", item_id); stock_rows = item.get("Item_Warehouse_Stock"); for each row in stock_rows { /* process each row */ }</code></td></tr></table>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="5">
+              <div class="ts-hd" onclick="igGo(this,5)"><div class="ts-circle"><span class="ts-num">5</span></div><h4>Error Logging Pattern</h4></div>
+              <div class="ts-bd">
+                <p>Never leave a production workflow without error handling. Use try/catch + log to a <code>Deluge_Error_Log</code> form:</p>
+<pre><code>try {
+    /* workflow logic here */
+} catch (e) {
+    err = Map();
+    err.put("Timestamp", now());
+    err.put("Form_Name", "Expenses");
+    err.put("Workflow_Name", "WF_Budget_Check");
+    err.put("Error_Message", e.toString());
+    err.put("Record_ID", input.ID.toString());
+    zoho.creator.createRecord("budget_tracking",
+        "Deluge_Error_Log", err);
+}</code></pre>
+                <p>The <code>Deluge_Error_Log</code> form needs: Timestamp, Form_Name, Workflow_Name, Error_Message, Record_ID.</p>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: Blueprints -->
+        <div class="ig-tab-pane" id="tab-blueprints">
+          <div class="ts" data-ts-total="4">
+            <span class="ts-indicator">Step <span class="ts-cur">1</span> of 4</span>
+            <div class="ts-step active" data-ts="1">
+              <div class="ts-hd" onclick="igGo(this,1)"><div class="ts-circle"><span class="ts-num">1</span></div><h4>When to Use Blueprints</h4></div>
+              <div class="ts-bd">
+                <table class="tbl"><tr><th>Use Blueprint When</th><th>Use Form Workflow When</th></tr>
+                <tr><td>Process has defined stages (Draft → Review → Approved)</td><td>Logic auto-runs on form events</td></tr>
+                <tr><td>Different users handle different stages</td><td>No manual stage transitions needed</td></tr>
+                <tr><td>Process order must be enforced</td><td>Background data sync, mass updates</td></tr>
+                <tr><td>Audit trail needed per stage</td><td>Calculations, validations</td></tr></table>
+                <p>In this project: Blueprints handle PR approval and PO lifecycle. Form workflows handle all other automations.</p>
+                <div class="ts-nav"><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="2">
+              <div class="ts-hd" onclick="igGo(this,2)"><div class="ts-circle"><span class="ts-num">2</span></div><h4>Create a Blueprint</h4></div>
+              <div class="ts-bd">
+                <ol>
+                  <li><strong>Workflows → Blueprints → + Create Blueprint</strong></li>
+                  <li>Select form (e.g. <code>Purchase_Requisitions</code>)</li>
+                  <li>Name: <code>BP_PR_Approval</code>, set execution: <strong>Run always</strong></li>
+                  <li>Canvas opens → drag stages from the left panel. Each stage = a status value</li>
+                  <li>Click between two stages to create a <strong>transition line</strong></li>
+                </ol>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="3">
+              <div class="ts-hd" onclick="igGo(this,3)"><div class="ts-circle"><span class="ts-num">3</span></div><h4>Configure Transitions</h4></div>
+              <div class="ts-bd">
+                <p>Each transition has configurable properties:</p>
+                <table class="tbl"><tr><th>Property</th><th>Purpose</th></tr>
+                <tr><td><strong>Transition Owner</strong></td><td>Who can perform this action. Select users, roles, or user fields.</td></tr>
+                <tr><td><strong>Criteria</strong></td><td>Conditions for availability (e.g. amount &gt;$10k requires CFO)</td></tr>
+                <tr><td><strong>Before</strong></td><td>Validation checks executed before transition</td></tr>
+                <tr><td><strong>After</strong></td><td>Notifications, Deluge scripts, field updates after transition</td></tr>
+                <tr><td><strong>Require Confirmation</strong></td><td>Show confirmation dialog before executing</td></tr></table>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="4">
+              <div class="ts-hd" onclick="igGo(this,4)"><div class="ts-circle"><span class="ts-num">4</span></div><h4>Associate Blueprint to Form</h4></div>
+              <div class="ts-bd">
+                <ol>
+                  <li>In Blueprint editor, click <strong>Associate</strong> (or Form Settings → Blueprint tab)</li>
+                  <li>Select form layout (standard or mobile)</li>
+                  <li>Map existing status values to blueprint stages</li>
+                  <li>Once associated, transition buttons appear in form/report views</li>
+                  <li>Users click buttons to move records forward. Order is enforced.</li>
+                </ol>
+                <p>Two transition types: <strong>Common</strong> (available from multiple stages, e.g. "Cancel") and <strong>Parallel</strong> (multiple paths from one stage).</p>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: Reports -->
+        <div class="ig-tab-pane" id="tab-reports">
+          <div class="ts" data-ts-total="4">
+            <span class="ts-indicator">Step <span class="ts-cur">1</span> of 4</span>
+            <div class="ts-step active" data-ts="1">
+              <div class="ts-hd" onclick="igGo(this,1)"><div class="ts-circle"><span class="ts-num">1</span></div><h4>Choose Report Type</h4></div>
+              <div class="ts-bd">
+                <table class="tbl"><tr><th>Type</th><th>Best For</th><th>In This Project</th></tr>
+                <tr><td><strong>List</strong></td><td>Tabular browsing with inline editing</td><td>All module records: Projects, Vendors, Items</td></tr>
+                <tr><td><strong>Summary</strong></td><td>Aggregated totals grouped by field</td><td>Budget vs Actual, Stock Value by Warehouse</td></tr>
+                <tr><td><strong>Chart</strong></td><td>Visual trends (Bar, Pie, Line, Area)</td><td>Monthly spending trend, Expense by category</td></tr>
+                <tr><td><strong>Pivot</strong></td><td>Multi-dimensional cross-tabulation</td><td>Expense by Category x Project</td></tr>
+                <tr><td><strong>Kanban</strong></td><td>Stage-based pipeline view</td><td>PO Pipeline, PR Approval pipeline</td></tr>
+                <tr><td><strong>Calendar</strong></td><td>Date-based records</td><td>Invoice due dates, Project timeline</td></tr>
+                <tr><td><strong>Spreadsheet</strong></td><td>Editable grid for power users</td><td>Quick inventory adjustments</td></tr></table>
+                <div class="ts-nav"><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="2">
+              <div class="ts-hd" onclick="igGo(this,2)"><div class="ts-circle"><span class="ts-num">2</span></div><h4>Create &amp; Customize a Report</h4></div>
+              <div class="ts-bd">
+                <ol>
+                  <li><strong>Reports → + Create Report</strong> → select source form and type</li>
+                  <li>Select fields to display. For Summary: set group-by + aggregate (Sum, Count, Avg)</li>
+                  <li>Add filters: e.g. <code>Status != 'Closed'</code>, <code>Date &gt;= Today-30</code></li>
+                  <li>Enable <strong>Search</strong>, <strong>Group By</strong>, <strong>Sort</strong>, <strong>Color Coding</strong>, <strong>Conditional Formatting</strong></li>
+                  <li>Set <strong>Role-based access</strong> per report</li>
+                  <li>Add <strong>Custom Actions</strong>: "Approve", "Reject", "Send Email" buttons on rows</li>
+                </ol>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="3">
+              <div class="ts-hd" onclick="igGo(this,3)"><div class="ts-circle"><span class="ts-num">3</span></div><h4>Consolidated Cross-Form Reports</h4></div>
+              <div class="ts-bd">
+                <p>Summary reports can include fields from related forms via Lookup relationships:</p>
+                <ul>
+                  <li><strong>Project P&amp;L</strong>: Summary on <code>Invoices</code> with Sum(Total) grouped by <code>Project.Project_Name</code></li>
+                   <li><strong>Budget vs Actual</strong>: Summary on <code>Budget_Plans</code> (via embedded Budget_Components) with Sum(Budget_Components.Allocated) and Sum(Budget_Components.Spent_Amount) by <code>Project.Project_Name</code></li>
+                  <li><strong>Invoice Aging</strong>: Summary on <code>Invoices</code>, Status=Sent, grouped by age bucket</li>
+                </ul>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="4">
+              <div class="ts-hd" onclick="igGo(this,4)"><div class="ts-circle"><span class="ts-num">4</span></div><h4>Conditional Formatting</h4></div>
+              <div class="ts-bd">
+                <p>Set visual rules in report settings:</p>
+                <ul>
+                  <li>Budget &gt; 90% used → <span style="color:#f87171">red background</span></li>
+                  <li>Invoice overdue → <span style="color:#fb923c">orange text</span></li>
+                  <li>Stock &lt; Reorder Level → <span style="color:#fbbf24">yellow highlight</span></li>
+                  <li>Status = Completed → <span style="color:#4ade80">green text</span></li>
+                </ul>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: Pages & Dashboards -->
+        <div class="ig-tab-pane" id="tab-pages">
+          <div class="ts" data-ts-total="3">
+            <span class="ts-indicator">Step <span class="ts-cur">1</span> of 3</span>
+            <div class="ts-step active" data-ts="1">
+              <div class="ts-hd" onclick="igGo(this,1)"><div class="ts-circle"><span class="ts-num">1</span></div><h4>Create a Dashboard Page</h4></div>
+              <div class="ts-bd">
+                <ol>
+                  <li><strong>Pages → + Create Page</strong></li>
+                  <li>Choose layout: Grid (2/3/4 column) or Free-form</li>
+                  <li>Drag components: <strong>Report</strong>, <strong>KPI</strong>, <strong>Chart</strong>, <strong>HTML</strong>, <strong>Image</strong>, <strong>Text</strong>, <strong>Map</strong></li>
+                  <li>For each component: configure size, data source, display options</li>
+                  <li>Set page as <strong>Homepage</strong> in app settings</li>
+                  <li>Set <strong>Permissions</strong> per role</li>
+                </ol>
+                <div class="ts-nav"><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="2">
+              <div class="ts-hd" onclick="igGo(this,2)"><div class="ts-circle"><span class="ts-num">2</span></div><h4>Configure KPI Widgets</h4></div>
+              <div class="ts-bd">
+                <p>KPI = single metric with label and optional trend arrow:</p>
+                <table class="tbl"><tr><th>KPI</th><th>Source</th><th>Aggregation</th><th>Filter</th></tr>
+                <tr><td>Total Project Budget</td><td>Budget_Plans</td><td>Sum(Total_Budget_Amount)</td><td>Status=Active</td></tr>
+                <tr><td>Spent Amount</td><td>Expenses</td><td>Sum(Amount)</td><td>Status=Approved</td></tr>
+                <tr><td>Open PO Value</td><td>Purchase_Orders</td><td>Sum(PO_Total)</td><td>Status='Open'</td></tr>
+                <tr><td>Inventory Value</td><td>Inventory_Items</td><td>Sum(Stock_Value)</td><td>Status=Active</td></tr>
+                <tr><td>Cost Overruns</td><td>Budget_Components</td><td>Count</td><td>Status=Exceeded</td></tr>
+                <tr><td>Pending Approvals</td><td>Budget_Approvals</td><td>Count</td><td>Status=Pending</td></tr></table>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="3">
+              <div class="ts-hd" onclick="igGo(this,3)"><div class="ts-circle"><span class="ts-num">3</span></div><h4>Page Layout Best Practices</h4></div>
+              <div class="ts-bd">
+                <ul>
+                  <li>2-3 column grid for KPI cards at top (4-6 KPIs per row)</li>
+                  <li>Full-width for main charts (line, bar, pie)</li>
+                  <li>List reports below charts for drill-down detail</li>
+                  <li>Use <strong>Tabs</strong> on page to organize by domain: Overview, Inventory, Budget, Procurement</li>
+                  <li>Set Overview page as <strong>app homepage</strong></li>
+                </ul>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: Permissions -->
+        <div class="ig-tab-pane" id="tab-permissions">
+          <div class="ts" data-ts-total="3">
+            <span class="ts-indicator">Step <span class="ts-cur">1</span> of 3</span>
+            <div class="ts-step active" data-ts="1">
+              <div class="ts-hd" onclick="igGo(this,1)"><div class="ts-circle"><span class="ts-num">1</span></div><h4>Understand 3 Permission Levels</h4></div>
+              <div class="ts-bd">
+                <table class="tbl"><tr><th>Level</th><th>Where to Set</th><th>Controls</th></tr>
+                <tr><td><strong>Component</strong></td><td>Form/Report/Page Settings → Permissions</td><td>Which roles can access. Toggle Create/Read/Update/Delete.</td></tr>
+                <tr><td><strong>Field</strong></td><td>Field Settings → Permissions</td><td>Which roles can see/edit each field. Hide sensitive data.</td></tr>
+                <tr><td><strong>Record</strong></td><td>Form Settings → Record Sharing</td><td>Who sees which records: All, Own only, or Group-based.</td></tr></table>
+                <div class="ts-nav"><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="2">
+              <div class="ts-hd" onclick="igGo(this,2)"><div class="ts-circle"><span class="ts-num">2</span></div><h4>Apply Role Permissions</h4></div>
+              <div class="ts-bd">
+                <p><strong>Settings → User Permissions → Permissions</strong>. Configure each role per the matrix:</p>
+                <ul>
+                  <li><strong>Admin</strong>: CRUD on everything</li>
+                  <li><strong>Project Manager</strong>: CRUD on Projects, Budgets, Expenses; Read on Inventory</li>
+                  <li><strong>Finance Manager</strong>: CRUD on Budgets; Read on Expenses; Update-only on Approvals</li>
+                  <li><strong>Procurement</strong>: CRUD on Vendors, POs, GRNs; Read others</li>
+                  <li><strong>Inventory</strong>: CRUD on Items, Stock, Transactions, TOs, DCs, BOMs</li>
+                  <li><strong>Employee</strong>: Create own Expenses/PRs; Read own records only</li>
+                </ul>
+                <p>Also set field-level: e.g. <code>PAN</code> = Admin/Finance only. <code>Purchase_Price</code> = Admin/Procurement/Inventory.</p>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="3">
+              <div class="ts-hd" onclick="igGo(this,3)"><div class="ts-circle"><span class="ts-num">3</span></div><h4>Record-Level Sharing</h4></div>
+              <div class="ts-bd">
+                <p><strong>Form Settings → Record Sharing</strong>:</p>
+                <ul>
+                  <li><strong>Employee</strong>: "Own records only" for Expenses, PRs</li>
+                  <li><strong>Project Manager</strong>: "All records" for project forms</li>
+                  <li><strong>Procurement</strong>: "All records" for POs, GRNs, TOs</li>
+                </ul>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: Best Practices -->
+        <div class="ig-tab-pane" id="tab-practices">
+          <div class="ts" data-ts-total="3">
+            <span class="ts-indicator">Step <span class="ts-cur">1</span> of 3</span>
+            <div class="ts-step active" data-ts="1">
+              <div class="ts-hd" onclick="igGo(this,1)"><div class="ts-circle"><span class="ts-num">1</span></div><h4>Naming &amp; API Name Rules</h4></div>
+              <div class="ts-bd">
+                <ul>
+                  <li><strong>Always use snake_case</strong> for API names: <code>Vendor_Name</code>, <code>Total_Approved_Budget</code></li>
+                  <li><strong>Never rename after go-live</strong> — breaks all lookups and Deluge references</li>
+                  <li>Use <strong>Formula Lookup</strong> (not Regular Lookup) for live values that change in source (stock, budget)</li>
+                </ul>
+                <div class="ts-nav"><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="2">
+              <div class="ts-hd" onclick="igGo(this,2)"><div class="ts-circle"><span class="ts-num">2</span></div><h4>Performance &amp; Limits</h4></div>
+              <div class="ts-bd">
+                <table class="tbl"><tr><th>Rule</th><th>Detail</th></tr>
+                <tr><td>API calls</td><td>Every CRUD operation counts against your plan limit. Batch in Scheduled workflows.</td></tr>
+                <tr><td>getRecords max</td><td>200 records per call. Paginate with offset/page parameter.</td></tr>
+                <tr><td>Subforms</td><td>~100 rows max. Use separate form with Lookup for more.</td></tr>
+                <tr><td>Deluge timeout</td><td>~5 min script limit. Keep On Submit under 30s. Use Scheduled for mass ops.</td></tr>
+                <tr><td>On Submit vs Post</td><td>Use <strong>On Submit</strong> for validation. <strong>On Post Submit</strong> for creating records dependent on current record ID.</td></tr>
+                <tr><td>Never delete</td><td>Always archive (Status=Inactive). Deleting breaks lookup references.</td></tr>
+                <tr><td>Mobile layout</td><td>Check mobile form layout after creation. Reorder for small screens.</td></tr></table>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="3">
+              <div class="ts-hd" onclick="igGo(this,3)"><div class="ts-circle"><span class="ts-num">3</span></div><h4>Common Issues &amp; Fixes</h4></div>
+              <div class="ts-bd">
+                <table class="tbl"><tr><th>Problem</th><th>Fix</th></tr>
+                <tr><td>"Invalid field name" in Deluge</td><td>Check API name spelling and case. Match exactly.</td></tr>
+                <tr><td>Lookup shows no records</td><td>Check criteria filter is not too restrictive. Ensure source has records.</td></tr>
+                <tr><td>Workflow not triggering</td><td>Check Activate toggle. Verify trigger form and event.</td></tr>
+                <tr><td>Subform not saving</td><td>Check subform field validations. Add required fields.</td></tr>
+                <tr><td>KPI shows 0</td><td>Wrong field/aggregation or filter excludes all records.</td></tr>
+                <tr><td>Slow form load</td><td>Too many lookups. Use popup mode, add criteria, reduce Formula Lookup scope.</td></tr>
+                <tr><td>Auto-number "Data exists"</td><td>Can't change format after records exist. Plan before data entry.</td></tr></table>
+                <p class="al al-w" style="font-size:0.78rem">Use <strong>Workflows → Execution Log</strong> to debug failed workflows. Always wrap production Deluge in try/catch.</p>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: Checklist -->
+        <div class="ig-tab-pane" id="tab-checklist">
+          <div class="ts" data-ts-total="3">
+            <span class="ts-indicator">Step <span class="ts-cur">1</span> of 3</span>
+            <div class="ts-step active" data-ts="1">
+              <div class="ts-hd" onclick="igGo(this,1)"><div class="ts-circle"><span class="ts-num">1</span></div><h4>Phase-by-Phase Build Order</h4></div>
+              <div class="ts-bd">
+                <table class="tbl"><tr><th>Phase</th><th>Forms</th><th>Key Workflows</th></tr>
+                <tr><td><strong>1A</strong></td><td>Vendors, Accounts, Projects, Warehouses, Inventory_Items + Item_Warehouse_Stock</td><td>Project Code, Ship-to-Billing copy, Init warehouse stock</td></tr>
+                <tr><td><strong>1B</strong></td><td>Budget_Plans, Budget_Components, Inventory_Transactions</td><td>Budget validation, Stock update, Stock Out → Expense, Negative stock</td></tr>
+                <tr><td><strong>1C</strong></td><td>Expenses, Purchase_Requisitions + Line Items, Budget Alerts</td><td>Budget check, Overrun approval, PR stage emails</td></tr>
+                <tr><td><strong>1D</strong></td><td>Budget_Approvals, Purchase_Orders + Items, GRN + Items, Transfer_Orders + Items</td><td>Approve/Reject, Auto-PO from PR, GRN→Stock In, TO paired txns</td></tr>
+                <tr><td><strong>1E</strong></td><td>BOM + Items, Delivery_Challans + Items, Invoices + Items</td><td>BOM cost calc, DC→Stock Out, Invoice→P&amp;L update, Create DC button</td></tr>
+                <tr><td><strong>1F</strong></td><td>10+ Reports, Dashboard Pages (Executive, Inventory, Procurement, Financial)</td><td>Scheduled daily: KPI refresh, budget alerts, low stock alerts</td></tr></table>
+                <div class="ts-nav"><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="2">
+              <div class="ts-hd" onclick="igGo(this,2)"><div class="ts-circle"><span class="ts-num">2</span></div><h4>Per-Form Build Pattern</h4></div>
+              <div class="ts-bd">
+                <p>Repeat for every form in every phase:</p>
+                <ol>
+                  <li>Create form with all fields per spec</li>
+                  <li>Configure Auto-Number format</li>
+                  <li>Set up Lookup fields with source, display field, criteria</li>
+                  <li>Add Add-as-Subform children</li>
+                  <li>Configure Field Display Rules (conditional show/hide)</li>
+                  <li>Set Field-Level Validation (required, pattern, range)</li>
+                  <li>Create Form Workflow for automation (On Submit)</li>
+                  <li>Create Blueprint if stage-based process</li>
+                  <li>Create default List Report → customize columns, filters</li>
+                  <li>Set Role Permissions on form + report</li>
+                  <li>Test: submit records, verify workflows, check edge cases</li>
+                  <li>Move to next form</li>
+                </ol>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button><button class="ts-btn" onclick="igNext(this)">Next &rarr;</button></div>
+              </div>
+            </div>
+            <div class="ts-step" data-ts="3">
+              <div class="ts-hd" onclick="igGo(this,3)"><div class="ts-circle"><span class="ts-num">3</span></div><h4>Open Build Guides</h4></div>
+              <div class="ts-bd">
+                <p>Open the full build guide for each phase for exact field specs and Deluge scripts:</p>
+                <ul>
+                  <li><a href="build-viewer.html?phase=1A">Phase 1A — Foundation</a></li>
+                  <li><a href="build-viewer.html?phase=1B">Phase 1B — Budget</a></li>
+                  <li><a href="build-viewer.html?phase=1C">Phase 1C — Expenses</a></li>
+                  <li><a href="build-viewer.html?phase=1D">Phase 1D — Procurement</a></li>
+                  <li><a href="build-viewer.html?phase=1E">Phase 1E — Revenue &amp; Mfg</a></li>
+                  <li><a href="build-viewer.html?phase=1F">Phase 1F — Reports &amp; Dashboards</a></li>
+                </ul>
+                <div class="ts-nav"><button class="ts-btn-muted" onclick="igPrev(this)">&larr; Back</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <script>
+        (function(){
+          // Tab switching
+          var tabs = document.querySelectorAll('.ig-tab-btn');
+          var panes = document.querySelectorAll('.ig-tab-pane');
+          tabs.forEach(function(t){
+            t.addEventListener('click', function(){
+              tabs.forEach(function(x){ x.classList.remove('active'); });
+              panes.forEach(function(p){ p.classList.remove('active'); });
+              t.classList.add('active');
+              var pane = document.getElementById('tab-' + t.getAttribute('data-tab'));
+              if (pane) pane.classList.add('active');
+            });
+          });
+
+          // Stepper navigation (scoped per tab)
+          window.igGo = function(el, num) {
+            var stepper = el.closest('.ts');
+            var steps = stepper.querySelectorAll('.ts-step');
+            var total = steps.length;
+            steps.forEach(function(s){ s.classList.remove('active','done'); });
+            steps.forEach(function(s){
+              var sn = parseInt(s.getAttribute('data-ts'));
+              if (sn < num) s.classList.add('done');
+              if (sn === num) s.classList.add('active');
+            });
+            var ind = stepper.querySelector('.ts-indicator .ts-cur');
+            if (ind) ind.textContent = num;
+          };
+          window.igNext = function(el) {
+            var stepper = el.closest('.ts');
+            var cur = stepper.querySelector('.ts-step.active');
+            if (!cur) return;
+            var num = parseInt(cur.getAttribute('data-ts'));
+            var next = stepper.querySelector('.ts-step[data-ts="' + (num+1) + '"]');
+            if (!next) return;
+            cur.classList.remove('active');
+            cur.classList.add('done');
+            next.classList.add('active');
+            var ind = stepper.querySelector('.ts-indicator .ts-cur');
+            if (ind) ind.textContent = num+1;
+            var hd = next.querySelector('.ts-hd');
+            if (hd) setTimeout(function(){ hd.scrollIntoView({behavior:'smooth',block:'center'}); }, 100);
+          };
+          window.igPrev = function(el) {
+            var stepper = el.closest('.ts');
+            var cur = stepper.querySelector('.ts-step.active');
+            if (!cur) return;
+            var num = parseInt(cur.getAttribute('data-ts'));
+            var prev = stepper.querySelector('.ts-step[data-ts="' + (num-1) + '"]');
+            if (!prev) return;
+            cur.classList.remove('active');
+            if (stepper.querySelector('.ts-step[data-ts="' + (num+1) + '"]')) {
+              /* don't mark last as done if going back */
+            }
+            prev.classList.remove('done');
+            prev.classList.add('active');
+            var ind = stepper.querySelector('.ts-indicator .ts-cur');
+            if (ind) ind.textContent = num-1;
+            var hd = prev.querySelector('.ts-hd');
+            if (hd) setTimeout(function(){ hd.scrollIntoView({behavior:'smooth',block:'center'}); }, 100);
+          };
+        })();
+      </script>
+    </section>
+
+    <footer>
+      <p><strong>ITOTCloud Systems Pvt. Ltd.</strong> — Internal Implementation Blueprint</p>
+      <p style="font-size:0.7rem;margin-top:4px;color:var(--muted)">18 modules · 24 Deluge workflows · 17 forms · 6 phases · Zoho Creator + Deluge</p>
+      <p style="font-size:0.62rem;margin-top:2px;color:var(--surface2)">Confidential — ITOTCloud Delivery Team Only</p>
+    </footer>
+
+  </div>
+</div>
+
+<script>
+// Hamburger toggle
+document.getElementById('hm').addEventListener('click', () => {
+  document.getElementById('sb').classList.toggle('o');
+  document.getElementById('so').classList.toggle('o');
+});
+document.getElementById('so').addEventListener('click', () => {
+  document.getElementById('sb').classList.remove('o');
+  document.getElementById('so').classList.remove('o');
+});
+
+// Collapse toggle
+function t(h) {
+  const bd = h.nextElementSibling;
+  bd.classList.toggle('o');
+  h.querySelector('.arr').classList.toggle('o');
+  h.querySelector('.arr').textContent = bd.classList.contains('o') ? '▾' : '▸';
+}
+
+// Collapse all modules by default
+document.querySelectorAll('.module-card bd').forEach(b => b.classList.remove('o'));
+document.querySelectorAll('.module-card .arr').forEach(a => { a.textContent = '▸'; a.classList.remove('o'); });
+
+// Active nav on scroll
+(function(){
+  const sections = document.querySelectorAll('section[id]');
+  const links = document.querySelectorAll('.sidebar a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 300) current = s.id;
+    });
+    links.forEach(a => {
+      a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    });
+  });
+})();
+</script>
+
+<script>
+function dashCount() {
+  var items = [
+    {key:'tc-1a-01',phase:'1A'},{key:'tc-1a-02',phase:'1A'},{key:'tc-1a-03',phase:'1A'},
+    {key:'tc-1a-04',phase:'1A'},{key:'tc-1a-05',phase:'1A'},{key:'tc-1a-06',phase:'1A'},
+    {key:'tc-1a-07',phase:'1A'},{key:'tc-1a-08',phase:'1A'},{key:'tc-1a-09',phase:'1A'},
+    {key:'tc-1b-01',phase:'1B'},{key:'tc-1b-02',phase:'1B'},{key:'tc-1b-03',phase:'1B'},
+    {key:'tc-1b-04',phase:'1B'},{key:'tc-1b-05',phase:'1B'},{key:'tc-1b-06',phase:'1B'},
+    {key:'tc-1b-07',phase:'1B'},{key:'tc-1b-08',phase:'1B'},{key:'tc-1b-09',phase:'1B'},
+    {key:'tc-1b-10',phase:'1B'},{key:'tc-1b-11',phase:'1B'},
+    {key:'tc-1c-01',phase:'1C'},{key:'tc-1c-02',phase:'1C'},{key:'tc-1c-03',phase:'1C'},
+    {key:'tc-1c-04',phase:'1C'},{key:'tc-1c-05',phase:'1C'},{key:'tc-1c-06',phase:'1C'},
+    {key:'tc-1c-07',phase:'1C'},
+    {key:'tc-1d-01',phase:'1D'},{key:'tc-1d-02',phase:'1D'},{key:'tc-1d-03',phase:'1D'},
+    {key:'tc-1d-04',phase:'1D'},{key:'tc-1d-05',phase:'1D'},{key:'tc-1d-06',phase:'1D'},
+    {key:'tc-1d-07',phase:'1D'},
+    {key:'tc-1e-01',phase:'1E'},{key:'tc-1e-02',phase:'1E'},{key:'tc-1e-03',phase:'1E'},
+    {key:'tc-1e-04',phase:'1E'},{key:'tc-1e-05',phase:'1E'},{key:'tc-1e-06',phase:'1E'},
+    {key:'tc-1e-07',phase:'1E'},{key:'tc-1e-08',phase:'1E'},
+    {key:'tc-1f-01',phase:'1F'},{key:'tc-1f-02',phase:'1F'},{key:'tc-1f-03',phase:'1F'},
+    {key:'tc-1f-04',phase:'1F'},{key:'tc-1f-05',phase:'1F'},{key:'tc-1f-06',phase:'1F'},
+    {key:'int-01',phase:'INT'},{key:'int-02',phase:'INT'},{key:'int-03',phase:'INT'},
+    {key:'int-04',phase:'INT'},{key:'int-05',phase:'INT'},{key:'int-06',phase:'INT'},
+    {key:'int-07',phase:'INT'},{key:'int-08',phase:'INT'},{key:'int-09',phase:'INT'},
+    {key:'int-10',phase:'INT'},{key:'int-11',phase:'INT'},
+    {key:'perm-p01',phase:'PERM'},{key:'perm-p02',phase:'PERM'},{key:'perm-p03',phase:'PERM'},
+    {key:'perm-p04',phase:'PERM'},{key:'perm-p05',phase:'PERM'},{key:'perm-p06',phase:'PERM'},
+    {key:'perm-p07',phase:'PERM'},{key:'perm-p08',phase:'PERM'},{key:'perm-p09',phase:'PERM'},
+    {key:'perm-p10',phase:'PERM'},
+    {key:'di-d01',phase:'DI'},{key:'di-d02',phase:'DI'},{key:'di-d03',phase:'DI'},
+    {key:'di-d04',phase:'DI'},{key:'di-d05',phase:'DI'},{key:'di-d06',phase:'DI'},{key:'di-d07',phase:'DI'},
+    {key:'di-c01',phase:'DI'},{key:'di-c02',phase:'DI'},{key:'di-c03',phase:'DI'},
+    {key:'di-c04',phase:'DI'},{key:'di-c05',phase:'DI'},{key:'di-c06',phase:'DI'},
+    {key:'di-c07',phase:'DI'},{key:'di-c08',phase:'DI'},{key:'di-c09',phase:'DI'},{key:'di-c10',phase:'DI'},
+    {key:'di-cc01',phase:'DI'},{key:'di-cc02',phase:'DI'},{key:'di-cc03',phase:'DI'},
+    {key:'di-cc04',phase:'DI'},{key:'di-cc05',phase:'DI'},
+    {key:'di-f01',phase:'DI'},{key:'di-f02',phase:'DI'},{key:'di-f03',phase:'DI'},
+    {key:'di-f04',phase:'DI'},{key:'di-f05',phase:'DI'},{key:'di-f06',phase:'DI'},
+    {key:'di-f07',phase:'DI'},{key:'di-f08',phase:'DI'},{key:'di-f09',phase:'DI'},
+    {key:'di-f10',phase:'DI'},{key:'di-f11',phase:'DI'},{key:'di-f12',phase:'DI'},
+    {key:'di-a01',phase:'DI'},{key:'di-a02',phase:'DI'},{key:'di-a03',phase:'DI'},
+    {key:'di-a04',phase:'DI'},{key:'di-a05',phase:'DI'},{key:'di-a06',phase:'DI'},
+    {key:'di-a07',phase:'DI'},{key:'di-a08',phase:'DI'},
+  ];
+
+  for (var i = 0; i < localStorage.length; i++) {
+    var k = localStorage.key(i);
+    if (k.indexOf('cb-val-') === 0) {
+      var id = k.replace('cb-val-', '');
+      items.push({key:'val-'+id, phase:'VAL'});
+    }
+  }
+
+  var phasesNames = {'1A':'Phase 1A (Foundation)','1B':'Phase 1B (Budget & Stock)','1C':'Phase 1C (Expenses & PR)','1D':'Phase 1D (Procurement)','1E':'Phase 1E (Revenue & Mfg)','1F':'Phase 1F (Reports)','INT':'Integration Test','VAL':'Critical Validations','PERM':'Permissions Testing','DI':'Data Integrity'};
+  var badges = {'1A':'ph-1a','1B':'ph-1b','1C':'ph-1c','1D':'ph-1d','1E':'ph-1e','1F':'ph-1f','INT':'ph-int','VAL':'ph-int','PERM':'ph-int','DI':'ph-int'};
+  var colors = {'1A':'g','1B':'a','1C':'p','1D':'o','1E':'r','1F':'y','INT':'a','VAL':'g','PERM':'p','DI':'o'};
+  var phaseOrder = ['1A','1B','1C','1D','1E','1F','INT','VAL','PERM','DI'];
+
+  var phaseStats = {};
+  var total = items.length;
+  var checked = 0;
+
+  items.forEach(function(item) {
+    if (!phaseStats[item.phase]) { phaseStats[item.phase] = {total:0,checked:0}; }
+    phaseStats[item.phase].total++;
+    if (localStorage.getItem('cb-' + item.key) === '1') {
+      checked++;
+      phaseStats[item.phase].checked++;
+    }
+  });
+
+  var pct = total > 0 ? Math.round(checked / total * 100) : 0;
+
+  var circ = 2 * Math.PI * 42;
+  var offset = circ - (pct / 100) * circ;
+  var ring = document.getElementById('donut-ring');
+  if (ring) { ring.style.strokeDasharray = circ; ring.style.strokeDashoffset = offset; }
+  var dp = document.getElementById('dash-pct');
+  if (dp) dp.textContent = pct + '%';
+  var dc = document.getElementById('dash-count');
+  if (dc) dc.textContent = checked + ' / ' + total + ' items checked';
+
+  var phasesDone = 0;
+  phaseOrder.forEach(function(ph) { if (phaseStats[ph] && phaseStats[ph].total > 0 && phaseStats[ph].checked >= phaseStats[ph].total) phasesDone++; });
+  
+  var kpisHtml = '';
+  kpisHtml += '<div class="dash-card"><div class="val ' + (pct >= 80 ? 'g' : pct >= 50 ? 'y' : 'a') + '">' + pct + '%</div><div class="lbl">Overall Completion</div></div>';
+  kpisHtml += '<div class="dash-card"><div class="val a">' + checked + '</div><div class="lbl">Passed / ' + total + '</div></div>';
+  kpisHtml += '<div class="dash-card"><div class="val p">' + Object.keys(phaseStats).length + '</div><div class="lbl">Sections Tracked</div></div>';
+  kpisHtml += '<div class="dash-card"><div class="val ' + (phasesDone >= 10 ? 'g' : phasesDone >= 5 ? 'y' : '') + '">' + phasesDone + '/10</div><div class="lbl">Sections Complete</div></div>';
+  document.getElementById('dash-kpis').innerHTML = kpisHtml;
+
+  var bars = '';
+  var lagging = [];
+  phaseOrder.forEach(function(ph) {
+    if (phaseStats[ph]) {
+      var phPct = Math.round(phaseStats[ph].checked / phaseStats[ph].total * 100);
+      var phName = phasesNames[ph] || ph;
+      var flag = '';
+      if (phPct < 50) { flag = '<span class="lag">⚠ Lagging</span>'; lagging.push(phName); }
+      else if (phPct < 100) { flag = '<span class="lag" style="color:var(--yellow)">⋯ In Progress</span>'; }
+      else { flag = '<span class="lag" style="color:var(--green)">✓ Complete</span>'; }
+      bars += '<div class="ph-row"><div class="lbl"><span class="badge ' + (badges[ph]||'ph-1a') + '">' + ph + '</span>' + phName + '</div><div class="trk"><div class="fill ' + (colors[ph]||'g') + '" style="width:' + phPct + '%"></div></div><div class="pct">' + phPct + '%</div>' + flag + '</div>';
+    }
+  });
+  document.getElementById('dash-phases').innerHTML = bars;
+
+  var crossHtml = '';
+  ['INT','VAL','PERM','DI'].forEach(function(ph) {
+    if (phaseStats[ph]) {
+      var phPct = Math.round(phaseStats[ph].checked / phaseStats[ph].total * 100);
+      var phName = phasesNames[ph] || ph;
+      var flag = '';
+      if (phPct < 50) { flag = '<span class="lag">⚠ Lagging</span>'; }
+      else if (phPct < 100) { flag = '<span class="lag" style="color:var(--yellow)">⋯ In Progress</span>'; }
+      else { flag = '<span class="lag" style="color:var(--green)">✓ Complete</span>'; }
+      crossHtml += '<div class="ph-row"><div class="lbl"><span class="badge ' + (badges[ph]||'ph-int') + '">' + ph + '</span>' + phName + '</div><div class="trk"><div class="fill ' + (colors[ph]||'a') + '" style="width:' + phPct + '%"></div></div><div class="pct">' + phPct + '%</div>' + flag + '</div>';
+    }
+  });
+  try { document.getElementById('dash-cross').innerHTML = crossHtml; } catch(e) {}
+
+  var lagHtml = lagging.length === 0 ? '<p style="color:var(--green)">✓ All sections on track!</p>' : '<ul style="padding-left:20px;margin:0">' + lagging.map(function(l) { return '<li style="padding:4px 0;color:var(--red)">' + l + ' &mdash; needs attention</li>'; }).join('') + '</ul>';
+  document.getElementById('dash-lagging').innerHTML = lagHtml;
+}
+
+document.addEventListener('DOMContentLoaded', dashCount);
+setInterval(dashCount, 2000);
+</script>
+</body>
+</html>

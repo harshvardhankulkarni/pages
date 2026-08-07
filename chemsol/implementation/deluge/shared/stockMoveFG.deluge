@@ -1,0 +1,57 @@
+// ============================================================
+// FG stock adjust + movement log (Phase 0, A-42)
+// Verified: flow_sim.py P4/P5 (FGHM +148/+300, FGC ->0/20)
+// ============================================================
+// Custom function. Input: {"warehouse", "item_code", "item_name", "qty"(+/-),
+//   "doc_type"("FGHM"|"FG_CONSUMPTION"), "doc_ref", "uom", "project_id"}
+
+fg = lookupRecords(FG_Inventory, {"Warehouse": input.warehouse, "Item_Code": input.item_code});
+if(isNull(fg) || fg.size() == 0)
+{
+  if(input.qty < 0)
+  {
+    throw "Stock adjustment refused: no FG row for " + input.item_code;
+  }
+  createRecord
+  {
+    "Form_Type": "FG_Inventory",
+    "Warehouse": input.warehouse,
+    "Item_Code": input.item_code,
+    "Item_Name": input.item_name,
+    "Current_Stock": input.qty,
+    "Last_Doc_Ref": input.doc_ref,
+    "Last_Updated": now()
+  };
+}
+else
+{
+  fgRec = fg.get(0);
+  newStock = fgRec.Current_Stock + input.qty;
+  if(newStock < 0)
+  {
+    throw "Insufficient FG stock for " + input.item_code;
+  }
+  updateRecord
+  {
+    "Form_Type": "FG_Inventory",
+    "ID": fgRec.ID,
+    "Current_Stock": newStock,
+    "Last_Doc_Ref": input.doc_ref,
+    "Last_Updated": now()
+  };
+}
+
+createRecord
+{
+  "Form_Type": "Stock_Movement_Log",
+  "Document_Type": input.doc_type,
+  "Document_Ref": input.doc_ref,
+  "Item_Code": input.item_code,
+  "Item_Name": input.item_name,
+  "Movement_Type": input.qty >= 0 ? "IN" : "OUT",
+  "Quantity": abs(input.qty),
+  "UOM": input.uom,
+  "Warehouse": input.warehouse,
+  "Project_ID": input.project_id,
+  "Timestamp": now()
+};

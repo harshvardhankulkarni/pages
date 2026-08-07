@@ -1,0 +1,74 @@
+// ============================================================
+// Post GRN — delayed stock posting + G5 hook (A-27, F9)
+// Verified: flow_sim.py P1 (stock 275, PO line Complete, PO Fully Received)
+// ============================================================
+// Report custom button "Post GRN" (GRN_Master)
+// Delayed posting: stock is NEVER touched before this button runs (F1:
+// GRN number also generated here, not at record creation).
+
+// Step 1 — validate
+if(input.Status == "Posted")
+{
+  throw "GRN already posted";
+}
+for each item in input.GRN_Line_Items
+{
+  if(isNull(item.QC_Status) || item.QC_Status == "Pending")
+  {
+    throw "All items must have QC Status before posting GRN";
+  }
+}
+
+// Step 2 — number (F1: generated only on posting)
+grnNo = numberSeries({"prefix": "GRN", "year": year(today())});
+input.GRN_Number = grnNo;
+
+// Step 3 — per item: G5 PO line update + stock + movement log
+for each item in input.GRN_Line_Items
+{
+  if(input.Partial_GRN == true && item.Process_In_Partial != true)
+  {
+    continue; // partial receipt — only checked lines post
+  }
+
+  poLine = lookupRecords(PO_Line_Items, {"PO_Ref": input.PO_Ref, "Item_Code": item.Item_Code});
+  if(isNull(poLine))
+  {
+    throw "PO line not found for " + item.Item_Code;
+  }
+  poLineRec = poLine.get(0);
+
+  // G5 hook (GRN_Post_PO_Update): Received/Balance/Receipt Status/Delivery Days
+  newReceived = poLineRec.Received_Qty + item.Received_Qty;
+  newBalance = poLineRec.Qty - newReceived;
+  updateRecord
+  {
+    "Form_Type": "PO_Line_Items",
+    "ID": poLineRec.ID,
+    "Received_Qty": newReceived,
+    "Balance_Qty": newBalance,
+    "Receipt_Status": newBalance <= 0 ? "Complete" : "Partial",
+    "Delivery_Days": input.GRN_Date.diff(poLineRec.Delivery_Date, "days")
+  };
+
+  // stock + movement log (shared function stockMoveRM)
+  stockMoveRM({"store": input.Warehouse, "item_code": item.Item_Code,
+    "item_name": item.Item_Name, "qty": item.Received_Qty, "doc_type": "GRN",
+    "doc_ref": grnNo, "uom": item.UOM, "project_id": input.Project_ID});
+}
+
+// Step 4 — PO header status (G5): Fully Received when no line has balance
+pendingLines = lookupRecords(PO_Line_Items, {"PO_Ref": input.PO_Ref, "Balance_Qty": 0, "Receipt_Status": "Complete"});
+if(pendingLines.size() == input.PO_Ref.PO_Line_Items.size() || input.PO_Ref.PO_Line_Items.size() == 0)
+{
+  updateRecord
+  {
+    "Form_Type": "PO_Master",
+    "ID": input.PO_Ref.ID,
+    "Status": "Fully Received"
+  };
+}
+
+// Step 5 — lock the GRN
+input.Status = "Posted";
+input.Posted_Time = now();

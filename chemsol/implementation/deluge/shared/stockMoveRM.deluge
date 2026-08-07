@@ -1,0 +1,60 @@
+// ============================================================
+// Shared RM stock adjust + movement log (Phase 0, A-42)
+// Verified: flow_sim.py P1/P4/P5 (GRN 200->275, MIS ->0/275, MRT ->10/285)
+// ============================================================
+// Custom function. Input: {"store", "item_code", "item_name", "qty"(+/-),
+//   "doc_type"("GRN"|"MIS"|"MATERIAL_RETURN"|"PACKING"), "doc_ref", "uom",
+//   "project_id"(optional, Stream B docs)}
+// qty sign: IN = +, OUT = -
+
+inv = lookupRecords(RM_Inventory, {"Warehouse": input.store, "Item_Code": input.item_code});
+if(isNull(inv) || inv.size() == 0)
+{
+  if(input.qty < 0)
+  {
+    throw "Stock adjustment refused: no inventory row for " + input.item_code;
+  }
+  createRecord
+  {
+    "Form_Type": "RM_Inventory",
+    "Warehouse": input.store,
+    "Item_Code": input.item_code,
+    "Item_Name": input.item_name,
+    "Current_Stock": input.qty,
+    "Last_Doc_Ref": input.doc_ref,
+    "Last_Updated": now()
+  };
+}
+else
+{
+  invRec = inv.get(0);
+  newStock = invRec.Current_Stock + input.qty;
+  if(newStock < 0)
+  {
+    throw "Insufficient stock for " + input.item_code + " (" + invRec.Current_Stock + " available, " + (-input.qty) + " required)";
+  }
+  updateRecord
+  {
+    "Form_Type": "RM_Inventory",
+    "ID": invRec.ID,
+    "Current_Stock": newStock,
+    "Last_Doc_Ref": input.doc_ref,
+    "Last_Updated": now()
+  };
+}
+
+// Movement log (A-42) — one row per posting, full traceability
+createRecord
+{
+  "Form_Type": "Stock_Movement_Log",
+  "Document_Type": input.doc_type,
+  "Document_Ref": input.doc_ref,
+  "Item_Code": input.item_code,
+  "Item_Name": input.item_name,
+  "Movement_Type": input.qty >= 0 ? "IN" : "OUT",
+  "Quantity": abs(input.qty),
+  "UOM": input.uom,
+  "Warehouse": input.store,
+  "Project_ID": input.project_id,
+  "Timestamp": now()
+};

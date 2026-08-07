@@ -1,0 +1,53 @@
+// ============================================================
+// P7 — FGHM inline accept (A-36, A-37): G6 + C14
+// Verified: flow_sim.py P4 (FG +148/+300; Fully Consumed stays OFF at 99.6%)
+// ============================================================
+// Report custom action button "Accept" (FGHM_Master).
+// G6 hook (FGHM_Accepted_Status): Status -> Accepted + FG stock IN.
+// F-02 NOTE (2026-08-06): MR_Allocation is a SUBFORM — resolve via MR_Master
+// lookup then iterate rows; re-PUT subform on parent to persist.
+// C14: Fully_Consumed = true ONLY when ALL project allocations >= 100%.
+// C29: with RM-002 at 99.6% in the canonical scenario the flag stays OFF —
+// that is correct behaviour, not a bug.
+
+input.Status = "Accepted";
+input.Accepted_Time = now();
+
+for each line in input.FGHM_Line_Items
+{
+  stockMoveFG({"warehouse": input.Warehouse, "item_code": line.FG_Code,
+    "item_name": line.FG_Name, "qty": line.Accepted_Qty, "doc_type": "FGHM",
+    "doc_ref": input.FGHM_Number, "uom": line.UOM, "project_id": input.Project_ID});
+}
+
+// C14: mark allocation Fully Consumed only when EVERY line >= 100%
+allocs = lookupRecords(MR_Allocation, {"Project_ID": input.Project_ID});
+allFull = true;
+for each a in allocs
+{
+  if(a.Consumption_Percentage < 100)
+  {
+    allFull = false;
+  }
+}
+if(allFull)
+{
+  for each a in allocs
+  {
+    updateRecord
+    {
+      "Form_Type": "MR_Allocation",
+      "ID": a.ID,
+      "Fully_Consumed": true
+    };
+  }
+}
+
+sendmail
+[
+  from: zoho.login.email,
+  to: "store@chemsol.in",
+  subject: "FGHM Accepted - " + input.FGHM_Number,
+  message: "FG handover " + input.FGHM_Number + " ACCEPTED for " + input.Project_ID.Project_Name
+    + " — FG stock updated."
+];

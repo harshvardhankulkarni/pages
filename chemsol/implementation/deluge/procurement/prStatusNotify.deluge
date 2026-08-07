@@ -1,0 +1,29 @@
+// ============================================================
+// PR status notifications (A-21, A-22)
+// ============================================================
+// Workflow: On Record Modified (PR_Master)
+
+if(input.Status == "Submitted" && input."PR_Status_Email_Sent" != true)
+{
+  sendmail
+  [
+    from: zoho.login.email,
+    to: "purchase@chemsol.in",
+    subject: "New Purchase Requisition " + input.PR_Number,
+    message: "PR " + input.PR_Number + " (" + input.Department + ") awaits approval. "
+      + "Items: " + input.PR_Line_Items.size() + ". Auto-created from Production Plan: "
+      + (input.Source == "Production Plan" ? "Yes" : "No")
+  ];
+  input."PR_Status_Email_Sent" = true;
+}
+
+if(input.Status == "Approved")
+{
+  sendmail
+  [
+    from: zoho.login.email,
+    to: input.Requested_By.email,
+    subject: "PR Approved - " + input.PR_Number,
+    message: "Your requisition " + input.PR_Number + " is APPROVED and ready for PO."
+  ];
+}

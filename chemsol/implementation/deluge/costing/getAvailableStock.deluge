@@ -1,0 +1,36 @@
+// ============================================================
+// F7/P4 — Available Stock query (A-13)
+// Verified: flow_sim.py P2 (RM-001 200 = 200 - 0 held; shortage 75)
+// ============================================================
+// Custom function. Input: {"item_code", "warehouse"}
+// F-02 NOTE (2026-08-06): MR_Allocation is a SUBFORM — query MR_Master
+// (MR_Status != Released) and iterate Material_Allocation rows for held qty.
+// Available = physical stock - SUM(Assigned Qty from unreleased MRs)
+// (prevents double-allocation; AGENTS.md "Available Stock" rule).
+// NOT a formula field — cross-form criteria aggregate (F7).
+
+phys = 0;
+inv = lookupRecords(RM_Inventory, {"Warehouse": input.warehouse, "Item_Code": input.item_code});
+if(!isNull(inv) && inv.size() > 0)
+{
+  phys = inv.get(0).Current_Stock;
+}
+
+held = 0;
+// C32: ALL unreleased states hold allocation — Draft, Pending Production
+// Verification, Production Verified, Costing Approved (5-state set, C30).
+// MR_Ref.MR_Status — subform records resolved through parent MR
+allocLines = lookupRecords(MR_Allocation,
+  {"Item_Code": input.item_code, "MR_Ref.MR_Status": "Draft"});
+allocLines.addAll(lookupRecords(MR_Allocation,
+  {"Item_Code": input.item_code, "MR_Ref.MR_Status": "Pending Production Verification"}));
+allocLines.addAll(lookupRecords(MR_Allocation,
+  {"Item_Code": input.item_code, "MR_Ref.MR_Status": "Production Verified"}));
+allocLines.addAll(lookupRecords(MR_Allocation,
+  {"Item_Code": input.item_code, "MR_Ref.MR_Status": "Costing Approved"}));
+for each a in allocLines
+{
+  held = held + a.Assigned_Qty;
+}
+
+return phys - held;

@@ -1,0 +1,61 @@
+// ============================================================
+// P5 — SO<->BOM<->MR cross-validation (A-16, C31)
+// Verified: flow_sim.py P3 (0% pass; +6% flag; +11% block)
+// ============================================================
+// Workflow: On Submit (MR_Master) — validate BEFORE create.
+// Per-RM rule (C31): diff% = |Assigned - BOM expected| / expected x 100
+// any line >5% -> Variance_Flag + warning; any line >10% -> block (throw).
+
+// expected kg per RM from SO System Lines x Composition x BOM
+// C32: SO resolved via MR -> Costing_Sheet_Ref -> SO_Reference (SO_Master has
+// NO Project_ID — Project is created only at Costing approval, C2/F3).
+cs = input.Costing_Sheet_Ref;
+so = cs.SO_Reference;
+expectedByRM = Map();
+for each sysLine in so.System_Lines
+{
+  comps = lookupRecords(System_Composition, {"System_Code": sysLine.System_Code});
+  for each comp in comps
+  {
+    boms = lookupRecords(BOM, {"FG_Code": comp.FG_Code, "Status": "Released"});
+    for each bom in boms
+    {
+      qty = sysLine.Area * comp.Qty_Per_Sqm * bom.Ratio;
+      cur = expectedByRM.get(bom.RM_Code);
+      if(cur == null) { expectedByRM.put(bom.RM_Code, qty); }
+      else { expectedByRM.put(bom.RM_Code, cur + qty); }
+    }
+  }
+}
+
+// Per-line rule (C31, F-05 2026-08-06): Variance_Flag / Variance_Percentage
+// live on the Material_Allocation rows (forms.html rows 16-17), NOT on the
+// MR header. Compute per line; any >10% blocks; >5% flags that line only.
+rows = List();
+for each a in input.Material_Allocation
+{
+  exp = expectedByRM.get(a.Item_Code);
+  if(exp == null || exp <= 0) { rows.add(a); continue; }
+  diff = abs(a.Assigned_Qty - exp) / exp * 100;
+  if(diff > 10)
+  {
+    throw "Cross-validation BLOCKED: " + a.Item_Code + " assigned " + round(a.Assigned_Qty, 1)
+      + " kg vs expected " + round(exp, 1) + " kg (diff " + round(diff, 1) + "% > 10%). Correct MR allocation first.";
+  }
+  if(diff > 5)
+  {
+    a.Variance_Flag = true;   // flag this line only (C31 per-RM, not aggregate)
+  }
+  a.Variance_Percentage = round(diff, 1);
+  rows.add(a);
+}
+// Persist per-line flags: subform rows are NOT a standalone form in Creator.
+// Re-PUT the whole Material_Allocation subform on the parent (keep row IDs).
+// NOTE (F-02 pattern): if this does not persist in your console build,
+// promote Material Allocation to a linked form and update per-line instead.
+updateRecord
+{
+  "Form_Type": "MR_Master",
+  "ID": input.ID,
+  "Material_Allocation": rows
+};

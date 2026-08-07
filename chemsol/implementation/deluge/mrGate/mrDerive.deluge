@@ -1,0 +1,91 @@
+// ============================================================
+// MR auto-derive from Costing Sheet + Released Plan (A-15, F4) - FG-based costing (Client update 2026-08-06)
+// Verified: flow_sim.py P3 (4 components = Rs 144,000; allocation 275/125)
+// ============================================================
+// Workflow: On Record Modified (Production_Plan, Plan_Status -> Released),
+// criteria: linked Costing Sheet already Approved.
+// F4: ONE canonical line table — Material Allocation subform only.
+// F5/F11: MR created here as Draft; MIS comes later at Release.
+// Zero manual entry — all 4 cost components pre-filled (C20: Section E
+// Overhead stays Costing-only, never part of MR cost baseline).
+// Costing Section A is FG-based; MR allocates RM via BOM roll-up.
+
+costing = lookupRecords(Costing_Sheet, {"ID": input.Costing_Sheet_No}).get(0);
+
+// 4 cost components (C20) - Section A total from FG roll-up
+matTotal = 0;
+for each line in costing.Costing_Material_Lines
+{
+  matTotal = matTotal + line.Material_Cost;
+}
+totalMr = matTotal + costing.Section_B_Total + costing.Section_C_Total
+  + costing.Section_D_Total; // Section E excluded
+
+// Derive RM allocation from FG-based costing via BOM
+rmAllocMap = Map();
+for each fgLine in costing.Costing_Material_Lines
+{
+  // fgLine has FG_Code, Required_FG_Qty, Unit_Rate, Material_Cost
+  boms = lookupRecords(BOM, {"FG_Code": fgLine.FG_Code, "Status": "Released"});
+  for each bom in boms
+  {
+    rmQty = round(fgLine.Required_FG_Qty * bom.Ratio, 1);
+    item = lookupRecords(Item_Muster, {"Item_Code": bom.RM_Code}).get(0);
+    rmCost = round(rmQty * item.Standard_Rate, 2);
+    
+    if(rmAllocMap.containsKey(bom.RM_Code))
+    {
+      rmAllocMap.put(bom.RM_Code, rmAllocMap.get(bom.RM_Code) + rmQty);
+    }
+    else
+    {
+      rmAllocMap.put(bom.RM_Code, rmQty);
+    }
+  }
+}
+
+allocLines = List();
+totalAssigned = 0;
+for each rmCode in rmAllocMap.keys()
+{
+  totalAssigned = totalAssigned + rmAllocMap.get(rmCode);
+}
+for each rmCode in rmAllocMap.keys()
+{
+  item = lookupRecords(Item_Muster, {"Item_Code": rmCode}).get(0);
+  rmQty = rmAllocMap.get(rmCode);
+  rmCost = round(rmQty * item.Standard_Rate, 2);
+  allocLines.add({
+    "Item_Code": rmCode,
+    "Item_Name": item.Item_Name,
+    "Assigned_Qty": rmQty,
+    "Rate": item.Standard_Rate,
+    "Material_Cost": rmCost,
+    // C32: ratio vs THIS project's total kg, not a hardcoded 400
+    "Allocation_Ratio_Percent": totalAssigned > 0 ? round(rmQty / totalAssigned * 100, 2) : 0,
+    "80%_Alert_Flag": true,
+    "Consumed_Qty": 0,
+    "Issued_Qty": 0,
+    "Returned_Qty": 0,
+    "Remaining": rmQty,
+    "Fully_Consumed": false
+  });
+}
+
+createRecord
+{
+  "Form_Type": "MR_Master",
+  "MR_Number": numberSeries({"prefix": "MR"}),
+  "Project_ID": input.Project_ID,
+  "Costing_Sheet_Ref": costing.ID,
+  "Production_Plan_Ref": input.ID,
+  "Requisition_Type": "Production",
+  "Priority": "High",
+  "MR_Status": "Draft",
+  "Material_Component": matTotal,
+  "Application_Component": costing.Section_B_Total,
+  "Transport_Component": costing.Section_C_Total,
+  "Tools_Component": costing.Section_D_Total,
+  "Total_MR_Cost": totalMr,
+  "Material_Allocation": allocLines
+};

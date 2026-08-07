@@ -1,0 +1,51 @@
+// ============================================================
+// F5 — MR Released -> auto-MIS draft + Project cost set (A-18, G2)
+// Verified: flow_sim.py P3 (MIS draft 2 lines; P&L +31,000)
+// ============================================================
+// Workflow: On Record Modified (MR_Master), criteria MR_Status == "Released".
+// NOT in the Blueprint transition (50-statement cap — F5).
+// One MIS header + line-items subform from Material Allocation (NOT one
+// record per line). G2 hook (Project_Cost_Set): Total Actual Cost + P&L.
+
+misLines = List();
+for each a in input.Material_Allocation
+{
+  misLines.add({
+    "Item_Code": a.Item_Code,
+    "Item_Name": a.Item_Name,
+    "Required_Qty": a.Assigned_Qty,
+    "Issued_Qty": 0,
+    "Balance_Qty": a.Assigned_Qty,
+    "UOM": a.UOM
+  });
+}
+
+createRecord
+{
+  "Form_Type": "MIS_Master",
+  "MIS_Number": numberSeries({"prefix": "MIS"}),
+  "MR_Ref": input.ID,
+  "Project_ID": input.Project_ID,
+  "Date": today(),
+  "Batch_Number": "B-" + padLeft(String(input.ID), 3, "0"),
+  "Status": "Draft",
+  "MIS_Line_Items": misLines
+};
+
+// G2 hook (Project_Cost_Set): Project.Total Actual Cost = MR total, P&L updates
+updateRecord
+{
+  "Form_Type": "Project_Master",
+  "ID": input.Project_ID.ID,
+  "Total_Actual_Cost": input.Total_MR_Cost
+};
+
+sendmail
+[
+  from: zoho.login.email,
+  to: "store@chemsol.in",
+  cc: "production@chemsol.in," + (input.Project_ID.Project_Manager != null && input.Project_ID.Project_Manager.Email != null ? input.Project_ID.Project_Manager.Email : "pm@chemsol.in"),
+  subject: "MR Released - " + input.MR_Number,
+  message: "MR " + input.MR_Number + " released for " + input.Project_ID.Project_Name
+    + ". MIS " + misLines.size() + " lines auto-created (Draft) for store issue."
+];

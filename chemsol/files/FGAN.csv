@@ -1,0 +1,18 @@
+Unnamed: 0,Unnamed: 1,Unnamed: 2,Unnamed: 3,Unnamed: 4,Unnamed: 5
+,Finish Goods Acceptance Note Master,,,,
+,Open From Pop up notofication or task list,,,,
+,,,,,
+*,FGH No,,(Autofetch if open from notification or list otherwise search by manually),,
+,,,,,
+*,Acceptance Date,,Today's Date,,
+,,,,,
+*,Product No.,Product Name,Handovered  Quantity,Damaged or Packaging Rejected Quantity,Accepted Quantity
+,(Autofetch),(Autofetch),(Autofetch),,
+,,,,,
+,,,,,
+,,,,,
+*,Appoved By,,,,
+,,,,,
+*,Remark,,,,
+,,,,,
+,Acceptance number will be generate after Approval,,,,

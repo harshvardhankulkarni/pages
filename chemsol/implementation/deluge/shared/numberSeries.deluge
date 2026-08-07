@@ -1,0 +1,40 @@
+// ============================================================
+// P1 — Prefixed number series counter (feasibility plan §4 P1)
+// Verified: flow_sim.py P0 (independent SO/RMWAD/RM counters)
+// ============================================================
+// Custom function. Input: {"prefix": "CST", "year": 2026}
+// Returns: "CST-2026-0001"
+// Config form: No_Series (Series_Prefix, Series_Year, Last_Number)
+// NOTE: Auto Number field is numeric-only; autogen() is NOT available
+// in Creator (F1) — every prefixed number must call this function.
+
+prefix = input.prefix;
+year = ifNull(input.year, year(today()));
+
+series = lookupRecords(No_Series, {"Series_Prefix": prefix, "Series_Year": year});
+if(isNull(series) || series.size() == 0)
+{
+  nextNo = 1;
+  createRecord
+  {
+    "Form_Type": "No_Series",
+    "Series_Prefix": prefix,
+    "Series_Year": year,
+    "Last_Number": nextNo
+  };
+}
+else
+{
+  // ponytail: last-record+1 counter; No_Series row is the lock.
+  // Concurrency edge (2 users same prefix same ms): add retry-on-unique-check
+  // at build (playbook risk R3, Phase 7 concurrency test).
+  nextNo = series.get(0).Last_Number + 1;
+  updateRecord
+  {
+    "Form_Type": "No_Series",
+    "ID": series.get(0).ID,
+    "Last_Number": nextNo
+  };
+}
+
+return prefix + "-" + year + "-" + padLeft(String(nextNo), 4, "0");

@@ -1,0 +1,29 @@
+// ============================================================
+// FG Consumption at site (A-39)
+// Verified: flow_sim.py P5 (FG-002 0 / FG-003 20 remaining)
+// ============================================================
+// Workflow: On Submit (FG_Consumption_Entry).
+// Deducts FG from inventory at site + logs to Project FG Consumption log
+// (G9 — feeds Project FG Position report R6).
+
+for each line in input.FG_Line_Items
+{
+  stockMoveFG({"warehouse": input.Warehouse, "item_code": line.FG_Code,
+    "item_name": line.FG_Name, "qty": 0 - line.Qty_Used, "doc_type": "FG_CONSUMPTION",
+    "doc_ref": input.FGC_Number, "uom": line.UOM, "project_id": input.Project_ID});
+
+  // C32: G9 — per-project FG consumption log (feeds R6 Project FG Position:
+  // FG_Remaining = SUM(FGHM.Accepted_Qty) - SUM(Project_FG_Consumption.Used_Qty))
+  createRecord
+  {
+    "Form_Type": "Project_FG_Consumption",
+    "Project_ID": input.Project_ID,
+    "FG_Code": line.FG_Code,
+    "FG_Name": line.FG_Name,
+    "UOM": line.UOM,
+    "Used_Qty": line.Qty_Used,
+    "Consumption_Date": today(),
+    "Site_Location": input.Site_Location,
+    "FGC_Ref": input.ID
+  };
+}

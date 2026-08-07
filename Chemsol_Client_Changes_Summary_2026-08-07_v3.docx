@@ -1,0 +1,234 @@
+Chemsol ERP — Client Change Summary
+=====================================
+
+Prepared for: Medha Desawale (medha.desawale@itotcloud.in)
+Prepared by: Harshvardhan Kulkarni
+Date: 07 August 2026
+Version: 3.0
+Status: Implemented & Verified (82/82 tests passing)
+
+────────────────────────────────────────────────────────────
+
+1. Executive Summary
+====================
+
+This document summarizes the comprehensive client change requests implemented on 2026-08-07, their implementation in the Chemsol Zoho Creator ERP, verification results, and the exact files that need to be replicated in the Creator console. All changes preserve the canonical financial numbers and the end-to-end process flow defined in AGENTS.md.
+
+The .ds files have been deleted as requested (they were trash/temporary files). Focus is entirely on the implementation flow in the deluge/ and verify/ directories.
+
+────────────────────────────────────────────────────────────
+
+2. Change Requests & Implementation
+===================================
+
+CHANGE 1: Production Plan — FG-Based with FG Lookup
+----------------------------------------------------
+
+Description: Production Plan is now fully FG-based. Plan lines have FG_Item_Code (Lookup to Item Muster — FG category), FG_Name autofetch, UOM autofetch, Plan_Qty (FG quantity to produce). RM shortage is derived via BOM roll-up on Plan Release.
+
+Files to Replicate in Creator Console:
+  • deluge/costing/planReleaseAutoPR.deluge (updated for FG-based lines)
+
+Verification (flow_sim.py): P2: "Plan FG-wise: 2 FG lines (FG-002 150 / FG-003 300)", "RM-001 shortage 75 kg → auto-PR"
+
+Impact: Plan structure changed from RM lines to FG lines; auto-PR output identical (RM-001 75 kg).
+
+Code Changes in planReleaseAutoPR.deluge:
+  - Plan lines are FG products with FG_Code and Plan_Qty
+  - On Plan Released: for each FG line lookup BOM, derive RM req = fgLine.Plan_Qty × bom.Ratio
+  - Check against getAvailableStock, create PR only if shortage > 0
+  - De-dupe: only one submitted PR per (Project_ID, RM_Code); if submitted PR exists, append line
+
+CHANGE 2: SO — Remove Approval Process Status
+----------------------------------------------
+
+Description: Remove the SO Acceptance gate. Costing Sheet auto-created directly from SO (Supply+Apply) on save. Project creation still occurs only at Costing approval (single fork). SO Status field no longer has "Accepted" state.
+
+Files to Replicate in Creator Console:
+  • deluge/costing/expandCosting.deluge (no SO status check)
+
+Verification (flow_sim.py): P2: "No SO approval: Costing Sheet Draft auto-created from SO"
+
+Impact: SO status "Accepted" removed; Costing Sheet created in Draft directly from SO save.
+
+CHANGE 3: Costing Sheet — FG-Based (No RM in Material Cost Subform)
+---------------------------------------------------------------------
+
+Description: Costing Sheet Material Cost Subform (Costing_Material_Lines) now lists FG products (not RM rows). Each FG line: Required_FG_Qty = Area × Qty_Per_Sqm; Unit_Rate = BOM roll-up (Σ BOM_Ratio × RM_Standard_Rate); Material_Cost = Required_FG_Qty × Unit_Rate. NO RM rows in Costing. RM requirements derived only at MR time via BOM roll-up.
+
+Files to Replicate in Creator Console:
+  • deluge/costing/expandCosting.deluge (FG-based Section A)
+  • deluge/mrGate/mrDerive.deluge (RM from FG costing via BOM)
+
+Verification (flow_sim.py): P2: "Costing Sec A FG-based: FG-002 150 kg / FG-003 300 kg", "2 FG lines (no RM rows in costing)"
+
+Impact: Costing Sec A = ₹103,000 (2 FG lines); MR derives RM (275/125 kg) via BOM. Canonical totals unchanged.
+
+Code Changes in expandCosting.deluge:
+  - Section A iterates System Composition to get FG products
+  - For each FG, calculates BOM roll-up rate from BOM ratios × RM standard rates
+  - Creates Costing_Material_Lines with FG_Code, FG_Name, Required_FG_Qty, Unit_Rate (FG roll-up), Material_Cost
+  - NO RM rows in Material Cost Subform
+
+Code Changes in mrDerive.deluge:
+  - MR derives RM allocation from FG-based costing via BOM roll-up
+  - For each FG cost line, lookup BOM, sum RM qty per RM code
+  - Creates Material_Allocation rows with Item_Code, Assigned_Qty, Rate, Material_Cost, Allocation_Ratio_Percent
+  - 4 cost components preserved (Material/Application/Transport/Tools; Section E excluded)
+
+CHANGE 4: MR Change History + Department Notification
+------------------------------------------------------
+
+Description: Every change to an MR (header or subform) is logged to a new MR_Change_History subform (field, old value, new value, user, timestamp). On any change, an email is sent to Production and Inventory (Store) departments with a formatted change table.
+
+Files to Replicate in Creator Console:
+  • deluge/mrGate/mrChangeHistory.deluge (NEW)
+
+Verification (flow_sim.py): P3: "MR Change History subform logged change", "MR Change notified Production & Inventory depts"
+
+Impact: Full audit trail on MR; proactive notification to Production & Inventory.
+
+CHANGE 5: Reports Subform-Focused (Open PR Detail)
+---------------------------------------------------
+
+Description: Reports should focus on subform details of main forms. Example: Open PR report now returns PR_Line_Items subform details (Item Code, Item Name, Qty, UOM, Lead Time) instead of only header-level data.
+
+Files to Replicate in Creator Console:
+  • Report query logic — no Deluge workflow change
+
+Verification (flow_sim.py): REP: "R4 subform report focus: Open PR report returns PR item subform details (RM-001, Qty 75)"
+
+Impact: Report output enhanced; no automation change required.
+
+CHANGE 6: Documentation — Sections Clarified as Subforms
+---------------------------------------------------------
+
+Description: All "Sections" in Costing Sheet and other forms are now explicitly labeled as subforms with their actual form names:
+- Section A → Material Cost Subform (Costing_Material_Lines)
+- Section B → Application Cost Subform (Costing_Application_Lines)
+- Section C → Transportation Cost Subform (Costing_Transportation_Lines)
+- Section D → Tools & Tackles Subform (Costing_Tools_Lines)
+- Section E → Overhead & Miscellaneous Subform (Costing_Overhead_Lines)
+
+This removes confusion for developers — they now know exactly which subform to create.
+
+Files Updated:
+  • forms.html — All sections renamed to subform names
+  • IMPLEMENTATION_PLAN.md — All sections renamed to subform names
+  • UAT_VERIFICATION_PLAN.md — Section A updated to show FG lines
+
+────────────────────────────────────────────────────────────
+
+3. Canonical Financial Numbers (Preserved Across All Changes)
+=============================================================
+
+| Metric                              | Value      | Notes                                    |
+|-------------------------------------|------------|------------------------------------------|
+| SO Total                            | ₹175,000   | 500 sqm × ₹350 (EP02)                    |
+| Costing Material Subform (FG roll-up) | ₹103,000   | FG-002 150 kg @ ₹310 = ₹46,500; FG-003 300 kg @ ₹188.33 = ₹56,500 |
+| Costing Application Subform         | ₹30,000    | Fixed                                    |
+| Costing Transportation Subform      | ₹7,500     | Fixed                                    |
+| Costing Tools Subform               | ₹3,500     | Fixed                                    |
+| Costing Overhead Subform (Costing only) | ₹2,000    | Excluded from MR                         |
+| Costing Sheet Total                 | ₹146,000   | Sum of all 5 subforms                    |
+| MR 4 Components                     | ₹144,000   | Overhead excluded per C20                |
+| MR Allocation — RM-001              | 275 kg     | 68.75% — Epoxy Resin A @ ₹220/kg         |
+| MR Allocation — RM-002              | 125 kg     | 31.25% — Hardener B @ ₹340/kg            |
+| Project P&L                         | +₹31,000   | ₹175,000 – ₹144,000                       |
+
+────────────────────────────────────────────────────────────
+
+4. Complete File Inventory for Creator Console Replication
+===========================================================
+
+| Module    | File                          | Status                           |
+|-----------|-------------------------------|----------------------------------|
+| Costing   | expandCosting.deluge          | MODIFIED (FG-based + no SO approval) |
+| Costing   | planReleaseAutoPR.deluge      | MODIFIED (FG-wise plan)          |
+| MR Gate   | mrDerive.deluge               | MODIFIED (RM from FG costing)    |
+| MR Gate   | mrChangeHistory.deluge        | NEW (audit + notify)             |
+
+────────────────────────────────────────────────────────────
+
+5. Verification Results
+=======================
+
+Command: python chemsol/implementation/verify/flow_sim.py
+
+Result: 82 passed, 0 failed
+
+Test Coverage:
+  P0 (Number Series): 1 test
+  P1 (Procurement): 10 tests
+  P2 (Costing/Plan): 15 tests
+  P3 (MR Gate): 18 tests
+  P4 (Production): 14 tests
+  P5 (Site/Consumption): 10 tests
+  P7 (Final): 5 tests
+  REP (Reports R1–R7): 9 tests
+  ─────────────────────────────
+  TOTAL: 82 tests
+
+────────────────────────────────────────────────────────────
+
+6. Process Flow Alignment (AGENTS.md)
+=====================================
+
+The core process flow from AGENTS.md remains fully intact:
+
+SO (Sales Order)
+  → Costing Sheet (5 subforms auto-expanded from SO × System Composition × BOM)  ← No SO approval gate; Costing created on SO save
+    → Costing Approved → auto-create Project + Production Plan  ← Unchanged
+      → Production Plan Released → auto-PR for stock shortages  ← Plan now FG-wise; PR via BOM
+        → MR auto-derived from Costing Sheet (4 cost pre-filled; Draft → Pending → Verified → Approved → Released)  ← MR derives RM from FG costing
+          → MR Released [CRITICAL GATE]  ← Unchanged
+            → auto-MIS → Store issues RM to Production  ← Unchanged
+              → Production (BMR → RM Consumption → Packing)  ← Unchanged
+                → FGHM (FG Handover → FG Stock +)  ← Unchanged
+                  → Site Consumption Entry (hourly/daily per area)  ← Unchanged
+                    → Material Return (unused RM back to Store)  ← Unchanged
+                      → Project Close → P&L (+₹31,000)  ← Unchanged
+
+────────────────────────────────────────────────────────────
+
+7. .ds Files Cleanup
+====================
+
+The following .ds files have been DELETED as requested (they were trash/temporary files):
+
+  - .hermes/desktop-attachments/ChemSol.ds
+  - chemsol/Chemsol V2.ds
+  - chemsol/ChemSol_v2.ds
+
+Focus is now entirely on the implementation flow in:
+  - chemsol/implementation/deluge/ (26 Deluge scripts)
+  - chemsol/implementation/verify/flow_sim.py (82 assertions)
+
+────────────────────────────────────────────────────────────
+
+8. Next Steps for Medha
+=======================
+
+1. Replicate the 4 Deluge files in the Zoho Creator console (Workflows → Function Tasks)
+
+2. Verify subforms are created in respective forms:
+   - Costing_Material_Lines in Costing_Sheet (FG-based, NO RM rows)
+   - Costing_Application_Lines in Costing_Sheet
+   - Costing_Transportation_Lines in Costing_Sheet
+   - Costing_Tools_Lines in Costing_Sheet
+   - Costing_Overhead_Lines in Costing_Sheet
+   - Production_Plan_Lines in Production_Plan (FG-based with FG_Item_Code lookup)
+   - MR_Change_History in MR_Master (Changed_Field, Old_Value, New_Value, Changed_At, Changed_By)
+   - MR_Allocation in MR_Master (per-project RM allocation)
+
+3. Verify email template in mrChangeHistory.deluge points to correct Production & Inventory department user groups
+
+4. Run UAT with client using sample data (EP02, 500 sqm, Supply+Apply)
+
+5. Confirm all 82 verification assertions pass in client environment
+
+6. Update client-facing documentation and data-flow diagrams
+
+────────────────────────────────────────────────────────────
+
+End of Document — Chemsol ERP Client Change Summary v3.0

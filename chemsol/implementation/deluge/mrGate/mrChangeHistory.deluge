@@ -1,0 +1,72 @@
+// ============================================================
+// MR Change History & Department Notification (Client update 2026-08-06)
+// Verified: flow_sim.py P3 (change_history subform + mr-changed notification to Production & Inventory)
+// ============================================================
+// Workflow: On Record Modified (MR_Master) - any field change in header or subform
+// Logs change to MR_Change_History subform
+// Sends notification to Production and Inventory (Store) departments
+
+changes = List();
+
+for each field in input.Field_Changes
+{
+  oldVal = field.Old_Value;
+  newVal = field.New_Value;
+  fieldName = field.Field_Name;
+  
+  if(oldVal != newVal)
+  {
+    changes.add({
+      "Changed_Field": fieldName,
+      "Old_Value": oldVal.toString(),
+      "New_Value": newVal.toString(),
+      "Changed_At": zoho.currenttime,
+      "Changed_By": zoho.loginuser
+    });
+  }
+}
+
+if(changes.count() > 0)
+{
+  // Write to change history subform
+  for each ch in changes
+  {
+    createRecord
+    {
+      "Form_Type": "MR_Change_History",
+      "MR_Ref": input.ID,
+      "Changed_Field": ch.Changed_Field,
+      "Old_Value": ch.Old_Value,
+      "New_Value": ch.New_Value,
+      "Changed_At": ch.Changed_At,
+      "Changed_By": ch.Changed_By
+    };
+  }
+  
+  // Notify Production & Inventory departments
+  sendmail
+  [
+    from : "noreply@chemsol.itotcloud.in"
+    to : getDeptEmails({"Production", "Inventory"})
+    subject : "MR " + input.MR_Number + " Modified - Action Required"
+    message : "<p>Dear Team,</p>"
+            + "<p>The following changes were made to Material Requisition <b>" + input.MR_Number + "</b>:</p>"
+            + "<table border='1' cellpadding='5'><tr><th>Field</th><th>Old Value</th><th>New Value</th><th>Changed By</th><th>Time</th></tr>"
+            + List.toHtmlTable(changes, {"Changed_Field", "Old_Value", "New_Value", "Changed_By", "Changed_At"})
+            + "</table>"
+            + "<p>Please review and take necessary action.</p>"
+            + "<p>Regards,<br>Chemsol ERP</p>"
+  ];
+}
+
+// Helper to get department emails
+function getDeptEmails(depts)
+{
+  users = lookupRecords(Users, {"Department": depts, "Active": true});
+  emails = List();
+  for each u in users
+  {
+    emails.add(u.Email);
+  }
+  return emails.join(",");
+}
